@@ -372,7 +372,7 @@ body{padding-bottom:6.5rem}
     <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
     <div class="level">Parcours DevOps — Niveau 8 · étape 9 sur 10</div>
     <h1>SRE et architecture : concevoir pour la panne, l'échelle et les équipes</h1>
-    <p class="lead">Six chapitres pour passer de « je sais exploiter » à « je conçois ce qui sera exploitable » : résilience et chaos engineering, haute disponibilité et reprise d'activité, performance et capacité, architectures microservices et événementielles, bases de données en production, puis le platform engineering qui industrialise tout ce qui précède pour d'autres équipes.</p>
+    <p class="lead">Six chapitres pour passer de « je sais exploiter » à « je conçois ce qui sera exploitable » : modèle SRE et rôle du Tech Lead SRE, résilience et chaos engineering, haute disponibilité et reprise d'activité, performance et capacité, architectures microservices et événementielles, bases de données en production, puis le platform engineering qui industrialise tout ce qui précède pour d'autres équipes.</p>
     <div class="meta">
       <span>6 chapitres</span><span>≈ 46 h de travail</span><span>Prérequis : Niveaux 0 à 7</span>
     </div>
@@ -404,18 +404,151 @@ body{padding-bottom:6.5rem}
 <h2>Fiabilité, résilience, chaos engineering</h2>
 <div class="bref"><span class="tag">En 30 secondes</span><ol><li>Timeouts, retries idempotents, circuit breaker, bulkheads, dégradation, load shedding, idempotence, backpressure.</li><li>Une seule couche de retries, sinon tempête ; le pool de connexions est le goulot classique.</li><li>Chaos engineering : hypothèse, injection contrôlée, mesure, correction ; staging puis prod.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
-<ul><li>Appliquer les principes SRE au-delà des SLO : toil, automatisation, revue de lancement</li><li>Concevoir des services résilients : timeouts, retries, circuit breakers, bulkheads, dégradation</li><li>Conduire un programme de chaos engineering avec hypothèses et mesures</li></ul></div>
+<ul><li>Expliquer le modèle SRE complet : principes, toil, revue de lancement, modèles d'organisation, contrat de prise en charge</li><li>Décrire le rôle du Tech Lead SRE : responsabilités, rituels, livrables, décisions, plan des 30 premiers jours</li><li>Concevoir la SRE de plateforme : SLO de la plateforme elle-même et capacités de fiabilité en libre-service</li><li>Concevoir des services résilients : timeouts, retries, circuit breakers, bulkheads, dégradation</li><li>Conduire un programme de chaos engineering avec hypothèses et mesures</li></ul></div>
 
 
-<h3>43.1 SRE : le reste du modèle<span class="badge tag-contexte">Bon à savoir</span></h3>
+<h3>43.1 Le modèle SRE<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Le Site Reliability Engineering (Google, 2003, formalisé dans le livre de 2016) est une implémentation du DevOps qui traite l'exploitation comme un problème d'ingénierie logicielle : des ingénieurs qui écrivent du code pour faire tourner les systèmes, avec des objectifs mesurés et un budget explicite pour l'échec.</p>
+<div class="tablewrap"><table>
+<tr><th>Principe</th><th>Ce qu'il signifie</th><th>Où tu l'as vu</th></tr>
+<tr><td>SLO et budget d'erreur</td><td>La fiabilité est un objectif chiffré, négocié avec le produit, ni plus ni moins ; le budget se dépense</td><td>Chapitre 35</td></tr>
+<tr><td>Toil plafonné à 50 %</td><td>Le travail manuel, répétitif, sans valeur durable est mesuré ; au-delà de la moitié du temps, on automatise ou on rend le service à l'équipe de développement</td><td>Cette section</td></tr>
+<tr><td>Post-mortems sans blâme</td><td>Chaque incident significatif produit des actions suivies ; on améliore le système, pas les coupables</td><td>Chapitre 36</td></tr>
+<tr><td>Ingénierie de release</td><td>Déploiements progressifs, reproductibles, réversibles ; la livraison est un système, pas un rituel</td><td>Niveaux 2 et 5</td></tr>
+<tr><td>Surveillance par symptômes</td><td>Alerter sur ce que l'utilisateur subit ; les causes vont en tickets</td><td>Chapitre 35</td></tr>
+<tr><td>Planification de capacité</td><td>Prévoir la demande et la provisionner avant qu'elle n'arrive, avec des tests de charge</td><td>Chapitre 45</td></tr>
+<tr><td>Simplicité</td><td>Chaque composant ajouté est une source de pannes ; retirer vaut souvent mieux qu'ajouter</td><td>Partout</td></tr>
+</table></div>
 <ul>
-<li><strong>Toil</strong> : le travail manuel, répétitif, automatisable, sans valeur durable (redémarrer, redimensionner, appliquer un patch à la main). Google plafonne le toil à 50 % du temps SRE ; au-delà, on automatise ou on rend le problème au développement. Mesurer le toil (tickets, temps) est la première étape.</li>
-<li><strong>Revue de lancement (Production Readiness Review)</strong> : avant qu'un service entre en production, une checklist : SLO définis, observabilité en place, runbooks, capacité estimée, dépendances connues, plan de rollback, sécurité validée, astreinte identifiée. Un service qui ne passe pas la revue n'a pas de support SRE.</li>
-<li><strong>Politique de budget d'erreur</strong> (chapitre 35), écrite et signée par produit et ingénierie.</li>
-<li><strong>Engagement du SRE</strong> : les SRE peuvent rendre un service à l'équipe de développement s'il génère trop de toil ou d'incidents ; l'inverse de l'exploitation subie.</li>
+<li><strong>Le toil, concrètement</strong> : redémarrer un service à la main, appliquer un patch serveur par serveur, agrandir un disque sur ticket, créer un compte, copier une base pour un environnement de test, répondre à la même question sur Slack. Test : est-ce manuel, répétitif, automatisable, sans jugement, et sans valeur qui reste une fois fait ? Le mesurer (tickets, temps déclaré par semaine) est la première étape ; le réduire, un objectif trimestriel.</li>
+<li><strong>Revue de lancement (Production Readiness Review)</strong> : avant qu'un service ne soit pris en charge, une checklist : SLO définis, observabilité, runbooks, capacité estimée, dépendances connues, plan de rollback, sécurité validée, astreinte identifiée, sauvegardes testées. Sans revue, pas de support SRE : c'est le levier qui rend les équipes produit responsables.</li>
+<li><strong>Modèles d'organisation</strong> : SRE centralisée (une équipe pour plusieurs services, cohérence, risque de goulot), SRE intégrée (un ou deux SRE dans chaque équipe produit, proche du terrain, risque de dilution), équipe plateforme (chapitre 48 ; la SRE construit l'outillage que les équipes consomment). La plupart des organisations combinent : une équipe plateforme et fiabilité, des correspondants dans les équipes.</li>
+<li><strong>Le contrat</strong> : la SRE prend en charge un service si celui-ci respecte la revue de lancement et la politique de budget d'erreur ; elle peut le rendre si le toil ou les incidents dépassent ce qui est soutenable. À l'inverse, elle s'engage sur l'astreinte, les SLO et l'amélioration continue. Ce contrat écrit évite l'exploitation subie.</li>
 </ul>
 
-<h3>43.2 Patrons de résilience<span class="badge tag-coeur">Par cœur</span></h3>
+<h3>43.2 Le quotidien d'un Tech Lead SRE<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Le Tech Lead SRE est responsable de la fiabilité d'un périmètre (une plateforme, un domaine de services) et de l'équipe qui l'assure. Il ne fait pas tout lui-même : il décide, arbitre, mesure, et rend les autres capables. C'est le rôle que visent tes missions, et celui qu'on te demandera de décrire en entretien.</p>
+<div class="tablewrap"><table>
+<tr><th>Responsabilité</th><th>Concrètement</th><th>Livrable</th></tr>
+<tr><td>Porter les SLO</td><td>Définir les SLI avec le produit, fixer et réviser les SLO, publier le budget d'erreur, faire appliquer la politique (gel des changements quand le budget est épuisé)</td><td>Document SLO par service, politique de budget d'erreur signée</td></tr>
+<tr><td>Arbitrer fiabilité contre fonctionnalités</td><td>Négocier chaque trimestre la part du temps consacrée à la fiabilité ; refuser un lancement qui échoue à la revue de lancement ; dire non avec des chiffres</td><td>Feuille de route fiabilité trimestrielle</td></tr>
+<tr><td>Réduire le toil</td><td>Inventorier, mesurer, prioriser l'automatisation ; rendre à l'équipe de développement ce qui génère du toil structurel</td><td>Registre du toil, objectif trimestriel (par exemple moins de 30 %)</td></tr>
+<tr><td>Tenir l'astreinte soutenable</td><td>Rotation, charge (moins de deux pages par semaine et par personne), qualité des alertes, runbooks, passation, compensation ; supprimer les alertes sans action</td><td>Manuel d'astreinte, revue mensuelle des alertes</td></tr>
+<tr><td>Commander les incidents majeurs</td><td>Tenir ou déléguer le rôle de commandant, garantir la communication, exiger le post-mortem et la fermeture des actions</td><td>Post-mortems publiés, actions suivies dans le backlog</td></tr>
+<tr><td>Revoir l'architecture pour la fiabilité</td><td>Participer aux revues (RFC, ADR) avec la question « comment ça tombe, et comment on s'en aperçoit ? » ; exiger timeouts, idempotence, dégradation, tests de charge</td><td>Avis écrit sur chaque RFC, checklist de revue de lancement</td></tr>
+<tr><td>Capacité et coût</td><td>Prévoir la charge, dimensionner, suivre le coût par unité ; le FinOps est de la fiabilité économique</td><td>Plan de capacité annuel, revue de coût mensuelle</td></tr>
+<tr><td>Reprise d'activité</td><td>RTO/RPO définis, sauvegardes testées, PRA exécuté au moins une fois par an, game days trimestriels</td><td>PRA, rapports de test, calendrier de chaos</td></tr>
+<tr><td>Faire grandir l'équipe</td><td>Binômage, shadowing d'astreinte, dojos, security champions, revues de code d'automatisation ; recruter sur la capacité à écrire du code d'exploitation</td><td>Plan de montée en compétence, grille de recrutement</td></tr>
+<tr><td>Rendre compte</td><td>Un tableau de bord et une page par mois pour la direction : SLO tenus, budget, incidents, toil, coût, risques, décisions à prendre</td><td>Rapport mensuel de fiabilité</td></tr>
+</table></div>
+
+<h4>Les rituels qui structurent la semaine</h4>
+<ul>
+<li><strong>Quotidien</strong> (15 min) : état des SLO, alertes de la nuit, incidents ouverts, changements risqués du jour.</li>
+<li><strong>Hebdomadaire — revue de fiabilité</strong> (45 min) : budgets d'erreur consommés, incidents et post-mortems de la semaine, actions en retard, alertes bruyantes à supprimer, toil de la semaine, passation d'astreinte.</li>
+<li><strong>Hebdomadaire — revue des changements</strong> : les déploiements et migrations à risque de la semaine suivante, avec fenêtre et plan de retour.</li>
+<li><strong>Mensuel</strong> : revue des SLO avec le produit, revue de coût, rapport à la direction, revue des accès (conformité).</li>
+<li><strong>Trimestriel</strong> : revues de lancement des nouveaux services, feuille de route fiabilité, game day ou test de PRA, enquête de charge de l'astreinte.</li>
+</ul>
+
+<h4>Une semaine type</h4>
+<div class="tablewrap"><table>
+<tr><th>Jour</th><th>Matin</th><th>Après-midi</th></tr>
+<tr><td>Lundi</td><td>Point quotidien ; lecture des alertes du week-end ; passation d'astreinte</td><td>Revue de fiabilité hebdomadaire ; priorisation des actions de post-mortem</td></tr>
+<tr><td>Mardi</td><td>Revue d'une RFC (nouveau service de notifications) : questions de résilience, SLO proposés</td><td>Binômage sur l'automatisation d'un runbook (toil : redémarrage manuel)</td></tr>
+<tr><td>Mercredi</td><td>Revue des changements de la semaine suivante ; validation d'une migration de schéma</td><td>Analyse de capacité : projection du trafic à 6 mois, demande de quotas</td></tr>
+<tr><td>Jeudi</td><td>Incident SEV2 : commandement, puis délégation ; communication</td><td>Rédaction du post-mortem avec l'équipe ; actions créées</td></tr>
+<tr><td>Vendredi</td><td>Revue de coût mensuelle ; préparation du rapport de fiabilité</td><td>Dojo d'équipe (chaos engineering sur staging) ; pas de déploiement risqué le vendredi après-midi</td></tr>
+</table></div>
+<p>Répartition visée : un tiers en ingénierie (automatisation, architecture), un tiers en exploitation (incidents, revues, astreinte), un tiers en organisation (rituels, coaching, direction). Si l'exploitation dépasse la moitié, le toil ou les incidents mangent l'amélioration : c'est le signal d'alarme du rôle.</p>
+
+<h4>Les décisions qu'il arbitre</h4>
+<ul>
+<li>« Le budget d'erreur est épuisé, le produit veut quand même livrer vendredi. » → La politique s'applique : livraison reportée, ou acceptée avec des mesures compensatoires écrites (canary, fenêtre, astreinte renforcée) et l'accord du sponsor. Jamais un oui tacite.</li>
+<li>« Cette alerte réveille l'astreinte trois fois par semaine sans action. » → Supprimée ou rétrogradée en ticket dès la revue hebdomadaire, sans attendre.</li>
+<li>« Ce service demande un support SRE mais n'a ni SLO ni runbook. » → Refus de prise en charge, checklist de revue de lancement fournie, accompagnement proposé.</li>
+<li>« Multi-région ou pas ? » → Pas avant que le RTO/RPO ne soit chiffré par le métier et que le multi-AZ ne soit prouvé par un test.</li>
+<li>« On automatise ou on embauche ? » → Le registre du toil répond : si 40 % du temps est du toil, embaucher ajoute du toil.</li>
+<li>« Qui est responsable de la fiabilité de ce microservice ? » → L'équipe qui l'a écrit ; la SRE fournit la plateforme, les standards et l'aide, pas la responsabilité.</li>
+</ul>
+
+<h4>Les métriques qu'il suit chaque semaine</h4>
+<p>SLO tenus et budget restant par service ; nombre d'incidents par sévérité et MTTD/MTTA/MTTR ; pages par personne et par semaine, part d'alertes sans action ; actions de post-mortem ouvertes de plus de 30 jours ; part de toil déclarée ; métriques DORA du périmètre ; coût par unité ; date du dernier test de restauration et de PRA ; services sans revue de lancement.</p>
+
+<h4>Les 30 premiers jours en mission</h4>
+<ol>
+<li><strong>Semaine 1 — écouter et mesurer</strong> : entretiens (équipe, développeurs, produit, direction), lecture des six derniers mois d'incidents et d'alertes, inventaire des services et de leurs propriétaires, état des sauvegardes et des accès. Livrable : un état des lieux d'une page avec les trois risques majeurs.</li>
+<li><strong>Semaine 2 — arrêter l'hémorragie</strong> : supprimer les alertes sans action, mettre un runbook sur les cinq alertes les plus fréquentes, vérifier qu'une restauration fonctionne, sécuriser l'accès d'urgence. Livrable : astreinte allégée, preuve de restauration.</li>
+<li><strong>Semaine 3 — poser le cadre</strong> : SLO sur les deux services les plus critiques, politique de budget d'erreur proposée au produit, modèle de post-mortem et première revue hebdomadaire de fiabilité. Livrable : documents SLO, premier rapport hebdomadaire.</li>
+<li><strong>Semaine 4 — la feuille de route</strong> : registre du toil, plan de réduction trimestriel, checklist de revue de lancement, calendrier des game days et du test de PRA, rapport mensuel à la direction avec trois décisions à prendre. Livrable : feuille de route fiabilité à 90 jours.</li>
+</ol>
+
+<div class="entretien"><strong>En entretien</strong> — « Que fait un Tech Lead SRE au quotidien ? » Réponse en trois blocs : porter les SLO et arbitrer avec le produit (budget d'erreur) ; rendre l'exploitation soutenable (toil mesuré et automatisé, astreinte sous deux pages par semaine, post-mortems fermés) ; concevoir pour la panne (revues d'architecture, capacité, PRA testé). Puis les rituels (revue de fiabilité hebdomadaire, rapport mensuel) et ton plan de 30 jours. Ton passé de Tech Lead et de Scrum Master rend crédible la partie arbitrage et rituels : appuie dessus.</div>
+
+<h3>43.3 SRE de plateforme : la fiabilité comme produit<span class="badge tag-coeur">Par cœur</span></h3>
+<p>« Platform SRE » ou « SRE platform engineering » recouvre deux choses qu'il faut distinguer, car on te demandera les deux :</p>
+<ol>
+<li><strong>La SRE de la plateforme</strong> : la plateforme interne (Kubernetes, CI, registre, ArgoCD, Vault, Keycloak, observabilité) est elle-même un service avec des utilisateurs (les équipes produit), des SLO, une astreinte, des post-mortems. Quand elle tombe, tout le monde tombe : son rayon d'impact impose des standards plus stricts qu'à n'importe quelle application.</li>
+<li><strong>La plateforme de fiabilité</strong> : l'équipe SRE ne surveille pas chaque service à la main ; elle construit des capacités en libre-service que les équipes consomment, pour que la fiabilité soit le chemin par défaut (le golden path du chapitre 48, appliqué à la fiabilité).</li>
+</ol>
+
+<h4>Les SLO de la plateforme elle-même</h4>
+<div class="tablewrap"><table>
+<tr><th>Composant</th><th>SLI</th><th>SLO typique</th><th>Pourquoi ça compte</th></tr>
+<tr><td>API Kubernetes</td><td>Disponibilité, latence p99 des requêtes</td><td>99,95 %, p99 &lt; 1 s</td><td>Sans elle, plus de déploiement ni d'autoscaling ; les applications continuent de servir</td></tr>
+<tr><td>CI/CD</td><td>Taux de succès hors échec de tests, durée p95 d'un pipeline, délai d'attente d'un runner</td><td>&gt; 98 %, p95 &lt; 10 min, attente &lt; 2 min</td><td>Un pipeline lent ou capricieux détruit la fréquence de déploiement de toutes les équipes</td></tr>
+<tr><td>Registre d'images</td><td>Disponibilité des pulls, latence</td><td>99,95 %</td><td>Un registre en panne empêche tout redémarrage de Pod</td></tr>
+<tr><td>ArgoCD</td><td>Délai entre commit sur le dépôt de config et synchronisation</td><td>p95 &lt; 3 min</td><td>C'est le chemin de déploiement et de rollback</td></tr>
+<tr><td>Vault / gestionnaire de secrets</td><td>Disponibilité, latence</td><td>99,99 %</td><td>Sans lui, les Pods ne démarrent plus (secrets dynamiques)</td></tr>
+<tr><td>IdP (Keycloak)</td><td>Disponibilité des connexions, latence du jeton</td><td>99,95 %</td><td>Sans lui, plus personne ne se connecte, ni les humains ni les services</td></tr>
+<tr><td>Observabilité</td><td>Délai d'ingestion des logs et métriques, disponibilité des requêtes</td><td>ingestion &lt; 60 s, 99,9 %</td><td>Un monitoring en panne est un incident invisible ; il s'héberge hors du cluster qu'il surveille</td></tr>
+<tr><td>Environnements en libre-service</td><td>Délai de création d'un service ou d'une base conforme</td><td>&lt; 15 min, succès &gt; 95 %</td><td>C'est la mesure d'adoption de la plateforme</td></tr>
+</table></div>
+<p>Règles propres à la plateforme : changements de plateforme en canary (un cluster ou un nœud d'abord, puis la flotte), fenêtres de maintenance annoncées et gel avant les périodes critiques des équipes, dépendances circulaires interdites (la plateforme ne doit pas dépendre d'un service qu'elle héberge : l'IdP de l'astreinte, la documentation et l'outil d'incident vivent ailleurs), accès d'urgence hors plateforme, et un SLA interne publié : les équipes savent ce qu'elles peuvent attendre et où s'arrête la responsabilité de la plateforme.</p>
+
+<h4>La plateforme de fiabilité : ce que la SRE offre en libre-service</h4>
+<div class="tablewrap"><table>
+<tr><th>Capacité</th><th>Ce que l'équipe produit obtient sans ticket</th><th>Outils</th><th>Vu au</th></tr>
+<tr><td>SLO as code</td><td>Un fichier de quelques lignes → recording rules, alertes de burn rate, dashboard, budget d'erreur</td><td>Sloth, Pyrra, Grafana SLO</td><td>Chapitre 35</td></tr>
+<tr><td>Observabilité par défaut</td><td>Logs, métriques, traces et dashboards générés à la création du service</td><td>OpenTelemetry Operator, templates Grafana, Beyla</td><td>Niveau 6</td></tr>
+<tr><td>Livraison progressive</td><td>Canary et rollback automatique sur métriques, sans configuration par équipe</td><td>Argo Rollouts, Flagger, Kargo</td><td>Chapitres 15, 29</td></tr>
+<tr><td>Résilience par défaut</td><td>Timeouts, retries, circuit breakers au niveau réseau ; bibliothèque applicative standard</td><td>Mesh, Resilience4j en starter interne</td><td>Chapitres 30, 43</td></tr>
+<tr><td>Chaos en libre-service</td><td>Catalogue d'expériences à lancer sur staging, avec mesure des SLO</td><td>Chaos Mesh, Litmus</td><td>Chapitre 43</td></tr>
+<tr><td>Sauvegarde et restauration</td><td>Chaque base créée par la plateforme est sauvegardée, testée, restaurable en libre-service</td><td>CloudNativePG, Velero, Kanister, compositions Crossplane</td><td>Chapitres 27, 44, 48</td></tr>
+<tr><td>Tests de charge</td><td>Scénario k6 standard exécutable en CI contre un environnement éphémère</td><td>k6 Operator</td><td>Chapitre 45</td></tr>
+<tr><td>Gestion d'incident</td><td>Déclaration en une commande, canal, rôles, chronologie, post-mortem généré</td><td>Dispatch, incident.io, Grafana OnCall</td><td>Chapitre 36</td></tr>
+<tr><td>Runbooks automatisés</td><td>Les remédiations éprouvées deviennent des actions exécutables et tracées</td><td>Event-Driven Ansible, Argo Workflows, Robusta</td><td>Chapitres 17, 54</td></tr>
+<tr><td>Capacité et coût</td><td>Recommandations de requests, coût et carbone par service, quotas</td><td>VPA, KRR, OpenCost, Kepler</td><td>Chapitres 23, 31</td></tr>
+<tr><td>Scorecard de fiabilité</td><td>Chaque service voit son niveau de préparation à la production et ce qui lui manque</td><td>Backstage tech-insights</td><td>Chapitre 48</td></tr>
+</table></div>
+<pre><code># Ce que « fiabilité par défaut » veut dire pour un développeur : un fichier, tout le reste est généré
+# slo.yaml à la racine du service, consommé par le template de la plateforme
+service: crisisshield-api
+owner: team-incidents
+slos:
+  - name: disponibilite
+    objective: 99.9
+    sli: { errors: 'http_server_requests_seconds_count{status=~"5.."}', total: 'http_server_requests_seconds_count' }
+  - name: latence
+    objective: 95
+    sli: { good: 'http_server_requests_seconds_bucket{le="0.3"}', total: 'http_server_requests_seconds_count' }
+rollout: { strategy: canary, steps: [10, 50, 100], analysis: [disponibilite, latence] }
+alerts: { page: burn-rate-fast, ticket: burn-rate-slow, receiver: team-incidents }
+backup: { schedule: daily, retention: 30d, restore-test: weekly }</code></pre>
+<p>Résultat : le service a des SLO, des alertes justes, un dashboard, un déploiement canary analysé et des sauvegardes testées le jour de sa création, sans que l'équipe ait lu les niveaux 5 à 8. C'est la définition d'une plateforme de fiabilité réussie.</p>
+
+<h4>Le rôle du Tech Lead SRE dans une organisation plateforme</h4>
+<ul>
+<li><strong>Posture produit</strong> : les équipes sont des clients ; on mesure l'adoption (part des services avec SLO, avec canary, avec sauvegarde testée), le délai de création d'un service fiable, la satisfaction, et la tendance du MTTR des équipes utilisatrices, pas seulement celle de la plateforme.</li>
+<li><strong>Organisation</strong> (Team Topologies) : la SRE peut être une équipe plateforme à part entière, ou une équipe habilitante qui outille et forme (chapitre 53) ; dans les deux cas, la responsabilité de la fiabilité d'un service reste à l'équipe qui le développe, la plateforme lui en donne les moyens.</li>
+<li><strong>Feuille de route</strong> : chaque capacité de la table ci-dessus est un produit avec un propriétaire, une version, une documentation et un canal de support ; on livre la capacité la plus demandée d'abord (souvent l'observabilité par défaut et les SLO as code), et on retire celles que personne n'adopte.</li>
+<li><strong>Standards</strong> : la revue de lancement devient une scorecard automatique ; les politiques as code (chapitre 51) rendent les bonnes pratiques obligatoires sans revue humaine.</li>
+<li><strong>Frontière</strong> : la plateforme n'exploite pas les applications ; elle exploite la plateforme et fournit les outils. Quand une équipe demande « pouvez-vous gérer notre astreinte ? », la réponse est une capacité (outil d'incident, alertes générées, formation), pas une prise en charge.</li>
+</ul>
+
+<div class="entretien"><strong>En entretien</strong> — « Quelle est la différence entre SRE et platform engineering ? » Le platform engineering construit une plateforme interne en libre-service ; la SRE garantit la fiabilité par des objectifs mesurés. Ils se rejoignent : la plateforme est un service qui a besoin de SRE (ses propres SLO, son astreinte, son canary), et la SRE passe à l'échelle en devenant une plateforme (SLO as code, observabilité par défaut, livraison progressive, incident tooling). Le Tech Lead SRE d'aujourd'hui pilote les deux : la fiabilité de la plateforme, et la fiabilité en libre-service pour les équipes.</div>
+
+<h3>43.4 Patrons de résilience<span class="badge tag-coeur">Par cœur</span></h3>
 <div class="tablewrap"><table>
 <tr><th>Patron</th><th>Problème</th><th>Règle</th></tr>
 <tr><td>Timeout</td><td>Un appel qui ne répond jamais bloque un thread, puis tous</td><td>Toujours un timeout, court, sur chaque appel sortant ; budget de temps propagé (deadline)</td></tr>
@@ -447,7 +580,7 @@ resilience4j:
   bulkhead.instances.notification:       {maxConcurrentCalls: 20}</code></pre>
 <p>Le mesh (chapitre 30) fournit timeouts, retries et circuit breaking au niveau réseau ; l'application garde la dégradation et l'idempotence, qui sont métier. Les deux ne doivent pas faire de retries en même temps (multiplication).</p>
 
-<h3>43.3 Chaos engineering<span class="badge tag-important">Important</span></h3>
+<h3>43.5 Chaos engineering<span class="badge tag-important">Important</span></h3>
 <p>Discipline d'expérimentation : formuler une hypothèse sur l'état stable (« si un Pod de l'API meurt, le taux d'erreur reste sous 0,1 % »), injecter la panne de façon contrôlée, mesurer, apprendre, corriger. Ce n'est pas casser au hasard : c'est tester la résilience comme on teste le code.</p>
 <ul>
 <li><strong>Périmètre progressif</strong> : staging, puis production sur une petite portion avec bouton d'arrêt, en heures ouvrées, avec l'astreinte prévenue.</li>
@@ -481,9 +614,22 @@ spec:
 <p>Rédige l'hypothèse, la méthode et les critères d'arrêt d'une expérience de chaos « perte d'une AZ » sur l'infrastructure AWS du niveau 4.</p>
 <details><summary>Corrigé</summary><div class="sol">Hypothèse : la perte de l'AZ a (33 % des tâches Fargate, un réplica RDS) maintient la disponibilité au-dessus de 99,9 % et la latence p99 sous 500 ms, avec bascule RDS en moins de 2 minutes. Méthode : AWS FIS avec l'action de perturbation d'AZ (ou retrait des sous-réseaux a du service ECS + reboot with failover RDS) pendant 15 minutes, en heures ouvrées, astreinte prévenue, boucle de mesure sur l'ALB et les SLO. Arrêt : taux d'erreur > 1 % pendant 1 minute ou bascule RDS > 3 minutes → rollback de l'expérience et post-mortem.</div></details></div>
 
+<div class="exo"><span class="tag">Exercice 43.3</span>
+<p>Tu arrives comme Tech Lead SRE. L'astreinte reçoit 25 pages par semaine, 80 % sans action ; le produit veut livrer une refonte dans deux semaines ; aucune restauration n'a été testée depuis un an. Dans quel ordre traites-tu ces trois sujets, et pourquoi ?</p>
+<details><summary>Corrigé</summary><div class="sol">1) La restauration : un risque de perte définitive prime sur tout ; un test prend une journée. 2) Les alertes : supprimer celles sans action allège l'astreinte en une semaine et rend l'équipe disponible pour le reste. 3) La refonte : elle ne se décide pas sans SLO ni budget d'erreur ; proposer une revue de lancement accélérée et un déploiement canary avec rollback, plutôt qu'un refus frontal ou un oui tacite. Le tout documenté dans l'état des lieux de la semaine 1.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 43.4</span>
+<p>L'équipe SRE passe 60 % de son temps à créer des environnements de test pour les développeurs, à la main. Deux options : embaucher un troisième SRE, ou consacrer un trimestre à l'automatisation. Argumente avec les principes SRE.</p>
+<details><summary>Corrigé</summary><div class="sol">C'est du toil (manuel, répétitif, automatisable, sans valeur durable) à 60 %, au-dessus du plafond de 50 % : embaucher ajouterait une personne à faire du toil. Le principe dit d'automatiser (environnements en libre-service : template, ApplicationSet par merge request, chapitre 48) et, si l'automatisation n'est pas possible à court terme, de rendre la tâche à l'équipe de développement avec l'outillage. Le trimestre d'automatisation se justifie par le calcul : 60 % de deux personnes récupérés chaque trimestre suivant.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 43.5</span>
+<p>Une équipe produit demande à la SRE de « prendre en charge l'astreinte » de son nouveau service. Réponds en Tech Lead SRE d'une organisation plateforme.</p>
+<details><summary>Corrigé</summary><div class="sol">La responsabilité reste à l'équipe ; la plateforme lui donne les moyens : création du service par le template (SLO as code, alertes de burn rate, dashboard, canary, sauvegardes), outil d'incident avec rôles et post-mortem générés, manuel d'astreinte type, shadowing avec un SRE pendant deux semaines, et une scorecard qui montre ce qui manque avant la mise en production. Si le service ne passe pas la revue de lancement, il n'est pas mis en production. La SRE prend l'astreinte de la plateforme, pas celle des applications.</div></details></div>
+
 <div class="tp"><span class="tag">Travail pratique 43 — Rendre CrisisShield résilient, et le prouver</span>
 <ol>
-<li>Production Readiness Review : rédige la checklist de CrisisShield et remplis-la honnêtement à partir des niveaux précédents ; liste les manques.</li>
+<li>Production Readiness Review : rédige la checklist de CrisisShield et remplis-la honnêtement à partir des niveaux précédents ; liste les manques.</li><li>Rôle de Tech Lead SRE, en vrai : rédige pour CrisisShield le manuel d'astreinte (rotation fictive, seuils, passation, runbooks référencés), la politique de budget d'erreur (une page, signée par un « produit » fictif), le registre du toil (liste les tâches manuelles qu'il te reste dans les TP précédents, avec temps estimé) et la feuille de route fiabilité à 90 jours. Tiens une revue de fiabilité hebdomadaire pendant les trois semaines suivantes du parcours, avec le compte rendu dans <code>docs/reliability/</code>.</li><li>SRE de plateforme : définis et mesure les SLO de ta plateforme kind (API Kubernetes, ArgoCD délai de synchronisation, registre, Vault, Keycloak, ingestion Loki) avec Sloth et un dashboard « santé de la plateforme » ; puis fais de la fiabilité un libre-service : le template de service du TP 48 doit lire un <code>slo.yaml</code> et générer SLO, alertes, dashboard, Rollout canary et sauvegarde. Crée un service fictif par le template et prouve qu'il est « fiable par défaut » en moins de 15 minutes, sans toucher au cluster.</li>
+<li>Rapport mensuel de fiabilité (une page) à partir des données réelles de tes TP : SLO, budget, incidents, toil, coût, trois décisions à prendre. C'est le document que tu montreras en entretien pour illustrer le rôle.</li>
 <li>Resilience4j sur tous les appels sortants de l'API (base via pool, Notification, Keycloak, Kafka) : timeouts, retries idempotents avec backoff, circuit breakers, bulkheads, fallbacks (outbox pour les notifications). Expose les métriques Resilience4j dans Prometheus et un dashboard. Un endpoint de création d'incident idempotent par clé.</li>
 <li>Toxiproxy en test d'intégration (Testcontainers) : latence de 3 s sur PostgreSQL et coupure de Notification ; les tests vérifient les timeouts et le fallback.</li>
 <li>Chaos Mesh sur kind : catalogue de six expériences (PodChaos kill API, NetworkChaos latence base, NetworkChaos partition API↔Kafka, StressChaos mémoire, DNSChaos, TimeChaos). Pour chacune : hypothèse écrite, mesure des SLO pendant l'expérience (dashboard SLO du chapitre 35), résultat, correction si l'hypothèse est réfutée. La première exécution de la latence base doit révéler l'épuisement du pool : corrige (timeouts HikariCP, bulkhead), rejoue.</li>
@@ -954,7 +1100,7 @@ spec:
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 8</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
 <ol class="quiz">
-<li>Toil, revue de lancement, politique de budget d'erreur : définitions et usage.</li>
+<li>SRE : la fiabilité comme objectif chiffré, le toil plafonné à 50 %, la revue de lancement comme contrat.</li><li>Tech Lead SRE : porter les SLO, arbitrer avec le produit, rendre l'astreinte soutenable, concevoir pour la panne, rendre compte ; un tiers ingénierie, un tiers exploitation, un tiers organisation.</li><li>SRE de plateforme : la plateforme a ses propres SLO et son canary ; la fiabilité devient un produit en libre-service (SLO as code, observabilité par défaut, livraison progressive, incidents outillés).</li>
 <li>Les huit patrons de résilience et la règle de chacun ; la tempête de retries.</li>
 <li>Chaos engineering : méthode (hypothèse, injection, mesure), périmètre progressif, outils.</li>
 <li>RTO, RPO, les quatre stratégies de reprise et leur coût.</li>
