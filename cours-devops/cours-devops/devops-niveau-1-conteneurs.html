@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cours DevOps — Niveau 1 : Virtualisation et conteneurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="in">
+    <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
+    <div class="level">Parcours DevOps — Niveau 1 sur 9</div>
+    <h1>Virtualisation et conteneurs : Docker en profondeur</h1>
+    <p class="lead">Quatre chapitres pour comprendre ce qu'est réellement un conteneur, construire des images petites et sûres, orchestrer une pile complète avec Compose, et publier dans un registre avec scan de vulnérabilités. Tout se pratique depuis Git Bash, sans rien installer d'autre que Docker.</p>
+    <div class="meta">
+      <span>4 chapitres</span><span>≈ 25 h de travail</span><span>Prérequis : Niveau 0, dépôt devops-lab</span>
+    </div>
+    <button class="theme" id="theme">Basculer clair / sombre</button>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <strong>Sommaire</strong>
+  <ol start="7">
+    <li><a href="#c7" class="toc-junior">Machines virtuelles et hyperviseurs</a></li>
+    <li><a href="#c8" class="toc-confirme">Docker : images, réseaux, volumes, sécurité</a></li>
+    <li><a href="#c9" class="toc-confirme">Docker Compose</a></li>
+    <li><a href="#c10" class="toc-confirme">Registres, tagging, scan</a></li>
+    <li><a href="#rev">Révision du niveau</a></li>
+  </ol>
+<div class="legend">Niveau des chapitres : <span class="badge lvl-junior">Junior</span><span class="badge lvl-confirme">Confirmé</span> <span class="badge badge-niche">Techno de niche</span> = encadré différenciant dans chaque chapitre<br>Mémorisation : <span class="badge tag-coeur">Par cœur</span> <span class="badge tag-important">Important</span> <span class="badge tag-contexte">Bon à savoir</span></div>
+  <div class="prog">Progression : <span id="pct">0 %</span><div class="bar"><i id="bar"></i></div></div>
+</nav>
+
+<main>
+
+<!-- ===================== CHAPITRE 7 ===================== -->
+<article id="c7">
+<div class="chaphead"><span class="chapnum">Chapitre 7</span><span class="badge lvl-junior">Junior</span></div>
+<h2>Machines virtuelles et hyperviseurs</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Expliquer la différence entre hyperviseur de type 1 et 2</li><li>Expliquer pourquoi un conteneur n'est pas une VM, et ce que Docker Desktop fait vraiment sous Windows</li><li>Choisir entre VM et conteneur selon le besoin</li></ul></div>
+<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Un conteneur n&#x27;est pas une petite VM : namespaces, cgroups, couches, noyau partagé.</li><li>Le noyau partagé est l&#x27;enjeu de sécurité ; micro-VM (Firecracker) et gVisor pour l&#x27;isolation forte.</li><li>Sous Windows, Docker tourne dans une VM WSL 2 : chemins, performances et fins de ligne en découlent.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 207" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Une VM embarque son noyau ; un conteneur est un processus isolé par le noyau de l&#x27;hôte. Isolation : namespaces (ce qu&#x27;on voit), cgroups (ce qu&#x27;on consomme), couches (ce qu&#x27;on stocke)."><defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><text x="20" y="22" class="glab">Machine virtuelle</text><text x="260" y="22" class="glab">Conteneur</text><rect x="20" y="32" width="200" height="40" rx="7" class="green"/><text x="120.0" y="56.5" text-anchor="middle" font-size="13" font-weight="700">Application</text><rect x="20" y="78" width="200" height="40" rx="7" class="amber"/><text x="120.0" y="102.5" text-anchor="middle" font-size="13" font-weight="700">OS invité + son noyau</text><rect x="20" y="124" width="200" height="40" rx="7" class="box"/><text x="120.0" y="148.6" text-anchor="middle" font-size="13" font-weight="700">Hyperviseur</text><rect x="20" y="170" width="200" height="40" rx="7" class="box"/><text x="120.0" y="194.6" text-anchor="middle" font-size="13" font-weight="700">Matériel</text><rect x="260" y="32" width="200" height="40" rx="7" class="green"/><text x="360.0" y="56.5" text-anchor="middle" font-size="13" font-weight="700">Application (processus isolé)</text><rect x="260" y="78" width="200" height="40" rx="7" class="box"/><text x="360.0" y="102.5" text-anchor="middle" font-size="13" font-weight="700">Runtime (containerd)</text><rect x="260" y="124" width="200" height="40" rx="7" class="amber"/><text x="360.0" y="148.6" text-anchor="middle" font-size="13" font-weight="700">Noyau de l&#x27;hôte, partagé</text><rect x="260" y="170" width="200" height="40" rx="7" class="box"/><text x="360.0" y="194.6" text-anchor="middle" font-size="13" font-weight="700">Matériel</text></svg><figcaption>Une VM embarque son noyau ; un conteneur est un processus isolé par le noyau de l'hôte. Isolation : namespaces (ce qu'on voit), cgroups (ce qu'on consomme), couches (ce qu'on stocke).</figcaption></figure>
+
+
+<h3>7.1 Ce qu'est une machine virtuelle<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Une VM est un ordinateur complet simulé : CPU virtuels, mémoire, disque, carte réseau, et son propre noyau. L'<strong>hyperviseur</strong> partage le matériel physique entre plusieurs VM.</p>
+<div class="tablewrap"><table>
+<tr><th></th><th>Type 1 (bare metal)</th><th>Type 2 (hébergé)</th></tr>
+<tr><td>Tourne sur</td><td>Directement le matériel</td><td>Un OS hôte</td></tr>
+<tr><td>Exemples</td><td>VMware ESXi, KVM, Hyper-V, Xen</td><td>VirtualBox, VMware Workstation</td></tr>
+<tr><td>Usage</td><td>Datacenter, cloud (AWS Nitro est dérivé de KVM)</td><td>Poste de développeur</td></tr>
+</table></div>
+<p>Vocabulaire à connaître : image disque (qcow2, VMDK, AMI chez AWS), snapshot, migration à chaud, sur-allocation (overcommit), extensions matérielles Intel VT-x / AMD-V.</p>
+
+<h3>7.2 VM contre conteneur<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Un conteneur n'est <em>pas</em> une petite VM. C'est un processus Linux ordinaire, isolé par le noyau de l'hôte grâce à trois mécanismes :</p>
+<ul>
+<li><strong>Namespaces</strong> : chaque conteneur voit ses propres PID, réseau, points de montage, utilisateurs, nom d'hôte. <code>ps</code> dans le conteneur ne voit que ses processus.</li>
+<li><strong>cgroups</strong> : limites de CPU, mémoire, I/O. C'est ce qui fait qu'un conteneur qui dépasse sa mémoire est tué (OOMKilled).</li>
+<li><strong>Système de fichiers en couches</strong> (OverlayFS) : l'image est une pile de couches en lecture seule, plus une couche d'écriture par conteneur.</li>
+</ul>
+<div class="tablewrap"><table>
+<tr><th></th><th>Machine virtuelle</th><th>Conteneur</th></tr>
+<tr><td>Noyau</td><td>Le sien</td><td>Celui de l'hôte, partagé</td></tr>
+<tr><td>Démarrage</td><td>Secondes à minutes</td><td>Millisecondes</td></tr>
+<tr><td>Taille</td><td>Gigaoctets</td><td>Mégaoctets</td></tr>
+<tr><td>Isolation</td><td>Forte (matériel virtuel)</td><td>Plus faible (noyau partagé) : une faille noyau touche tous les conteneurs</td></tr>
+<tr><td>Cas d'usage</td><td>OS différents, isolation forte, charges legacy</td><td>Applications, microservices, CI</td></tr>
+</table></div>
+<p>Les deux se combinent : dans le cloud, un nœud Kubernetes est une VM qui fait tourner des conteneurs. Pour une isolation forte de conteneurs multi-locataires, il existe des micro-VM (Firecracker, gVisor, Kata) : c'est ce qui fait tourner AWS Lambda.</p>
+
+<h3>7.3 Docker sous Windows : ce qui se passe vraiment<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Un conteneur Linux a besoin d'un noyau Linux. Sous Windows, Docker Desktop utilise <strong>WSL 2</strong>, une VM Linux légère gérée par Hyper-V. Le démon Docker tourne dans cette VM ; ton Git Bash parle au démon via un socket. Conséquences pratiques :</p>
+<ul>
+<li>Les volumes montés depuis <code>/c/Users/...</code> traversent une frontière VM → performances I/O réduites. Pour un projet lourd, garde les sources dans le système de fichiers WSL (<code>\\wsl$\</code>) ou utilise des volumes nommés.</li>
+<li>Git Bash convertit les chemins de type <code>/c/...</code> en <code>C:\...</code> et parfois des arguments comme <code>/etc/nginx</code> en <code>C:\Program Files\Git\etc\nginx</code>. Préfixe la commande par <code>MSYS_NO_PATHCONV=1</code> quand un chemin Linux est mal interprété.</li>
+<li>Les programmes interactifs ont parfois besoin de <code>winpty</code>.</li>
+<li>Les fins de ligne <code>\r\n</code> cassent les scripts dans les conteneurs : <code>.gitattributes</code> avec <code>eol=lf</code>, vu au chapitre 5.</li>
+</ul>
+<pre><code>docker version              # client et serveur (Server: Docker Desktop, OS/Arch linux/amd64)
+docker info | head -30      # runtime, cgroups, stockage
+docker run --rm alpine uname -a   # le noyau vu du conteneur = noyau de la VM WSL</code></pre>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Firecracker</span><p>La micro-VM d'AWS qui fait tourner Lambda et Fargate : démarrage en 125 ms, noyau minimal, isolation matérielle pour des charges non fiables. Kata Containers l'utilise comme runtime OCI, ce qui permet de lancer un « conteneur » qui est en réalité une VM.</p><p><strong>Pourquoi ça différencie :</strong> Savoir expliquer la différence entre gVisor (noyau en espace utilisateur), Kata/Firecracker (micro-VM) et un conteneur classique est une question d'expert sur l'isolation multi-locataire.</p><p><strong>À essayer en une heure :</strong> Nécessite KVM : sur une instance EC2 metal ou une VM avec virtualisation imbriquée (à combiner avec le TP 21), suivre le quickstart Firecracker et lancer une micro-VM en moins de dix commandes.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Différence entre VM et conteneur ? » Réponse en une phrase, puis les trois mécanismes : namespaces (isolation de ce qu'on voit), cgroups (limitation de ce qu'on consomme), couches (ce qu'on stocke). Puis la conséquence sécurité : noyau partagé. C'est ce niveau de réponse qui fait la différence.</div>
+
+<div class="exo"><span class="tag">Exercice 7.1</span>
+<p>Un conteneur affiche « Killed » et son état indique <code>OOMKilled: true</code>. Quel mécanisme est en jeu et comment le constater ?</p>
+<details><summary>Corrigé</summary><div class="sol">Les cgroups : la limite mémoire (<code>--memory</code>, ou les limits Kubernetes) est dépassée, le noyau tue le processus. <code>docker inspect &lt;id&gt; | jq '.[0].State'</code> montre <code>OOMKilled</code> ; <code>docker stats</code> montre la consommation en direct.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 7.2</span>
+<p>Pourquoi ne peut-on pas faire tourner une image Windows Server sur un nœud Linux, ni une image Linux directement sur Windows sans WSL ?</p>
+<details><summary>Corrigé</summary><div class="sol">Un conteneur partage le noyau de l'hôte. Une image Windows a besoin d'appels système Windows ; une image Linux a besoin d'un noyau Linux, fourni sous Windows par la VM WSL 2.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 7 — Voir l'isolation de ses propres yeux</span>
+<ol>
+<li>Lance <code>docker run -d --name iso --memory 64m --cpus 0.5 alpine sleep 3600</code>.</li>
+<li>Depuis Git Bash, ouvre un shell dans la VM WSL de Docker : <code>docker run -it --rm --pid=host --privileged alpine sh</code>. Dans ce shell, <code>ps aux | grep sleep</code> montre le processus du conteneur <code>iso</code> avec son PID hôte. Compare avec <code>docker exec iso ps aux</code> : c'est le namespace PID.</li>
+<li>Toujours dans le shell privilégié, lis la limite mémoire : <code>cat /sys/fs/cgroup/system.slice/docker-$(docker inspect -f '{{.Id}}' iso 2>/dev/null || echo X)*/memory.max</code> — si le chemin diffère, explore <code>/sys/fs/cgroup</code> avec <code>find /sys/fs/cgroup -name memory.max | head</code>. Retrouve la valeur 67108864.</li>
+<li>Fais dépasser la limite : <code>docker exec iso sh -c 'head -c 100m /dev/zero | tail'</code>. Observe le résultat et <code>docker inspect iso | jq '.[0].State'</code>.</li>
+<li>Montre les couches : <code>docker image inspect alpine | jq '.[0].RootFS.Layers'</code> puis <code>docker history nginx:1.27</code>.</li>
+</ol>
+<p>Livrable : <code>tp7.md</code> avec les sorties commentées, et une explication en trois phrases de ce que Docker Desktop fait sous Windows.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c7"> Chapitre 7 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 8 ===================== -->
+<article id="c8">
+<div class="chaphead"><span class="chapnum">Chapitre 8</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Docker : images, Dockerfile, réseaux, volumes, sécurité</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Écrire un Dockerfile multi-étapes optimisé pour le cache et la taille</li><li>Choisir le bon type de stockage et le bon réseau</li><li>Durcir une image : utilisateur non root, base minimale, lecture seule, capabilities</li><li>Déboguer un conteneur qui ne démarre pas</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le cache de build suit l&#x27;ordre des instructions : ce qui change le moins en premier.</li><li>Multi-étapes, base minimale, non root, lecture seule, capabilities retirées, versions épinglées.</li><li>Déboguer : logs, inspect (ExitCode, OOMKilled), entrypoint sh, netshoot ; 137 = SIGKILL, 143 = SIGTERM.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 207" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Une image est une pile de couches ; l&#x27;ordre des instructions décide du cache et de la taille. Ce qui change le moins va en premier. Un fichier supprimé dans une couche suivante reste dans l&#x27;image."><defs><marker id="ah5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><text x="20" y="22" class="glab">Image (lecture seule)</text><rect x="20" y="32" width="300" height="38" rx="7" class="soft"/><text x="170.0" y="55.2" text-anchor="middle" font-size="12" font-weight="700">FROM eclipse-temurin:21-jre-alpine</text><rect x="20" y="76" width="300" height="38" rx="7" class="soft"/><text x="170.0" y="99.2" text-anchor="middle" font-size="12" font-weight="700">RUN adduser app</text><rect x="20" y="120" width="300" height="38" rx="7" class="soft"/><text x="170.0" y="143.2" text-anchor="middle" font-size="12" font-weight="700">COPY app.jar</text><rect x="20" y="170" width="300" height="38" rx="7" class="amber"/><text x="170.0" y="193.2" text-anchor="middle" font-size="12" font-weight="700">Couche d&#x27;écriture du conteneur (perdue au rm)</text><text x="340" y="55" text-anchor="start" class="lbl">mise en cache tant que</text><text x="340" y="71" text-anchor="start" class="lbl">l&#x27;instruction et son</text><text x="340" y="87" text-anchor="start" class="lbl">contexte ne changent pas</text><path d="M335,120 L335,80" class="arrow" marker-end="url(#ah5)"/><text x="340" y="150" text-anchor="start" class="lbl">un changement ici</text><text x="340" y="166" text-anchor="start" class="lbl">reconstruit tout</text><text x="340" y="182" text-anchor="start" class="lbl">ce qui est en dessous</text></svg><figcaption>Une image est une pile de couches ; l'ordre des instructions décide du cache et de la taille. Ce qui change le moins va en premier. Un fichier supprimé dans une couche suivante reste dans l'image.</figcaption></figure>
+
+
+<h3>8.1 Cycle de vie et commandes de base<span class="badge tag-important">Important</span></h3>
+<pre><code>docker pull nginx:1.27
+docker run -d --name web -p 8080:80 --restart unless-stopped nginx:1.27
+docker ps -a ; docker logs -f web ; docker exec -it web sh
+docker stop web ; docker start web ; docker rm -f web
+docker inspect web | jq '.[0].NetworkSettings'
+docker stats ; docker top web
+docker system df ; docker system prune -af --volumes   # nettoyer (attention aux volumes)</code></pre>
+<p>Options de <code>run</code> à connaître : <code>-e VAR=val</code> et <code>--env-file</code>, <code>-v</code> ou <code>--mount</code>, <code>--network</code>, <code>--memory</code>, <code>--cpus</code>, <code>--user</code>, <code>--read-only</code>, <code>--cap-drop</code>, <code>--health-cmd</code>, <code>--init</code> (un vrai PID 1 qui relaie les signaux).</p>
+
+<h3>8.2 Images et couches<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Une image = un manifeste + des couches, chacune identifiée par un digest. Chaque instruction <code>RUN</code>, <code>COPY</code>, <code>ADD</code> du Dockerfile crée une couche. Docker met en cache : si une instruction et son contexte n'ont pas changé, la couche est réutilisée ; dès qu'une couche change, toutes les suivantes sont reconstruites. D'où la règle : <strong>ce qui change le moins en premier</strong>.</p>
+<pre><code># Mauvais : chaque changement de code réinstalle les dépendances
+COPY . .
+RUN mvn package
+
+# Bon : les dépendances sont mises en cache tant que le pom ne change pas
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn package -DskipTests</code></pre>
+<p>Un fichier supprimé dans une couche ultérieure reste dans l'image (couche précédente). Un secret copié puis effacé est toujours là : <code>docker history</code> et <code>dive</code> le révèlent.</p>
+
+<h3>8.3 Dockerfile : instructions et bonnes pratiques<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code># syntax=docker/dockerfile:1
+FROM eclipse-temurin:21-jdk AS build
+WORKDIR /app
+COPY pom.xml mvnw ./
+COPY .mvn .mvn
+RUN --mount=type=cache,target=/root/.m2 ./mvnw -q dependency:go-offline
+COPY src ./src
+RUN --mount=type=cache,target=/root/.m2 ./mvnw -q package -DskipTests
+
+FROM eclipse-temurin:21-jre-alpine
+RUN addgroup -S app && adduser -S -G app app
+WORKDIR /app
+COPY --from=build --chown=app:app /app/target/*.jar app.jar
+USER app
+EXPOSE 8080
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=75"
+HEALTHCHECK --interval=30s --timeout=3s --start-period=20s \
+  CMD wget -qO- http://localhost:8080/actuator/health/liveness || exit 1
+ENTRYPOINT ["sh","-c","exec java $JAVA_OPTS -jar app.jar"]</code></pre>
+<ul>
+<li><strong>Multi-étapes</strong> : l'image finale ne contient ni JDK ni Maven ni sources. De 700 Mo à 200 Mo.</li>
+<li><code>ENTRYPOINT</code> définit l'exécutable, <code>CMD</code> ses arguments par défaut. Forme exec (<code>["java","-jar"]</code>) : le processus est PID 1 et reçoit SIGTERM. Forme shell (<code>java -jar</code>) : c'est <code>sh</code> qui est PID 1 et ne relaie pas les signaux, sauf avec <code>exec</code>.</li>
+<li><code>COPY</code> plutôt qu'<code>ADD</code> (ADD décompresse et télécharge, source de surprises).</li>
+<li><code>.dockerignore</code> : exclure <code>.git</code>, <code>target</code>, <code>node_modules</code>, <code>.env</code>. Réduit le contexte envoyé au démon et évite les fuites.</li>
+<li>Épingler les versions de base (<code>:21-jre-alpine</code>, jamais <code>:latest</code>), idéalement par digest en production.</li>
+<li><code>RUN --mount=type=cache</code> et <code>--mount=type=secret</code> (BuildKit) : cache de dépendances entre builds, secrets de build absents de l'image.</li>
+<li>Une seule instruction <code>RUN apt-get update && apt-get install -y ... && rm -rf /var/lib/apt/lists/*</code> : sinon la couche du cache apt reste.</li>
+</ul>
+<p>Images de base, du plus gros au plus sûr : <code>ubuntu</code> → <code>debian-slim</code> → <code>alpine</code> (musl, parfois incompatible) → <code>distroless</code> (Google, pas de shell) → <code>scratch</code> (binaire statique Go). Moins il y a de paquets, moins il y a de CVE.</p>
+<pre><code>docker build -t crisisshield-api:1.0.0 .
+docker build --no-cache --progress=plain .    # voir tout
+docker build --target build -t api-builder .   # s'arrêter à une étape
+docker buildx build --platform linux/amd64,linux/arm64 -t image:tag --push .</code></pre>
+
+<h3>8.4 Stockage<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Type</th><th>Syntaxe</th><th>Usage</th></tr>
+<tr><td>Volume nommé</td><td><code>-v pgdata:/var/lib/postgresql/data</code></td><td>Données persistantes gérées par Docker. Le choix par défaut en production.</td></tr>
+<tr><td>Bind mount</td><td><code>-v "$PWD/src:/app/src"</code></td><td>Développement, config. Lent sous Windows.</td></tr>
+<tr><td>tmpfs</td><td><code>--tmpfs /tmp</code></td><td>En mémoire, disparaît à l'arrêt : secrets, cache.</td></tr>
+</table></div>
+<pre><code>docker volume create pgdata ; docker volume ls ; docker volume inspect pgdata
+docker run --rm -v pgdata:/data -v "$PWD:/backup" alpine tar czf /backup/pgdata.tgz -C /data .   # sauvegarder un volume</code></pre>
+<p>La couche d'écriture du conteneur est perdue à <code>docker rm</code>. Tout ce qui doit survivre va dans un volume.</p>
+
+<h3>8.5 Réseaux<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Driver</th><th>Comportement</th></tr>
+<tr><td><code>bridge</code> (défaut)</td><td>Réseau privé sur l'hôte, NAT en sortie, <code>-p</code> pour exposer. Le bridge par défaut n'a <em>pas</em> de DNS entre conteneurs ; un bridge créé par l'utilisateur en a.</td></tr>
+<tr><td><code>host</code></td><td>Pas d'isolation réseau, le conteneur utilise directement les ports de l'hôte. Linux uniquement.</td></tr>
+<tr><td><code>none</code></td><td>Aucun réseau.</td></tr>
+<tr><td><code>overlay</code></td><td>Réseau entre plusieurs hôtes (Swarm).</td></tr>
+</table></div>
+<pre><code>docker network create backend
+docker run -d --name db --network backend postgres:16
+docker run -d --name api --network backend -p 8080:8080 crisisshield-api:1.0.0
+docker exec api getent hosts db          # résolution DNS par nom de conteneur
+docker network inspect backend | jq '.[0].Containers'</code></pre>
+<p>Règle : un réseau par pile, la base <em>non exposée</em> avec <code>-p</code>. Seul le point d'entrée (API, proxy) publie un port. <code>-p 127.0.0.1:5432:5432</code> pour n'exposer que sur l'hôte local.</p>
+
+<h3>8.6 Sécurité des conteneurs<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Par défaut, un conteneur tourne en root et le démon Docker est root sur l'hôte : accès au socket <code>/var/run/docker.sock</code> = root sur la machine. Mesures, de la plus simple à la plus avancée :</p>
+<ol>
+<li><strong>Utilisateur non root</strong> dans l'image (<code>USER app</code>) et/ou <code>--user 1000:1000</code>.</li>
+<li><strong>Image minimale</strong>, versions épinglées, scan régulier (chapitre 10).</li>
+<li><strong>Système de fichiers en lecture seule</strong> : <code>--read-only --tmpfs /tmp</code>. Un attaquant ne peut rien écrire.</li>
+<li><strong>Capabilities</strong> : <code>--cap-drop ALL --cap-add NET_BIND_SERVICE</code>. Root sans capabilities ne peut presque rien.</li>
+<li><strong>Pas d'escalade</strong> : <code>--security-opt no-new-privileges</code>.</li>
+<li><strong>Limites de ressources</strong> : <code>--memory</code>, <code>--cpus</code>, <code>--pids-limit</code> contre les fork bombs.</li>
+<li><strong>Jamais <code>--privileged</code></strong> ni montage du socket Docker dans un conteneur applicatif.</li>
+<li><strong>Secrets</strong> : pas dans <code>ENV</code> ni dans l'image ; fichier monté, secret Compose, ou gestionnaire externe (Vault, niveau 7).</li>
+<li>Docker <em>rootless</em> et runtimes durcis (gVisor) pour l'isolation forte.</li>
+</ol>
+<pre><code>docker run -d --name api --user 1000:1000 --read-only --tmpfs /tmp \
+  --cap-drop ALL --security-opt no-new-privileges --memory 512m --pids-limit 200 \
+  --network backend -p 8080:8080 crisisshield-api:1.0.0</code></pre>
+
+<h3>8.7 Déboguer<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>docker logs --tail 100 api                 # 1. les logs
+docker inspect api | jq '.[0].State'       # 2. ExitCode, OOMKilled, Error
+docker run -it --rm --entrypoint sh image  # 3. entrer sans lancer l'app
+docker exec -it api sh                     # 4. si l'app tourne
+docker events --since 10m                  # 5. ce qui s'est passé
+docker run --rm -it --network container:api nicolaka/netshoot   # 6. outils réseau dans le namespace de l'app</code></pre>
+<p>Codes de sortie : 0 succès, 1 erreur applicative, 125 erreur du démon, 126 commande non exécutable, 127 commande introuvable, 137 = 128+9 SIGKILL (OOM ou <code>docker kill</code>), 143 = 128+15 SIGTERM.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Wolfi et apko (Chainguard)</span><p>Une « distribution sans distribution » : des images minimales construites déclarativement par apko à partir de paquets Wolfi (melange pour en compiler), avec SBOM natif, mises à jour quotidiennes, et souvent zéro CVE. Les images <code>cgr.dev/chainguard/jre</code> en sont issues.</p><p><strong>Pourquoi ça différencie :</strong> C'est l'état de l'art des images durcies ; comparer Trivy sur <code>jre-alpine</code> et sur une image Chainguard est un argument massue en entretien DevSecOps.</p><p><strong>À essayer en une heure :</strong> Un <code>apko.yaml</code> avec <code>contents.packages: [wolfi-base, openjdk-21-jre]</code>, puis <code>docker run --rm -v "$PWD:/w" -w /w cgr.dev/chainguard/apko build apko.yaml api:wolfi api.tar</code> et <code>docker load &lt; api.tar</code>.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu réduis la taille et la surface d'attaque d'une image Java ? » Multi-étapes JDK → JRE, base slim ou distroless, non root, versions épinglées, <code>.dockerignore</code>, une couche par groupe de changement, scan Trivy dans la CI. Ajoute <code>MaxRAMPercentage</code> et la forme exec de l'ENTRYPOINT : tu montres que tu as exploité du Java en conteneur.</div>
+
+<div class="exo"><span class="tag">Exercice 8.1 — Dockerfile à corriger</span>
+<pre><code>FROM ubuntu:latest
+RUN apt-get update
+RUN apt-get install -y openjdk-21-jdk maven
+COPY . /app
+WORKDIR /app
+RUN mvn package
+ENV DB_PASSWORD=secret123
+CMD java -jar target/app.jar</code></pre>
+<p>Liste les problèmes (il y en a au moins huit) et réécris-le.</p>
+<details><summary>Corrigé</summary><div class="sol"><code>latest</code> non épinglé ; <code>apt-get update</code> dans sa propre couche (cache périmé) ; pas de nettoyage apt ; JDK + Maven dans l'image finale ; <code>COPY . </code> avant les dépendances (cache cassé à chaque commit) et sans <code>.dockerignore</code> ; secret dans <code>ENV</code> ; root ; CMD en forme shell (pas de SIGTERM) ; pas de HEALTHCHECK. Réécriture : le Dockerfile multi-étapes de la section 8.3, mot de passe passé à l'exécution.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 8.2 — Réseau</span>
+<p>Deux conteneurs lancés avec <code>docker run</code> sans option réseau n'arrivent pas à se joindre par leur nom. Pourquoi, et deux façons de corriger ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le bridge par défaut n'a pas de résolution DNS entre conteneurs. Créer un réseau (<code>docker network create app</code>) et y lancer les deux, ou utiliser Compose qui le fait automatiquement.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 8.3 — Codes de sortie</span>
+<p>Un conteneur se termine avec le code 137 toutes les nuits à 2 h. Hypothèses et vérifications ?</p>
+<details><summary>Corrigé</summary><div class="sol">137 = SIGKILL. Soit OOM (<code>docker inspect</code> → <code>OOMKilled</code>, <code>dmesg</code> de l'hôte), soit quelqu'un ou quelque chose fait <code>docker kill</code> / <code>docker stop</code> dépassant les 10 s (un cron de sauvegarde, une rotation). <code>docker events</code> tranche.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 8 — Conteneuriser CrisisShield proprement</span>
+<ol>
+<li><strong>Backend</strong> : écris le Dockerfile multi-étapes du backend Spring Boot (section 8.3), avec <code>.dockerignore</code>. Construis-le. Mesure la taille avec <code>docker images</code>. Objectif : moins de 250 Mo.</li>
+<li><strong>Frontend React</strong> : Dockerfile multi-étapes <code>node:22-alpine</code> (build) → <code>nginxinc/nginx-unprivileged:1.27-alpine</code> (servir <code>dist/</code> sur le port 8080, non root). Ajoute une config nginx qui renvoie <code>index.html</code> pour toutes les routes (SPA).</li>
+<li>Analyse les couches avec dive : <code>docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive crisisshield-api:1.0.0</code>. Vérifie qu'aucune source ni secret n'est présent.</li>
+<li>Lance PostgreSQL, l'API et le front sur un réseau <code>crisisshield</code> créé à la main, la base sans port publié, l'API avec toutes les options de durcissement de la section 8.6. Vérifie que l'API démarre en lecture seule (si Spring écrit dans <code>/tmp</code>, le tmpfs suffit).</li>
+<li>Prouve la gestion de SIGTERM : <code>time docker stop api</code> doit rendre la main en moins de 3 s avec le log d'arrêt gracieux.</li>
+<li>Casse volontairement l'image (<code>ENTRYPOINT</code> vers un jar inexistant), relance, et applique la méthode de débogage 8.7 jusqu'au diagnostic.</li>
+</ol>
+<p>Livrable : Dockerfiles et <code>.dockerignore</code> dans le dépôt CrisisShield ; <code>tp8.md</code> dans devops-lab avec tailles, temps d'arrêt et capture dive.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c8"> Chapitre 8 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 9 ===================== -->
+<article id="c9">
+<div class="chaphead"><span class="chapnum">Chapitre 9</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Docker Compose</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Décrire une pile complète dans un fichier Compose : services, réseaux, volumes, secrets</li><li>Gérer les dépendances et l'ordre de démarrage avec les healthchecks</li><li>Séparer développement et production avec profils et fichiers de surcharge</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Compose décrit une pile complète : services, réseaux, volumes, secrets, healthchecks.</li><li>depends_on n&#x27;attend pas la disponibilité sans condition: service_healthy ; l&#x27;application doit retenter de toute façon.</li><li>Override, profils et .env séparent dev et prod ; Compose pilote un seul hôte.</li></ol></div>
+
+
+<h3>9.1 Anatomie d'un fichier Compose<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code># compose.yaml  (le nom docker-compose.yml fonctionne aussi ; la clé "version" est obsolète)
+name: crisisshield
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: crisis
+      POSTGRES_USER: crisis
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets: [db_password]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crisis -d crisis"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: crisisshield-api:${TAG:-dev}
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/crisis
+      SPRING_DATASOURCE_USERNAME: crisis
+      SPRING_DATASOURCE_PASSWORD_FILE: /run/secrets/db_password
+    secrets: [db_password]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [backend, frontend]
+    user: "1000:1000"
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    deploy:
+      resources:
+        limits: {memory: 512m, cpus: "1.0"}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health/readiness"]
+      interval: 10s
+      start_period: 30s
+      retries: 5
+    restart: unless-stopped
+
+  web:
+    build: ./frontend
+    ports: ["8080:8080"]
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [frontend]
+    restart: unless-stopped
+
+networks:
+  backend:
+  frontend:
+
+volumes:
+  pgdata:
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt</code></pre>
+<p>Points clés : deux réseaux (la base n'est pas joignable depuis <code>web</code>), un seul port publié, secrets en fichier et non en variable (jamais visibles dans <code>docker inspect</code>), <code>depends_on</code> avec condition (sans condition, Compose attend seulement le <em>démarrage</em>, pas la disponibilité).</p>
+
+<h3>9.2 Commandes<span class="badge tag-important">Important</span></h3>
+<pre><code>docker compose up -d --build       # construire et lancer
+docker compose ps ; docker compose logs -f api
+docker compose exec api sh
+docker compose stop ; docker compose down          # down supprime conteneurs et réseaux
+docker compose down -v                              # ... et les volumes : données perdues
+docker compose config                               # le fichier résolu (variables, surcharges)
+docker compose pull ; docker compose up -d          # mettre à jour les images
+docker compose up -d --scale worker=3
+docker compose run --rm api sh -c "./mvnw test"     # commande ponctuelle dans le service</code></pre>
+
+<h3>9.3 Variables, surcharges, profils<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong><code>.env</code></strong> à côté du fichier : variables interpolées dans le YAML (<code>${TAG:-dev}</code>). À ne pas commiter ; commiter un <code>.env.example</code>.</li>
+<li><strong>Surcharge</strong> : <code>compose.override.yaml</code> est fusionné automatiquement (dev : bind mounts, ports de debug). En production : <code>docker compose -f compose.yaml -f compose.prod.yaml up -d</code>.</li>
+<li><strong>Profils</strong> : <code>profiles: [tools]</code> sur un service (pgAdmin, Mailhog) qu'on ne lance qu'avec <code>--profile tools</code>.</li>
+<li><strong>Extension</strong> : <code>x-common: &common</code> puis <code>&lt;&lt;: *common</code> pour factoriser logging, restart, etc.</li>
+</ul>
+<pre><code># compose.override.yaml (développement)
+services:
+  api:
+    build: {target: build}
+    command: ./mvnw spring-boot:run
+    volumes: ["./backend/src:/app/src"]
+    ports: ["5005:5005"]
+    environment:
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    read_only: false</code></pre>
+
+<h3>9.4 Ce que Compose ne fait pas<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Compose pilote un seul hôte. Pas de haute disponibilité, pas de redémarrage sur un autre nœud, pas de rolling update natif, pas de secrets chiffrés au repos. C'est parfait pour le développement, la CI, et de petites productions à un serveur. Au-delà : Kubernetes (niveau 5). Le fichier Compose reste un excellent document de l'architecture.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Podman et Quadlet</span><p>Podman exécute des conteneurs sans démon et sans root par défaut ; Quadlet décrit des conteneurs et des pods dans des fichiers <code>.container</code>/<code>.pod</code> que systemd transforme en services. C'est la façon Red Hat de servir des conteneurs sur des VM, sans Kubernetes ni Compose.</p><p><strong>Pourquoi ça différencie :</strong> Très présent dans le secteur public et bancaire français (RHEL) ; rootless par défaut, c'est un argument sécurité immédiat.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -it --privileged quay.io/podman/stable podman run --rm alpine echo ok</code>, puis écrire le fichier <code>crisisshield-api.container</code> équivalent à ton service Compose.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « <code>depends_on</code> suffit pour que l'API attende la base ? » Non : sans <code>condition: service_healthy</code>, Compose attend le lancement du conteneur, pas que PostgreSQL accepte des connexions. Et en production, l'application doit de toute façon retenter (résilience), car la base peut redémarrer à tout moment.</div>
+
+<div class="exo"><span class="tag">Exercice 9.1</span>
+<p>Le service <code>web</code> doit joindre <code>api</code>, <code>api</code> doit joindre <code>db</code>, mais <code>web</code> ne doit pas pouvoir joindre <code>db</code>. Écris uniquement les blocs <code>networks</code> nécessaires.</p>
+<details><summary>Corrigé</summary><div class="sol">Deux réseaux : <code>db</code> sur <code>[backend]</code>, <code>api</code> sur <code>[backend, frontend]</code>, <code>web</code> sur <code>[frontend]</code>. C'est exactement le fichier de la section 9.1.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 9.2</span>
+<p>Après <code>docker compose down</code> puis <code>up</code>, les données de la base ont disparu. Trois causes possibles ?</p>
+<details><summary>Corrigé</summary><div class="sol"><code>down -v</code> a été utilisé ; aucun volume déclaré (la couche d'écriture est perdue) ; le nom de projet a changé (<code>name:</code> ou dossier renommé), donc Compose a créé un nouveau volume <code>autre-projet_pgdata</code>.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 9 — La pile CrisisShield complète en une commande</span>
+<ol>
+<li>Écris <code>compose.yaml</code> pour CrisisShield : PostgreSQL, API, front, plus un reverse proxy Traefik ou Nginx en TLS (réutilise le TP 3) qui est le <em>seul</em> service avec un port publié. Secrets en fichiers, healthchecks partout, durcissement de l'API.</li>
+<li>Ajoute <code>compose.override.yaml</code> pour le développement : rechargement à chaud du front (bind mount + <code>npm run dev</code> dans le conteneur node), debug JVM sur 5005.</li>
+<li>Ajoute un profil <code>tools</code> avec pgAdmin (<code>dpage/pgadmin4</code>), non lancé par défaut.</li>
+<li>Vérifie : <code>docker compose config</code> propre ; <code>docker compose up -d</code> démarre dans le bon ordre (regarde <code>docker compose ps</code> passer de <code>starting</code> à <code>healthy</code>) ; l'application fonctionne via le proxy ; <code>docker compose exec web wget -qO- http://db:5432</code> échoue (isolation réseau).</li>
+<li>Simule une panne : <code>docker compose kill db</code> puis <code>docker compose start db</code>. L'API se reconnecte-t-elle seule ? Si non, corrige la configuration du pool (HikariCP <code>connection-timeout</code>, <code>initialization-fail-timeout</code>).</li>
+<li>Écris un <code>Makefile</code> (ou <code>scripts/</code> Bash) avec les cibles <code>up</code>, <code>down</code>, <code>logs</code>, <code>test</code>, <code>backup-db</code> (le <code>pg_dump</code> du TP 6 via <code>docker compose exec</code>).</li>
+</ol>
+<p>Livrable : fichiers Compose, secrets ignorés par Git avec <code>secrets/.gitkeep</code> et un <code>README</code> qui décrit le démarrage en trois commandes. Cours joint dans le dépôt : <code>docs/cours-compose.md</code> expliquant chaque choix (réseaux, secrets, healthchecks) et la réponse d'entretien associée.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c9"> Chapitre 9 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 10 ===================== -->
+<article id="c10">
+<div class="chaphead"><span class="chapnum">Chapitre 10</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Registres, tagging et scan de vulnérabilités</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Publier et récupérer des images dans un registre privé ou public</li><li>Appliquer une stratégie de tags qui permet le retour arrière et la traçabilité</li><li>Scanner une image, lire un rapport, produire un SBOM</li><li>Signer une image et vérifier la signature</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>latest est interdit en production : tags immuables (SHA, version) et déploiement par digest.</li><li>Scanner (Trivy), produire un SBOM, signer (Cosign) : contenu, inventaire, origine.</li><li>Le SBOM permet de répondre à une nouvelle CVE en secondes, sans rescanner.</li></ol></div>
+
+
+<h3>10.1 Registres<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Un registre stocke images et manifestes selon la spécification OCI. Docker Hub (public, limites de pull), GitHub Container Registry (<code>ghcr.io</code>), GitLab Container Registry, AWS ECR, Harbor (auto-hébergé, avec scan et réplication), ou le registre officiel minimal <code>registry:2</code>.</p>
+<pre><code>docker run -d -p 5000:5000 --name registry -v regdata:/var/lib/registry registry:2
+docker tag crisisshield-api:1.0.0 localhost:5000/crisisshield/api:1.0.0
+docker push localhost:5000/crisisshield/api:1.0.0
+curl -s localhost:5000/v2/_catalog ; curl -s localhost:5000/v2/crisisshield/api/tags/list
+docker login ghcr.io -u USER --password-stdin &lt; token.txt   # jamais le mot de passe en argument</code></pre>
+<p>Nom complet d'une image : <code>registre/espace/nom:tag@sha256:digest</code>. Sans registre → Docker Hub ; sans tag → <code>latest</code>.</p>
+
+<h3>10.2 Stratégie de tags<span class="badge tag-coeur">Par cœur</span></h3>
+<p><code>latest</code> ne veut rien dire : il pointe sur la dernière image poussée, quelle qu'elle soit. En production, il empêche de savoir ce qui tourne et de revenir en arrière. Un tag est mutable ; un <strong>digest</strong> ne l'est pas.</p>
+<div class="tablewrap"><table>
+<tr><th>Tag</th><th>Exemple</th><th>Usage</th></tr>
+<tr><td>Version sémantique</td><td><code>1.4.2</code>, <code>1.4</code>, <code>1</code></td><td>Livraisons ; les tags courts glissent vers le dernier correctif</td></tr>
+<tr><td>SHA du commit</td><td><code>sha-3f9a2b1</code></td><td>Traçabilité exacte, une image par commit</td></tr>
+<tr><td>Branche</td><td><code>main</code>, <code>develop</code></td><td>Environnements d'intégration</td></tr>
+<tr><td>Digest</td><td><code>@sha256:ab12...</code></td><td>Déploiement en production, pinning immuable</td></tr>
+</table></div>
+<p>Pratique recommandée : la CI construit une fois, tague avec le SHA du commit, puis ajoute la version sémantique au moment de la release (retag sans reconstruction). Le déploiement référence le digest. Politique de rétention dans le registre pour ne pas exploser le stockage.</p>
+
+<h3>10.3 Scanner une image<span class="badge tag-important">Important</span></h3>
+<p>Une image embarque un OS et des bibliothèques qui ont des CVE. Trivy (Aqua) est l'outil de référence, gratuit, utilisable dans la CI :</p>
+<pre><code># Scan complet, vulnérabilités OS + dépendances applicatives (jar, npm...)
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/root/.cache \
+  aquasec/trivy image crisisshield-api:1.0.0
+
+# Ne remonter que critique et haute, échouer si présentes (pour la CI)
+... aquasec/trivy image --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed crisisshield-api:1.0.0
+
+# Scanner le Dockerfile et la config (mauvaises pratiques)
+docker run --rm -v "$PWD:/w" aquasec/trivy config /w
+
+# Générer un SBOM (inventaire des composants)
+... aquasec/trivy image --format cyclonedx --output sbom.json crisisshield-api:1.0.0</code></pre>
+<p>Lire un rapport : la sévérité CVSS, si un correctif existe (« fixed version »), et si le composant est réellement utilisé. Un <code>--ignore-unfixed</code> évite de bloquer sur des CVE sans correctif ; un fichier <code>.trivyignore</code> documente les acceptations de risque, avec justification et date.</p>
+<p><strong>SBOM</strong> (Software Bill of Materials) : la liste de tout ce que contient l'image, au format CycloneDX ou SPDX. Exigé par de plus en plus de clients et de réglementations (Cyber Resilience Act). Il permet, quand une nouvelle CVE sort (type Log4Shell), de savoir en quelques secondes quelles images sont concernées sans tout rescanner.</p>
+
+<h3>10.4 Signer et vérifier<span class="badge tag-important">Important</span></h3>
+<p>Un scan dit ce qu'il y a dans l'image ; une signature dit <em>qui</em> l'a produite et qu'elle n'a pas été modifiée. Cosign (projet Sigstore) signe le digest et stocke la signature dans le registre à côté de l'image.</p>
+<pre><code>docker run --rm -it -v "$PWD:/w" -w /w gcr.io/projectsigstore/cosign generate-key-pair
+docker run --rm -it -v "$PWD:/w" -w /w -e COSIGN_PASSWORD gcr.io/projectsigstore/cosign \
+  sign --key cosign.key localhost:5000/crisisshield/api@sha256:...
+docker run --rm -v "$PWD:/w" -w /w gcr.io/projectsigstore/cosign \
+  verify --key cosign.pub localhost:5000/crisisshield/api:1.0.0</code></pre>
+<p>En CI, on signe sans clé (keyless) avec l'identité OIDC du pipeline. Kubernetes peut refuser toute image non signée (Kyverno, niveau 7). C'est la base de la sécurité de la chaîne d'approvisionnement (SLSA).</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — ORAS et Zot</span><p>ORAS pousse n'importe quel artefact (SBOM, chart, plan Terraform, modèle ML, fichier de politique) dans un registre OCI, avec tags, digests et signatures Cosign ; Zot est un registre OCI natif (CNCF) léger avec scan et synchronisation.</p><p><strong>Pourquoi ça différencie :</strong> Un seul système de distribution pour tous les artefacts, signé et versionné : c'est ce que les plateformes matures font désormais.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm --network host ghcr.io/oras-project/oras:v1.2.0 push localhost:5000/crisisshield/sbom:1.0.0 sbom.json:application/json</code> puis <code>oras pull</code> depuis un autre conteneur.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu garantis qu'une image en prod est celle que la CI a construite ? » Réponse : build unique dans la CI, tag par SHA de commit, scan Trivy bloquant, SBOM publié, signature Cosign, déploiement par digest, vérification de signature à l'admission. Cinq mots-clés qui te placent immédiatement sur le terrain DevSecOps.</div>
+
+<div class="exo"><span class="tag">Exercice 10.1</span>
+<p>L'équipe déploie <code>api:latest</code> en production. Vendredi soir, un développeur pousse une image cassée avec ce tag. Que se passe-t-il au prochain redémarrage d'un conteneur, et comment l'éviter structurellement ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le redémarrage tire la nouvelle image cassée (selon la politique de pull). Éviter : tags immuables (SHA, version), déploiement par digest, droits de push sur les tags de release réservés à la CI, tags de production immuables dans le registre (ECR, Harbor le permettent).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 10.2</span>
+<p>Trivy remonte 40 CVE HIGH sur ton image <code>eclipse-temurin:21-jre</code>, dont 35 sans correctif. Que fais-tu ?</p>
+<details><summary>Corrigé</summary><div class="sol">D'abord réduire la surface : passer sur la variante <code>alpine</code> ou distroless, reconstruire (les images de base sont mises à jour régulièrement). Puis <code>--ignore-unfixed</code> pour ne bloquer que sur l'actionnable, documenter les 5 restantes dans <code>.trivyignore</code> avec justification si non exploitables, et programmer un rebuild hebdomadaire pour récupérer les correctifs.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 10 — Chaîne de publication sécurisée pour CrisisShield</span>
+<ol>
+<li>Lance un registre local (<code>registry:2</code>) et un Harbor si tu veux aller plus loin (compose fourni par le projet Harbor ; c'est lourd, optionnel).</li>
+<li>Écris <code>scripts/release.sh</code> qui : construit l'image, la tague <code>sha-$(git rev-parse --short HEAD)</code>, la scanne avec Trivy (échec si CRITICAL avec correctif disponible), génère le SBOM CycloneDX dans <code>sbom/</code>, pousse l'image, la signe avec Cosign, puis, si un argument de version est fourni, ajoute le tag sémantique. Le script doit respecter les règles du chapitre 4.</li>
+<li>Réduis les CVE : compare le rapport Trivy entre <code>eclipse-temurin:21-jre</code>, <code>21-jre-alpine</code> et <code>gcr.io/distroless/java21-debian12</code>. Note le nombre de CVE et la taille pour chacune dans un tableau. Choisis et justifie.</li>
+<li>Modifie le <code>compose.prod.yaml</code> du TP 9 pour référencer l'image par digest et vérifie la signature avant <code>up</code> dans le Makefile.</li>
+<li>Rejoue un scénario Log4Shell : cherche dans ton SBOM si <code>log4j-core</code> est présent avec <code>jq</code>, sans rescanner l'image.</li>
+</ol>
+<p>Livrable : <code>scripts/release.sh</code>, <code>.trivyignore</code> documenté, tableau comparatif dans <code>tp10.md</code>, et <code>docs/cours-supply-chain.md</code> dans CrisisShield : ce qui a été fait, quels outils, comment le raconter en entretien.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c10"> Chapitre 10 terminé</label>
+</article>
+
+<!-- ===================== REVISION ===================== -->
+<section class="rev" id="rev">
+<h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 1</h2>
+<ol class="quiz">
+<li>Hyperviseur de type 1 contre type 2, un exemple de chaque.</li>
+<li>Les trois mécanismes noyau qui font un conteneur.</li>
+<li>Pourquoi le noyau partagé est un enjeu de sécurité ; ce qu'apportent Firecracker et gVisor.</li>
+<li>Ce que Docker Desktop fait sous Windows ; deux pièges de Git Bash.</li>
+<li>Comment fonctionne le cache de build ; l'ordre des instructions qui en découle.</li>
+<li>Pourquoi un secret effacé dans une couche ultérieure est toujours dans l'image.</li>
+<li>ENTRYPOINT forme exec contre forme shell : conséquence sur SIGTERM.</li>
+<li>Multi-étapes : ce qu'on gagne, avec des chiffres.</li>
+<li>Volume nommé, bind mount, tmpfs : quand utiliser chacun.</li>
+<li>Pourquoi deux conteneurs sur le bridge par défaut ne se résolvent pas par nom.</li>
+<li>Six mesures de durcissement d'un conteneur, dans l'ordre où tu les appliques.</li>
+<li>Signification des codes 137 et 143.</li>
+<li>Ta méthode de débogage d'un conteneur qui ne démarre pas.</li>
+<li>Pourquoi <code>depends_on</code> seul ne suffit pas.</li>
+<li>Secret Compose contre variable d'environnement.</li>
+<li>Override, profils, <code>.env</code> : à quoi sert chacun.</li>
+<li>Ce que Compose ne sait pas faire.</li>
+<li>Pourquoi <code>latest</code> est interdit en production ; tag contre digest.</li>
+<li>Ce qu'est un SBOM et ce qu'il permet lors d'une nouvelle CVE.</li>
+<li>Scan contre signature : ce que chacun garantit.</li>
+</ol>
+<p><strong>Prochain niveau</strong> : Intégration et livraison continues — pipelines GitLab CI et GitHub Actions, tests et quality gates, versioning, stratégies de déploiement.</p>
+</section>
+
+<div class="footnav"><a href="devops-niveau-0-fondations.html">← Niveau 0 — Fondations</a><a href="devops-niveau-2-ci-cd.html">Niveau 2 — Intégration et livraison continues →</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='devops-n1-progress', THEME='devops-theme';
+  var boxes=document.querySelectorAll('input[data-ch]');
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  function render(){
+    var done=0; boxes.forEach(function(b){ if(b.checked) done++; });
+    var pct=Math.round(done/boxes.length*100);
+    document.getElementById('pct').textContent=pct+' %';
+    document.getElementById('bar').style.width=pct+'%';
+  }
+  var st=load();
+  boxes.forEach(function(b){ b.checked=!!st[b.dataset.ch]; b.addEventListener('change',function(){ st[b.dataset.ch]=b.checked; save(st); render(); }); });
+  render();
+  var root=document.documentElement;
+  try{ var t=localStorage.getItem(THEME); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.getElementById('theme').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur==='dark';
+    var next=dark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem(THEME,next); }catch(e){}
+  });
+})();
+</script>
+
+<script>
+(function(){
+  // Barre de lecture
+  var bar=document.createElement('div'); bar.className='readbar'; document.body.prepend(bar);
+  function upd(){ var h=document.documentElement; var max=h.scrollHeight-h.clientHeight; bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%'; }
+  window.addEventListener('scroll',upd,{passive:true}); upd();
+  // Bouton copier sur chaque bloc de code
+  document.querySelectorAll('pre').forEach(function(pre){
+    var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier'; b.setAttribute('aria-label','Copier le code');
+    b.addEventListener('click',function(){
+      var t=pre.innerText.replace(/^Copier\n?/,'').replace(/Copi\u00e9 !$/,'');
+      var done=function(){ b.textContent='Copi\u00e9 !'; b.classList.add('ok'); setTimeout(function(){ b.textContent='Copier'; b.classList.remove('ok'); },1500); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); }
+      else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); done(); }
+    });
+    pre.appendChild(b);
+  });
+  // Sommaire qui suit la lecture
+  var links=document.querySelectorAll('nav.toc a[href^="#"]');
+  if(links.length&&'IntersectionObserver' in window){
+    var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){a.classList.remove('active');}); var a=map[e.target.id]; if(a) a.classList.add('active'); } });
+    },{rootMargin:'-10% 0px -75% 0px'});
+    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el) io.observe(el); });
+  }
+  // Impression : ouvrir tous les corrig\u00e9s
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.open=true; }); });
+})();
+</script>
+
+<script>
+(function(){
+  // Tableaux : libellé de colonne sur chaque cellule pour l'affichage empilé
+  document.querySelectorAll('table').forEach(function(t){
+    var rows=t.rows; if(!rows.length) return;
+    var head=rows[0]; var ths=head.querySelectorAll('th');
+    if(!ths.length) return;
+    head.classList.add('head');
+    var labels=Array.prototype.map.call(head.cells,function(c){return c.textContent.trim();});
+    for(var i=1;i<rows.length;i++){
+      var cells=rows[i].cells;
+      for(var j=0;j<cells.length;j++){ if(cells[j].tagName==='TD') cells[j].setAttribute('data-label',labels[j]||''); }
+    }
+    t.classList.add('stack');
+  });
+  // Schémas ASCII : garder l'alignement (défilement horizontal) au lieu du repli
+  document.querySelectorAll('pre').forEach(function(p){
+    if(/[\u2500-\u257F\u25B6\u25C0\u25BA\u25C4\u2192\u2190\u2191\u2193]/.test(p.textContent)) p.classList.add('diagram');
+  });
+})();
+</script>
+</body>
+</html>

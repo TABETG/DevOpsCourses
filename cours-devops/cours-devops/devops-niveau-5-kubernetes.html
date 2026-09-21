@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cours DevOps — Niveau 5 : Kubernetes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="in">
+    <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
+    <div class="level">Parcours DevOps — Niveau 5 sur 9</div>
+    <h1>Kubernetes</h1>
+    <p class="lead">Sept chapitres pour maîtriser l'orchestrateur devenu standard : architecture, objets de base, stockage et applications à état, Helm et Kustomize, GitOps avec ArgoCD, service mesh, puis autoscaling et scheduling. Le cluster tourne dans Docker (kind), gratuitement, et CrisisShield y est déployé en GitOps à la fin du niveau.</p>
+    <div class="meta">
+      <span>7 chapitres</span><span>≈ 50 h de travail</span><span>Prérequis : Niveaux 0 à 4</span>
+    </div>
+    <button class="theme" id="theme">Basculer clair / sombre</button>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <strong>Sommaire</strong>
+  <ol start="25">
+    <li><a href="#c25" class="toc-confirme">Architecture</a></li>
+    <li><a href="#c26" class="toc-confirme">Objets fondamentaux</a></li>
+    <li><a href="#c27" class="toc-senior">Stockage, StatefulSets, Operators</a></li>
+    <li><a href="#c28" class="toc-senior">Helm et Kustomize</a></li>
+    <li><a href="#c29" class="toc-senior">GitOps : ArgoCD et Flux</a></li>
+    <li><a href="#c30" class="toc-expert">Service mesh</a></li>
+    <li><a href="#c31" class="toc-senior">Autoscaling et scheduling</a></li>
+    <li><a href="#rev">Révision du niveau</a></li>
+  </ol>
+<div class="legend">Niveau des chapitres : <span class="badge lvl-confirme">Confirmé</span><span class="badge lvl-senior">Senior</span><span class="badge lvl-expert">Expert</span> <span class="badge badge-niche">Techno de niche</span> = encadré différenciant dans chaque chapitre<br>Mémorisation : <span class="badge tag-coeur">Par cœur</span> <span class="badge tag-important">Important</span> <span class="badge tag-contexte">Bon à savoir</span></div>
+  <div class="prog">Progression : <span id="pct">0 %</span><div class="bar"><i id="bar"></i></div></div>
+</nav>
+
+<main>
+
+<!-- ===================== CHAPITRE 25 ===================== -->
+<article id="c25">
+<div class="chaphead"><span class="chapnum">Chapitre 25</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Architecture</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Nommer chaque composant du control plane et des nœuds, et son rôle</li><li>Expliquer le modèle déclaratif et la boucle de réconciliation</li><li>Lancer un cluster local dans Docker et le piloter avec kubectl en conteneur</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>API server, etcd, scheduler, contrôleurs ; kubelet, containerd, CNI sur les nœuds.</li><li>Tout est déclaré ; les contrôleurs réconcilient en boucle l&#x27;état réel vers l&#x27;état désiré.</li><li>describe (événements) puis logs --previous : les deux premiers réflexes devant un Pod malade.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Les composants de Kubernetes et qui parle à qui. kubectl parle à l&#x27;API ; les contrôleurs rapprochent en boucle l&#x27;état réel de l&#x27;état désiré."><defs><marker id="ah11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="230" height="190" rx="10" class="frame"/><text x="20" y="22" class="glab">Control plane</text><rect x="20" y="40" width="210" height="36" rx="7" class="soft"/><text x="125.0" y="61.9" text-anchor="middle" font-size="11" font-weight="700">kube-apiserver (le point d&#x27;entrée)</text><rect x="20" y="84" width="210" height="36" rx="7" class="soft"/><text x="125.0" y="105.8" text-anchor="middle" font-size="11" font-weight="700">etcd (l&#x27;état)</text><rect x="20" y="128" width="210" height="36" rx="7" class="soft"/><text x="125.0" y="149.8" text-anchor="middle" font-size="11" font-weight="700">scheduler (choisit un nœud)</text><rect x="20" y="172" width="210" height="36" rx="7" class="soft"/><text x="125.0" y="193.8" text-anchor="middle" font-size="11" font-weight="700">controller-manager (les boucles)</text><rect x="260" y="30" width="210" height="190" rx="10" class="frame"/><text x="270" y="22" class="glab">Nœud (× N)</text><rect x="270" y="40" width="190" height="36" rx="7" class="box"/><text x="365.0" y="61.9" text-anchor="middle" font-size="11" font-weight="700">kubelet (exécute les Pods)</text><rect x="270" y="84" width="190" height="36" rx="7" class="box"/><text x="365.0" y="105.8" text-anchor="middle" font-size="11" font-weight="700">containerd (le runtime)</text><rect x="270" y="128" width="190" height="36" rx="7" class="box"/><text x="365.0" y="149.8" text-anchor="middle" font-size="11" font-weight="700">kube-proxy / CNI (réseau)</text><rect x="270" y="172" width="190" height="36" rx="7" class="green"/><text x="365.0" y="193.8" text-anchor="middle" font-size="11" font-weight="700">Pods</text><path d="M230,58 L270,58" class="arrow" marker-end="url(#ah11)"/></svg><figcaption>Les composants de Kubernetes et qui parle à qui. kubectl parle à l'API ; les contrôleurs rapprochent en boucle l'état réel de l'état désiré.</figcaption></figure>
+
+
+<div class="note">Outillage du niveau, tout en conteneur : <code>kind</code> crée un cluster dont les nœuds sont des conteneurs Docker ; <code>kubectl</code> et <code>helm</code> tournent depuis une image. Un alias dans ton <code>.bashrc</code> : <code>alias k='docker run --rm -it --network host -v "$HOME/.kube:/root/.kube" -v "$PWD:/w" -w /w bitnami/kubectl:1.31'</code>. Le <code>--network host</code> ne fonctionne pas sous Docker Desktop Windows : remplace-le par le réseau <code>kind</code> et un kubeconfig dont l'adresse du serveur est <code>https://crisisshield-control-plane:6443</code> (voir TP 25).</div>
+<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
+
+<h3>25.1 Pourquoi un orchestrateur<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Docker Compose pilote un hôte. Dès qu'il faut plusieurs machines, le redémarrage automatique sur un autre nœud, la mise à l'échelle, les déploiements progressifs, la découverte de services et la gestion de la capacité, il faut un orchestrateur. Kubernetes (Google, 2014, CNCF) a gagné : toutes les offres cloud et sur site en proposent, et l'écosystème (Helm, ArgoCD, Prometheus, Istio, cert-manager) est devenu la plateforme standard.</p>
+
+<h3>25.2 Les composants<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>                       CONTROL PLANE
+  ┌──────────────────────────────────────────────────────────────┐
+  │ kube-apiserver  ◄── kubectl, contrôleurs, kubelets : tout passe par lui (REST, authN/authZ, admission)
+  │ etcd            ◄── la base clé-valeur : l'état désiré ET observé du cluster
+  │ kube-scheduler  ◄── choisit un nœud pour chaque Pod non planifié
+  │ controller-manager ◄── les boucles : Deployment, ReplicaSet, Node, Job, ServiceAccount...
+  │ cloud-controller-manager ◄── load balancers, volumes, nœuds côté cloud
+  └──────────────────────────────────────────────────────────────┘
+                       NŒUDS (workers)
+  ┌──────────────────────────────────────────────────────────────┐
+  │ kubelet         ◄── agent : fait tourner les Pods demandés, remonte l'état
+  │ container runtime (containerd, CRI-O) ◄── lance les conteneurs (Docker n'est plus le runtime)
+  │ kube-proxy      ◄── règles réseau (iptables/IPVS) pour les Services ; remplacé par eBPF avec Cilium
+  │ CNI (Cilium, Calico, Flannel) ◄── le réseau des Pods
+  └──────────────────────────────────────────────────────────────┘</code></pre>
+<p>Dans un cluster managé (EKS, AKS, GKE), le control plane est géré et invisible ; tu ne vois que les nœuds. Sur site : kubeadm, RKE2, k3s (léger, un binaire), OpenShift (Red Hat, opinionated, très présent dans les grands comptes français).</p>
+
+<h3>25.3 Le modèle déclaratif et la réconciliation<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Tu envoies à l'API un objet décrivant l'état désiré (<code>spec</code>). Un contrôleur observe en boucle l'état réel (<code>status</code>) et agit pour le rapprocher du désiré. Si un Pod meurt, le ReplicaSet en crée un autre ; si un nœud disparaît, le scheduler replace les Pods ailleurs. Rien n'est « lancé », tout est « déclaré ». C'est exactement le principe GitOps du niveau 3, appliqué au cluster lui-même.</p>
+<pre><code>Deployment (je veux 3 réplicas de l'image X)
+   └── ReplicaSet (maintient 3 Pods identiques ; un nouveau ReplicaSet par version)
+         └── Pod × 3 (un ou plusieurs conteneurs qui partagent réseau et volumes)
+               └── conteneur(s)</code></pre>
+
+<h3>25.4 kubectl : les réflexes<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>kubectl cluster-info ; kubectl get nodes -o wide
+kubectl get pods -A                       # tous les namespaces
+kubectl get all -n crisisshield
+kubectl describe pod api-7d9f-x2k         # événements en bas : la première chose à lire
+kubectl logs -f deploy/api --all-containers ; kubectl logs api-xxx --previous
+kubectl exec -it deploy/api -- sh
+kubectl apply -f manifests/ ; kubectl diff -f manifests/ ; kubectl delete -f manifests/
+kubectl get deploy api -o yaml ; kubectl explain deployment.spec.strategy
+kubectl port-forward svc/api 8080:80
+kubectl top pods ; kubectl top nodes     # nécessite metrics-server
+kubectl rollout status deploy/api ; kubectl rollout history deploy/api ; kubectl rollout undo deploy/api
+kubectl get events --sort-by=.lastTimestamp
+kubectl debug -it api-xxx --image=nicolaka/netshoot --target=api   # conteneur éphémère de debug
+kubectl config get-contexts ; kubectl config use-context kind-crisisshield</code></pre>
+<p>Les états d'un Pod à savoir lire : <code>Pending</code> (pas planifié : ressources, volume, image), <code>ContainerCreating</code>, <code>Running</code>, <code>CrashLoopBackOff</code> (démarre puis meurt en boucle : lire <code>logs --previous</code>), <code>ImagePullBackOff</code> (image ou registre inaccessible), <code>OOMKilled</code>, <code>Completed</code>, <code>Terminating</code> bloqué (finalizers, arrêt qui n'aboutit pas).</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — kwok (Kubernetes WithOut Kubelet)</span><p>Simule des milliers de nœuds et de Pods sans kubelet ni conteneur : le control plane est réel, les nœuds sont factices. Idéal pour tester le scheduling, les opérateurs, l'autoscaling et les politiques à l'échelle sur un poste.</p><p><strong>Pourquoi ça différencie :</strong> Tester à 5 000 nœuds gratuitement, c'est un argument qui frappe quand on parle de plateformes à l'échelle.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -it -p 8080:8080 registry.k8s.io/kwok/cluster:v0.6.0-k8s.v1.31.0</code>, puis créer 1 000 nœuds et observer le comportement de tes politiques Kyverno et du scheduler.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Que se passe-t-il quand tu fais <code>kubectl apply</code> d'un Deployment ? » kubectl envoie l'objet à l'API ; authN, authZ (RBAC), admission (validation, mutation) ; écriture dans etcd ; le contrôleur Deployment crée un ReplicaSet ; le contrôleur ReplicaSet crée les Pods ; le scheduler leur assigne un nœud ; le kubelet du nœud demande au runtime de lancer les conteneurs et au CNI de connecter le Pod ; les Endpoints du Service se mettent à jour. Cette chaîne vaut un entretien à elle seule.</div>
+
+<div class="exo"><span class="tag">Exercice 25.1</span>
+<p>Le control plane tombe entièrement pendant 10 minutes. Les applications qui tournaient continuent-elles de servir du trafic ? Que ne peut-on plus faire ?</p>
+<details><summary>Corrigé</summary><div class="sol">Oui : les kubelets et les conteneurs continuent, kube-proxy garde ses règles. On ne peut plus déployer, mettre à l'échelle, replanifier un Pod mort, ni obtenir de nouveaux Endpoints ; les Pods qui crashent ne sont pas remplacés tant que le control plane est absent (le kubelet redémarre les conteneurs localement, mais un nœud perdu n'est pas compensé).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 25.2</span>
+<p>Pourquoi dit-on que « Docker a été retiré de Kubernetes » alors que les images Docker continuent de fonctionner ?</p>
+<details><summary>Corrigé</summary><div class="sol">Kubernetes parle au runtime via l'interface CRI ; Docker Engine ne l'implémentait pas directement (il fallait un adaptateur, dockershim, retiré en 1.24). containerd, qui est le composant que Docker utilise lui-même, implémente CRI. Les images sont au format OCI, indépendant de Docker.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 25 — Un cluster à trois nœuds dans Docker</span>
+<ol>
+<li>Construis d'abord ton poste de travail Kubernetes en conteneur : un <code>tools/Dockerfile</code> à partir d'<code>alpine</code> qui installe les binaires <code>kind</code>, <code>kubectl</code> et <code>helm</code> (téléchargés depuis leurs releases officielles, versions épinglées), et un script <code>k8s.sh</code> qui lance ce conteneur avec le socket Docker (<code>-v /var/run/docker.sock:/var/run/docker.sock</code>), ton répertoire courant et <code>$HOME/.kube</code> montés. Écris ensuite <code>kind-config.yaml</code> : un control plane et deux workers, <code>extraPortMappings</code> 80 et 443 sur le control plane (pour l'ingress plus tard) et un label <code>ingress-ready=true</code>. Crée le cluster avec <code>./k8s.sh kind create cluster --name crisisshield --config kind-config.yaml</code>.</li>
+<li>Depuis ce conteneur outillé (sur le réseau Docker <code>kind</code>), <code>kubectl get nodes</code> doit montrer 3 nœuds Ready. Note l'adresse du serveur API dans le kubeconfig et pourquoi tu as dû la modifier.</li>
+<li>Installe metrics-server (Helm, avec <code>--kubelet-insecure-tls</code> sur kind) et vérifie <code>kubectl top nodes</code>.</li>
+<li>Explore : <code>docker exec crisisshield-worker ps aux</code> montre kubelet et containerd ; <code>crictl ps</code> dans un nœud liste les conteneurs ; <code>kubectl get pods -n kube-system</code> montre les composants. Identifie qui est etcd, le CNI, kube-proxy.</li>
+<li>Tue un nœud (<code>docker stop crisisshield-worker2</code>), observe <code>kubectl get nodes</code> passer NotReady après ~40 s, puis redémarre-le.</li>
+</ol>
+<p>Livrable : <code>k8s/tools/</code>, <code>kind-config.yaml</code>, <code>tp25.md</code> avec la cartographie des composants observés.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c25"> Chapitre 25 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 26 ===================== -->
+<article id="c26">
+<div class="chaphead"><span class="chapnum">Chapitre 26</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Objets fondamentaux</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Écrire un Deployment de production complet : probes, ressources, sécurité, stratégie</li><li>Exposer une application : Service, Ingress, Gateway API, avec TLS automatique</li><li>Gérer configuration et secrets ; isoler par namespace, RBAC et NetworkPolicy</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le Deployment de référence : probes, requests sans limite CPU, arrêt propre, non root, PDB, topologie.</li><li>Service pour une adresse stable, Ingress ou Gateway API pour entrer, NetworkPolicy default-deny.</li><li>Un Secret n&#x27;est pas secret : chiffrement etcd, RBAC, et External Secrets plutôt que Git.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comment une requête arrive à un Pod, et qui maintient les Pods en vie. Le Service route vers les Pods prêts (readiness) ; le Deployment crée un ReplicaSet par version."><defs><marker id="ah12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="20" y="20" width="130" height="44" rx="7" class="purple"/><text x="85.0" y="38.0" text-anchor="middle" font-size="13" font-weight="700">Ingress</text><text x="85.0" y="55.0" text-anchor="middle" class="lbl">hôte, chemin, TLS</text><path d="M85,64 L85,96" class="arrow" marker-end="url(#ah12)"/><rect x="20" y="96" width="130" height="44" rx="7" class="soft"/><text x="85.0" y="114.0" text-anchor="middle" font-size="13" font-weight="700">Service</text><text x="85.0" y="131.1" text-anchor="middle" class="lbl">IP stable, DNS</text><rect x="20" y="176" width="40" height="40" rx="7" class="green"/><text x="40.0" y="200.2" text-anchor="middle" font-size="12" font-weight="700">Pod</text><path d="M85,140 L40,176" class="arrow" marker-end="url(#ah12)"/><rect x="65" y="176" width="40" height="40" rx="7" class="green"/><text x="85.0" y="200.2" text-anchor="middle" font-size="12" font-weight="700">Pod</text><path d="M85,140 L85,176" class="arrow" marker-end="url(#ah12)"/><rect x="110" y="176" width="40" height="40" rx="7" class="green"/><text x="130.0" y="200.2" text-anchor="middle" font-size="12" font-weight="700">Pod</text><path d="M85,140 L130,176" class="arrow" marker-end="url(#ah12)"/><rect x="300" y="20" width="160" height="44" rx="7" class="amber"/><text x="380.0" y="38.0" text-anchor="middle" font-size="13" font-weight="700">Deployment</text><text x="380.0" y="55.0" text-anchor="middle" class="lbl">réplicas, stratégie</text><path d="M380,64 L380,96" class="arrow" marker-end="url(#ah12)"/><rect x="300" y="96" width="160" height="44" rx="7" class="amber"/><text x="380.0" y="114.0" text-anchor="middle" font-size="13" font-weight="700">ReplicaSet</text><text x="380.0" y="131.1" text-anchor="middle" class="lbl">maintient N Pods</text><path d="M380,140 L150,196" class="arrow" marker-end="url(#ah12)"/></svg><figcaption>Comment une requête arrive à un Pod, et qui maintient les Pods en vie. Le Service route vers les Pods prêts (readiness) ; le Deployment crée un ReplicaSet par version.</figcaption></figure>
+
+
+<h3>26.1 Le Deployment de référence<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: crisisshield
+  labels: {app.kubernetes.io/name: api, app.kubernetes.io/part-of: crisisshield}
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  selector: {matchLabels: {app.kubernetes.io/name: api}}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}     # jamais moins de 3 disponibles
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: api, app.kubernetes.io/part-of: crisisshield}
+      annotations: {prometheus.io/scrape: "true", prometheus.io/path: /actuator/prometheus, prometheus.io/port: "8080"}
+    spec:
+      serviceAccountName: api
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile: {type: RuntimeDefault}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: {matchLabels: {app.kubernetes.io/name: api}}
+      containers:
+        - name: api
+          image: registry.example/crisisshield/api@sha256:3f9a...
+          ports: [{name: http, containerPort: 8080}]
+          envFrom:
+            - configMapRef: {name: api-config}
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom: {secretKeyRef: {name: api-db, key: password}}
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=75 -XX:+UseContainerSupport"
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {memory: 768Mi}              # pas de limite CPU : voir 26.2
+          startupProbe:
+            httpGet: {path: /actuator/health/liveness, port: http}
+            failureThreshold: 30
+            periodSeconds: 2                     # jusqu'à 60 s pour démarrer
+          livenessProbe:
+            httpGet: {path: /actuator/health/liveness, port: http}
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: {path: /actuator/health/readiness, port: http}
+            periodSeconds: 5
+          lifecycle:
+            preStop: {exec: {command: ["sh", "-c", "sleep 5"]}}   # laisse le temps aux Endpoints de se retirer
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: tmp, emptyDir: {}}
+      terminationGracePeriodSeconds: 30</code></pre>
+
+<h3>26.2 Les points qui font la différence<span class="badge tag-coeur">Par cœur</span></h3>
+<ul>
+<li><strong>Probes</strong> : <em>startup</em> protège les applications lentes (Java) ; <em>liveness</em> redémarre le conteneur s'il est bloqué (ne jamais y mettre une dépendance externe : une base en panne redémarrerait toute l'application en boucle) ; <em>readiness</em> retire le Pod du Service quand il ne peut pas servir (base injoignable, préchauffage). Spring Boot expose les deux nativement.</li>
+<li><strong>Ressources</strong> : <code>requests</code> = ce que le scheduler réserve ; <code>limits</code> = le plafond (mémoire : OOMKill ; CPU : throttling). Pratique courante : limite mémoire = requête mémoire (classe QoS Guaranteed pour la mémoire, prévisible), pas de limite CPU ou une limite large (le throttling CPU dégrade la latence des JVM sans bénéfice). Toujours des requests : sans elles, le scheduler ne peut rien garantir.</li>
+<li><strong>Arrêt propre</strong> : SIGTERM → l'application arrête d'accepter, finit les requêtes, ferme ; <code>preStop</code> compense le délai de propagation du retrait des Endpoints ; <code>terminationGracePeriodSeconds</code> puis SIGKILL.</li>
+<li><strong>Sécurité</strong> : non root, lecture seule, pas de capabilities, seccomp, pas de token de compte de service monté si inutile. C'est le profil <em>restricted</em> des Pod Security Standards (niveau 7).</li>
+<li><strong>Répartition</strong> : <code>topologySpreadConstraints</code> sur nœud et zone ; <strong>PodDisruptionBudget</strong> pour qu'une maintenance de nœud ne retire jamais plus d'un Pod à la fois.</li>
+</ul>
+<pre><code>apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: {name: api, namespace: crisisshield}
+spec:
+  minAvailable: 2
+  selector: {matchLabels: {app.kubernetes.io/name: api}}</code></pre>
+
+<h3>26.3 Exposer : Service, Ingress, Gateway<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>apiVersion: v1
+kind: Service
+metadata: {name: api, namespace: crisisshield}
+spec:
+  type: ClusterIP                       # NodePort, LoadBalancer (cloud), ExternalName
+  selector: {app.kubernetes.io/name: api}
+  ports: [{name: http, port: 80, targetPort: http}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crisisshield
+  namespace: crisisshield
+  annotations: {cert-manager.io/cluster-issuer: letsencrypt}
+spec:
+  ingressClassName: nginx
+  tls: [{hosts: [app.crisisshield.example], secretName: crisisshield-tls}]
+  rules:
+    - host: app.crisisshield.example
+      http:
+        paths:
+          - {path: /api, pathType: Prefix, backend: {service: {name: api, port: {name: http}}}}
+          - {path: /,    pathType: Prefix, backend: {service: {name: web, port: {name: http}}}}</code></pre>
+<ul>
+<li><strong>Service</strong> : une adresse virtuelle stable et un nom DNS (<code>api.crisisshield.svc.cluster.local</code>) devant un ensemble de Pods sélectionnés par labels ; les <strong>EndpointSlices</strong> listent les Pods prêts. <code>ClusterIP</code> interne ; <code>NodePort</code> ouvre un port sur chaque nœud ; <code>LoadBalancer</code> demande un équilibreur au cloud (un ALB/NLB par Service, coûteux : préférer un seul Ingress). Headless (<code>clusterIP: None</code>) pour les StatefulSets.</li>
+<li><strong>Ingress</strong> : routage HTTP par hôte et chemin vers des Services, réalisé par un <em>Ingress Controller</em> (ingress-nginx, Traefik, HAProxy, AWS Load Balancer Controller). TLS par <strong>cert-manager</strong> qui obtient et renouvelle les certificats Let's Encrypt (défi HTTP-01 ou DNS-01) ou une PKI interne.</li>
+<li><strong>Gateway API</strong> : le successeur d'Ingress (GA depuis 2023) : <code>GatewayClass</code>, <code>Gateway</code>, <code>HTTPRoute</code>, séparation des rôles (l'infra possède la Gateway, l'équipe applicative ses routes), routage pondéré, en-têtes, réécritures sans annotations propriétaires. À connaître pour les nouveaux projets ; Ingress reste majoritaire en mission.</li>
+</ul>
+
+<h3>26.4 Configuration et secrets<span class="badge tag-important">Important</span></h3>
+<pre><code>apiVersion: v1
+kind: ConfigMap
+metadata: {name: api-config, namespace: crisisshield}
+data:
+  SPRING_PROFILES_ACTIVE: prod
+  SPRING_DATASOURCE_URL: jdbc:postgresql://db-rw.crisisshield.svc:5432/crisis
+  application.yaml: |
+    server.shutdown: graceful
+---
+apiVersion: v1
+kind: Secret
+metadata: {name: api-db, namespace: crisisshield}
+type: Opaque
+stringData: {password: "..."}      # jamais dans Git en clair : SOPS, Sealed Secrets ou External Secrets</code></pre>
+<p>Un Secret n'est qu'encodé en base64 : il faut activer le chiffrement au repos dans etcd et restreindre par RBAC qui peut le lire. Montage en variable d'environnement (visible dans <code>kubectl describe</code> et dans les dumps) ou en fichier (préférable). Un ConfigMap modifié n'est pas rechargé par un conteneur en cours : soit l'application observe le fichier, soit on redéploie (Helm : hash du ConfigMap en annotation pour forcer le rolling ; Kustomize : <code>configMapGenerator</code> avec suffixe de hash). <strong>External Secrets Operator</strong> synchronise depuis AWS Secrets Manager, Vault, Azure Key Vault : le secret ne vit que dans le gestionnaire.</p>
+
+<h3>26.5 Isoler : namespaces, RBAC, NetworkPolicy, quotas<span class="badge tag-important">Important</span></h3>
+<pre><code># Rôle limité au namespace : lire les pods et logs
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: viewer, namespace: crisisshield}
+rules:
+  - apiGroups: [""]
+    resources: [pods, pods/log]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: dev-viewers, namespace: crisisshield}
+subjects: [{kind: Group, name: crisisshield-developers, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: Role, name: viewer, apiGroup: rbac.authorization.k8s.io}
+---
+# Par défaut, tout Pod parle à tout Pod : on ferme, puis on ouvre le nécessaire
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: default-deny, namespace: crisisshield}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: api-allow, namespace: crisisshield}
+spec:
+  podSelector: {matchLabels: {app.kubernetes.io/name: api}}
+  ingress:
+    - from: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: ingress-nginx}}}]
+      ports: [{port: 8080}]
+  egress:
+    - to: [{podSelector: {matchLabels: {app.kubernetes.io/name: db}}}]
+      ports: [{port: 5432}]
+    - to: [{namespaceSelector: {}, podSelector: {matchLabels: {k8s-app: kube-dns}}}]
+      ports: [{port: 53, protocol: UDP}]
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata: {name: quota, namespace: crisisshield}
+spec:
+  hard: {requests.cpu: "4", requests.memory: 8Gi, limits.memory: 16Gi, pods: "50"}
+---
+apiVersion: v1
+kind: LimitRange
+metadata: {name: defaults, namespace: crisisshield}
+spec:
+  limits: [{type: Container, defaultRequest: {cpu: 100m, memory: 128Mi}, default: {memory: 256Mi}}]</code></pre>
+<p>RBAC : <code>Role</code>/<code>RoleBinding</code> (namespace), <code>ClusterRole</code>/<code>ClusterRoleBinding</code> (cluster). Les humains viennent d'un fournisseur d'identité (OIDC, IAM sur EKS) ; les applications ont un <code>ServiceAccount</code>. <code>kubectl auth can-i list secrets --as=system:serviceaccount:crisisshield:api</code> pour vérifier. Les NetworkPolicies exigent un CNI qui les applique (Cilium, Calico ; pas Flannel seul ; kind par défaut ne les applique pas, d'où Cilium au TP 26).</p>
+
+<h3>26.6 Jobs, CronJobs, DaemonSets<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p><strong>Job</strong> : un Pod jusqu'à succès (migrations de schéma, import), avec <code>backoffLimit</code> et <code>ttlSecondsAfterFinished</code>. <strong>CronJob</strong> : planification (<code>0 2 * * *</code>), <code>concurrencyPolicy: Forbid</code>, <code>startingDeadlineSeconds</code>. <strong>DaemonSet</strong> : un Pod par nœud (agents de logs, de métriques, CNI). Migration Flyway : soit au démarrage de l'application avec un <code>initContainer</code> qui l'exécute une fois, soit un Job pré-déploiement (hook Helm), qui est plus propre en rolling.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Envoy Gateway</span><p>L'implémentation de référence de Gateway API par le projet Envoy (CNCF) : HTTPRoute, TLSRoute, rate limiting, authentification JWT et externe, réécritures, sans annotations propriétaires.</p><p><strong>Pourquoi ça différencie :</strong> Gateway API est l'avenir des ingress ; en maîtriser une implémentation avant qu'elle ne devienne standard, c'est prendre de l'avance.</p><p><strong>À essayer en une heure :</strong> Helm <code>oci://docker.io/envoyproxy/gateway-helm</code> sur kind, puis remplacer l'Ingress de CrisisShield par une Gateway et deux HTTPRoute avec limitation de débit par organisation.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Différence entre liveness et readiness ? » et « pourquoi ne pas mettre de limite CPU ? » sont les deux questions les plus posées. Liveness : « suis-je vivant ? » → redémarrage, sans dépendance externe. Readiness : « puis-je servir ? » → retrait du trafic. CPU : la limite provoque du throttling CFS qui augmente la latence même sous la limite moyenne ; les requests suffisent à partager équitablement ; la limite mémoire, elle, est obligatoire.</div>
+
+<div class="exo"><span class="tag">Exercice 26.1</span>
+<p>Pendant chaque rolling update, les utilisateurs voient quelques erreurs 502 pendant une à deux secondes. Le Deployment a readiness et liveness correctes. Cause et correction ?</p>
+<details><summary>Corrigé</summary><div class="sol">À l'arrêt d'un Pod, le retrait de ses Endpoints et le SIGTERM sont envoyés en parallèle ; l'ingress peut encore router vers un Pod déjà en train de s'arrêter. Ajouter <code>preStop: sleep 5</code> (le Pod reste vivant mais est retiré des Endpoints), et vérifier que l'application arrête d'accepter les connexions proprement (<code>server.shutdown=graceful</code>, <code>terminationGracePeriodSeconds</code> suffisant).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 26.2</span>
+<p>Un Pod est en <code>Pending</code> depuis 5 minutes. Les quatre causes les plus fréquentes et la commande qui les révèle.</p>
+<details><summary>Corrigé</summary><div class="sol"><code>kubectl describe pod</code>, section Events : « Insufficient cpu/memory » (requests trop grandes ou cluster plein), « didn't match node selector/affinity » ou taint non tolérée, volume PersistentVolumeClaim non lié (« pod has unbound immediate PersistentVolumeClaims »), quota du namespace dépassé (<code>kubectl describe quota</code>).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 26.3</span>
+<p>Un développeur demande l'accès en lecture aux Secrets d'un namespace « pour déboguer ». Que réponds-tu ?</p>
+<details><summary>Corrigé</summary><div class="sol">Non par défaut : lire un Secret équivaut à posséder le mot de passe de production. Proposer : logs et describe (Role viewer), un mode debug qui n'expose pas les valeurs, ou un accès temporaire tracé (juste-à-temps) avec rotation du secret après. Et vérifier que le secret ne devrait pas plutôt être remplacé par une identité sans mot de passe (IAM, Workload Identity).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 26 — CrisisShield sur le cluster, en manifests bruts</span>
+<ol>
+<li>Recrée le cluster kind avec Cilium comme CNI (kind : <code>disableDefaultCNI: true</code>, puis Helm <code>cilium/cilium</code>). Installe ingress-nginx (manifest kind officiel) et cert-manager avec un <code>ClusterIssuer</code> auto-signé (Let's Encrypt n'atteindra pas ton poste).</li>
+<li>Namespace <code>crisisshield</code> avec ResourceQuota et LimitRange. Charge tes images dans le cluster (<code>kind load docker-image</code>) ou pousse-les sur ton registre local accessible depuis kind (configuration <code>containerdConfigPatches</code>).</li>
+<li>Écris les manifests : ConfigMap, Secret (en clair pour ce TP, tu le corrigeras au chapitre 29), ServiceAccount, Deployment de l'API tel qu'en 26.1, Deployment du front, Services, Ingress avec TLS, PodDisruptionBudget, un Job Flyway de migration, un CronJob de sauvegarde (<code>pg_dump</code> vers un volume). PostgreSQL en Deployment avec un PersistentVolumeClaim pour l'instant (chapitre 27 fera mieux).</li>
+<li>Pilote avec <code>kubectl apply -f k8s/base/</code>. Ajoute l'entrée <code>app.crisisshield.local</code> dans ton <code>hosts</code> Windows et ouvre l'application en HTTPS (avertissement de certificat attendu).</li>
+<li>NetworkPolicies : default-deny puis ouverture minimale. Prouve avec <code>kubectl debug</code> (netshoot) que le front ne peut pas joindre la base et que l'API le peut.</li>
+<li>RBAC : un ServiceAccount <code>ci-deployer</code> qui ne peut que mettre à jour les Deployments du namespace, testé avec <code>auth can-i</code> ; un kubeconfig limité pour lui.</li>
+<li>Rolling update : boucle <code>curl</code> pendant un changement d'image, zéro erreur exigé. Puis <code>rollout undo</code>. Puis un <code>kubectl drain</code> d'un worker : le PDB doit empêcher de descendre sous 2 réplicas.</li>
+<li>Casse : mets une liveness qui vérifie la base, tue la base, observe le CrashLoopBackOff de toute l'API, comprends, corrige.</li>
+</ol>
+<p>Livrable : <code>k8s/base/</code> dans CrisisShield, preuves dans <code>tp26.md</code>, et <code>docs/cours-kubernetes-objets.md</code> avec chaque objet expliqué et les deux réponses d'entretien.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c26"> Chapitre 26 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 27 ===================== -->
+<article id="c27">
+<div class="chaphead"><span class="chapnum">Chapitre 27</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Stockage, StatefulSets, Operators et CRD</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Expliquer PersistentVolume, PersistentVolumeClaim, StorageClass et CSI</li><li>Déployer une application à état avec un StatefulSet</li><li>Comprendre le pattern Operator et exploiter une base de données via un opérateur</li><li>Décider quand une base doit ou non tourner dans Kubernetes</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>PV, PVC, StorageClass, CSI ; un volume RWO suit un nœud, d&#x27;où la lenteur des bascules.</li><li>StatefulSet donne identité et volume stables ; il ne fait pas la réplication : c&#x27;est le rôle de l&#x27;opérateur.</li><li>Base managée par défaut, opérateur (CloudNativePG) si beaucoup de bases, portabilité ou sur site ; restauration testée.</li></ol></div>
+
+
+<h3>27.1 Le stockage<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>Pod ──volumeMount──► PersistentVolumeClaim (demande : 20Gi, ReadWriteOnce, classe gp3)
+                          │ liaison (binding)
+                     PersistentVolume (le disque réel : EBS, disque Azure, NFS, Ceph...)
+                          │ créé dynamiquement par
+                     StorageClass (provisioner CSI, paramètres, politique de rétention, expansion)</code></pre>
+<ul>
+<li><strong>Modes d'accès</strong> : <code>ReadWriteOnce</code> (un nœud : disques bloc cloud), <code>ReadWriteMany</code> (plusieurs nœuds : NFS, EFS, CephFS), <code>ReadWriteOncePod</code>.</li>
+<li><strong>CSI</strong> (Container Storage Interface) : le standard des pilotes de stockage ; chaque cloud et chaque baie en fournit un. Snapshots de volumes via <code>VolumeSnapshot</code>.</li>
+<li><strong>reclaimPolicy</strong> : <code>Delete</code> (le disque part avec le PVC : dangereux pour une base) ou <code>Retain</code>.</li>
+<li>Volumes éphémères : <code>emptyDir</code> (durée de vie du Pod, peut être en mémoire), <code>configMap</code>, <code>secret</code>, <code>projected</code>, <code>downwardAPI</code>.</li>
+<li>Un volume RWO est attaché à un nœud : un Pod ne peut pas migrer plus vite que le détachement/rattachement (30 s à plusieurs minutes dans le cloud). C'est la première raison pour laquelle les applications à état sont plus délicates.</li>
+</ul>
+
+<h3>27.2 StatefulSet<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Un Deployment produit des Pods interchangeables aux noms aléatoires. Un StatefulSet donne à chacun une identité stable (<code>db-0</code>, <code>db-1</code>), un volume propre qui le suit (<code>volumeClaimTemplates</code>), un DNS stable via un Service headless (<code>db-0.db.crisisshield.svc</code>), et un ordre de création/arrêt. Nécessaire pour les bases, Kafka, Elasticsearch, tout ce qui a des rôles (primaire/réplica) et un état local.</p>
+<pre><code>apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: db, namespace: crisisshield}
+spec:
+  serviceName: db
+  replicas: 2
+  selector: {matchLabels: {app.kubernetes.io/name: db}}
+  template:
+    metadata: {labels: {app.kubernetes.io/name: db}}
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          volumeMounts: [{name: data, mountPath: /var/lib/postgresql/data}]
+          resources: {requests: {cpu: 500m, memory: 1Gi}, limits: {memory: 1Gi}}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec: {accessModes: [ReadWriteOnce], storageClassName: standard, resources: {requests: {storage: 10Gi}}}</code></pre>
+<p>Ce StatefulSet ne fait pas de réplication PostgreSQL : deux Pods, deux bases indépendantes. Mettre en place la réplication, la bascule, les sauvegardes, c'est précisément le travail d'un opérateur.</p>
+
+<h3>27.3 Le pattern Operator et les CRD<span class="badge tag-important">Important</span></h3>
+<p>Kubernetes est extensible : une <strong>CustomResourceDefinition</strong> ajoute un type d'objet (<code>kind: Cluster</code> du groupe <code>postgresql.cnpg.io</code>), et un <strong>opérateur</strong> est un contrôleur qui réconcilie ces objets en encodant le savoir-faire d'exploitation : créer les Pods dans le bon ordre, configurer la réplication, promouvoir un réplica en cas de panne, sauvegarder vers S3, restaurer à un instant précis, mettre à jour la version mineure sans coupure.</p>
+<pre><code># CloudNativePG : une base PostgreSQL haute disponibilité en 15 lignes
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata: {name: db, namespace: crisisshield}
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.4
+  storage: {size: 20Gi, storageClass: gp3}
+  postgresql:
+    parameters: {max_connections: "200", shared_buffers: 256MB}
+  bootstrap:
+    initdb: {database: crisis, owner: crisis}     # le secret db-app est généré
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://crisisshield-backups/db
+      s3Credentials: {accessKeyId: {name: backup-creds, key: id}, secretAccessKey: {name: backup-creds, key: key}}
+      wal: {compression: gzip}
+    retentionPolicy: 30d
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata: {name: db-daily, namespace: crisisshield}
+spec: {schedule: "0 0 2 * * *", cluster: {name: db}}</code></pre>
+<p>L'opérateur crée les Services <code>db-rw</code> (primaire), <code>db-ro</code> (réplicas), <code>db-r</code> (tous). Une bascule prend quelques secondes. Autres opérateurs de référence : Strimzi (Kafka), Prometheus Operator, cert-manager, ECK (Elasticsearch), Redis Operator, Keycloak Operator. OperatorHub les catalogue ; les niveaux de maturité vont de « installe » à « auto-pilote ». Écrire un opérateur : Kubebuilder (Go), Java Operator SDK (Quarkus, pertinent pour toi).</p>
+
+<h3>27.4 Base dans Kubernetes ou service managé ?<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>Service managé (RDS, Cloud SQL)</th><th>Opérateur dans le cluster</th></tr>
+<tr><td>Exploitation</td><td>Fournisseur : sauvegardes, patchs, bascule</td><td>Toi, aidé par l'opérateur</td></tr>
+<tr><td>Coût</td><td>Prime de service managé</td><td>Nœuds seulement ; moins cher à l'échelle</td></tr>
+<tr><td>Portabilité</td><td>Faible</td><td>Totale (sur site, tout cloud)</td></tr>
+<tr><td>Performance</td><td>Disque réseau</td><td>Disque local possible</td></tr>
+<tr><td>Risque</td><td>Faible</td><td>Dépend de la maturité de l'équipe et de l'opérateur</td></tr>
+</table></div>
+<p>Position raisonnable : service managé par défaut dans le cloud ; opérateur quand il y a beaucoup de bases (une par microservice), une contrainte de portabilité ou de souveraineté, ou du sur site. Dans tous les cas : restauration testée régulièrement.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Longhorn</span><p>Stockage bloc distribué (CNCF) pour Kubernetes : répliques synchrones entre nœuds, instantanés, sauvegardes vers S3, interface de gestion ; conçu pour le sur site et l'edge, sans baie de stockage.</p><p><strong>Pourquoi ça différencie :</strong> Savoir fournir du stockage persistant fiable hors cloud est une compétence recherchée sur les plateformes souveraines.</p><p><strong>À essayer en une heure :</strong> Installer <code>open-iscsi</code> dans les nœuds kind, Helm <code>longhorn</code>, StorageClass avec 3 répliques, puis rejouer le TP 27 avec CloudNativePG sur Longhorn et perdre un nœud.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Mettrais-tu une base de données dans Kubernetes ? » Ne pas répondre oui ou non. Expliquer StatefulSet et ses limites, le rôle d'un opérateur (CloudNativePG), les critères (managé par défaut, opérateur si beaucoup de bases, portabilité, sur site), et la condition non négociable : sauvegardes vers stockage objet et restauration testée.</div>
+
+<div class="exo"><span class="tag">Exercice 27.1</span>
+<p>Un StatefulSet à 3 réplicas est supprimé par erreur. Les données sont-elles perdues ? Et si c'était le namespace ?</p>
+<details><summary>Corrigé</summary><div class="sol">Supprimer un StatefulSet ne supprime pas ses PVC (par défaut, <code>persistentVolumeClaimRetentionPolicy</code>) : recréer le StatefulSet réattache les volumes. Supprimer le namespace supprime les PVC ; les PV sont conservés seulement si la StorageClass a <code>reclaimPolicy: Retain</code>, sinon les disques sont détruits. D'où : Retain pour les données, et sauvegardes hors cluster.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 27.2</span>
+<p>Pourquoi un opérateur est-il plus qu'un chart Helm de PostgreSQL avec réplication ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le chart installe ; il ne réagit pas. L'opérateur observe en continu et agit : promotion d'un réplica quand le primaire meurt, reconfiguration des Services, réconciliation après un redémarrage de nœud, sauvegardes planifiées, mises à jour ordonnées. C'est la boucle de réconciliation appliquée à un savoir-faire d'administrateur de bases.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 27 — La base de CrisisShield en haute disponibilité</span>
+<ol>
+<li>Sur kind, vérifie la StorageClass <code>standard</code> (provisioner local). Crée un PVC, un Pod qui écrit dedans, supprime le Pod, recrée-le : les données sont là. Supprime le PVC : que devient le PV ?</li>
+<li>Installe l'opérateur CloudNativePG (Helm). Déploie un <code>Cluster</code> à 3 instances avec sauvegardes vers un MinIO dans le cluster (Helm <code>minio</code>, ou un simple Deployment) jouant le rôle de S3.</li>
+<li>Bascule l'API sur <code>db-rw</code> et le secret généré par l'opérateur. Migre les données du Deployment PostgreSQL du TP 26 (<code>pg_dump</code> / <code>psql</code> via <code>kubectl exec</code>).</li>
+<li>Panne : <code>kubectl delete pod db-1</code> (le primaire, vérifie avec <code>kubectl cnpg status</code> ou les labels). Chronomètre la bascule avec la boucle <code>curl</code> sur l'API. Puis <code>docker stop</code> du nœud qui héberge le primaire : observe et mesure.</li>
+<li>Sauvegarde et restauration : déclenche un <code>Backup</code>, insère des données, puis restaure dans un nouveau <code>Cluster</code> avec <code>bootstrap.recovery</code> à un instant antérieur à l'insertion (PITR). Vérifie que les données insérées après sont absentes.</li>
+<li>Kafka en bonus : installe Strimzi, un cluster Kafka à 3 brokers en mode KRaft, et un topic <code>incidents</code> par CRD <code>KafkaTopic</code>. Fais publier un événement par l'API (tu as Kafka dans ta stack).</li>
+</ol>
+<p>Livrable : <code>k8s/database/</code>, temps de bascule mesurés et procédure de restauration dans <code>tp27.md</code>, <code>docs/cours-stateful.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c27"> Chapitre 27 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 28 ===================== -->
+<article id="c28">
+<div class="chaphead"><span class="chapnum">Chapitre 28</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Helm et Kustomize</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Installer et exploiter des charts tiers en toute sécurité</li><li>Écrire un chart pour ton application, avec tests et hooks</li><li>Gérer des variantes par environnement avec Kustomize</li><li>Choisir entre les deux, ou les combiner</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Helm pour installer et distribuer des paquets ; Kustomize pour les variantes de tes applications.</li><li>helm diff, --atomic, versions épinglées, checksum de ConfigMap, hooks de migration.</li><li>Toujours rendre et scanner les manifests avant de les appliquer.</li></ol></div>
+
+
+<h3>28.1 Helm : le gestionnaire de paquets<span class="badge tag-important">Important</span></h3>
+<p>Un <strong>chart</strong> = des templates de manifests + un fichier <code>values.yaml</code> de paramètres + des métadonnées. Une <strong>release</strong> = un chart installé avec des valeurs dans un namespace, versionnée (Helm garde l'historique dans des Secrets et permet le rollback). Les charts tiers (ingress-nginx, cert-manager, Prometheus, ArgoCD, Keycloak...) évitent de réécrire des centaines de lignes.</p>
+<pre><code>helm repo add bitnami https://charts.bitnami.com/bitnami ; helm repo update
+helm search repo postgresql ; helm show values bitnami/postgresql > values-default.yaml
+helm install db bitnami/postgresql -n crisisshield --create-namespace -f values.yaml --version 15.5.20
+helm upgrade --install db bitnami/postgresql -n crisisshield -f values.yaml --atomic --timeout 5m
+helm list -A ; helm history db -n crisisshield ; helm rollback db 2 -n crisisshield
+helm template db bitnami/postgresql -f values.yaml > rendered.yaml      # voir ce qui sera appliqué
+helm diff upgrade db bitnami/postgresql -f values.yaml                  # plugin helm-diff : indispensable
+helm uninstall db -n crisisshield
+# Charts OCI (registres d'images) : helm install x oci://ghcr.io/org/charts/x --version 1.2.3</code></pre>
+<p>Règles : toujours épingler <code>--version</code>, toujours <code>helm diff</code> avant <code>upgrade</code>, <code>--atomic</code> pour rollback automatique en cas d'échec, lire les values par défaut (elles activent parfois des choses que tu ne veux pas), et scanner les manifests rendus (Trivy config, Kyverno CLI).</p>
+
+<h3>28.2 Écrire un chart<span class="badge tag-important">Important</span></h3>
+<pre><code>charts/crisisshield-api/
+├── Chart.yaml            # name, version (du chart), appVersion (de l'application), dependencies
+├── values.yaml           # valeurs par défaut, documentées
+├── values.schema.json    # validation des valeurs (évite les typos silencieuses)
+├── templates/
+│   ├── _helpers.tpl      # fonctions nommées (labels, nom complet)
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   ├── ingress.yaml
+│   ├── configmap.yaml
+│   ├── pdb.yaml
+│   ├── job-migrate.yaml  # hook pre-upgrade
+│   ├── NOTES.txt         # affiché après install
+│   └── tests/test-connection.yaml
+└── README.md</code></pre>
+<pre><code># templates/deployment.yaml (extrait)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "api.fullname" . }}
+  labels: {{- include "api.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: {{- include "api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "api.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}@{{ .Values.image.digest }}"
+          {{- with .Values.resources }}
+          resources: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.probes.enabled }}
+          readinessProbe: {{- toYaml .Values.probes.readiness | nindent 12 }}
+          {{- end }}
+---
+# templates/job-migrate.yaml (extrait)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "api.fullname" . }}-migrate
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded</code></pre>
+<p>Outils : <code>helm lint</code>, <code>helm unittest</code> (plugin), <code>helm test</code> (exécute les Pods de <code>templates/tests</code>), chart-testing (<code>ct</code>) en CI, publication dans un registre OCI avec <code>helm push</code>. Dépendances (<code>Chart.yaml: dependencies</code>) pour un chart « parapluie » qui regroupe api, web et leurs sous-charts, avec <code>condition</code> pour les activer.</p>
+
+<h3>28.3 Kustomize : des surcharges sans templates<span class="badge tag-important">Important</span></h3>
+<p>Intégré à kubectl (<code>kubectl apply -k</code>). Une <strong>base</strong> de manifests YAML purs, des <strong>overlays</strong> par environnement qui patchent : image, réplicas, ressources, annotations. Pas de langage de template, tout est du YAML valide et lisible.</p>
+<pre><code>k8s/
+├── base/
+│   ├── kustomization.yaml   # resources: [deployment.yaml, service.yaml, ...]
+│   └── ...
+└── overlays/
+    ├── staging/
+    │   ├── kustomization.yaml
+    │   └── patch-replicas.yaml
+    └── prod/
+        └── kustomization.yaml
+
+# overlays/prod/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: crisisshield
+resources: [../../base]
+images:
+  - name: registry.example/crisisshield/api
+    digest: sha256:3f9a...
+replicas: [{name: api, count: 5}]
+patches:
+  - target: {kind: Deployment, name: api}
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: 1Gi
+configMapGenerator:
+  - name: api-config
+    literals: [SPRING_PROFILES_ACTIVE=prod]    # suffixe de hash → rolling automatique
+commonLabels: {environment: prod}</code></pre>
+
+<h3>28.4 Choisir<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>Helm</th><th>Kustomize</th></tr>
+<tr><td>Force</td><td>Paquets tiers, paramétrage riche, hooks, rollback, écosystème</td><td>Simplicité, YAML pur, diff lisible, intégré à kubectl</td></tr>
+<tr><td>Faiblesse</td><td>Templates Go difficiles à lire et à déboguer, values qui grossissent</td><td>Pas de logique conditionnelle, pas de paquet distribuable</td></tr>
+<tr><td>Usage typique</td><td>Installer l'infrastructure (ingress, monitoring, opérateurs) et distribuer un produit</td><td>Tes propres applications par environnement</td></tr>
+</table></div>
+<p>Combinaison fréquente : Helm pour les charts tiers, Kustomize pour tes applications, ou <code>helmCharts:</code> dans Kustomize pour rendre un chart puis le patcher. ArgoCD sait faire les deux. Autres : Jsonnet/Tanka, cdk8s, Timoni (CUE) pour les équipes qui veulent du typage.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Timoni</span><p>Des modules d'application écrits en CUE (typage fort, validation, valeurs par défaut, contraintes) et distribués en OCI : l'alternative à Helm sans templates texte, par l'auteur de Flux.</p><p><strong>Pourquoi ça différencie :</strong> CUE et Timoni sont encore confidentiels ; en parler avec un exemple montre une compréhension des limites de Helm.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -it -v "$PWD:/w" -w /w ghcr.io/stefanprodan/timoni mod init crisisshield-api</code>, puis convertir le chart de l'API et publier le module dans ton registre OCI.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Helm ou Kustomize ? » Réponse : les deux, à des places différentes ; Helm pour les composants tiers et un produit à distribuer, Kustomize pour les overlays d'environnement de nos applications. Cite <code>helm diff</code>, <code>--atomic</code>, le checksum de ConfigMap et les hooks de migration : ce sont les détails qui distinguent l'usage réel.</div>
+
+<div class="exo"><span class="tag">Exercice 28.1</span>
+<p>Après <code>helm upgrade</code> avec une nouvelle valeur dans le ConfigMap, les Pods n'ont pas redémarré et utilisent l'ancienne configuration. Pourquoi et comment corriger dans le chart ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le Deployment n'a pas changé (même template de Pod), donc pas de rolling. Ajouter l'annotation <code>checksum/config</code> calculée sur le ConfigMap rendu : toute modification change le hash, donc le template, donc déclenche un rolling.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 28.2</span>
+<p>Un chart tiers installe par défaut un Service de type LoadBalancer et un compte avec ClusterRole admin. Comment l'aurais-tu vu avant l'installation, et que fais-tu ?</p>
+<details><summary>Corrigé</summary><div class="sol"><code>helm show values</code> et <code>helm template | grep -E "LoadBalancer|ClusterRole"</code>, ou scanner le rendu avec Trivy/Kyverno. Surcharger les values (<code>service.type: ClusterIP</code>, <code>rbac.create: false</code> avec un rôle limité fourni par toi) ; si le chart ne le permet pas, le forker ou le post-rendre avec Kustomize.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 28 — Chart et overlays pour CrisisShield</span>
+<ol>
+<li>Convertis les manifests du TP 26 en un chart <code>crisisshield</code> (parapluie) avec sous-charts <code>api</code> et <code>web</code>, <code>values.schema.json</code>, helpers, checksum de ConfigMap, hook de migration Flyway, PDB, un test Helm qui vérifie <code>/actuator/health</code>. <code>helm lint</code>, <code>helm unittest</code> (3 tests), <code>helm test</code> verts.</li>
+<li>Publie le chart dans ton registre OCI local (<code>helm push</code>), installe depuis le registre avec <code>--version</code>.</li>
+<li>Construis en parallèle <code>k8s/overlays/{staging,prod}</code> avec Kustomize sur la base brute : image par digest, réplicas, ressources, <code>configMapGenerator</code>. <code>kubectl kustomize overlays/prod | kubectl diff -f -</code>.</li>
+<li>Pipeline : job <code>chart-lint-test</code> (image <code>alpine/helm</code> + chart-testing), job <code>kustomize-build</code> qui rend les overlays et les scanne avec Trivy config et Kyverno CLI (règle : pas de <code>latest</code>, ressources obligatoires, non root).</li>
+<li>Décide et documente ce que tu gardes pour la suite (le TP 29 utilisera ArgoCD avec l'un des deux).</li>
+</ol>
+<p>Livrable : <code>charts/</code>, <code>k8s/overlays/</code>, pipeline, <code>docs/cours-helm-kustomize.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c28"> Chapitre 28 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 29 ===================== -->
+<article id="c29">
+<div class="chaphead"><span class="chapnum">Chapitre 29</span><span class="badge lvl-senior">Senior</span></div>
+<h2>GitOps : ArgoCD et Flux</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Installer et sécuriser ArgoCD, définir des Applications et un ApplicationSet</li><li>Gérer les secrets en GitOps (Sealed Secrets, SOPS, External Secrets)</li><li>Organiser les dépôts et la promotion entre environnements</li><li>Positionner Flux et connaître ses différences</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>ArgoCD réconcilie Git et cluster ; AppProject restrictif, ApplicationSet par environnement, sync waves.</li><li>Secrets : External Secrets vers un gestionnaire, Sealed Secrets ou SOPS sinon ; jamais en clair.</li><li>Promotion staging → prod par merge request ; rollback par revert ; Flux fait pareil sans interface.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 234" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Du commit à la production en GitOps : promotion par merge request. La CI ne touche jamais le cluster : elle écrit un digest dans Git. La prod attend une merge request revue."><defs><marker id="ah13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="100" height="50" rx="7" class="soft"/><text x="60.0" y="59.5" text-anchor="middle" font-size="13" font-weight="700">Dépôt code</text><path d="M110,55 L130,55" class="arrow" marker-end="url(#ah13)"/><rect x="130" y="30" width="80" height="50" rx="7" class="box"/><text x="170.0" y="59.5" text-anchor="middle" font-size="13" font-weight="700">CI</text><path d="M210,55 L230,55" class="arrow" marker-end="url(#ah13)"/><rect x="230" y="30" width="110" height="50" rx="7" class="box"/><text x="285.0" y="51.0" text-anchor="middle" font-size="13" font-weight="700">Registre</text><text x="285.0" y="68.0" text-anchor="middle" class="lbl">image@digest</text><path d="M285,80 L285,110" class="arrow" marker-end="url(#ah13)"/><rect x="200" y="110" width="170" height="50" rx="7" class="amber"/><text x="285.0" y="139.2" text-anchor="middle" font-size="12" font-weight="700">Dépôt config : staging</text><path d="M370,135 L400,135" class="arrow" marker-end="url(#ah13)"/><text x="385.0" y="127.0" text-anchor="middle" class="lbl">MR</text><rect x="400" y="110" width="70" height="50" rx="7" class="amber"/><text x="435.0" y="139.2" text-anchor="middle" font-size="12" font-weight="700">prod</text><rect x="200" y="190" width="170" height="44" rx="7" class="purple"/><text x="285.0" y="216.6" text-anchor="middle" font-size="13" font-weight="700">ArgoCD réconcilie</text><path d="M285,160 L285,190" class="arrow" marker-end="url(#ah13)"/><path d="M435,160 L340,190" class="arrow" marker-end="url(#ah13)"/></svg><figcaption>Du commit à la production en GitOps : promotion par merge request. La CI ne touche jamais le cluster : elle écrit un digest dans Git. La prod attend une merge request revue.</figcaption></figure>
+
+
+<h3>29.1 ArgoCD<span class="badge tag-coeur">Par cœur</span></h3>
+<p>ArgoCD tourne dans le cluster, observe un dépôt Git (manifests, Kustomize, Helm, Jsonnet), compare avec l'état du cluster, affiche <code>Synced</code>/<code>OutOfSync</code> et <code>Healthy</code>/<code>Degraded</code>, et synchronise (manuellement ou automatiquement). Interface web très appréciée en mission pour visualiser l'état d'une application.</p>
+<pre><code>apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crisisshield-prod
+  namespace: argocd
+  finalizers: [resources-finalizer.argocd.argoproj.io]   # supprimer l'Application supprime ses ressources
+spec:
+  project: crisisshield
+  source:
+    repoURL: https://gitlab.example/crisisshield/config.git
+    targetRevision: main
+    path: envs/prod                     # kustomize détecté automatiquement
+  destination: {server: https://kubernetes.default.svc, namespace: crisisshield}
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}     # supprime ce qui n'est plus dans Git ; corrige la dérive
+    syncOptions: [CreateNamespace=true, ServerSideApply=true]
+    retry: {limit: 3, backoff: {duration: 30s, factor: 2}}
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers: [/spec/replicas]     # géré par le HPA, pas par Git
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata: {name: crisisshield, namespace: argocd}
+spec:
+  sourceRepos: [https://gitlab.example/crisisshield/*]
+  destinations: [{server: https://kubernetes.default.svc, namespace: crisisshield*}]
+  clusterResourceWhitelist: []          # aucune ressource cluster (pas de ClusterRole, pas de CRD)
+  namespaceResourceBlacklist: [{group: "", kind: ResourceQuota}]
+  roles:
+    - name: developers
+      policies: ["p, proj:crisisshield:developers, applications, sync, crisisshield/*, allow"]
+      groups: [crisisshield-developers]</code></pre>
+<ul>
+<li><strong>AppProject</strong> : le périmètre de sécurité. Sans lui, une Application peut déployer n'importe quoi n'importe où.</li>
+<li><strong>Sync waves et hooks</strong> : annotations <code>argocd.argoproj.io/sync-wave: "-1"</code> pour ordonner (namespace, CRD, secrets, puis base, puis application), <code>PreSync</code>/<code>PostSync</code> pour les migrations et les tests.</li>
+<li><strong>App of Apps</strong> : une Application racine qui déploie d'autres Applications ; ou mieux, <strong>ApplicationSet</strong> avec des générateurs (liste d'environnements, répertoires Git, clusters) pour engendrer N applications à partir d'un modèle.</li>
+<li><strong>Notifications</strong> vers Slack/Teams ; <strong>Image Updater</strong> pour écrire automatiquement le nouveau tag en staging ; <strong>Argo Rollouts</strong> pour canary et blue/green analysés par métriques (chapitre 31 et niveau 6).</li>
+<li>Sécurité d'ArgoCD lui-même : SSO (OIDC vers Keycloak, Entra ID), RBAC par projet, pas de compte admin local, accès Git en lecture seule par deploy token, interface non exposée publiquement.</li>
+</ul>
+
+<h3>29.2 Les secrets en GitOps<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Approche</th><th>Principe</th><th>Quand</th></tr>
+<tr><td>Sealed Secrets</td><td>Un contrôleur dans le cluster possède une clé privée ; on chiffre avec la clé publique (<code>kubeseal</code>) ; le <code>SealedSecret</code> est commité, déchiffré uniquement dans ce cluster</td><td>Simple, autonome, sans gestionnaire externe</td></tr>
+<tr><td>SOPS + age/KMS</td><td>Fichiers chiffrés dans Git, déchiffrés par ArgoCD (plugin) ou Flux (natif)</td><td>Chiffrement par clé cloud (KMS), multi-outil</td></tr>
+<tr><td>External Secrets Operator</td><td>Git ne contient qu'une référence (<code>ExternalSecret</code>) ; l'opérateur lit AWS Secrets Manager, Vault, Key Vault et crée le Secret</td><td>La référence en entreprise : rotation, audit, aucun secret dans Git</td></tr>
+<tr><td>CSI Secrets Store</td><td>Le secret est monté en volume directement depuis le gestionnaire</td><td>Quand on refuse même un Secret Kubernetes</td></tr>
+</table></div>
+<pre><code>apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata: {name: api-db, namespace: crisisshield}
+spec:
+  refreshInterval: 1h
+  secretStoreRef: {name: aws, kind: ClusterSecretStore}
+  target: {name: api-db}
+  data:
+    - secretKey: password
+      remoteRef: {key: crisisshield/prod/db, property: password}</code></pre>
+
+<h3>29.3 Organisation et promotion<span class="badge tag-important">Important</span></h3>
+<pre><code>crisisshield-config/
+├── clusters/
+│   ├── staging/   (Applications ou ApplicationSet pour ce cluster)
+│   └── prod/
+├── apps/
+│   └── crisisshield/
+│       ├── base/
+│       └── overlays/{staging,prod}/
+└── platform/      (ingress, cert-manager, monitoring, opérateurs : versions Helm épinglées)</code></pre>
+<p>Flux de promotion : la CI de l'application pousse l'image et met à jour le digest dans <code>overlays/staging</code> (commit automatique) ; ArgoCD synchronise staging ; les tests e2e tournent ; une merge request (automatique ou humaine) copie le digest vers <code>overlays/prod</code> ; approbation ; ArgoCD synchronise prod. Le <code>git log</code> du dépôt de config est l'historique exact des déploiements. Retour arrière : <code>git revert</code>. Kargo (Akuity) automatise cette promotion entre étapes.</p>
+
+<h3>29.4 Flux<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Flux (CNCF, Weaveworks) : le même GitOps, sans interface web, composé de contrôleurs (<code>source-controller</code>, <code>kustomize-controller</code>, <code>helm-controller</code>, <code>notification-controller</code>, <code>image-automation</code>). Plus « Kubernetes-natif » (tout est CRD, pas de serveur central), SOPS intégré, HelmRelease en CRD, multi-tenant plus strict. ArgoCD domine par son interface et son adoption ; Flux plaît aux équipes plateforme qui automatisent tout. Les deux se valent ; connaître les deux vocabulaires suffit.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Kargo</span><p>Promotion multi-environnements pour GitOps (par les créateurs d'Argo) : Warehouses qui surveillent images et charts, Freight (un lot versionné), Stages dev → staging → prod avec vérifications, en amont d'ArgoCD.</p><p><strong>Pourquoi ça différencie :</strong> La promotion est le chaînon manquant d'ArgoCD ; Kargo l'outille proprement et peu d'équipes l'ont mis en place.</p><p><strong>À essayer en une heure :</strong> Helm <code>oci://ghcr.io/akuity/kargo-charts/kargo</code> sur kind, un Warehouse sur ton registre, trois Stages, et remplace le job de promotion manuel du TP 29.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu gères les secrets avec ArgoCD ? » Ne jamais dire « en base64 dans Git ». External Secrets Operator vers le gestionnaire du cloud ou Vault par défaut ; Sealed Secrets pour un cluster autonome ; SOPS pour du multi-outil. Puis : ArgoCD lui-même en SSO, AppProjects restrictifs, deploy tokens en lecture seule.</div>
+
+<div class="exo"><span class="tag">Exercice 29.1</span>
+<p>Une Application ArgoCD reste <code>OutOfSync</code> en permanence juste après chaque synchronisation, sur le champ <code>replicas</code> d'un Deployment. Cause et correction ?</p>
+<details><summary>Corrigé</summary><div class="sol">Un HPA modifie <code>replicas</code>, Git dit autre chose, ArgoCD voit une différence (et avec selfHeal, il y aurait un ping-pong). Soit retirer <code>replicas</code> du manifest, soit <code>ignoreDifferences</code> sur ce champ.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 29.2</span>
+<p>Quel est le risque d'un AppProject <code>default</code> non restreint et d'une Application dont <code>prune: true</code> ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le projet default autorise toute source vers toute destination, y compris les ressources cluster : qui peut créer une Application peut prendre le contrôle du cluster. Avec prune, un commit qui supprime un fichier par erreur supprime la ressource en production. Mitigations : projets restrictifs, revue obligatoire sur le dépôt de config, <code>argocd.argoproj.io/sync-options: Prune=false</code> sur les ressources critiques (PVC, bases).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 29 — CrisisShield en GitOps complet</span>
+<ol>
+<li>Installe ArgoCD (Helm, version épinglée) sur kind, avec l'interface accessible via l'Ingress en TLS auto-signé. Connecte-le à ton GitLab local par deploy token en lecture seule. Configure le SSO OIDC vers un Keycloak déployé dans le cluster (Helm ou opérateur) : c'est ta spécialité, autant l'utiliser ; un groupe <code>developers</code> avec droit de sync sur le projet, un groupe <code>platform</code> admin.</li>
+<li>Crée le dépôt <code>crisisshield-config</code> avec la structure 29.3. AppProject restrictif. ApplicationSet avec générateur de liste pour staging et prod (deux namespaces sur le même cluster), auto-sync avec prune et selfHeal en staging, sync manuel en prod.</li>
+<li>Secrets : installe External Secrets Operator avec un <code>ClusterSecretStore</code> vers ton LocalStack Secrets Manager (ou Vault en mode dev dans le cluster, ce que le niveau 7 approfondira). Le secret de base de CrisisShield n'existe plus dans Git. Alternative locale : Sealed Secrets avec <code>kubeseal</code> en conteneur.</li>
+<li>Pipeline de l'application : après le push d'image, un job met à jour le digest dans <code>overlays/staging</code> et ouvre automatiquement une merge request vers <code>overlays/prod</code> (API GitLab). Suis dans ArgoCD : staging se synchronise seul ; prod attend la fusion puis un sync manuel (ou automatique si tu préfères).</li>
+<li>Dérive : modifie à la main les réplicas en staging, observe selfHeal ; supprime un Service, observe sa recréation.</li>
+<li>Rollback : <code>git revert</code> du commit de promotion en prod, sync, vérifie l'image revenue.</li>
+<li>Sync waves : la migration Flyway en <code>PreSync</code> hook, un smoke test en <code>PostSync</code> ; provoque l'échec du PostSync et regarde l'état de l'Application.</li>
+</ol>
+<p>Livrable : dépôt de config, manifests ArgoCD, pipeline modifié, <code>tp29.md</code> avec captures des états, <code>docs/cours-gitops-argocd.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c29"> Chapitre 29 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 30 ===================== -->
+<article id="c30">
+<div class="chaphead"><span class="chapnum">Chapitre 30</span><span class="badge lvl-expert">Expert</span></div>
+<h2>Service mesh</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Expliquer ce qu'un mesh apporte (mTLS, observabilité, trafic) et ce qu'il coûte</li><li>Comparer Istio, Linkerd et Cilium mesh</li><li>Décider si un projet en a besoin</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le mesh sort mTLS, autorisation, résilience et métriques de trafic du code de chaque service.</li><li>Sidecar hier, ambient et eBPF demain ; Istio, Linkerd, Cilium.</li><li>Pas de mesh pour trois services ; oui quand mTLS partout, dizaines de services polyglottes, canary fin.</li></ol></div>
+
+
+<h3>30.1 Le problème que le mesh résout<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Avec des dizaines de microservices, chacun doit : chiffrer ses appels (mTLS), vérifier l'identité de l'appelant, retenter, respecter des timeouts, couper le circuit quand un service est en panne, exposer des métriques de trafic, propager les traces. Coder cela dans chaque service (Resilience4j, Spring Cloud) fonctionne mais dépend de chaque langage et de chaque équipe. Le mesh sort ces fonctions de l'application et les place dans l'infrastructure réseau.</p>
+
+<h3>30.2 Comment ça marche<span class="badge tag-contexte">Bon à savoir</span></h3>
+<ul>
+<li><strong>Sidecar</strong> (modèle historique) : un proxy (Envoy pour Istio, un micro-proxy Rust pour Linkerd) injecté dans chaque Pod, intercepte tout le trafic entrant et sortant. Coût : mémoire et CPU par Pod, latence de quelques ms, complexité au démarrage/arrêt.</li>
+<li><strong>Ambient / sans sidecar</strong> : Istio ambient (un proxy par nœud pour L4 et mTLS, un « waypoint » optionnel pour L7) et Cilium (eBPF dans le noyau) suppriment le sidecar. C'est la direction du marché.</li>
+<li><strong>Control plane</strong> (istiod) distribue les certificats (rotation automatique, identité SPIFFE), la configuration de routage et les politiques.</li>
+</ul>
+<pre><code># Istio : mTLS strict sur le namespace, et une politique d'autorisation
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata: {name: default, namespace: crisisshield}
+spec: {mtls: {mode: STRICT}}
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata: {name: db-from-api-only, namespace: crisisshield}
+spec:
+  selector: {matchLabels: {app.kubernetes.io/name: db}}
+  action: ALLOW
+  rules:
+    - from: [{source: {principals: ["cluster.local/ns/crisisshield/sa/api"]}}]
+---
+# Routage pondéré (canary) et résilience
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata: {name: api, namespace: crisisshield}
+spec:
+  hosts: [api]
+  http:
+    - route:
+        - {destination: {host: api, subset: v1}, weight: 90}
+        - {destination: {host: api, subset: v2}, weight: 10}
+      retries: {attempts: 3, perTryTimeout: 2s, retryOn: "5xx,reset"}
+      timeout: 10s
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata: {name: api, namespace: crisisshield}
+spec:
+  host: api
+  subsets: [{name: v1, labels: {version: v1}}, {name: v2, labels: {version: v2}}]
+  trafficPolicy:
+    outlierDetection: {consecutive5xxErrors: 5, interval: 30s, baseEjectionTime: 60s}   # circuit breaker
+    connectionPool: {tcp: {maxConnections: 100}}</code></pre>
+
+<h3>30.3 Ce qu'on obtient<span class="badge tag-contexte">Bon à savoir</span></h3>
+<ul>
+<li><strong>Sécurité</strong> : mTLS partout sans toucher au code, identité par ServiceAccount (SPIFFE), politiques d'autorisation L4/L7 (« seul l'API peut appeler la base », « seul GET sur /public »). C'est le socle réseau du zero trust (niveau 7).</li>
+<li><strong>Observabilité</strong> : métriques RED (requêtes, erreurs, durée) pour chaque service sans instrumentation, traces (si l'application propage les en-têtes), topologie visuelle avec Kiali.</li>
+<li><strong>Trafic</strong> : canary pondéré, mirroring, injection de fautes (chaos), retries, timeouts, circuit breaking, rate limiting, egress contrôlé.</li>
+</ul>
+
+<h3>30.4 Comparatif et décision<span class="badge tag-contexte">Bon à savoir</span></h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>Istio</th><th>Linkerd</th><th>Cilium Service Mesh</th></tr>
+<tr><td>Proxy</td><td>Envoy (sidecar ou ambient)</td><td>linkerd2-proxy (Rust, léger)</td><td>eBPF + Envoy par nœud</td></tr>
+<tr><td>Fonctions</td><td>Les plus complètes</td><td>L'essentiel, simple</td><td>Réseau + mesh + sécurité + observabilité (Hubble)</td></tr>
+<tr><td>Complexité</td><td>Élevée</td><td>Faible</td><td>Moyenne, mais remplace le CNI</td></tr>
+<tr><td>Quand</td><td>Grande plateforme, besoins L7 avancés</td><td>Mesh rapide et fiable</td><td>Nouveau cluster, on veut tout en un</td></tr>
+</table></div>
+<p>Un mesh n'est pas nécessaire pour une application à trois services. Il devient pertinent quand : mTLS exigé partout (conformité), dizaines de services polyglottes, besoin de canary fin sans modifier les apps, observabilité réseau uniforme. Alternatives partielles : NetworkPolicies + cert-manager + Resilience4j + OpenTelemetry couvrent beaucoup à moindre coût. Le Gateway API devient l'interface commune de configuration des meshes.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Kmesh</span><p>Un service mesh eBPF sans sidecar ni proxy par nœud pour le trafic L4 (compatible avec le control plane Istio), avec une latence quasi nulle ; à connaître aux côtés d'Istio ambient et de Cilium, en surveillant sa maturité.</p><p><strong>Pourquoi ça différencie :</strong> Comprendre le mouvement « sans sidecar » et ses trois implémentations te place dans les discussions d'architecture réseau avancées.</p><p><strong>À essayer en une heure :</strong> Helm Kmesh sur un cluster kind avec un noyau récent ; compare la latence p99 de CrisisShield avec Istio sidecar, Istio ambient, Cilium et Kmesh dans un tableau.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Vous utiliseriez un service mesh ? » Réponse : d'abord ce qu'il apporte (mTLS, autorisation par identité, résilience, métriques sans code), puis le coût (complexité, ressources), puis le critère (nombre de services, exigence de chiffrement, équipe capable de l'opérer), et la tendance sans sidecar. Le lien avec ton profil : le mesh est l'outil qui implémente le zero trust réseau ; sache le dire.</div>
+
+<div class="exo"><span class="tag">Exercice 30.1</span>
+<p>Avec mTLS STRICT activé, un Job de migration Flyway lancé par Helm échoue à joindre la base. Pourquoi ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le Job n'a pas de sidecar (souvent exclu, ou le sidecar n'est pas prêt quand le conteneur démarre, ou le Job se termine sans arrêter le sidecar). En mode sidecar : annoter pour l'injection et gérer la fin (<code>holdApplicationUntilProxyStarts</code>, appel à <code>/quitquitquit</code>), ou exclure le Job du mTLS strict avec une PeerAuthentication en PERMISSIVE ciblée. En mode ambient, le problème disparaît.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 30.2</span>
+<p>Un mesh fournit des retries automatiques. Quel risque pour une API de création de paiement, et comment le maîtriser ?</p>
+<details><summary>Corrigé</summary><div class="sol">Un retry sur un POST non idempotent peut créer deux paiements. Limiter les retries aux méthodes idempotentes (<code>retryOn</code> ciblé, pas sur les POST), ou rendre l'API idempotente avec une clé d'idempotence, ce qui est de toute façon une bonne pratique.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 30 — mTLS et canary avec un mesh</span>
+<ol>
+<li>Sur ton cluster kind avec Cilium : active le mesh Cilium et Hubble (Helm values <code>hubble.enabled</code>, <code>hubble.ui.enabled</code>). Observe dans Hubble UI les flux entre front, API et base.</li>
+<li>Installe Istio en mode ambient (ou Linkerd si ta machine est limitée) dans un second cluster kind pour comparer. Ajoute le namespace crisisshield au mesh. Vérifie le mTLS avec <code>istioctl x describe</code> ou en capturant le trafic entre deux Pods avec tcpdump (netshoot) : il doit être chiffré.</li>
+<li>AuthorizationPolicy : seule l'identité de l'API peut joindre la base ; teste depuis un Pod netshoot (refus attendu).</li>
+<li>Canary : déploie une v2 de l'API (change le message d'un endpoint), route 10 % du trafic, observe avec Kiali ou les métriques du mesh, augmente à 50 % puis 100 %, puis annule. Compare avec ce que fait Argo Rollouts (installe-le, définit un <code>Rollout</code> avec étapes 10/50/100 et pause).</li>
+<li>Résilience : injecte 30 % d'erreurs 500 sur la v2 (fault injection), observe le circuit breaker éjecter les Pods, puis les retries masquer les erreurs pour les GET.</li>
+<li>Rédige un avis d'une demi-page : CrisisShield a-t-il besoin d'un mesh ? Avec quels critères et quelle alternative.</li>
+</ol>
+<p>Livrable : manifests mesh, captures Hubble/Kiali, avis dans <code>tp30.md</code>, <code>docs/cours-service-mesh.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c30"> Chapitre 30 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 31 ===================== -->
+<article id="c31">
+<div class="chaphead"><span class="chapnum">Chapitre 31</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Autoscaling, scheduling, affinités, quotas</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Mettre à l'échelle les Pods (HPA, VPA, KEDA) et les nœuds (Cluster Autoscaler, Karpenter)</li><li>Influencer le scheduler : affinités, taints, priorités, topologie</li><li>Dimensionner un cluster et gérer la capacité entre équipes</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>HPA sur métriques métier, VPA pour calibrer, KEDA pour scaler à zéro sur une file.</li><li>Karpenter provisionne le bon nœud en secondes et consolide ; Spot et ARM pour le coût.</li><li>Affinités, taints, priorités, topologie, quotas : gouverner le placement et la capacité entre équipes.</li></ol></div>
+
+
+<h3>31.1 Mise à l'échelle des Pods<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: {name: api, namespace: crisisshield}
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: api}
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource: {name: cpu, target: {type: Utilization, averageUtilization: 70}}   # % des requests
+    - type: Pods
+      pods: {metric: {name: http_requests_per_second}, target: {type: AverageValue, averageValue: "200"}}
+  behavior:
+    scaleUp:   {stabilizationWindowSeconds: 0,   policies: [{type: Percent, value: 100, periodSeconds: 60}]}
+    scaleDown: {stabilizationWindowSeconds: 300, policies: [{type: Pods, value: 2, periodSeconds: 60}]}</code></pre>
+<ul>
+<li><strong>HPA</strong> : ajuste les réplicas sur le CPU/mémoire (metrics-server) ou des métriques custom (Prometheus Adapter : requêtes par seconde, longueur de file). Le CPU en % des <em>requests</em> : d'où l'importance de requests réalistes. Montée rapide, descente lente.</li>
+<li><strong>VPA</strong> : ajuste les requests/limits d'un Pod à partir de l'usage observé ; en mode <code>Off</code>, il ne fait que recommander : parfait pour calibrer. Ne pas combiner HPA et VPA sur la même métrique.</li>
+<li><strong>KEDA</strong> : mise à l'échelle événementielle, y compris à zéro : longueur d'une file SQS/Kafka, requêtes HTTP, cron, métrique Prometheus. Indispensable pour les workers et les consommateurs Kafka (un Pod par partition en charge).</li>
+<li>Une JVM ne réagit pas bien à des variations rapides (préchauffage) : réplicas minimum suffisants, startup probe, et éviter de scaler sur la mémoire (une JVM garde son tas).</li>
+</ul>
+
+<h3>31.2 Mise à l'échelle des nœuds<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Cluster Autoscaler</strong> : ajoute un nœud quand des Pods sont Pending faute de ressources, retire un nœud sous-utilisé après en avoir déplacé les Pods. Fonctionne par groupes de nœuds (ASG) homogènes.</li>
+<li><strong>Karpenter</strong> (AWS, aussi Azure) : provisionne directement l'instance la plus adaptée aux Pods en attente (taille, famille, Spot/à la demande, architecture), sans groupes prédéfinis, en secondes ; consolide en continu pour réduire le coût. Devenu le standard sur EKS.</li>
+<li><strong>Modes sans nœuds</strong> : EKS Auto Mode, GKE Autopilot, AKS Automatic : le fournisseur gère les nœuds, tu payes les Pods.</li>
+<li>Impact FinOps : un cluster tourne rarement au-delà de 50 % d'utilisation ; Karpenter + Spot + consolidation + VPA pour calibrer sont les quatre leviers.</li>
+</ul>
+<pre><code># Karpenter : un NodePool qui préfère Spot et ARM, limité en taille
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata: {name: default}
+spec:
+  template:
+    spec:
+      requirements:
+        - {key: karpenter.sh/capacity-type, operator: In, values: [spot, on-demand]}
+        - {key: kubernetes.io/arch, operator: In, values: [arm64, amd64]}
+        - {key: karpenter.k8s.aws/instance-category, operator: In, values: [c, m, r]}
+      nodeClassRef: {group: karpenter.k8s.aws, kind: EC2NodeClass, name: default}
+      expireAfter: 720h
+  limits: {cpu: "200", memory: 800Gi}
+  disruption: {consolidationPolicy: WhenEmptyOrUnderutilized, consolidateAfter: 1m}</code></pre>
+
+<h3>31.3 Influencer le scheduler<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Mécanisme</th><th>Effet</th><th>Exemple</th></tr>
+<tr><td><code>nodeSelector</code></td><td>Le Pod ne va que sur les nœuds ayant ce label</td><td><code>disktype: ssd</code></td></tr>
+<tr><td><code>nodeAffinity</code></td><td>Comme nodeSelector, avec required/preferred et opérateurs</td><td>Préférer les nœuds ARM, exiger la zone eu-west-3a</td></tr>
+<tr><td><code>podAffinity</code> / <code>podAntiAffinity</code></td><td>Rapprocher ou éloigner des Pods entre eux</td><td>Anti-affinité des réplicas de la base sur des nœuds différents</td></tr>
+<tr><td><code>topologySpreadConstraints</code></td><td>Répartir uniformément sur une topologie (zone, nœud)</td><td>Réplicas de l'API sur 3 zones</td></tr>
+<tr><td>Taints et tolerations</td><td>Un nœud tainté repousse les Pods qui ne le tolèrent pas</td><td>Nœuds GPU réservés ; nœuds Spot tolérés seulement par les workers</td></tr>
+<tr><td><code>priorityClassName</code></td><td>En cas de pénurie, les Pods prioritaires évincent les autres</td><td>Ingress et API critiques > batch</td></tr>
+<tr><td>Classes QoS</td><td>Guaranteed (requests = limits), Burstable, BestEffort : ordre d'éviction sous pression mémoire</td><td>Bases en Guaranteed</td></tr>
+</table></div>
+<pre><code>tolerations: [{key: spot, operator: Equal, value: "true", effect: NoSchedule}]
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector: {matchLabels: {app.kubernetes.io/name: db}}
+        topologyKey: kubernetes.io/hostname
+priorityClassName: critical</code></pre>
+
+<h3>31.4 Capacité multi-équipes<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Un namespace par équipe et par environnement, avec ResourceQuota (plafond), LimitRange (défauts), PriorityClass (qui gagne en cas de pénurie), NetworkPolicy (isolation), RBAC. Les équipes voient leur consommation (Kubecost/OpenCost par namespace) et leur facture. C'est le début du platform engineering (niveau 8) : un cluster partagé bien gouverné coûte moins cher que dix clusters.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Kueue</span><p>Files d'attente de jobs pour Kubernetes (projet sigs) : quotas par équipe, priorités, préemption, partage équitable, admission en attendant les ressources ; conçu pour le batch et l'IA (entraînements, GPU), là où le scheduler seul ne suffit pas.</p><p><strong>Pourquoi ça différencie :</strong> Les charges IA arrivent partout ; savoir gouverner des GPU partagés entre équipes est une compétence neuve et rare.</p><p><strong>À essayer en une heure :</strong> <code>kubectl apply -f https://github.com/kubernetes-sigs/kueue/releases/latest/download/manifests.yaml</code>, une ClusterQueue par équipe, dix Jobs soumis et l'ordre d'admission observé.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu dimensionnes et fais évoluer un cluster ? » Requests calibrées avec VPA en mode recommandation, HPA sur métrique métier plutôt que CPU seul, KEDA pour les workers, Karpenter avec Spot et consolidation pour les nœuds, PDB et topologie pour que tout cela n'abîme pas la disponibilité, quotas par équipe, et OpenCost pour rendre le coût visible. Cite le piège de la JVM et du scaling mémoire.</div>
+
+<div class="exo"><span class="tag">Exercice 31.1</span>
+<p>Le HPA oscille : 3 → 8 → 3 → 8 réplicas toutes les cinq minutes. Causes et corrections ?</p>
+<details><summary>Corrigé</summary><div class="sol">Fenêtre de stabilisation de descente trop courte, requests CPU trop faibles (le % monte vite), pics de démarrage des nouveaux Pods (JVM) comptés dans la moyenne. Corriger : <code>scaleDown.stabilizationWindowSeconds: 300</code> et politique par paliers, requests réalistes, startup probe, scaler sur une métrique de trafic plutôt que le CPU.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 31.2</span>
+<p>Des Pods batch de faible priorité occupent tout le cluster ; l'API ne peut plus scaler et reste Pending. Comment garantir que l'API passe toujours ?</p>
+<details><summary>Corrigé</summary><div class="sol">PriorityClass haute pour l'API et basse pour le batch avec préemption : le scheduler évince des Pods batch pour placer l'API. Compléter par un autoscaler de nœuds pour absorber, et des quotas par namespace pour que le batch ne puisse pas tout consommer.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 31 — Charge, scaling et capacité</span>
+<ol>
+<li>Installe le Prometheus Operator (kube-prometheus-stack, Helm ; il servira au niveau 6) et Prometheus Adapter pour exposer <code>http_server_requests_seconds_count</code> de Spring Boot comme métrique custom.</li>
+<li>HPA sur l'API : CPU 70 % et requêtes par seconde. Génère de la charge avec k6 en conteneur (<code>grafana/k6</code>) : observe la montée, puis la descente lente. Ajuste <code>behavior</code>.</li>
+<li>VPA en mode <code>Off</code> sur l'API et la base pendant la charge : relève les recommandations et compare à tes requests. Ajuste.</li>
+<li>KEDA : un worker qui consomme le topic Kafka <code>incidents</code> (TP 27), scalé de 0 à N sur le lag du consumer group. Produis un burst de messages, observe.</li>
+<li>Scheduling : taint un worker <code>spot=true:NoSchedule</code>, seul le worker Kafka le tolère ; anti-affinité stricte des instances CloudNativePG par nœud ; PriorityClass <code>critical</code> pour l'API et <code>batch</code> pour le worker. Sature le cluster avec des Pods batch (un Deployment <code>pause</code> avec grosses requests) et prouve la préemption en faveur de l'API.</li>
+<li>Capacité : second namespace <code>equipe-b</code> avec quota ; montre qu'il ne peut pas dépasser. Installe OpenCost et compare le coût par namespace.</li>
+<li>Sans compte cloud, écris le NodePool Karpenter de la production CrisisShield (Spot + ARM, limites) et explique en dix lignes ce qu'il ferait sur EKS. Avec compte : déploie EKS Auto Mode ou Karpenter sur un cluster de test pendant une heure (coût ≈ 0,20 €), observe la consolidation, détruis.</li>
+</ol>
+<p>Livrable : manifests HPA/VPA/KEDA/scheduling, résultats k6 et graphiques, <code>tp31.md</code>, <code>docs/cours-autoscaling.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c31"> Chapitre 31 terminé</label>
+</article>
+
+<!-- ===================== REVISION ===================== -->
+<section class="rev" id="rev">
+<h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 5</h2>
+<ol class="quiz">
+<li>Chaque composant du control plane et des nœuds, et son rôle.</li>
+<li>Le parcours complet d'un <code>kubectl apply</code> jusqu'au conteneur qui tourne.</li>
+<li>Deployment, ReplicaSet, Pod : relations et responsabilités.</li>
+<li>Startup, liveness, readiness : rôle, pièges, et ce qu'on n'y met jamais.</li>
+<li>Requests et limits : classes QoS, pourquoi pas de limite CPU, OOMKill.</li>
+<li>Arrêt propre d'un Pod et pourquoi <code>preStop sleep</code>.</li>
+<li>ClusterIP, NodePort, LoadBalancer, headless ; Ingress contre Gateway API.</li>
+<li>Pourquoi un Secret n'est pas secret, et les quatre approches GitOps pour les secrets.</li>
+<li>RBAC : Role, ClusterRole, ServiceAccount ; <code>auth can-i</code>.</li>
+<li>NetworkPolicy default-deny : ce qu'il faut rouvrir (DNS !) et quel CNI l'applique.</li>
+<li>PV, PVC, StorageClass, CSI, modes d'accès, reclaimPolicy.</li>
+<li>StatefulSet contre Deployment ; ce qu'un StatefulSet ne fait pas pour une base.</li>
+<li>CRD et Operator : définition, exemple CloudNativePG, critère managé contre opérateur.</li>
+<li>Helm : release, values, hooks, checksum, <code>diff</code>, <code>--atomic</code>.</li>
+<li>Kustomize : base, overlays, générateurs ; quand Helm, quand Kustomize.</li>
+<li>ArgoCD : Application, AppProject, ApplicationSet, sync waves, selfHeal, prune.</li>
+<li>Organisation des dépôts et promotion staging → prod ; rollback par revert.</li>
+<li>Service mesh : ce qu'il apporte, ce qu'il coûte, sidecar contre ambient, critère de décision.</li>
+<li>HPA, VPA, KEDA, Cluster Autoscaler, Karpenter : rôle et pièges (JVM, oscillation).</li>
+<li>Affinités, taints, priorités, topologie, quotas : un exemple d'usage chacun.</li>
+</ol>
+<p><strong>Prochain niveau</strong> : Observabilité — logs, métriques, traces, alerting, SLO, astreinte et post-mortems.</p>
+</section>
+
+<div class="footnav"><a href="devops-niveau-4-cloud.html">← Niveau 4 — Cloud</a><a href="devops-niveau-6-observabilite.html">Niveau 6 — Observabilité →</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='devops-n5-progress', THEME='devops-theme';
+  var boxes=document.querySelectorAll('input[data-ch]');
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  function render(){
+    var done=0; boxes.forEach(function(b){ if(b.checked) done++; });
+    var pct=Math.round(done/boxes.length*100);
+    document.getElementById('pct').textContent=pct+' %';
+    document.getElementById('bar').style.width=pct+'%';
+  }
+  var st=load();
+  boxes.forEach(function(b){ b.checked=!!st[b.dataset.ch]; b.addEventListener('change',function(){ st[b.dataset.ch]=b.checked; save(st); render(); }); });
+  render();
+  var root=document.documentElement;
+  try{ var t=localStorage.getItem(THEME); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.getElementById('theme').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur==='dark';
+    var next=dark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem(THEME,next); }catch(e){}
+  });
+})();
+</script>
+
+<script>
+(function(){
+  // Barre de lecture
+  var bar=document.createElement('div'); bar.className='readbar'; document.body.prepend(bar);
+  function upd(){ var h=document.documentElement; var max=h.scrollHeight-h.clientHeight; bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%'; }
+  window.addEventListener('scroll',upd,{passive:true}); upd();
+  // Bouton copier sur chaque bloc de code
+  document.querySelectorAll('pre').forEach(function(pre){
+    var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier'; b.setAttribute('aria-label','Copier le code');
+    b.addEventListener('click',function(){
+      var t=pre.innerText.replace(/^Copier\n?/,'').replace(/Copi\u00e9 !$/,'');
+      var done=function(){ b.textContent='Copi\u00e9 !'; b.classList.add('ok'); setTimeout(function(){ b.textContent='Copier'; b.classList.remove('ok'); },1500); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); }
+      else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); done(); }
+    });
+    pre.appendChild(b);
+  });
+  // Sommaire qui suit la lecture
+  var links=document.querySelectorAll('nav.toc a[href^="#"]');
+  if(links.length&&'IntersectionObserver' in window){
+    var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){a.classList.remove('active');}); var a=map[e.target.id]; if(a) a.classList.add('active'); } });
+    },{rootMargin:'-10% 0px -75% 0px'});
+    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el) io.observe(el); });
+  }
+  // Impression : ouvrir tous les corrig\u00e9s
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.open=true; }); });
+})();
+</script>
+
+<script>
+(function(){
+  // Tableaux : libellé de colonne sur chaque cellule pour l'affichage empilé
+  document.querySelectorAll('table').forEach(function(t){
+    var rows=t.rows; if(!rows.length) return;
+    var head=rows[0]; var ths=head.querySelectorAll('th');
+    if(!ths.length) return;
+    head.classList.add('head');
+    var labels=Array.prototype.map.call(head.cells,function(c){return c.textContent.trim();});
+    for(var i=1;i<rows.length;i++){
+      var cells=rows[i].cells;
+      for(var j=0;j<cells.length;j++){ if(cells[j].tagName==='TD') cells[j].setAttribute('data-label',labels[j]||''); }
+    }
+    t.classList.add('stack');
+  });
+  // Schémas ASCII : garder l'alignement (défilement horizontal) au lieu du repli
+  document.querySelectorAll('pre').forEach(function(p){
+    if(/[\u2500-\u257F\u25B6\u25C0\u25BA\u25C4\u2192\u2190\u2191\u2193]/.test(p.textContent)) p.classList.add('diagram');
+  });
+})();
+</script>
+</body>
+</html>

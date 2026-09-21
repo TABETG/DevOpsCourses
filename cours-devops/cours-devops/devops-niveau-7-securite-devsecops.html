@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cours DevOps — Niveau 7 : Sécurité DevSecOps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="in">
+    <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
+    <div class="level">Parcours DevOps — Niveau 7 sur 9</div>
+    <h1>Sécurité : DevSecOps de bout en bout</h1>
+    <p class="lead">Six chapitres pour faire de la sécurité une propriété de la chaîne, pas un audit final. Shift-left et analyses dans le pipeline, gestion des secrets avec Vault, durcissement des conteneurs et de Kubernetes avec politiques as code, chaîne d'approvisionnement signée, zero trust et PKI, puis les référentiels de conformité qui structurent une mission. C'est le niveau qui porte ton positionnement : chaque TP produit une preuve montrable en entretien.</p>
+    <div class="meta">
+      <span>6 chapitres</span><span>≈ 45 h de travail</span><span>Prérequis : Niveaux 0 à 6</span>
+    </div>
+    <button class="theme" id="theme">Basculer clair / sombre</button>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <strong>Sommaire</strong>
+  <ol start="37">
+    <li><a href="#c37" class="toc-senior">Shift-left, SAST/DAST/SCA, SBOM</a></li>
+    <li><a href="#c38" class="toc-senior">Secrets : Vault, KMS, sealed secrets</a></li>
+    <li><a href="#c39" class="toc-expert">Conteneurs et Kubernetes : RBAC, PSA, OPA/Kyverno</a></li>
+    <li><a href="#c40" class="toc-expert">Supply chain : signatures, Sigstore, SLSA</a></li>
+    <li><a href="#c41" class="toc-expert">Zero trust, PKI, IAM avancé</a></li>
+    <li><a href="#c42" class="toc-expert">Conformité : ISO 27001, SOC 2, RGPD</a></li>
+    <li><a href="#rev">Révision du niveau</a></li>
+  </ol>
+<div class="legend">Niveau des chapitres : <span class="badge lvl-senior">Senior</span><span class="badge lvl-expert">Expert</span> <span class="badge badge-niche">Techno de niche</span> = encadré différenciant dans chaque chapitre<br>Mémorisation : <span class="badge tag-coeur">Par cœur</span> <span class="badge tag-important">Important</span> <span class="badge tag-contexte">Bon à savoir</span></div>
+  <div class="prog">Progression : <span id="pct">0 %</span><div class="bar"><i id="bar"></i></div></div>
+</nav>
+
+<main>
+
+<!-- ===================== CHAPITRE 37 ===================== -->
+<article id="c37">
+<div class="chaphead"><span class="chapnum">Chapitre 37</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Shift-left : SAST, DAST, SCA, SBOM</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Modéliser les menaces d'une application avant d'écrire un test</li><li>Placer chaque analyse de sécurité au bon endroit de la chaîne et en gérer le bruit</li><li>Exploiter un SBOM et prioriser les vulnérabilités avec EPSS, KEV et VEX</li><li>Construire un programme de sécurité applicative mesurable</li></ul></div>
+<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Modéliser les menaces (STRIDE) avant de coder ; ASVS comme exigences.</li><li>Chaque analyse à sa place, résultats agrégés (DefectDojo), bruit maîtrisé, SLA de correction.</li><li>SBOM à chaque build ; prioriser par EPSS, KEV et reachability ; VEX pour documenter le non-exploitable.</li></ol></div>
+
+
+<h3>37.1 Shift-left et modélisation des menaces<span class="badge tag-important">Important</span></h3>
+<p>Corriger une faille coûte dix fois moins en conception qu'en production. Shift-left = déplacer la sécurité vers la gauche du cycle : exigences, conception, code, avant le build. Cela commence par la <strong>modélisation des menaces</strong> : pour chaque fonctionnalité, qui peut attaquer quoi, par où, et qu'est-ce qu'on fait.</p>
+<pre><code>Méthode STRIDE, appliquée à « créer un incident » dans CrisisShield
+─────────────────────────────────────────────────────────────────────────────
+S  Spoofing        Un attaquant se fait passer pour un opérateur      → authentification forte, jetons courts
+T  Tampering       Modification d'un incident en transit ou en base   → TLS, contrôle d'intégrité, audit
+R  Repudiation     Un opérateur nie avoir clôturé un incident         → journal d'audit signé, horodatage
+I  Info disclosure Fuite de la localisation des victimes              → chiffrement, minimisation, RBAC
+D  Denial          Saturation de l'API pendant une crise réelle       → rate limiting, autoscaling, WAF
+E  Elevation       Un lecteur devient administrateur                  → contrôle d'accès côté serveur, tests</code></pre>
+<p>Outils : un diagramme de flux de données (DFD) avec les frontières de confiance, un atelier d'une heure par fonctionnalité sensible, OWASP Threat Dragon ou une simple table dans le dépôt. Les menaces deviennent des exigences, puis des tests. Références : OWASP Top 10, OWASP ASVS (exigences vérifiables par niveau), CWE Top 25.</p>
+
+<h3>37.2 La cartographie des analyses<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Étape</th><th>Analyse</th><th>Détecte</th><th>Outils</th><th>Mode</th></tr>
+<tr><td>Poste développeur</td><td>Pre-commit, IDE</td><td>Secrets, patterns évidents</td><td>gitleaks, Semgrep IDE, SonarLint</td><td>Immédiat, non bloquant</td></tr>
+<tr><td>Commit / MR</td><td>Secrets, SAST, SCA, IaC</td><td>Failles de code, dépendances, mauvaises configs</td><td>gitleaks, Semgrep, CodeQL, Trivy fs, Dependency-Check, Checkov</td><td>Bloquant sur critique</td></tr>
+<tr><td>Build</td><td>Scan d'image, SBOM</td><td>CVE OS et applicatives, inventaire</td><td>Trivy, Grype, Syft</td><td>Bloquant sur critique avec correctif</td></tr>
+<tr><td>Déploiement staging</td><td>DAST, tests d'API, fuzzing</td><td>Failles à l'exécution, configuration serveur</td><td>ZAP, Nuclei, Schemathesis, RESTler</td><td>Bloquant sur haute confirmée</td></tr>
+<tr><td>Production</td><td>Surveillance continue, pentest, bug bounty</td><td>Nouvelles CVE, dérive, exploitation</td><td>Dependabot/Renovate, Falco, CSPM, pentest annuel</td><td>Ticket, alerte</td></tr>
+</table></div>
+<p>Le principe unificateur : chaque outil produit un résultat normalisé (SARIF, CycloneDX) agrégé dans une plateforme de gestion des vulnérabilités (DefectDojo en open source, GitLab Vulnerability Report, Snyk) qui dédoublonne, suit le cycle de vie et mesure. Sans agrégation, dix outils font dix listes que personne ne lit.</p>
+
+<h3>37.3 SAST en pratique<span class="badge tag-important">Important</span></h3>
+<pre><code># Semgrep : règles communautaires + règles maison
+semgrep ci --config p/owasp-top-ten --config p/java --config .semgrep/    # en CI, avec SARIF
+# .semgrep/no-raw-query.yaml : interdire les requêtes JPA construites par concaténation
+rules:
+  - id: jpa-concat-query
+    languages: [java]
+    severity: ERROR
+    message: Requête construite par concaténation, risque d'injection. Utiliser des paramètres nommés.
+    patterns:
+      - pattern: $EM.createQuery("..." + $X, ...)
+      - pattern-not: $EM.createQuery("...", ...)</code></pre>
+<p>Semgrep est rapide et lisible : les règles maison encodent les conventions de l'équipe (pas de <code>@CrossOrigin("*")</code>, pas de désactivation CSRF, pas de <code>Random</code> pour un jeton). CodeQL (GitHub) fait de l'analyse de flux de données plus profonde mais plus lente. SonarQube couvre qualité et sécurité avec le quality gate. Pour le front : ESLint plugin security, Semgrep JavaScript.</p>
+
+<h3>37.4 SCA, SBOM et priorisation<span class="badge tag-important">Important</span></h3>
+<p>90 % du code d'une application moderne est de la dépendance. Le SCA les inventorie et croise avec les bases de CVE. Le <strong>SBOM</strong> (CycloneDX ou SPDX) est cet inventaire, produit à chaque build, stocké et versionné : quand une CVE sort, on interroge les SBOM au lieu de rescanner. Le <strong>VEX</strong> (Vulnerability Exploitability eXchange) documente pour chaque CVE si elle est exploitable dans ce produit (« non affecté : la fonction vulnérable n'est pas appelée »), ce qui coupe le bruit.</p>
+<pre><code># Générer, stocker, interroger
+syft crisisshield-api:1.7.0 -o cyclonedx-json > sbom.json
+grype sbom:sbom.json --fail-on high          # scanner un SBOM sans l'image
+# Attacher le SBOM à l'image dans le registre (chapitre 40 : signé)
+cosign attach sbom --sbom sbom.json registry/crisisshield/api@sha256:...
+# Dependency-Track : plateforme qui ingère les SBOM et alerte sur les nouvelles CVE</code></pre>
+<p>Prioriser : le CVSS mesure la gravité théorique ; <strong>EPSS</strong> estime la probabilité d'exploitation dans les 30 jours ; le catalogue <strong>KEV</strong> (CISA) liste les CVE exploitées activement ; la <em>reachability</em> (la fonction vulnérable est-elle appelée ?) est le meilleur filtre. Règle pratique : KEV → 24 h ; CVSS ≥ 9 avec EPSS élevé → 7 jours ; le reste par cycle de mise à jour Renovate. Un SLA de correction par sévérité, mesuré.</p>
+
+<h3>37.5 DAST et tests d'API<span class="badge tag-important">Important</span></h3>
+<pre><code># ZAP full scan authentifié contre staging, avec OpenAPI
+docker run --rm -v "$PWD:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable zap-api-scan.py \
+  -t https://staging.crisisshield.example/v3/api-docs -f openapi -r zap.html \
+  -z "-config replacer.full_list(0).description=auth -config replacer.full_list(0).enabled=true \
+      -config replacer.full_list(0).matchtype=REQ_HEADER -config replacer.full_list(0).matchstr=Authorization \
+      -config replacer.full_list(0).replacement='Bearer $TOKEN'"
+# Nuclei : templates de vulnérabilités connues et de mauvaises configurations
+docker run --rm projectdiscovery/nuclei -u https://staging.crisisshield.example -severity high,critical
+# Schemathesis : fuzzing à partir du contrat OpenAPI
+docker run --rm schemathesis/schemathesis run https://staging.crisisshield.example/v3/api-docs --checks all</code></pre>
+<p>Le DAST trouve ce que le code ne montre pas : en-têtes de sécurité, cookies, CORS, authentification contournable, erreurs verbeuses. Le fuzzing d'API trouve les 500 sur des entrées inattendues. Pentest humain annuel et à chaque changement majeur ; bug bounty quand la maturité le permet.</p>
+
+<h3>37.6 Un programme mesurable<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Indicateurs : couverture des dépôts par les analyses, délai moyen de correction par sévérité, vulnérabilités ouvertes par âge, part des MR bloquées et pourquoi, dette de sécurité acceptée avec date de revue. Le modèle de maturité OWASP SAMM structure la progression. La sécurité qui bloque sans expliquer est contournée ; celle qui explique et propose la correction dans la MR est adoptée : investir dans la qualité des messages et l'auto-correction (Semgrep autofix, Renovate).</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Bearer CLI</span><p>Un SAST orienté données sensibles : il cartographie où transitent données personnelles et de santé dans le code (Java supporté), détecte leur fuite dans les logs, les envois vers des tiers, les stockages non chiffrés, et produit des rapports sécurité et vie privée.</p><p><strong>Pourquoi ça différencie :</strong> AppSec plus RGPD dans un seul outil : le croisement exact de ton positionnement.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -v "$PWD:/tmp/scan" bearer/bearer scan /tmp/scan --report privacy</code> sur le backend CrisisShield ; corrige les fuites détectées dans les logs.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place le DevSecOps dans une équipe ? » Modélisation des menaces sur les fonctionnalités sensibles, analyses au bon endroit avec bruit maîtrisé et agrégation (DefectDojo), SBOM à chaque build, priorisation EPSS/KEV/reachability avec SLA de correction, DAST authentifié sur staging, mesure et SAMM. Et la posture : la sécurité au service des développeurs, avec correction proposée, pas un mur.</div>
+
+<div class="exo"><span class="tag">Exercice 37.1</span>
+<p>Trivy remonte CVE-2024-XXXX critique (CVSS 9.8) dans une bibliothèque de parsing XML incluse transitivement par un client SOAP jamais utilisé par CrisisShield. Que fais-tu et que documentes-tu ?</p>
+<details><summary>Corrigé</summary><div class="sol">Vérifier la reachability (la classe vulnérable est-elle chargée ? le client SOAP est-il appelé ?), l'EPSS et KEV. Si non atteignable : VEX « not_affected » avec justification, exclusion documentée avec date de revue, et idéalement retirer la dépendance inutile (la vraie correction). Si le retrait est simple, le faire : moins de code, moins de CVE.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 37.2</span>
+<p>Classe : a) cookie de session sans <code>Secure</code> ; b) <code>String.format("SELECT * FROM t WHERE id=" + id)</code> ; c) Log4j 2.14 dans le jar ; d) un rôle IAM avec <code>"Action": "*"</code> dans Terraform ; e) un token GitLab dans <code>.env</code> commité. Quelle analyse détecte chacun ?</p>
+<details><summary>Corrigé</summary><div class="sol">a) DAST ; b) SAST ; c) SCA / scan d'image ; d) IaC scan (Checkov, Trivy config) ; e) détection de secrets (gitleaks).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 37 — Programme AppSec de CrisisShield</span>
+<ol>
+<li>Modélisation des menaces STRIDE sur trois fonctionnalités (création d'incident, authentification, export de rapports) avec DFD dans <code>docs/security/threat-model.md</code>. Chaque menace devient une exigence ASVS référencée et, quand c'est possible, un test automatisé.</li>
+<li>Complète le pipeline du niveau 2 : Semgrep avec trois règles maison (concaténation JPA, CSRF désactivé, CORS ouvert), CodeQL si GitHub ou SonarQube avec règles sécurité, Trivy fs pour SCA, Checkov sur Terraform et Kubernetes, tous en SARIF.</li>
+<li>Déploie DefectDojo (Compose officiel) et importe les résultats de chaque job par API ; configure la déduplication et un SLA par sévérité. Tableau de bord des vulnérabilités ouvertes par âge.</li>
+<li>SBOM : Syft à chaque build, attaché à l'image, ingéré par Dependency-Track (Compose). Simule une nouvelle CVE en ajoutant une dépendance vulnérable connue (par exemple une vieille version de <code>commons-text</code>) : Dependency-Track doit alerter sans rebuild. Rédige un VEX pour une CVE non atteignable.</li>
+<li>DAST : ZAP API scan authentifié contre staging (jeton Keycloak obtenu dans le job), Nuclei, Schemathesis sur le contrat OpenAPI. Corrige au moins trois findings (en-têtes, CORS, erreurs verbeuses).</li>
+<li>Introduis volontairement cinq failles (une par catégorie de l'exercice 37.2) dans une branche ; vérifie que chacune est détectée par la bonne analyse et bloquée. Capture d'écran de chaque MR bloquée.</li>
+<li>Indicateurs : un dashboard Grafana ou une page dans le README avec les métriques du programme (couverture, délai de correction, ouvertes par âge).</li>
+</ol>
+<p>Livrable : threat model, pipeline, DefectDojo et Dependency-Track dans <code>infra/security/</code>, preuves dans <code>tp37.md</code>, <code>docs/cours-appsec.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c37"> Chapitre 37 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 38 ===================== -->
+<article id="c38">
+<div class="chaphead"><span class="chapnum">Chapitre 38</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Gestion des secrets : Vault, KMS, sealed secrets</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Déployer et exploiter HashiCorp Vault (ou OpenBao) : moteurs, authentification, politiques</li><li>Distribuer des secrets dynamiques et de courte durée aux applications et aux pipelines</li><li>Chiffrer avec KMS et le chiffrement d'enveloppe</li><li>Supprimer les secrets statiques partout où c'est possible</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Supprimer le secret (identité) &gt; dynamique &gt; statique centralisé et tourné &gt; chiffré dans Git.</li><li>Vault : auth Kubernetes, politiques, moteurs database/PKI/Transit, audit ; livré par agent, opérateur ou SDK.</li><li>KMS et chiffrement d&#x27;enveloppe pour les données ; HSM pour les clés critiques.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Un secret dynamique : créé à la demande, lié à une instance, révoqué à l&#x27;expiration. Hiérarchie : supprimer le secret (identité) &gt; dynamique &gt; statique centralisé et tourné &gt; chiffré dans Git."><defs><marker id="ah16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="40" width="110" height="56" rx="7" class="green"/><text x="65.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">Pod API</text><text x="65.0" y="81.0" text-anchor="middle" class="lbl">token de SA</text><path d="M120,68 L150,68" class="arrow" marker-end="url(#ah16)"/><text x="135.0" y="60.0" text-anchor="middle" class="lbl">1. auth</text><rect x="150" y="40" width="110" height="56" rx="7" class="purple"/><text x="205.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">Vault</text><text x="205.0" y="81.0" text-anchor="middle" class="lbl">politique, TTL 1 h</text><path d="M260,68 L290,68" class="arrow" marker-end="url(#ah16)"/><text x="275.0" y="60.0" text-anchor="middle" class="lbl">2. crée</text><rect x="290" y="40" width="170" height="56" rx="7" class="amber"/><text x="375.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">PostgreSQL</text><text x="375.0" y="81.0" text-anchor="middle" class="lbl">rôle temporaire v-kube-…</text><path d="M345,96 L345,130 L65,130 L65,96" class="arrow dashed" marker-end="url(#ah16)"/><text x="205" y="146" text-anchor="middle" class="lbl">3. l&#x27;API se connecte avec des identifiants qui expirent et sont révocables</text></svg><figcaption>Un secret dynamique : créé à la demande, lié à une instance, révoqué à l'expiration. Hiérarchie : supprimer le secret (identité) > dynamique > statique centralisé et tourné > chiffré dans Git.</figcaption></figure>
+
+
+<h3>38.1 Le problème des secrets<span class="badge tag-important">Important</span></h3>
+<p>Un secret statique (mot de passe de base, clé d'API) est copié dans des variables, des fichiers, des pipelines, des postes ; il ne tourne jamais ; personne ne sait qui l'a ; quand il fuit, on ne s'en aperçoit pas. Objectifs : centraliser, chiffrer au repos et en transit, contrôler et auditer chaque accès, <strong>faire tourner automatiquement</strong>, et surtout remplacer les secrets statiques par des <strong>identités</strong> (une charge de travail prouve qui elle est et reçoit un secret de courte durée) ou des <strong>secrets dynamiques</strong> (créés à la demande, révoqués à l'expiration).</p>
+
+<h3>38.2 Vault<span class="badge tag-coeur">Par cœur</span></h3>
+<p>HashiCorp Vault (et son fork open source OpenBao) : un serveur qui stocke des secrets chiffrés, expose des moteurs, authentifie des clients par de nombreux moyens, applique des politiques et journalise tout.</p>
+<pre><code>Client (app, pipeline, humain)
+   │ 1. s'authentifie (Kubernetes SA, OIDC, AWS IAM, AppRole, JWT GitLab)
+   ▼
+Vault ──► délivre un token avec des politiques et un TTL
+   │ 2. lit ou génère un secret
+   ├── KV v2         : secrets statiques versionnés (kv/crisisshield/prod/smtp)
+   ├── Database      : identifiants PostgreSQL générés à la demande, TTL 1 h, révoqués après
+   ├── PKI           : certificats X.509 émis à la volée (mTLS, services internes)
+   ├── Transit       : chiffrement as a service (l'app envoie les données, Vault chiffre, la clé ne sort jamais)
+   ├── AWS / Azure / GCP : identifiants cloud temporaires
+   └── SSH, TOTP, Kubernetes (tokens de SA)
+   3. audit device : chaque requête journalisée (hachée)</code></pre>
+<pre><code># Démarrer en labo (mode dev : en mémoire, non scellé ; en prod : stockage Raft, auto-unseal par KMS, HA)
+docker run -d --name vault --cap-add IPC_LOCK -p 8200:8200 -e VAULT_DEV_ROOT_TOKEN_ID=root hashicorp/vault:1.17
+export VAULT_ADDR=http://localhost:8200 VAULT_TOKEN=root
+v() { docker run --rm -e VAULT_ADDR=http://host.docker.internal:8200 -e VAULT_TOKEN hashicorp/vault:1.17 "$@"; }
+
+# Secrets statiques
+v secrets enable -path=kv kv-v2
+v kv put kv/crisisshield/prod/smtp host=smtp.example user=notif password=...
+v kv get -version=2 kv/crisisshield/prod/smtp
+
+# Politique : l'API lit seulement ses secrets
+v policy write crisisshield-api - <<'POLICY'
+path "kv/data/crisisshield/prod/*"      { capabilities = ["read"] }
+path "database/creds/crisisshield-api"  { capabilities = ["read"] }
+path "transit/encrypt/crisisshield"     { capabilities = ["update"] }
+path "transit/decrypt/crisisshield"     { capabilities = ["update"] }
+POLICY
+
+# Authentification Kubernetes : le Pod présente son token de ServiceAccount
+v auth enable kubernetes
+v write auth/kubernetes/config kubernetes_host=https://kubernetes.default.svc
+v write auth/kubernetes/role/crisisshield-api bound_service_account_names=api \
+   bound_service_account_namespaces=crisisshield policies=crisisshield-api ttl=1h
+
+# Secrets dynamiques PostgreSQL : un couple utilisateur/mot de passe par instance de l'app, 1 h de vie
+v secrets enable database
+v write database/config/crisis plugin_name=postgresql-database-plugin \
+   connection_url="postgresql://{{username}}:{{password}}@db-rw.crisisshield.svc:5432/crisis" \
+   allowed_roles=crisisshield-api username=vault password=...
+v write database/roles/crisisshield-api db_name=crisis default_ttl=1h max_ttl=24h \
+   creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT app_rw TO \"{{name}}\";"
+v read database/creds/crisisshield-api      # → username v-kubernet-crisissh-x7f2..., password ..., lease 1h</code></pre>
+<p>Rotation du mot de passe root de la base par Vault lui-même (<code>rotate-root</code>) : plus personne ne le connaît. Chaque instance de l'application a ses propres identifiants : une fuite est attribuable et révocable sans impact sur les autres.</p>
+
+<h3>38.3 Livrer les secrets aux applications<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Méthode</th><th>Principe</th><th>Avantage</th><th>Limite</th></tr>
+<tr><td>Vault Agent Injector (sidecar/init)</td><td>Annotation sur le Pod ; l'agent s'authentifie, écrit les secrets dans un fichier partagé, les renouvelle</td><td>Sans code, renouvellement des baux</td><td>Sidecar par Pod</td></tr>
+<tr><td>Vault Secrets Operator</td><td>CRD <code>VaultStaticSecret</code>/<code>VaultDynamicSecret</code> → Secret Kubernetes synchronisé</td><td>Natif Kubernetes, redéploiement à la rotation</td><td>Le secret existe dans etcd</td></tr>
+<tr><td>External Secrets Operator</td><td>Comme ci-dessus, multi-backends (Vault, AWS, Azure, GCP)</td><td>Un seul outil pour tous les gestionnaires</td><td>Idem</td></tr>
+<tr><td>CSI Secrets Store</td><td>Volume monté depuis Vault</td><td>Pas de Secret Kubernetes</td><td>Pas de rotation en place sans redémarrage</td></tr>
+<tr><td>SDK dans l'application</td><td>Spring Cloud Vault, Quarkus Vault : l'app lit et renouvelle elle-même</td><td>Baux dynamiques gérés finement (HikariCP se reconfigure)</td><td>Couplage au code</td></tr>
+</table></div>
+<pre><code># Spring Cloud Vault : identifiants de base dynamiques renouvelés sans redémarrage
+spring:
+  cloud:
+    vault:
+      uri: https://vault.vault.svc:8200
+      authentication: KUBERNETES
+      kubernetes: {role: crisisshield-api}
+      database: {enabled: true, role: crisisshield-api, backend: database}
+  config:
+    import: vault://</code></pre>
+
+<h3>38.4 Pipelines et humains sans secrets<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>CI</strong> : le job GitLab présente son <code>CI_JOB_JWT</code>/ID token ; Vault (auth <code>jwt</code>) vérifie l'émetteur, le projet, la branche, et délivre un token de 10 minutes avec la politique du projet. Aucune variable secrète dans GitLab. Même principe avec AWS (OIDC), sans passer par Vault.</li>
+<li><strong>Humains</strong> : auth OIDC (Keycloak, Entra ID) avec MFA ; accès aux secrets de prod juste-à-temps, approuvé, tracé, expirant. Interface Vault ou CLI.</li>
+<li><strong>Serveurs</strong> : certificats SSH signés par Vault (validité 1 h) au lieu de clés autorisées permanentes.</li>
+</ul>
+
+<h3>38.5 KMS et chiffrement d'enveloppe<span class="badge tag-important">Important</span></h3>
+<p>Un KMS (AWS KMS, Azure Key Vault, GCP Cloud KMS, un HSM) garde des clés maîtresses qui ne sortent jamais du service (ou du matériel). <strong>Chiffrement d'enveloppe</strong> : on génère une clé de données (DEK), on chiffre les données avec, on chiffre la DEK avec la clé maîtresse (KEK) du KMS, et on stocke la DEK chiffrée à côté des données. Le KMS ne voit jamais les données ; on peut faire tourner la KEK sans rechiffrer les données. C'est ainsi que fonctionnent S3 SSE-KMS, EBS, RDS, les Secrets Kubernetes chiffrés au repos (EKS avec KMS), et le moteur Transit de Vault. Ton expérience PKI/HSM se raconte ici : un HSM est un KMS matériel certifié (FIPS 140-2/3), exigé pour les clés de signature critiques et certains référentiels.</p>
+<pre><code># Transit : l'application ne manipule jamais la clé
+v secrets enable transit ; v write -f transit/keys/crisisshield type=aes256-gcm96
+v write transit/encrypt/crisisshield plaintext=$(echo -n "06 12 34 56 78" | base64)   # → vault:v1:...
+v write transit/decrypt/crisisshield ciphertext=vault:v1:...
+v write -f transit/keys/crisisshield/rotate     # nouvelle version ; rewrap possible sans tout déchiffrer</code></pre>
+
+<h3>38.6 Sealed Secrets et SOPS<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Quand il n'y a pas de gestionnaire de secrets (petit projet, cluster isolé) : Sealed Secrets (clé dans le cluster, <code>kubeseal</code> chiffre, le SealedSecret est commité) ou SOPS (fichiers chiffrés avec age, PGP ou une clé KMS ; Flux le déchiffre nativement, ArgoCD via plugin). Ce sont des solutions de chiffrement dans Git, pas de gestion de secrets : pas de rotation automatique, pas de secrets dynamiques, pas d'audit d'accès. Acceptables en dessous d'un certain niveau d'exigence, à documenter comme tel.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Infisical et OpenBao</span><p>Infisical : plateforme de secrets open source avec interface, versionnage, injection par CLI, agent ou opérateur Kubernetes, secrets dynamiques et PKI, plus simple à adopter que Vault. OpenBao : le fork communautaire de Vault sous la Linux Foundation, choix des organisations qui refusent la licence BSL.</p><p><strong>Pourquoi ça différencie :</strong> Savoir positionner Vault, OpenBao et Infisical selon le contexte (licence, souveraineté, taille d'équipe) est une réponse d'architecte.</p><p><strong>À essayer en une heure :</strong> Compose d'Infisical, l'opérateur Kubernetes sur kind, et un secret de CrisisShield synchronisé ; puis remplace l'image Vault du TP 38 par <code>openbao/openbao</code> et vérifie la compatibilité.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu gères les secrets ? » Hiérarchie : d'abord supprimer le secret (identité : rôle IAM, Workload Identity, OIDC en CI), ensuite secret dynamique de courte durée (Vault database, PKI), ensuite secret statique centralisé avec rotation (Vault KV, Secrets Manager) livré par External Secrets, et en dernier le chiffrement dans Git (Sealed Secrets, SOPS) avec ses limites énoncées. KMS et enveloppe pour les données. Ta PKI/HSM est ton point fort : place-la.</div>
+
+<div class="exo"><span class="tag">Exercice 38.1</span>
+<p>Le mot de passe PostgreSQL de production a fuité dans un log. Décris la réponse avec et sans Vault database.</p>
+<details><summary>Corrigé</summary><div class="sol">Sans : changer le mot de passe en base, le mettre à jour partout (gestionnaire, pipelines, applications), redéployer, vérifier qu'aucun composant ne l'a encore, journaliser l'incident ; heures de travail et risque d'oubli. Avec : le secret fuité est un bail d'une heure lié à une instance ; le révoquer (<code>vault lease revoke</code>), l'application en obtient un nouveau ; rechercher d'où vient le log ; minutes. Dans les deux cas : corriger la fuite dans les logs (chapitre 32).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 38.2</span>
+<p>Pourquoi un Secret Kubernetes synchronisé depuis Vault par External Secrets reste-t-il moins bon qu'un secret lu directement par l'application ?</p>
+<details><summary>Corrigé</summary><div class="sol">Il existe dans etcd (chiffrement au repos à activer, RBAC à restreindre), il est visible par quiconque peut lire les Secrets du namespace, et sa rotation demande un redéploiement (ou un rechargement). La lecture directe avec bail renouvelé (SDK ou agent) garde le secret en mémoire, par instance, avec expiration. Compromis acceptable pour beaucoup d'équipes, à connaître.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 38 — Zéro secret statique pour CrisisShield</span>
+<ol>
+<li>Déploie Vault sur kind en mode HA Raft (chart officiel, 3 réplicas), avec auto-unseal par une clé Transit d'un second Vault de labo ou par LocalStack KMS. Initialise, garde les clés de descellement dans un endroit sûr (et documente la procédure de recouvrement). Active l'audit device vers stdout et collecte-le dans Loki.</li>
+<li>Auth Kubernetes, politique de l'API, moteur database branché sur CloudNativePG avec rotation du root. Spring Cloud Vault dans l'API : les identifiants sont dynamiques, HikariCP se renouvelle, prouve-le en observant les rôles créés dans PostgreSQL et en révoquant un bail à chaud sans erreur utilisateur.</li>
+<li>Moteur Transit : chiffre le champ « localisation précise » des incidents dans l'API (chiffrement applicatif) ; fais tourner la clé et vérifie que les anciens enregistrements se déchiffrent encore.</li>
+<li>Moteur PKI : une CA intermédiaire Vault (racine hors ligne que tu génères avec openssl et gardes hors du cluster) émet les certificats des services internes ; cert-manager avec l'issuer Vault renouvelle celui de l'Ingress. C'est le socle du chapitre 41.</li>
+<li>Pipeline : auth JWT GitLab dans Vault, plus aucune variable secrète dans GitLab (supprime-les), le job lit ce dont il a besoin avec un token de 10 minutes. Vérifie l'audit.</li>
+<li>Remplace tous les Secrets restants (SMTP, Keycloak client, MinIO) par External Secrets vers Vault ; supprime les SealedSecrets du TP 29. Il ne doit plus y avoir un seul secret en clair ni dans Git ni dans GitLab.</li>
+<li>Humains : auth OIDC Keycloak avec MFA vers Vault, un rôle « lecteur prod » à durée de 30 minutes. Documente la procédure d'accès d'urgence (break-glass) avec le token root scellé.</li>
+</ol>
+<p>Livrable : <code>infra/vault/</code>, configuration application, preuves de rotation et de révocation dans <code>tp38.md</code>, <code>docs/cours-secrets.md</code> avec la hiérarchie d'entretien.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c38"> Chapitre 38 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 39 ===================== -->
+<article id="c39">
+<div class="chaphead"><span class="chapnum">Chapitre 39</span><span class="badge lvl-expert">Expert</span></div>
+<h2>Sécurité des conteneurs et de Kubernetes</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Durcir un cluster selon le CIS Benchmark et les Pod Security Standards</li><li>Écrire et appliquer des politiques as code avec Kyverno ou OPA Gatekeeper</li><li>Détecter les comportements suspects à l'exécution avec Falco</li><li>Concevoir l'isolation multi-locataire et la posture d'un cluster</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les 4 C : cloud, cluster, conteneur, code ; chaque couche protège la suivante.</li><li>PSA restricted par namespace (warn → audit → enforce), Kyverno pour le reste, Falco à l&#x27;exécution.</li><li>kube-bench, kubescape, Trivy Operator : mesurer la posture et la suivre.</li></ol></div>
+
+
+<h3>39.1 Le modèle des 4 C<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Cloud (compte, réseau, IAM) → Cluster (API, etcd, nœuds, RBAC) → Conteneur (image, runtime, capabilities) → Code (l'application). Chaque couche protège la suivante ; une faille dans une couche externe rend les internes inutiles. Les niveaux précédents ont couvert le cloud et le code ; ce chapitre couvre cluster et conteneur.</p>
+
+<h3>39.2 Durcir le cluster<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>API server</strong> : authentification OIDC (pas de certificats clients distribués aux humains), RBAC strict, audit logging activé et exporté (qui a fait quoi sur l'API), pas d'accès anonyme, admission control activé.</li>
+<li><strong>etcd</strong> : chiffrement au repos des Secrets (provider KMS sur EKS/AKS/GKE), accès réseau limité au control plane, sauvegardes chiffrées.</li>
+<li><strong>Nœuds</strong> : OS minimal (Bottlerocket, Flatcar, Talos : immuables, sans SSH), kubelet authentifié et autorisé (pas de port en lecture anonyme), mises à jour par remplacement (Packer, niveau 3), IMDS bloqué aux Pods (ou IMDSv2 avec hop limit 1).</li>
+<li><strong>Réseau</strong> : NetworkPolicies default-deny par namespace (chapitre 26), CNI qui les applique, egress contrôlé (les Pods n'ont pas besoin d'Internet en général), mTLS par mesh si exigé.</li>
+<li><strong>RBAC</strong> : aucun <code>cluster-admin</code> permanent pour les humains, rôles par namespace, ServiceAccounts dédiés sans token monté, audit des bindings (<code>kubectl-who-can</code>, rbac-tool).</li>
+<li><strong>Composants</strong> : versions supportées (Kubernetes a 3 versions maintenues, ~14 mois chacune), add-ons épinglés, scan des images de l'infrastructure aussi.</li>
+</ul>
+<p>Le <strong>CIS Kubernetes Benchmark</strong> liste ces contrôles ; <code>kube-bench</code> les vérifie automatiquement (Job dans le cluster). <code>kubescape</code> couvre CIS, NSA/CISA et MITRE ATT&CK. Les fournisseurs managés en implémentent une partie ; le reste te revient.</p>
+
+<h3>39.3 Pod Security Standards<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Trois profils définis par Kubernetes : <strong>privileged</strong> (tout), <strong>baseline</strong> (interdit le plus dangereux : privileged, hostNetwork, hostPath, capabilities dangereuses), <strong>restricted</strong> (le durcissement complet : non root, pas d'escalade, drop ALL, seccomp RuntimeDefault, volumes limités). Le contrôleur Pod Security Admission les applique par namespace avec trois modes : <code>enforce</code> (refuse), <code>audit</code> (journalise), <code>warn</code> (avertit).</p>
+<pre><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: crisisshield
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: v1.31
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted</code></pre>
+<p>Approche : <code>warn</code> et <code>audit</code> partout d'abord, corriger les workloads (le Deployment du chapitre 26 est déjà conforme), puis <code>enforce</code>. Les namespaces système et certains agents (CNI, agents de logs, Falco) ont besoin de privilèges : namespaces dédiés, profil adapté, justification documentée.</p>
+
+<h3>39.4 Politiques as code : Kyverno et OPA Gatekeeper<span class="badge tag-important">Important</span></h3>
+<p>PSA couvre la sécurité des Pods ; il ne dit rien sur « les images doivent venir de notre registre », « chaque Deployment a des requests », « pas de tag latest », « les Ingress ont TLS ». Un moteur de politiques en admission (webhook) valide, mute ou génère des ressources.</p>
+<pre><code># Kyverno : YAML, lisible, avec mutation et génération
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: images-registre-interne}
+spec:
+  validationFailureAction: Enforce
+  background: true                       # aussi audit de l'existant
+  rules:
+    - name: registre-autorise
+      match: {any: [{resources: {kinds: [Pod]}}]}
+      exclude: {any: [{resources: {namespaces: [kube-system, monitoring]}}]}
+      validate:
+        message: "Les images doivent provenir de registry.crisisshield.example"
+        pattern:
+          spec:
+            containers: [{image: "registry.crisisshield.example/*"}]
+    - name: pas-de-latest
+      match: {any: [{resources: {kinds: [Pod]}}]}
+      validate:
+        message: "Tag latest interdit : utiliser un digest ou une version"
+        pattern:
+          spec:
+            containers: [{image: "!*:latest"}]
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: defauts-securite}
+spec:
+  rules:
+    - name: ajouter-seccomp
+      match: {any: [{resources: {kinds: [Pod]}}]}
+      mutate:
+        patchStrategicMerge:
+          spec:
+            securityContext:
+              +(seccompProfile): {type: RuntimeDefault}      # ajouté seulement si absent
+    - name: generer-networkpolicy
+      match: {any: [{resources: {kinds: [Namespace]}}]}
+      generate:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: default-deny
+        namespace: "{{request.object.metadata.name}}"
+        data: {spec: {podSelector: {}, policyTypes: [Ingress, Egress]}}
+---
+# Vérification de signature d'image (chapitre 40)
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: images-signees}
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  rules:
+    - name: verifier-cosign
+      match: {any: [{resources: {kinds: [Pod], namespaces: [crisisshield]}}]}
+      verifyImages:
+        - imageReferences: ["registry.crisisshield.example/crisisshield/*"]
+          attestors:
+            - entries:
+                - keyless:
+                    subject: "https://gitlab.example/crisisshield/backend//.gitlab-ci.yml@refs/heads/main"
+                    issuer: "https://gitlab.example"
+                    rekor: {url: https://rekor.sigstore.dev}
+          mutateDigest: true       # remplace le tag par le digest vérifié</code></pre>
+<p><strong>OPA Gatekeeper</strong> : le même rôle, avec des politiques en Rego (langage déclaratif puissant, courbe d'apprentissage) et des <code>ConstraintTemplate</code> réutilisables ; OPA sert aussi hors Kubernetes (Terraform, API, Envoy). <strong>ValidatingAdmissionPolicy</strong> (CEL, natif Kubernetes depuis 1.30) couvre les validations simples sans webhook. Choix courant : Kyverno pour Kubernetes, OPA quand la même politique doit s'appliquer ailleurs. Dans les deux cas, les politiques sont versionnées, testées (<code>kyverno test</code>, <code>conftest</code>) et appliquées en CI sur les manifests avant même le cluster.</p>
+
+<h3>39.5 Sécurité à l'exécution<span class="badge tag-important">Important</span></h3>
+<p>Tout ce qui précède est préventif. <strong>Falco</strong> (CNCF) observe les appels système (eBPF) et alerte sur des comportements : un shell lancé dans un conteneur, une écriture dans <code>/etc</code>, une lecture de <code>/etc/shadow</code>, une connexion sortante inattendue, un binaire exécuté depuis <code>/tmp</code>, un montage du socket Docker. Les règles se personnalisent ; Falcosidekick route vers Slack, Loki, un SIEM. Alternatives : Tetragon (Cilium, peut aussi bloquer), Sysdig, Aqua, Wiz.</p>
+<pre><code>- rule: Shell dans un conteneur de production
+  desc: Un shell interactif a été lancé dans un conteneur du namespace crisisshield
+  condition: spawned_process and container and proc.name in (bash, sh, zsh) and k8s.ns.name = "crisisshield" and proc.tty != 0
+  output: "Shell dans un conteneur (user=%user.name pod=%k8s.pod.name image=%container.image.repository cmd=%proc.cmdline)"
+  priority: WARNING</code></pre>
+<p>Compléments : profils seccomp et AppArmor par workload (Security Profiles Operator génère les profils par observation), runtimes isolés (gVisor, Kata) pour les charges non fiables, scan continu des images déjà déployées (Trivy Operator produit des rapports CRD par workload).</p>
+
+<h3>39.6 Multi-locataire et posture<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Plusieurs équipes ou clients sur un cluster : namespaces avec PSA restricted, quotas, NetworkPolicies, RBAC, politiques Kyverno par tenant, nœuds dédiés par taints pour les charges sensibles, et si l'isolation doit être forte, des clusters séparés (vCluster ou clusters virtuels comme intermédiaire). La <strong>posture</strong> se mesure : kube-bench, kubescape, Trivy Operator, CSPM cloud (Security Hub, Defender, Wiz) avec un score suivi dans le temps et des seuils par environnement.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — KubeArmor</span><p>Enforcement à l'exécution par les modules de sécurité du noyau (AppArmor, BPF-LSM) : il bloque, et pas seulement détecte, l'exécution de processus, l'accès à des fichiers ou le réseau par Pod, avec des politiques CRD et une découverte automatique du comportement normal.</p><p><strong>Pourquoi ça différencie :</strong> Falco alerte ; KubeArmor empêche. Savoir les combiner est une réponse qui dépasse le discours habituel.</p><p><strong>À essayer en une heure :</strong> Helm <code>kubearmor</code> sur kind, une <code>KubeArmorPolicy</code> qui interdit tout shell dans les Pods de l'API, puis <code>kubectl exec</code> refusé et journalisé.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu sécurises un cluster Kubernetes ? » Les 4 C, puis par couche : API OIDC + RBAC + audit, etcd chiffré, nœuds immuables sans SSH, NetworkPolicies default-deny, PSA restricted, Kyverno pour registre/signatures/ressources, Falco à l'exécution, kube-bench et Trivy Operator pour mesurer. Précise la méthode : audit → warn → enforce, jamais enforce d'un coup sur un cluster existant.</div>
+
+<div class="exo"><span class="tag">Exercice 39.1</span>
+<p>Un Pod avec <code>hostPath: /</code> monté et <code>privileged: true</code> est déployé par un développeur dans son namespace. Que peut-il faire, et quels trois mécanismes auraient dû l'empêcher ?</p>
+<details><summary>Corrigé</summary><div class="sol">Il est root sur le nœud : lecture de tous les secrets des autres Pods du nœud, du token du kubelet, pivot vers l'API et le cloud (IMDS). PSA baseline (ou restricted) sur le namespace, une politique Kyverno interdisant hostPath et privileged, et un RBAC qui ne lui permet pas de créer des Pods hors d'un Deployment revu en GitOps. Falco aurait au moins alerté.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 39.2</span>
+<p>Kyverno est en <code>Enforce</code> et son webhook tombe (Pods Kyverno OOMKilled). Que se passe-t-il pour les déploiements, et comment concevoir pour éviter le pire ?</p>
+<details><summary>Corrigé</summary><div class="sol">Selon <code>failurePolicy</code> : <code>Fail</code> bloque toute création de Pod dans les namespaces couverts (y compris le redémarrage des workloads, potentiellement Kyverno lui-même si non exclu) ; <code>Ignore</code> laisse passer sans vérification. Concevoir : Kyverno en HA avec ressources suffisantes et PDB, exclusion des namespaces système et de kyverno, <code>failurePolicy: Fail</code> seulement sur les politiques critiques (signatures) et <code>Ignore</code> sur les autres, alerte sur la santé du webhook, et appliquer les mêmes politiques en CI pour ne pas dépendre uniquement de l'admission.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 39 — Cluster durci et prouvé</span>
+<ol>
+<li>Lance kube-bench et kubescape sur ton cluster kind : note le score initial. Active l'audit logging de l'API (kind : <code>kubeadmConfigPatches</code> avec une policy d'audit) et collecte les logs dans Loki. Lance Trivy Operator.</li>
+<li>PSA : <code>warn</code> + <code>audit</code> restricted sur tous les namespaces applicatifs, corrige les violations remontées dans les logs d'audit, passe en <code>enforce</code>. Namespaces d'infrastructure avec profil justifié dans un fichier <code>docs/security/psa-exceptions.md</code>.</li>
+<li>Kyverno (chart, HA) avec au moins huit politiques : registre interne, pas de latest, digest obligatoire en prod, requests/limits obligatoires, labels obligatoires, pas de hostPath/privileged, mutation seccomp et <code>automountServiceAccountToken: false</code>, génération de NetworkPolicy default-deny par namespace, vérification de signature (préparée, activée au TP 40). Tests avec <code>kyverno test</code> dans la CI et <code>kyverno apply</code> sur les manifests rendus par Kustomize/Helm avant push.</li>
+<li>Réécris trois de ces politiques en OPA Gatekeeper (Rego) et une en ValidatingAdmissionPolicy (CEL) pour comparer.</li>
+<li>Falco avec Falcosidekick vers Loki et Slack (webhook de test) ; trois règles personnalisées (shell en prod, lecture de secrets montés par un processus inattendu, connexion sortante hors du mesh). Déclenche chacune, capture l'alerte. Bonus : Tetragon avec une politique qui <em>tue</em> un processus qui lit <code>/etc/shadow</code>.</li>
+<li>Security Profiles Operator : enregistre un profil seccomp de l'API en observation, applique-le, vérifie qu'un appel système hors profil est refusé.</li>
+<li>Rejoue kube-bench et kubescape ; compare les scores ; dashboard Grafana des rapports Trivy Operator (CVE par workload) et du score dans le temps.</li>
+<li>Attaque : depuis un Pod compromis (netshoot dans le namespace), tente d'atteindre l'API Kubernetes, l'IMDS de LocalStack, un autre namespace, le socket containerd. Chaque tentative doit échouer et être visible (audit, Falco, NetworkPolicy). Rédige le rapport de la tentative.</li>
+</ol>
+<p>Livrable : <code>k8s/policies/</code> (Kyverno, Gatekeeper, VAP, Falco), scores avant/après et rapport d'attaque dans <code>tp39.md</code>, <code>docs/cours-securite-kubernetes.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c39"> Chapitre 39 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 40 ===================== -->
+<article id="c40">
+<div class="chaphead"><span class="chapnum">Chapitre 40</span><span class="badge lvl-expert">Expert</span></div>
+<h2>Chaîne d'approvisionnement : signatures, Sigstore, SLSA</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Expliquer les attaques sur la supply chain logicielle et ce qui les rend possibles</li><li>Signer et attester sans clé avec Sigstore, et vérifier à l'admission</li><li>Atteindre un niveau SLSA et produire de la provenance</li><li>Sécuriser les dépendances, le pipeline lui-même et les outils de build</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>SolarWinds, Codecov, XZ, tj-actions : le build et les dépendances sont des cibles.</li><li>Sigstore keyless : signature liée à l&#x27;identité du job ; Rekor pour la transparence ; vérification à l&#x27;admission.</li><li>SLSA L3 : runner éphémère, provenance signée, paramètres non modifiables ; builds reproductibles.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="De la source au cluster : chaque étape produit une preuve vérifiée à la suivante. Trois questions à tout artefact : d&#x27;où vient-il ? a-t-il été modifié ? que contient-il ? Le déploiement référence le digest vérifié, jamais un tag."><defs><marker id="ah17" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="84" height="60" rx="7" class="soft"/><text x="52.0" y="56.0" text-anchor="middle" font-size="13" font-weight="700">Source</text><text x="52.0" y="73.0" text-anchor="middle" class="lbl">MR revue</text><path d="M94,60 L104,60" class="arrow" marker-end="url(#ah17)"/><rect x="104" y="30" width="84" height="60" rx="7" class="soft"/><text x="146.0" y="56.0" text-anchor="middle" font-size="13" font-weight="700">Build</text><text x="146.0" y="73.0" text-anchor="middle" class="lbl">runner éphémère</text><path d="M188,60 L198,60" class="arrow" marker-end="url(#ah17)"/><rect x="198" y="30" width="84" height="60" rx="7" class="soft"/><text x="240.0" y="56.0" text-anchor="middle" font-size="13" font-weight="700">Attester</text><text x="240.0" y="73.0" text-anchor="middle" class="lbl">SBOM, provenance</text><path d="M282,60 L292,60" class="arrow" marker-end="url(#ah17)"/><rect x="292" y="30" width="84" height="60" rx="7" class="soft"/><text x="334.0" y="56.0" text-anchor="middle" font-size="13" font-weight="700">Signer</text><text x="334.0" y="73.0" text-anchor="middle" class="lbl">Sigstore keyless</text><path d="M376,60 L386,60" class="arrow" marker-end="url(#ah17)"/><rect x="386" y="30" width="84" height="60" rx="7" class="green"/><text x="428.0" y="56.0" text-anchor="middle" font-size="13" font-weight="700">Admission</text><text x="428.0" y="73.0" text-anchor="middle" class="lbl">Kyverno vérifie</text></svg><figcaption>De la source au cluster : chaque étape produit une preuve vérifiée à la suivante. Trois questions à tout artefact : d'où vient-il ? a-t-il été modifié ? que contient-il ? Le déploiement référence le digest vérifié, jamais un tag.</figcaption></figure>
+
+
+<h3>40.1 Les attaques<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Cas</th><th>Vecteur</th><th>Leçon</th></tr>
+<tr><td>SolarWinds (2020)</td><td>Le système de build compromis injecte une porte dérobée dans un produit signé</td><td>Le build lui-même est une cible ; la signature ne prouve rien si le signataire est compromis</td></tr>
+<tr><td>Codecov (2021)</td><td>Un script d'upload modifié exfiltre les secrets des CI de milliers de clients</td><td>Épingler les outils tiers par hash ; pas de secrets long terme en CI</td></tr>
+<tr><td>Log4Shell (2021)</td><td>Vulnérabilité dans une dépendance omniprésente</td><td>SBOM pour savoir où elle est ; SCA continu</td></tr>
+<tr><td>XZ Utils (2024)</td><td>Un mainteneur infiltré pendant deux ans insère une porte dérobée dans une bibliothèque de compression</td><td>Builds reproductibles, provenance, revue des dépendances critiques</td></tr>
+<tr><td>tj-actions (2025)</td><td>Une action GitHub populaire compromise ; les tags déplacés vers du code malveillant</td><td>Épingler les actions par SHA ; permissions minimales</td></tr>
+<tr><td>Typosquatting npm/PyPI</td><td>Paquets aux noms proches de paquets légitimes</td><td>Registre proxy avec liste d'autorisation, vérification des nouvelles dépendances</td></tr>
+</table></div>
+<p>Trois questions à poser à tout artefact : <strong>d'où vient-il</strong> (provenance), <strong>a-t-il été modifié</strong> (intégrité), <strong>que contient-il</strong> (SBOM) ?</p>
+
+<h3>40.2 Sigstore : signer sans gérer de clés<span class="badge tag-important">Important</span></h3>
+<p>Sigstore = <strong>Cosign</strong> (signer et vérifier artefacts et images), <strong>Fulcio</strong> (CA qui émet des certificats de signature de 10 minutes liés à une identité OIDC), <strong>Rekor</strong> (journal de transparence public, en append-only, où chaque signature est enregistrée). Signature <em>keyless</em> : le pipeline s'authentifie par OIDC (GitLab, GitHub, Google), obtient un certificat éphémère, signe, publie dans Rekor ; le vérificateur exige que l'identité du signataire corresponde (« le job de la branche main du projet X »). Plus de clé privée à protéger et à faire tourner.</p>
+<pre><code># Dans le pipeline (GitLab : id_tokens avec audience sigstore)
+sign-image:
+  id_tokens: {SIGSTORE_ID_TOKEN: {aud: sigstore}}
+  script:
+    - cosign sign --yes "$IMAGE@$DIGEST"                                    # signature keyless
+    - cosign attest --yes --predicate sbom.json --type cyclonedx "$IMAGE@$DIGEST"   # attestation SBOM
+    - cosign attest --yes --predicate provenance.json --type slsaprovenance "$IMAGE@$DIGEST"
+
+# Vérifier (localement, en CI de déploiement, ou par Kyverno à l'admission)
+cosign verify "$IMAGE@$DIGEST" \
+  --certificate-identity "https://gitlab.example/crisisshield/backend//.gitlab-ci.yml@refs/heads/main" \
+  --certificate-oidc-issuer https://gitlab.example
+cosign verify-attestation --type cyclonedx ... | jq '.payload | @base64d | fromjson | .predicate'
+# Signer aussi les blobs (binaire, chart Helm, fichier Terraform plan)
+cosign sign-blob --yes --bundle release.bundle release.tar.gz</code></pre>
+<p>Pour une entreprise qui ne veut pas de journal public : Sigstore privé (Fulcio + Rekor auto-hébergés), ou signature avec clé dans un KMS/HSM (<code>cosign sign --key awskms://...</code>), ce qui rejoint ton expérience PKI. Notation (Notary v2) est l'alternative de la CNCF, avec clés classiques.</p>
+
+<h3>40.3 SLSA et la provenance<span class="badge tag-coeur">Par cœur</span></h3>
+<p><strong>SLSA</strong> (Supply-chain Levels for Software Artifacts) définit des niveaux pour la piste de build :</p>
+<div class="tablewrap"><table>
+<tr><th>Niveau</th><th>Exigence</th><th>Ce que ça empêche</th></tr>
+<tr><td>Build L1</td><td>Provenance existe (qui, quoi, comment, générée par le build)</td><td>Erreurs, confusion sur l'origine</td></tr>
+<tr><td>Build L2</td><td>Provenance signée par une plateforme de build hébergée</td><td>Falsification de provenance après coup</td></tr>
+<tr><td>Build L3</td><td>Plateforme de build durcie : builds isolés, clés de signature inaccessibles au job, paramètres non modifiables par l'utilisateur</td><td>Compromission par un job malveillant ou un mainteneur ; c'est le niveau visé</td></tr>
+</table></div>
+<p>La <strong>provenance</strong> est une attestation in-toto : « cet artefact (digest) a été produit par ce builder, à partir de ce dépôt à ce commit, avec ces paramètres ». Générée par le builder (GitLab produit des attestations SLSA pour les artefacts ; GitHub via <code>slsa-github-generator</code> ou <code>actions/attest-build-provenance</code>), signée avec Sigstore, vérifiable par les consommateurs et par Kyverno. Les <strong>builds reproductibles</strong> (même source → mêmes octets) sont la vérification ultime ; Maven et Docker (BuildKit avec <code>SOURCE_DATE_EPOCH</code>, <code>rewrite-timestamp</code>) s'en approchent.</p>
+
+<h3>40.4 Sécuriser le pipeline lui-même<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Runners</strong> : éphémères (un conteneur ou une VM par job, détruit après), isolés par projet ou par niveau de confiance, sans socket Docker (Kaniko, BuildKit rootless, ou build sur des runners dédiés), pas d'accès réseau non nécessaire.</li>
+<li><strong>Identité</strong> : OIDC partout, jetons à portée minimale et courte durée ; les jobs de MR de forks n'ont accès à aucun secret.</li>
+<li><strong>Code du pipeline</strong> : fichiers de pipeline protégés (CODEOWNERS, approbation obligatoire), templates centralisés versionnés et épinglés, images de job depuis le registre interne et épinglées par digest, actions/composants par SHA.</li>
+<li><strong>Dépendances de build</strong> : proxy Nexus/Artifactory avec liste d'autorisation, vérification des signatures Maven Central (<code>pgpverify</code>), <code>npm audit signatures</code>, lockfiles avec hashes (chapitre 14).</li>
+<li><strong>Séparation</strong> : le job qui construit n'a pas le droit de déployer ; le job qui déploie ne peut déployer que ce qui est signé par le job de build (GitOps + Kyverno ferment la boucle).</li>
+<li><strong>Détection</strong> : Falco ou audit sur les runners, alerte sur un job qui accède à des ressources inhabituelles, revue des changements de pipeline comme du code de production.</li>
+</ul>
+
+<h3>40.5 Réglementation<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Le <strong>Cyber Resilience Act</strong> européen (obligations progressives 2026-2027) exige des fabricants de produits numériques une gestion des vulnérabilités, un SBOM et un traitement des CVE ; l'Executive Order 14028 américain a lancé les SBOM ; NIS2 touche les entités essentielles et importantes en France. Le SBOM et la provenance passent de bonne pratique à obligation : un argument fort en mission.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — GUAC</span><p>Graph for Understanding Artifact Composition (OpenSSF) : ingère SBOM, provenance SLSA, VEX, résultats de scan et signatures, et construit un graphe interrogeable : « quels artefacts déployés contiennent log4j-core 2.14 et par quel chemin ? ».</p><p><strong>Pourquoi ça différencie :</strong> Le SBOM sans graphe reste un fichier ; GUAC en fait un système de réponse rapide aux CVE, encore quasi inconnu en mission.</p><p><strong>À essayer en une heure :</strong> Compose de GUAC, <code>guacone collect files sbom/</code> sur tes SBOM du TP 37, puis une requête GraphQL sur une dépendance.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu sécurises la supply chain ? » Trois questions (provenance, intégrité, contenu), puis la chaîne : dépendances épinglées et proxifiées, build unique sur runner éphémère sans Docker socket, SBOM et provenance SLSA attestés, signature keyless Sigstore, vérification à l'admission (Kyverno), déploiement par digest, actions et images de job par SHA. Cite XZ et tj-actions pour montrer que tu suis l'actualité, et le CRA pour le côté conformité.</div>
+
+<div class="exo"><span class="tag">Exercice 40.1</span>
+<p>Une image est signée par Cosign et la signature est valide. Un attaquant contrôle le compte GitLab du développeur principal. L'image en production peut-elle être malveillante ? Qu'est-ce qui l'empêche, ou non ?</p>
+<details><summary>Corrigé</summary><div class="sol">Si la signature est keyless liée au job de la branche main, l'attaquant doit faire passer du code malveillant par la MR (revue par un autre, CODEOWNERS), sur un runner qu'il ne contrôle pas (SLSA L3). Si la signature est faite avec une clé accessible au développeur, il signe ce qu'il veut. La signature prouve l'origine, pas l'innocuité ; la protection vient de la revue, de l'isolation du build, des analyses et de la séparation des rôles.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 40.2</span>
+<p>Pourquoi vérifier une image par digest plutôt que par tag, même signée ?</p>
+<details><summary>Corrigé</summary><div class="sol">La signature porte sur le digest ; un tag peut être déplacé vers une autre image non signée ou signée par quelqu'un d'autre (si la politique est laxiste). Kyverno avec <code>mutateDigest</code> remplace le tag par le digest vérifié au moment de l'admission, et le Pod tourne exactement sur ce qui a été vérifié.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 40 — SLSA niveau 3 pour CrisisShield</span>
+<ol>
+<li>Pipeline : build sur runner éphémère sans socket Docker (Kaniko ou BuildKit rootless), image de job épinglée par digest, <code>id_tokens</code> pour Sigstore et Vault, aucun secret statique. Signature keyless de l'image, attestation SBOM (CycloneDX) et provenance SLSA (GitLab la génère pour les artefacts ; pour l'image, produis un prédicat in-toto avec les informations du job). Signe aussi le chart Helm (OCI) et l'archive du front.</li>
+<li>Rekor : retrouve tes signatures dans le journal public (<code>rekor-cli search</code>) et explique en trois lignes ce que ça implique (transparence, mais aussi exposition des noms de projets). Déploie ensuite un Sigstore privé minimal (Fulcio + Rekor + Keycloak comme OIDC) sur kind ou en Compose, et bascule dessus.</li>
+<li>Active la politique Kyverno de vérification de signature et d'attestation (l'image doit être signée par le job main <em>et</em> porter un SBOM attesté). Tente de déployer une image non signée, une image signée par une autre branche, une image signée sans SBOM : les trois doivent être refusées, avec message clair.</li>
+<li>Reproductibilité : rends le build de l'image déterministe (<code>SOURCE_DATE_EPOCH</code>, versions épinglées, tri des fichiers) et prouve qu'un second build du même commit donne le même digest. Documente ce qui a dû changer.</li>
+<li>Dépendances : le proxy Nexus n'autorise que les artefacts signés et une liste de groupes ; ajoute un paquet typosquatté fictif à ton <code>pom.xml</code> et vérifie le refus. Vérification PGP des artefacts Maven en CI.</li>
+<li>Évalue ton pipeline avec la checklist SLSA (site officiel) et l'OpenSSF Scorecard sur le dépôt ; note le niveau atteint et ce qui manque pour L3 complet.</li>
+</ol>
+<p>Livrable : pipeline, politiques, Sigstore privé dans <code>infra/sigstore/</code>, preuves de refus et de reproductibilité dans <code>tp40.md</code>, <code>docs/cours-supply-chain.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c40"> Chapitre 40 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 41 ===================== -->
+<article id="c41">
+<div class="chaphead"><span class="chapnum">Chapitre 41</span><span class="badge lvl-expert">Expert</span></div>
+<h2>Zero trust, PKI, IAM avancé</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Traduire les principes zero trust en architecture concrète</li><li>Concevoir et exploiter une PKI interne : hiérarchie, cycle de vie, automatisation</li><li>Mettre en place l'identité des charges de travail (SPIFFE/SPIRE) et des humains (OIDC, MFA, JIT)</li><li>Maîtriser OAuth 2.1, OpenID Connect et les jetons dans une architecture de services</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Zero trust : vérifier à chaque saut, humains (MFA, JIT) et charges (SPIFFE, mTLS).</li><li>PKI : racine hors ligne, intermédiaire en ligne (Vault), certificats courts renouvelés par cert-manager.</li><li>OAuth 2.1 : code + PKCE, jetons courts, refresh rotation, BFF ; IDOR est la faille numéro un des API.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Zero trust : vérifier à chaque saut, pour les humains comme pour les charges de travail. Chaque saut est authentifié, autorisé, chiffré, journalisé, de courte durée. Pas de confiance implicite au réseau : « à l&#x27;intérieur » n&#x27;existe plus."><defs><marker id="ah18" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="40" width="100" height="56" rx="7" class="box"/><text x="60.0" y="64.2" text-anchor="middle" font-size="12" font-weight="700">Humain +</text><text x="60.0" y="80.2" text-anchor="middle" font-size="12" font-weight="700">appareil</text><path d="M110,68 L130,68" class="arrow" marker-end="url(#ah18)"/><text x="120.0" y="60.0" text-anchor="middle" class="lbl">MFA</text><rect x="130" y="40" width="90" height="56" rx="7" class="purple"/><text x="175.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">IdP</text><text x="175.0" y="81.0" text-anchor="middle" class="lbl">Keycloak</text><path d="M220,68 L240,68" class="arrow" marker-end="url(#ah18)"/><text x="230.0" y="60.0" text-anchor="middle" class="lbl">jeton court</text><rect x="240" y="40" width="100" height="56" rx="7" class="green"/><text x="290.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">Service</text><text x="290.0" y="81.0" text-anchor="middle" class="lbl">SPIFFE, mTLS</text><path d="M340,68 L360,68" class="arrow" marker-end="url(#ah18)"/><text x="350.0" y="60.0" text-anchor="middle" class="lbl">identité</text><rect x="360" y="40" width="110" height="56" rx="7" class="amber"/><text x="415.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">Base / secrets</text><text x="415.0" y="81.0" text-anchor="middle" class="lbl">par identité</text></svg><figcaption>Zero trust : vérifier à chaque saut, pour les humains comme pour les charges de travail. Chaque saut est authentifié, autorisé, chiffré, journalisé, de courte durée. Pas de confiance implicite au réseau : « à l'intérieur » n'existe plus.</figcaption></figure>
+
+
+<h3>41.1 Zero trust<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Le modèle périmétrique (« à l'intérieur du réseau, on fait confiance ») ne tient plus : cloud, télétravail, mouvement latéral après une première compromission. Zero trust (NIST SP 800-207) : <strong>ne jamais faire confiance implicitement, toujours vérifier</strong>. Chaque accès est authentifié (identité forte de l'utilisateur <em>et</em> de l'appareil ou de la charge), autorisé (moindre privilège, contexte : appareil conforme, localisation, heure), chiffré, journalisé, et de courte durée.</p>
+<pre><code>Principe                      Implémentation
+──────────────────────────── ──────────────────────────────────────────────────────────────
+Identité forte des humains    IdP central (Keycloak, Entra ID), MFA résistant au phishing (FIDO2/passkeys), SSO partout
+Identité des charges          Certificats SPIFFE (SPIRE, mesh), rôles IAM, tokens de ServiceAccount projetés
+Micro-segmentation            NetworkPolicies, security groups par référence, mesh avec AuthorizationPolicy
+Chiffrement partout           mTLS interne, TLS 1.3 externe, chiffrement au repos KMS
+Accès aux ressources          Proxy d'identité (BeyondCorp, Cloudflare Access, Pomerium, Teleport) au lieu du VPN
+Accès administrateur          Juste-à-temps, approuvé, enregistré (Teleport, Boundary, SSM Session Manager)
+Posture de l'appareil         MDM, certificat machine, conformité vérifiée avant accès
+Journalisation et détection   Tout accès tracé vers un SIEM ; alertes sur anomalies</code></pre>
+<p>Ce n'est pas un produit ni un projet : c'est une direction, appliquée d'abord aux accès les plus sensibles (production, secrets, données personnelles).</p>
+
+<h3>41.2 PKI interne<span class="badge tag-important">Important</span></h3>
+<pre><code>CA racine (hors ligne : HSM ou machine isolée, clé jamais en ligne, validité 10-20 ans)
+└── CA intermédiaire « services » (Vault PKI ou step-ca, en ligne, validité 2-5 ans)
+│   ├── certificats de services internes (mTLS), validité heures à jours, renouvelés automatiquement
+│   └── certificats Ingress internes via cert-manager
+└── CA intermédiaire « personnes / machines » (certificats clients, SSH)
+Externe : Let's Encrypt (ACME) pour tout ce qui est public, via cert-manager ou le load balancer cloud</code></pre>
+<ul>
+<li><strong>Cycle de vie</strong> : émission automatisée (ACME, API Vault, cert-manager), durée courte (jours), renouvellement bien avant expiration, révocation (CRL, OCSP, ou simplement durée courte qui rend la révocation presque inutile), rotation des intermédiaires planifiée, cérémonie documentée pour la racine.</li>
+<li><strong>Distribution de la confiance</strong> : le certificat racine dans les trust stores (images de base, trust-manager dans Kubernetes, MDM sur les postes) ; la rotation de la racine est un projet en soi, d'où sa longue durée.</li>
+<li><strong>Erreurs classiques</strong> : certificats de 5 ans jamais renouvelés, clés privées dans Git, une seule CA pour tout, pas d'inventaire (une expiration = un incident majeur : alerte à 30 et 14 jours obligatoire, chapitre 35), SAN manquants.</li>
+<li><strong>HSM</strong> : pour la racine et les clés de signature critiques ; PKCS#11 comme interface ; KMS cloud comme HSM managé (AWS CloudHSM, KMS ; Azure Managed HSM). Les certifications (FIPS 140-3, Critères Communs) sont demandées par les référentiels bancaires et étatiques (RGS en France).</li>
+</ul>
+<pre><code># cert-manager avec Vault comme issuer : renouvellement automatique
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata: {name: vault-services}
+spec:
+  vault:
+    server: https://vault.vault.svc:8200
+    path: pki_int/sign/services
+    auth: {kubernetes: {role: cert-manager, mountPath: /v1/auth/kubernetes, serviceAccountRef: {name: cert-manager}}}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata: {name: api-internal, namespace: crisisshield}
+spec:
+  secretName: api-internal-tls
+  duration: 24h
+  renewBefore: 8h
+  dnsNames: [api.crisisshield.svc, api.crisisshield.svc.cluster.local]
+  issuerRef: {name: vault-services, kind: ClusterIssuer}
+  privateKey: {algorithm: ECDSA, size: 256, rotationPolicy: Always}</code></pre>
+
+<h3>41.3 Identité des charges de travail : SPIFFE et SPIRE<span class="badge tag-important">Important</span></h3>
+<p><strong>SPIFFE</strong> définit une identité universelle pour les charges : un identifiant <code>spiffe://crisisshield.example/ns/crisisshield/sa/api</code> porté par un certificat X.509 court (SVID) ou un JWT. <strong>SPIRE</strong> l'implémente : un serveur, des agents sur chaque nœud qui attestent les charges (par ServiceAccount, par processus, par métadonnées cloud) et leur délivrent des SVID renouvelés automatiquement. Istio et Linkerd utilisent SPIFFE en interne ; SPIRE l'étend hors du mesh (VM, autres clouds, sur site) et permet la fédération entre domaines de confiance. Résultat : plus aucun secret pour authentifier un service auprès d'un autre, d'une base, de Vault ou d'un cloud.</p>
+
+<h3>41.4 OAuth 2.1, OpenID Connect, jetons<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Ton domaine avec Keycloak ; ce que le DevSecOps doit exiger :</p>
+<ul>
+<li><strong>Flux</strong> : Authorization Code + PKCE pour toute application (SPA, mobile, serveur) ; Client Credentials pour service à service (préférer SPIFFE/mTLS ou Token Exchange quand possible) ; Device Code pour les CLI ; jamais Implicit ni Password (supprimés par OAuth 2.1).</li>
+<li><strong>Jetons</strong> : access tokens courts (5 à 15 min), refresh tokens avec rotation et détection de réutilisation, audience et scopes stricts, validation de signature (JWKS) et de l'émetteur côté ressource, <code>typ</code> et <code>alg</code> vérifiés (pas de <code>none</code>), révocation possible (introspection ou liste courte). Jetons liés au client (DPoP ou mTLS-bound) pour les cas sensibles.</li>
+<li><strong>Autorisation</strong> : au serveur, jamais au client ; rôles et attributs (RBAC, ABAC) ou politiques externalisées (OPA, Keycloak Authorization Services, Cedar) ; contrôle d'accès par objet (IDOR est la faille numéro un des API).</li>
+<li><strong>Sessions</strong> : cookies <code>HttpOnly Secure SameSite</code> pour le web côté serveur (BFF), pas de jeton dans le localStorage du navigateur.</li>
+<li><strong>Keycloak en production</strong> : haute disponibilité, base PostgreSQL managée ou opérateur, thème et flux d'authentification durcis (MFA obligatoire pour les administrateurs, brute force detection), réalisme des rôles, journal d'événements exporté, mises à jour suivies (Keycloak livre souvent des correctifs de sécurité), configuration as code (opérateur Keycloak, <code>keycloak-config-cli</code>, Terraform provider).</li>
+</ul>
+
+<h3>41.5 IAM avancé dans le cloud<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Permission boundaries</strong> et SCP pour plafonner ce qu'un administrateur délégué peut accorder.</li>
+<li><strong>Attribute-based access control</strong> : politiques conditionnées par les tags (<code>aws:ResourceTag/Project = ${aws:PrincipalTag/Project}</code>) : une politique pour cent projets.</li>
+<li><strong>Accès juste-à-temps</strong> : élévation temporaire approuvée (Identity Center avec workflows, Entra PIM, Google IAM conditions temporelles), avec journalisation et alerte.</li>
+<li><strong>Analyse continue</strong> : IAM Access Analyzer (accès externe, permissions inutilisées), CloudTrail Insights, détection de clés inutilisées et de rôles trop larges ; revue trimestrielle des accès (exigée par ISO 27001 et SOC 2).</li>
+<li><strong>Fédération</strong> : un seul IdP source (Entra ID, Okta, Keycloak) pour tous les clouds, GitLab, Vault, ArgoCD, Grafana ; désactiver un compte = perdre tous les accès en une action.</li>
+</ul>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — OpenZiti</span><p>Réseau zero trust applicatif open source : identités par certificat, services « invisibles » sans aucun port ouvert (dark), politiques par identité, et des SDK pour embarquer le réseau dans l'application elle-même (dont <code>ziti-sdk-jvm</code>).</p><p><strong>Pourquoi ça différencie :</strong> Zero trust concret jusque dans le code Java : un sujet de conférence, pas seulement d'entretien.</p><p><strong>À essayer en une heure :</strong> Compose du quickstart OpenZiti, expose l'API CrisisShield comme service Ziti sans port publié et accède-la depuis un tunnel authentifié.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — C'est ton terrain. Construis une réponse type « zero trust appliqué à une plateforme Kubernetes » : IdP unique avec MFA phishing-resistant, SPIFFE pour les charges, mTLS par mesh, PKI Vault avec certificats de 24 h renouvelés par cert-manager, racine hors ligne dans un HSM, accès admin JIT enregistré, NetworkPolicies, secrets dynamiques, tout journalisé dans un SIEM. Puis OAuth 2.1 côté application : PKCE, jetons courts, BFF. Prépare une anecdote PKI/HSM réelle.</div>
+
+<div class="exo"><span class="tag">Exercice 41.1</span>
+<p>Le certificat de la CA intermédiaire expire dans 30 jours. Déroule la rotation sans interruption des services qui présentent des certificats émis par elle.</p>
+<details><summary>Corrigé</summary><div class="sol">Émettre une nouvelle intermédiaire signée par la racine (cérémonie), la publier dans Vault comme nouvel émetteur par défaut tout en gardant l'ancienne active, distribuer la chaîne mise à jour dans les trust stores (les deux intermédiaires sont signées par la même racine : les clients qui font confiance à la racine acceptent les deux), laisser les certificats courts se renouveler naturellement sur la nouvelle (24 h), vérifier qu'aucun certificat n'est plus émis par l'ancienne, la retirer après expiration du dernier certificat émis. Alerte à 30 jours = c'est déjà tard ; planifier à 90.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 41.2</span>
+<p>Une SPA React stocke l'access token dans le localStorage et l'envoie en en-tête Authorization. Deux risques et l'architecture recommandée.</p>
+<details><summary>Corrigé</summary><div class="sol">XSS = vol du jeton ; refresh token dans le navigateur = session longue volable. Recommandation : BFF (backend for frontend) qui gère les jetons côté serveur et donne au navigateur un cookie de session HttpOnly Secure SameSite, ou à défaut Authorization Code + PKCE avec jetons très courts, refresh rotation, et politique CSP stricte.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 41 — Zero trust sur la plateforme CrisisShield</span>
+<ol>
+<li>PKI : CA racine hors ligne (openssl dans un conteneur sans réseau, clé chiffrée stockée hors du poste ; documente la cérémonie), intermédiaire Vault PKI du TP 38 signée par la racine, trust-manager pour distribuer la racine dans tous les namespaces, certificats internes de 24 h via cert-manager pour l'API, le worker, Keycloak, Grafana. Alerte à 14 jours sur toute expiration (cert-manager metrics). Rotation de l'intermédiaire selon l'exercice 41.1, exécutée réellement.</li>
+<li>Identité des charges : déploie SPIRE (serveur + agents) ; l'API obtient un SVID X.509 ; PostgreSQL (CloudNativePG) authentifie l'API par certificat client (auth <code>cert</code>) à la place du mot de passe dynamique, ou en complément ; Vault accepte l'auth par certificat SPIFFE. Compare avec l'identité fournie par le mesh du TP 30.</li>
+<li>Humains : Keycloak comme IdP unique avec passkeys/WebAuthn obligatoires pour le groupe admin ; fédération vers GitLab, ArgoCD, Grafana, Vault, Kubernetes (OIDC sur l'API server via kind config). Désactive un compte et vérifie la perte d'accès partout.</li>
+<li>Accès admin JIT : Teleport (Compose ou Helm, édition communautaire) ou Boundary devant kubectl et la base ; demande d'accès de 30 minutes approuvée, session enregistrée et rejouable. Supprime tout kubeconfig admin permanent.</li>
+<li>Application : audite le flux OAuth de CrisisShield (front React + API) ; passe en Authorization Code + PKCE, access token 10 min, refresh rotation, BFF si tu as le temps ; ajoute un test automatique d'IDOR (un utilisateur ne peut pas lire l'incident d'une autre organisation) et de validation de jeton (algorithme <code>none</code>, audience incorrecte, jeton expiré : 401 attendu).</li>
+<li>Keycloak as code : export du realm en JSON versionné, appliqué par <code>keycloak-config-cli</code> dans le pipeline GitOps ; MFA admin, brute force, journal d'événements vers Loki.</li>
+<li>Écris le document d'architecture zero trust de CrisisShield (2 pages, schéma) : identités, segmentation, chiffrement, accès, journalisation, et le reste à faire.</li>
+</ol>
+<p>Livrable : <code>infra/pki/</code>, <code>infra/spire/</code>, <code>infra/teleport/</code>, realm Keycloak, tests de sécurité, <code>docs/security/zero-trust.md</code>, preuves dans <code>tp41.md</code>, <code>docs/cours-zero-trust-pki.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c41"> Chapitre 41 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 42 ===================== -->
+<article id="c42">
+<div class="chaphead"><span class="chapnum">Chapitre 42</span><span class="badge lvl-expert">Expert</span></div>
+<h2>Conformité : ISO 27001, SOC 2, RGPD et référentiels français</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Lire un référentiel et le traduire en contrôles techniques automatisés</li><li>Produire des preuves de conformité en continu à partir de la plateforme</li><li>Intégrer le RGPD dans la conception et l'exploitation</li><li>Te repérer dans les référentiels rencontrés en mission en France</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Un contrôle = une politique, une implémentation, une preuve ; le DevSecOps automatise les deux dernières.</li><li>ISO 27001 pour tous, SOC 2 pour le SaaS, RGPD obligatoire, NIS2 et DORA qui arrivent, SecNumCloud pour l&#x27;État.</li><li>La conformité papier ne tient pas ; la plateforme rend la politique vraie et la preuve gratuite.</li></ol></div>
+
+
+<h3>42.1 Les référentiels<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Référentiel</th><th>Nature</th><th>Pour qui</th><th>Ce que le DevSecOps y fait</th></tr>
+<tr><td>ISO 27001 (2022)</td><td>Système de management de la sécurité (SMSI), certifiable ; 93 contrôles en annexe A</td><td>Toute organisation ; très demandé par les clients B2B</td><td>Implémenter et prouver les contrôles techniques (accès, journalisation, sauvegarde, développement sécurisé, gestion des vulnérabilités)</td></tr>
+<tr><td>SOC 2 (Type I/II)</td><td>Rapport d'audit sur cinq critères (sécurité, disponibilité, intégrité, confidentialité, vie privée)</td><td>Éditeurs SaaS vendant aux États-Unis</td><td>Preuves d'efficacité des contrôles sur une période (Type II : 6 à 12 mois)</td></tr>
+<tr><td>RGPD</td><td>Règlement, obligatoire</td><td>Tout traitement de données de résidents européens</td><td>Minimisation, chiffrement, pseudonymisation, droits (effacement, portabilité), registre, notification de violation sous 72 h, sous-traitants</td></tr>
+<tr><td>NIS2</td><td>Directive transposée en 2024-2025</td><td>Entités essentielles et importantes (énergie, santé, numérique, administrations...)</td><td>Gestion des risques, incidents (notification 24 h/72 h), supply chain, tests</td></tr>
+<tr><td>DORA (UE)</td><td>Règlement résilience numérique, applicable janvier 2025</td><td>Secteur financier et ses prestataires TIC</td><td>Tests de résilience, gestion des tiers, incidents, réversibilité</td></tr>
+<tr><td>PCI DSS 4.0</td><td>Norme industrie carte bancaire</td><td>Qui traite des données de carte</td><td>Segmentation, chiffrement, journalisation, scans trimestriels, pentests</td></tr>
+<tr><td>HDS</td><td>Certification hébergement de données de santé (France)</td><td>Hébergeurs de données de santé</td><td>ISO 27001 + exigences spécifiques, localisation</td></tr>
+<tr><td>SecNumCloud (ANSSI)</td><td>Qualification des fournisseurs cloud de confiance</td><td>Cloud pour l'État et les opérateurs sensibles</td><td>Choix du fournisseur, immunité au droit extra-européen</td></tr>
+<tr><td>Guides ANSSI</td><td>Recommandations (Linux, Docker, Kubernetes, PKI, OpenSSH, TLS)</td><td>Référence technique française</td><td>Baseline de durcissement citée par les auditeurs</td></tr>
+<tr><td>CIS Benchmarks</td><td>Guides de configuration par technologie</td><td>Universel</td><td>Automatisés par kube-bench, Checkov, Security Hub</td></tr>
+</table></div>
+
+<h3>42.2 Du référentiel au contrôle automatisé<span class="badge tag-important">Important</span></h3>
+<p>Un auditeur veut trois choses par contrôle : la <strong>politique</strong> (ce qu'on a décidé), l'<strong>implémentation</strong> (comment), la <strong>preuve</strong> (que ça fonctionne, sur la période). Le DevSecOps transforme chaque contrôle applicable en code et en preuve automatique.</p>
+<pre><code>ISO 27001 A.8.9 Gestion des configurations
+   politique : « toute infrastructure est décrite en code, revue, déployée par pipeline, la dérive est détectée »
+   implémentation : Terraform + GitOps + Kyverno + détection de dérive nocturne (niveau 3)
+   preuve : historique Git des MR approuvées, rapports de dérive, politiques en enforce, export mensuel automatique
+
+ISO 27001 A.8.8 Gestion des vulnérabilités techniques
+   implémentation : SCA/scan d'images à chaque build, Dependency-Track, SLA par sévérité (chapitre 37)
+   preuve : rapport mensuel des vulnérabilités par âge, délai moyen de correction, exceptions VEX datées
+
+ISO 27001 A.5.15 / A.5.18 Contrôle et droits d'accès
+   implémentation : IdP unique, RBAC, JIT, revue trimestrielle (chapitre 41)
+   preuve : export des accès par système, rapport de revue signé, journal des élévations
+
+ISO 27001 A.8.15 Journalisation, A.8.16 Surveillance
+   implémentation : logs centralisés, immutables, rétention (chapitre 32), alertes (chapitre 35), SIEM
+   preuve : configuration de rétention, tests d'alerte, incidents traités
+
+ISO 27001 A.8.13 Sauvegarde
+   implémentation : sauvegardes chiffrées hors site, restauration testée (chapitres 6, 27)
+   preuve : journal des sauvegardes, rapports de test de restauration trimestriels
+
+ISO 27001 A.8.25-A.8.29 Développement sécurisé
+   implémentation : threat model, analyses en pipeline, revue de code, environnements séparés
+   preuve : pipeline bloquant, MR avec approbation, threat models versionnés</code></pre>
+<p>Outils de <strong>conformité continue</strong> : les CSPM (Security Hub avec ses standards, Defender for Cloud, Wiz, Prowler en open source) mappent automatiquement l'état du cloud sur CIS, ISO, PCI ; les plateformes de GRC (Vanta, Drata, Sprinto) collectent les preuves par API et suivent les contrôles ; OSCAL (NIST) normalise politiques et preuves en machine-lisible. La <em>policy as code</em> (OPA, Kyverno, Sentinel, Checkov) est la preuve la plus solide : le contrôle est vérifié à chaque changement.</p>
+
+<h3>42.3 Le RGPD dans la plateforme<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Cartographie</strong> : où sont les données personnelles (bases, logs, sauvegardes, traces, files Kafka, exports) ; le registre des traitements en dépend.</li>
+<li><strong>Minimisation et pseudonymisation</strong> : ne collecter que le nécessaire ; identifiants indirects dans les logs et les traces ; données sensibles chiffrées au niveau applicatif (Transit, chapitre 38) avec clé par organisation pour permettre l'effacement par destruction de clé (crypto-shredding).</li>
+<li><strong>Droits</strong> : l'effacement doit atteindre les sauvegardes (délai documenté) et les journaux (rétention limitée) ; la portabilité exige un export machine-lisible.</li>
+<li><strong>Localisation et sous-traitants</strong> : régions européennes, liste des sous-traitants (cloud, SaaS d'observabilité, e-mail) avec clauses contractuelles ; transferts hors UE encadrés.</li>
+<li><strong>Violation</strong> : détection (chapitres 35, 39), qualification, notification à la CNIL sous 72 h ; le processus d'incident (chapitre 36) inclut le DPO.</li>
+<li><strong>Privacy by design</strong> : analyse d'impact (AIPD) pour les traitements à risque (données de santé, localisation, surveillance), et le DevSecOps y contribue la partie technique.</li>
+</ul>
+
+<h3>42.4 La mission conformité, en pratique<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Ce qu'on attend d'un consultant DevSecOps sur ces sujets : faire l'écart (gap analysis) entre le référentiel et l'existant, prioriser par risque, automatiser les contrôles et les preuves, écrire les procédures techniques que l'auditeur lira, préparer et accompagner l'audit (l'auditeur teste des échantillons : « montrez-moi la revue d'accès de mars », « montrez-moi que ce commit a été approuvé »), et rendre le maintien de la conformité cheap : ce qui est automatique ne coûte rien à prouver. Piège : la conformité papier (des politiques que personne n'applique) ; la plateforme rend la politique vraie.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — compliance-trestle</span><p>L'outillage OSCAL d'IBM : catalogues, profils, définitions de composants et plans de sécurité écrits en Markdown et YAML dans Git, générés et validés en CI ; la conformité devient du code revu par merge request.</p><p><strong>Pourquoi ça différencie :</strong> OSCAL est adopté par le NIST et arrive en Europe ; savoir le manipuler te place en avance sur les missions de conformité.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -v "$PWD:/w" -w /w python:3.12-slim sh -c "pip install compliance-trestle &amp;&amp; trestle init"</code>, puis importe le catalogue NIST 800-53 et rédige un composant pour la passerelle CrisisShield.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Un client veut l'ISO 27001, que fais-tu ? » Gap analysis sur l'annexe A, priorisation par risque, traduction des contrôles techniques en code et en preuves automatiques (donner trois exemples concrets comme ci-dessus), procédures écrites, préparation d'audit avec échantillons. Ajoute NIS2 et DORA pour montrer que tu connais le calendrier réglementaire européen, et le RGPD comme obligation transverse. Ton profil Tech Lead + Scrum Master donne la crédibilité organisationnelle que ces missions exigent.</div>
+
+<div class="exo"><span class="tag">Exercice 42.1</span>
+<p>L'auditeur demande : « prouvez que tous les changements en production des six derniers mois ont été revus et approuvés par une personne différente de l'auteur ». Quelles preuves produis-tu, en combien de temps ?</p>
+<details><summary>Corrigé</summary><div class="sol">Avec GitOps et branches protégées : export via l'API GitLab des MR fusionnées sur <code>main</code> du dépôt de config avec auteur, approbateur, date ; règle de protection (approbation requise, auteur exclu) et son historique de configuration ; log ArgoCD des synchronisations liées aux commits ; audit log de l'API Kubernetes montrant qu'aucune modification n'est venue d'un humain. Un script, quelques minutes. Sans GitOps : impossible à prouver de façon fiable.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 42.2</span>
+<p>Un utilisateur exerce son droit à l'effacement. Liste tous les endroits où ses données peuvent se trouver dans CrisisShield et le traitement pour chacun.</p>
+<details><summary>Corrigé</summary><div class="sol">Base PostgreSQL (suppression ou anonymisation), réplicas (suivent), sauvegardes (délai documenté avant expiration, ou crypto-shredding), Kafka (rétention limitée ; sinon compaction avec tombstone), logs et traces (pseudonymisation à la source, rétention courte), index de recherche, exports S3 (cycle de vie), caches Redis (TTL), Keycloak (suppression du compte), sous-traitants (e-mail, observabilité SaaS : demande de suppression). Réponse dans le délai légal avec preuve.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 42 — Dossier de conformité de CrisisShield</span>
+<ol>
+<li>Choisis 15 contrôles de l'annexe A ISO 27001:2022 pertinents pour la plateforme. Pour chacun : politique (une phrase), implémentation (référence aux TP précédents), preuve automatisable. Tableau dans <code>docs/compliance/iso27001-mapping.md</code>.</li>
+<li>Écris <code>scripts/evidence.sh</code> qui collecte automatiquement les preuves de 8 contrôles (MR approuvées, rapports Trivy Operator, scores kube-bench, dérive Terraform, revues d'accès Keycloak/Vault, sauvegardes CloudNativePG et dernier test de restauration, rétention des logs, politiques Kyverno en enforce) dans un dossier daté, signé avec Cosign. Planifie-le mensuellement en CI.</li>
+<li>Prowler (ou Security Hub sur ton sandbox) contre ton compte AWS de TP : rapport mappé CIS et ISO ; corrige cinq findings ; exporte le rapport avant/après.</li>
+<li>RGPD : cartographie des données personnelles de CrisisShield (schéma), pseudonymisation dans les logs et les traces vérifiée, chiffrement Transit avec clé par organisation, procédure et script d'effacement couvrant chaque emplacement de l'exercice 42.2, test réel. Ébauche d'AIPD sur la géolocalisation des incidents.</li>
+<li>Simulation d'audit : rédige dix demandes d'auditeur (échantillons) et réponds à chacune avec la preuve exacte et le temps mis pour la produire.</li>
+<li>Note de cadrage NIS2/DORA : en une page, ce que CrisisShield devrait ajouter si son client était un opérateur d'importance vitale ou une banque.</li>
+</ol>
+<p>Livrable : <code>docs/compliance/</code>, <code>scripts/evidence.sh</code>, rapports Prowler, procédure d'effacement, <code>tp42.md</code>, <code>docs/cours-conformite.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c42"> Chapitre 42 terminé</label>
+</article>
+
+<!-- ===================== REVISION ===================== -->
+<section class="rev" id="rev">
+<h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 7</h2>
+<ol class="quiz">
+<li>STRIDE sur une fonctionnalité de ton choix, en deux minutes.</li>
+<li>La cartographie des analyses de sécurité : étape, outil, mode bloquant ou non.</li>
+<li>SBOM, VEX, EPSS, KEV, reachability : rôle de chacun dans la priorisation.</li>
+<li>Comment introduire la sécurité sans qu'elle soit contournée.</li>
+<li>La hiérarchie des secrets : identité > dynamique > statique centralisé > chiffré dans Git.</li>
+<li>Vault : moteurs, auth, politiques, audit ; livrer un secret à un Pod (cinq méthodes).</li>
+<li>Chiffrement d'enveloppe ; KMS contre HSM ; le moteur Transit.</li>
+<li>Les 4 C ; durcir l'API, etcd, les nœuds.</li>
+<li>Pod Security Standards : trois profils, trois modes, la méthode de déploiement.</li>
+<li>Kyverno contre OPA Gatekeeper contre ValidatingAdmissionPolicy ; validate, mutate, generate, verifyImages.</li>
+<li>Falco : ce qu'il voit ; trois règles utiles.</li>
+<li>Les attaques supply chain de référence et leur leçon.</li>
+<li>Sigstore keyless : Cosign, Fulcio, Rekor ; ce qu'une signature prouve et ne prouve pas.</li>
+<li>SLSA : les trois niveaux de build ; provenance ; reproductibilité.</li>
+<li>Sécuriser le pipeline lui-même : six mesures.</li>
+<li>Zero trust : principes NIST et implémentation par principe.</li>
+<li>Une PKI interne : hiérarchie, durées, rotation de l'intermédiaire, HSM.</li>
+<li>SPIFFE/SPIRE : ce que c'est, ce que ça supprime.</li>
+<li>OAuth 2.1 et OIDC : flux autorisés, jetons, BFF, IDOR.</li>
+<li>ISO 27001, SOC 2, RGPD, NIS2, DORA, SecNumCloud : nature, cible, et comment tu produis les preuves.</li>
+</ol>
+<p><strong>Prochain niveau</strong> : SRE et architecture — fiabilité et chaos engineering, haute disponibilité et reprise d'activité, performance et capacité, architectures microservices et événementielles, bases de données en production, platform engineering.</p>
+</section>
+
+<div class="footnav"><a href="devops-niveau-6-observabilite.html">← Niveau 6 — Observabilité</a><a href="devops-niveau-8-sre-architecture.html">Niveau 8 — SRE et architecture →</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='devops-n7-progress', THEME='devops-theme';
+  var boxes=document.querySelectorAll('input[data-ch]');
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  function render(){
+    var done=0; boxes.forEach(function(b){ if(b.checked) done++; });
+    var pct=Math.round(done/boxes.length*100);
+    document.getElementById('pct').textContent=pct+' %';
+    document.getElementById('bar').style.width=pct+'%';
+  }
+  var st=load();
+  boxes.forEach(function(b){ b.checked=!!st[b.dataset.ch]; b.addEventListener('change',function(){ st[b.dataset.ch]=b.checked; save(st); render(); }); });
+  render();
+  var root=document.documentElement;
+  try{ var t=localStorage.getItem(THEME); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.getElementById('theme').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur==='dark';
+    var next=dark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem(THEME,next); }catch(e){}
+  });
+})();
+</script>
+
+<script>
+(function(){
+  // Barre de lecture
+  var bar=document.createElement('div'); bar.className='readbar'; document.body.prepend(bar);
+  function upd(){ var h=document.documentElement; var max=h.scrollHeight-h.clientHeight; bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%'; }
+  window.addEventListener('scroll',upd,{passive:true}); upd();
+  // Bouton copier sur chaque bloc de code
+  document.querySelectorAll('pre').forEach(function(pre){
+    var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier'; b.setAttribute('aria-label','Copier le code');
+    b.addEventListener('click',function(){
+      var t=pre.innerText.replace(/^Copier\n?/,'').replace(/Copi\u00e9 !$/,'');
+      var done=function(){ b.textContent='Copi\u00e9 !'; b.classList.add('ok'); setTimeout(function(){ b.textContent='Copier'; b.classList.remove('ok'); },1500); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); }
+      else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); done(); }
+    });
+    pre.appendChild(b);
+  });
+  // Sommaire qui suit la lecture
+  var links=document.querySelectorAll('nav.toc a[href^="#"]');
+  if(links.length&&'IntersectionObserver' in window){
+    var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){a.classList.remove('active');}); var a=map[e.target.id]; if(a) a.classList.add('active'); } });
+    },{rootMargin:'-10% 0px -75% 0px'});
+    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el) io.observe(el); });
+  }
+  // Impression : ouvrir tous les corrig\u00e9s
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.open=true; }); });
+})();
+</script>
+
+<script>
+(function(){
+  // Tableaux : libellé de colonne sur chaque cellule pour l'affichage empilé
+  document.querySelectorAll('table').forEach(function(t){
+    var rows=t.rows; if(!rows.length) return;
+    var head=rows[0]; var ths=head.querySelectorAll('th');
+    if(!ths.length) return;
+    head.classList.add('head');
+    var labels=Array.prototype.map.call(head.cells,function(c){return c.textContent.trim();});
+    for(var i=1;i<rows.length;i++){
+      var cells=rows[i].cells;
+      for(var j=0;j<cells.length;j++){ if(cells[j].tagName==='TD') cells[j].setAttribute('data-label',labels[j]||''); }
+    }
+    t.classList.add('stack');
+  });
+  // Schémas ASCII : garder l'alignement (défilement horizontal) au lieu du repli
+  document.querySelectorAll('pre').forEach(function(p){
+    if(/[\u2500-\u257F\u25B6\u25C0\u25BA\u25C4\u2192\u2190\u2191\u2193]/.test(p.textContent)) p.classList.add('diagram');
+  });
+})();
+</script>
+</body>
+</html>

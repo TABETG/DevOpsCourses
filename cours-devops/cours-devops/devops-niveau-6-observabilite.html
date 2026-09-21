@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cours DevOps — Niveau 6 : Observabilité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="in">
+    <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
+    <div class="level">Parcours DevOps — Niveau 6 sur 9</div>
+    <h1>Observabilité : logs, métriques, traces, alertes, astreinte</h1>
+    <p class="lead">Cinq chapitres pour savoir ce qui se passe en production avant que les utilisateurs ne le disent. Les trois signaux et leur collecte avec OpenTelemetry, l'alerting fondé sur des objectifs de service, puis la partie humaine : astreinte, gestion d'incident et post-mortems. La pile complète (Loki, Prometheus, Tempo, Grafana) tourne sur ton cluster kind.</p>
+    <div class="meta">
+      <span>5 chapitres</span><span>≈ 35 h de travail</span><span>Prérequis : Niveaux 0 à 5</span>
+    </div>
+    <button class="theme" id="theme">Basculer clair / sombre</button>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <strong>Sommaire</strong>
+  <ol start="32">
+    <li><a href="#c32" class="toc-confirme">Logs</a></li>
+    <li><a href="#c33" class="toc-senior">Métriques</a></li>
+    <li><a href="#c34" class="toc-senior">Traces et OpenTelemetry</a></li>
+    <li><a href="#c35" class="toc-senior">Alerting, SLI, SLO, budgets d'erreur</a></li>
+    <li><a href="#c36" class="toc-senior">Astreinte, incidents, post-mortems</a></li>
+    <li><a href="#rev">Révision du niveau</a></li>
+  </ol>
+<div class="legend">Niveau des chapitres : <span class="badge lvl-confirme">Confirmé</span><span class="badge lvl-senior">Senior</span> <span class="badge badge-niche">Techno de niche</span> = encadré différenciant dans chaque chapitre<br>Mémorisation : <span class="badge tag-coeur">Par cœur</span> <span class="badge tag-important">Important</span> <span class="badge tag-contexte">Bon à savoir</span></div>
+  <div class="prog">Progression : <span id="pct">0 %</span><div class="bar"><i id="bar"></i></div></div>
+</nav>
+
+<main>
+
+<!-- ===================== CHAPITRE 32 ===================== -->
+<article id="c32">
+<div class="chaphead"><span class="chapnum">Chapitre 32</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Logs</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Distinguer monitoring et observabilité, et positionner les trois signaux</li><li>Produire des logs structurés et exploitables depuis une application Java</li><li>Collecter, stocker et interroger les logs d'un cluster avec Loki ou la pile Elastic</li><li>Maîtriser le coût et la conformité des logs</li></ul></div>
+<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Logs JSON sur stdout avec trace_id, sans données sensibles, niveaux disciplinés.</li><li>Loki indexe peu (labels à faible cardinalité) et coûte peu ; Elastic indexe tout et coûte cher.</li><li>Rétention par type, échantillonnage des succès, coût mesuré par service.</li></ol></div>
+
+
+<h3>32.1 Monitoring et observabilité<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Le <strong>monitoring</strong> répond à des questions connues d'avance : « le CPU dépasse-t-il 80 % ? », « le service répond-il ? ». L'<strong>observabilité</strong> est la capacité à répondre à des questions qu'on n'avait pas prévues, à partir des données émises par le système : « pourquoi les utilisateurs de l'organisation X voient-ils des lenteurs depuis le déploiement de 14 h 12 ? ». Elle repose sur trois signaux corrélés : les <strong>logs</strong> (événements discrets), les <strong>métriques</strong> (valeurs agrégées dans le temps) et les <strong>traces</strong> (le parcours d'une requête à travers les services). Le lien entre eux (identifiants de trace dans les logs, exemplars dans les métriques) est ce qui rend l'ensemble utile.</p>
+
+<h3>32.2 Produire de bons logs<span class="badge tag-coeur">Par cœur</span></h3>
+<ul>
+<li><strong>Structurés en JSON</strong> : un champ par information, jamais de texte à parser par regex. Un log est une donnée, pas une phrase.</li>
+<li><strong>Sur stdout</strong> : la plateforme collecte (12 facteurs). Pas de fichier, pas de rotation à gérer.</li>
+<li><strong>Corrélés</strong> : <code>trace_id</code> et <code>span_id</code> dans chaque ligne, plus un identifiant de requête et, si pertinent, l'identifiant de l'utilisateur ou de l'organisation (pseudonymisé si nécessaire).</li>
+<li><strong>Niveaux</strong> avec discipline : ERROR = quelqu'un doit agir ; WARN = anomalie tolérée ; INFO = événement métier notable ; DEBUG = jamais en prod par défaut, activable à chaud.</li>
+<li><strong>Sans données sensibles</strong> : jamais de mot de passe, de jeton, de numéro de carte, de données de santé. Masquage à la source ; c'est un sujet RGPD et un vecteur de fuite classique.</li>
+<li><strong>Un événement par ligne</strong>, et les stack traces sur une seule ligne JSON (sinon le collecteur les découpe).</li>
+</ul>
+<pre><code>// Spring Boot 3.4+ : logs JSON natifs, sans dépendance
+// application.yaml
+logging:
+  structured:
+    format:
+      console: ecs        # Elastic Common Schema ; ou logstash, gelf
+  level:
+    root: INFO
+    fr.crisisshield: INFO
+management:
+  tracing:
+    sampling:
+      probability: 1.0    # les identifiants de trace sont injectés dans le MDC automatiquement
+
+// Un log métier structuré
+log.atInfo()
+   .addKeyValue("incident_id", incident.id())
+   .addKeyValue("zone", incident.zone())
+   .addKeyValue("priority", incident.priority())
+   .log("Incident créé");
+
+// Sortie
+{"@timestamp":"2026-09-18T10:12:03.412Z","log.level":"INFO","message":"Incident créé",
+ "service.name":"crisisshield-api","trace.id":"4bf92f3577b34da6a3ce929d0e0e4736","span.id":"00f067aa0ba902b7",
+ "incident_id":"INC-2041","zone":"Nord","priority":"HIGH","process.thread.name":"http-nio-8080-exec-3","log.logger":"fr.crisisshield.incident.IncidentService"}</code></pre>
+<p>Pour le front : envoyer les erreurs JavaScript à un collecteur (Sentry, Grafana Faro) avec le même identifiant de session ; ne pas laisser les logs dans la console du navigateur.</p>
+
+<h3>32.3 Collecter et stocker<span class="badge tag-important">Important</span></h3>
+<pre><code>Pods (stdout) ─► fichiers /var/log/pods sur le nœud ─► agent DaemonSet ─► backend ─► interface
+                                                       (Promtail/Alloy, Fluent Bit,     (Loki,       (Grafana,
+                                                        Vector, OTel Collector)          Elastic/     Kibana)
+                                                                                         OpenSearch)</code></pre>
+<div class="tablewrap"><table>
+<tr><th></th><th>Loki (Grafana)</th><th>Elasticsearch / OpenSearch</th><th>Cloud (CloudWatch Logs, Azure Monitor)</th></tr>
+<tr><td>Indexation</td><td>Seulement les labels (namespace, app, niveau) ; le contenu est compressé, filtré à la lecture</td><td>Tout le texte indexé</td><td>Tout, géré</td></tr>
+<tr><td>Coût</td><td>Faible (stockage objet)</td><td>Élevé (CPU, mémoire, disque des index)</td><td>Ingestion chère à volume</td></tr>
+<tr><td>Recherche</td><td>Rapide si on filtre par label d'abord ; LogQL</td><td>Texte intégral très rapide, agrégations riches</td><td>Insights, KQL</td></tr>
+<tr><td>Quand</td><td>Kubernetes, logs applicatifs, budget maîtrisé</td><td>Recherche plein texte, SIEM, analytique</td><td>Petite équipe tout-cloud</td></tr>
+</table></div>
+<pre><code># LogQL
+{namespace="crisisshield", app="api"} |= "ERROR"
+{namespace="crisisshield"} | json | priority="HIGH" | line_format "{{.message}} zone={{.zone}}"
+sum by (app) (rate({namespace="crisisshield"} | json | level="ERROR" [5m]))      # métrique dérivée des logs
+{app="api"} | json | trace_id="4bf92f3577b34da6a3ce929d0e0e4736"                  # tous les logs d'une trace</code></pre>
+<p>Règle Loki : peu de labels, à faible cardinalité (jamais un identifiant d'utilisateur ou de requête en label : ça explose l'index). Tout le reste se filtre dans la requête.</p>
+<p><strong>Elastic / OpenSearch</strong> : index par jour, ILM (hot, warm, cold, delete), mappings explicites (sinon un champ change de type et casse l'index), Kibana/Dashboards. Choix courant en France pour les logs de sécurité et les SIEM.</p>
+<p><strong>OpenTelemetry Collector</strong> : un seul agent pour les trois signaux, avec des <em>pipelines</em> (receivers → processors → exporters). Il remplace de plus en plus les agents spécialisés ; le chapitre 34 le détaille.</p>
+
+<h3>32.4 Coût, rétention, conformité<span class="badge tag-contexte">Bon à savoir</span></h3>
+<ul>
+<li>Le volume de logs est le premier poste de coût d'observabilité. Mesurer les Go/jour par service ; un service bavard en DEBUG coûte plus cher que son calcul.</li>
+<li>Échantillonner les logs de succès (garder 100 % des erreurs, 10 % des 200 sur les endpoints à fort trafic), agréger à la source (un log par lot plutôt qu'un par élément).</li>
+<li>Rétention par type : applicatifs 14 à 30 jours en accès rapide, puis archivage S3 Glacier ; audit et sécurité 1 an ou plus selon obligations (LPM, PCI, ISO 27001) ; jamais « infini par défaut » (CloudWatch le fait si tu n'y touches pas).</li>
+<li>Accès aux logs = accès à des données personnelles : RBAC sur le backend, journalisation des consultations, pseudonymisation.</li>
+</ul>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Vector</span><p>Agent de logs et métriques en Rust (Datadog, open source) : ultra performant, avec le langage VRL pour parser, transformer, enrichir et surtout masquer les données personnelles à la source avant tout stockage.</p><p><strong>Pourquoi ça différencie :</strong> Le masquage RGPD à la collecte, prouvable, est un argument fort pour un profil DevSecOps ; Vector remplace Fluent Bit et Promtail.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -v "$PWD/vector.yaml:/etc/vector/vector.yaml:ro" timberio/vector:latest-alpine</code> avec une transformation VRL qui remplace les adresses e-mail par un hachage avant envoi vers Loki.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place les logs sur un cluster ? » Applications en JSON sur stdout avec trace_id, agent DaemonSet (Alloy ou OTel Collector), Loki sur S3 avec peu de labels, Grafana pour interroger, rétention par type, coût mesuré par service, données sensibles masquées à la source. Et le pont vers les métriques et traces : le trace_id qui permet de cliquer d'un log vers la trace.</div>
+
+<div class="exo"><span class="tag">Exercice 32.1</span>
+<p>Une requête Loki sur 24 h met 2 minutes et échoue par manque de mémoire. Le développeur cherche <code>user_id=42</code>. Que s'est-il passé et comment faire ?</p>
+<details><summary>Corrigé</summary><div class="sol">La requête ne filtre par aucun label (ou par un label trop large) : Loki décompresse et lit tout. Ajouter les labels <code>namespace</code> et <code>app</code>, réduire la fenêtre, filtrer avec <code>|=</code> avant <code>| json</code>. Ne pas transformer <code>user_id</code> en label pour autant : c'est de la haute cardinalité. Si ce type de recherche est fréquent, c'est un cas pour Elasticsearch, ou pour une trace (les traces sont indexées par attribut).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 32.2</span>
+<p>Trouve trois problèmes dans ce log : <code>2026-09-18 10:12 ERROR Login failed for user jean.dupont@mail.fr password=Azerty123 from 82.14.3.9</code></p>
+<details><summary>Corrigé</summary><div class="sol">Non structuré (texte à parser), un mot de passe en clair (fuite majeure), une adresse e-mail et une IP en clair (données personnelles ; à pseudonymiser ou justifier par la sécurité avec rétention limitée). Et ERROR est probablement excessif pour un échec de connexion isolé (WARN, avec une alerte sur le taux).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 32 — Logs structurés de bout en bout</span>
+<ol>
+<li>Passe le backend CrisisShield en logs JSON ECS avec trace_id (Spring Boot 3.4 natif, ou Logback + logstash-encoder). Ajoute trois logs métier structurés (création, escalade, clôture d'incident). Masque tout champ sensible avec un filtre.</li>
+<li>Installe Loki (chart <code>loki</code> en mode SingleBinary avec stockage MinIO, ou <code>loki-stack</code>) et Grafana Alloy en DaemonSet qui collecte les Pods du cluster avec labels <code>namespace</code>, <code>app</code>, <code>container</code>. Grafana connecté à Loki.</li>
+<li>Écris cinq requêtes LogQL utiles pour CrisisShield (erreurs par service, incidents HIGH par zone, latence extraite d'un champ, logs d'une trace, top des messages d'erreur) et sauvegarde-les dans un dashboard.</li>
+<li>Alerte : règle Loki (ruler) qui déclenche si plus de 10 ERROR en 5 minutes sur l'API.</li>
+<li>Mesure : Go/jour par namespace (métriques de Loki), puis réduis de moitié en échantillonnant les logs d'accès à 10 % dans Alloy.</li>
+<li>Rétention : 7 jours en staging, 30 jours en prod, configuration de compaction et de suppression vérifiée.</li>
+<li>Bonus : la même collecte vers OpenSearch (Helm) avec Fluent Bit, un index par jour et ILM ; compare la mémoire consommée par les deux piles.</li>
+</ol>
+<p>Livrable : configuration Loki/Alloy dans le dépôt de config (GitOps), dashboard exporté en JSON, mesures dans <code>tp32.md</code>, <code>docs/cours-logs.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c32"> Chapitre 32 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 33 ===================== -->
+<article id="c33">
+<div class="chaphead"><span class="chapnum">Chapitre 33</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Métriques : Prometheus et Grafana</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Expliquer le modèle Prometheus : types, labels, scraping, cardinalité</li><li>Écrire du PromQL pour les questions courantes (taux, percentiles, saturation)</li><li>Instrumenter une application Java et construire des dashboards utiles</li><li>Passer à l'échelle et gérer la rétention longue</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Counter, gauge, histogram ; rate, histogram_quantile ; jamais de moyenne de latence.</li><li>La cardinalité tue Prometheus : pas d&#x27;identifiant en label.</li><li>RED pour les services, USE pour les ressources ; dashboards en code ; Thanos/Mimir pour l&#x27;échelle.</li></ol></div>
+
+
+<h3>33.1 Le modèle<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Prometheus <strong>tire</strong> (scrape) périodiquement un endpoint <code>/metrics</code> exposé par chaque cible, stocke des séries temporelles identifiées par un nom et des labels, et les interroge en PromQL. Sur Kubernetes, le Prometheus Operator découvre les cibles via <code>ServiceMonitor</code>/<code>PodMonitor</code>.</p>
+<div class="tablewrap"><table>
+<tr><th>Type</th><th>Sémantique</th><th>Exemple</th><th>Requête typique</th></tr>
+<tr><td>Counter</td><td>Ne fait que croître (remise à zéro au redémarrage)</td><td><code>http_server_requests_seconds_count</code></td><td><code>rate(x[5m])</code></td></tr>
+<tr><td>Gauge</td><td>Valeur qui monte et descend</td><td><code>jvm_memory_used_bytes</code>, <code>kafka_consumer_lag</code></td><td>valeur brute, <code>avg_over_time</code></td></tr>
+<tr><td>Histogram</td><td>Répartition en buckets cumulés + somme + compte</td><td><code>http_server_requests_seconds_bucket</code></td><td><code>histogram_quantile(0.95, sum by (le) (rate(x_bucket[5m])))</code></td></tr>
+<tr><td>Summary</td><td>Quantiles calculés côté client (non agrégeables)</td><td>À éviter en général</td><td></td></tr>
+</table></div>
+<p><strong>Cardinalité</strong> : chaque combinaison de labels est une série. Un label <code>user_id</code> ou <code>url</code> avec des identifiants crée des millions de séries et tue Prometheus. Labels autorisés : service, méthode, route <em>templatée</em> (<code>/incidents/{id}</code>), code de statut, instance, zone.</p>
+
+<h3>33.2 PromQL essentiel<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code># Taux de requêtes par seconde, par service
+sum by (service) (rate(http_server_requests_seconds_count[5m]))
+
+# Taux d'erreur (5xx) en %
+100 * sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m]))
+    / sum(rate(http_server_requests_seconds_count[5m]))
+
+# Latence p95 et p99
+histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{uri!~"/actuator.*"}[5m])))
+
+# Saturation : CPU d'un conteneur en % de sa request
+sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="crisisshield"}[5m]))
+  / sum by (pod) (kube_pod_container_resource_requests{resource="cpu", namespace="crisisshield"})
+
+# Mémoire proche de la limite (OOM imminent)
+container_memory_working_set_bytes / container_spec_memory_limit_bytes > 0.9
+
+# Pods non prêts, redémarrages
+kube_deployment_status_replicas_unavailable > 0
+increase(kube_pod_container_status_restarts_total[1h]) > 3
+
+# JVM : GC et pool de connexions
+rate(jvm_gc_pause_seconds_sum[5m]) / rate(jvm_gc_pause_seconds_count[5m])
+hikaricp_connections_active / hikaricp_connections_max > 0.8
+
+# Kafka : lag du consumer group
+sum by (group, topic) (kafka_consumergroup_lag)
+
+# Prédiction : disque plein dans 4 h ?
+predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[6h], 4*3600) < 0</code></pre>
+<p>Les quatre signaux d'or (Google SRE) pour tout service : <strong>latence</strong>, <strong>trafic</strong>, <strong>erreurs</strong>, <strong>saturation</strong>. La méthode RED (Rate, Errors, Duration) pour les services, USE (Utilization, Saturation, Errors) pour les ressources.</p>
+
+<h3>33.3 Instrumenter<span class="badge tag-important">Important</span></h3>
+<p>Java : Micrometer est intégré à Spring Boot et Quarkus ; <code>/actuator/prometheus</code> expose HTTP, JVM, HikariCP, Kafka, cache sans code. Métriques métier :</p>
+<pre><code>// Compteur et timer métier
+private final Counter incidentsCreated;
+private final Timer escalationTimer;
+
+public IncidentService(MeterRegistry registry) {
+    incidentsCreated = Counter.builder("crisisshield_incidents_created_total")
+        .description("Incidents créés").tag("channel", "api").register(registry);
+    escalationTimer = Timer.builder("crisisshield_escalation_duration_seconds")
+        .publishPercentileHistogram().register(registry);
+}
+// registry.gauge("crisisshield_open_incidents", openIncidents, AtomicInteger::get);</code></pre>
+<p>Nommage : préfixe applicatif, unité de base en suffixe (<code>_seconds</code>, <code>_bytes</code>, <code>_total</code> pour les counters). Exporters pour ce qui n'expose rien nativement : <code>node-exporter</code> (machines), <code>kube-state-metrics</code> (objets Kubernetes), <code>postgres-exporter</code>, <code>blackbox-exporter</code> (sondes HTTP/TCP/ICMP depuis l'extérieur), <code>kafka-exporter</code>.</p>
+<pre><code>apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata: {name: api, namespace: crisisshield, labels: {release: monitoring}}
+spec:
+  selector: {matchLabels: {app.kubernetes.io/name: api}}
+  endpoints: [{port: http, path: /actuator/prometheus, interval: 30s}]</code></pre>
+
+<h3>33.4 Dashboards<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Un dashboard répond à une question pour un public. Trois niveaux : <strong>service</strong> (RED + SLO, pour l'équipe), <strong>ressources</strong> (USE, pour l'exploitation), <strong>métier</strong> (incidents ouverts, temps de traitement, pour le produit). Règles : un dashboard par service avec la même structure, les variables Grafana (<code>$namespace</code>, <code>$service</code>) pour réutiliser, les dashboards en code (JSON dans Git, provisionnés par ConfigMap ou par l'opérateur Grafana), jamais construits à la main en prod et perdus. Les dashboards communautaires (Grafana.com : node-exporter, JVM Micrometer, Kubernetes) sont un bon départ.</p>
+<p>Anti-patterns : le mur de 40 graphiques que personne ne lit, les moyennes de latence (toujours des percentiles), les couleurs sans seuil.</p>
+
+<h3>33.5 À l'échelle<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Un Prometheus garde ses données localement (15 jours par défaut) et ne se réplique pas. Pour la haute disponibilité et la rétention longue : <strong>Thanos</strong> ou <strong>Cortex/Mimir</strong> (stockage objet, requêtes globales sur plusieurs clusters, déduplication), ou <code>remote_write</code> vers un service géré (Grafana Cloud, Amazon Managed Prometheus). Les <em>recording rules</em> précalculent les requêtes lourdes ; l'<em>agent mode</em> collecte sans stocker.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — VictoriaMetrics</span><p>Base de séries temporelles compatible Prometheus (remote write, PromQL étendu en MetricsQL) qui consomme jusqu'à dix fois moins de mémoire et de disque, avec un mode cluster simple ; alternative à Thanos et Mimir, très répandue en Europe de l'Est et chez les gros volumes.</p><p><strong>Pourquoi ça différencie :</strong> Savoir dimensionner et comparer Thanos, Mimir et VictoriaMetrics est une question de plateforme d'observabilité à l'échelle.</p><p><strong>À essayer en une heure :</strong> <code>docker run -p 8428:8428 victoriametrics/victoria-metrics</code>, remote write depuis ton Prometheus, puis compare la consommation mémoire à charge égale.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Quelles métriques tu regardes en premier sur un service qui va mal ? » RED : le taux d'erreur et la latence p99 par route, puis la saturation (CPU vs request, mémoire vs limite, pool de connexions, lag Kafka), puis les événements Kubernetes (redémarrages, Pending). Précise : percentiles et pas moyennes, et le piège de la cardinalité.</div>
+
+<div class="exo"><span class="tag">Exercice 33.1</span>
+<p>Pourquoi <code>avg(http_server_requests_seconds_sum / http_server_requests_seconds_count)</code> est-il une mauvaise mesure de latence, et que faut-il regarder ?</p>
+<details><summary>Corrigé</summary><div class="sol">La moyenne masque la distribution : 1 % de requêtes à 10 s disparaissent dans une moyenne à 200 ms alors qu'elles concernent les utilisateurs les plus actifs. Utiliser les histogrammes et <code>histogram_quantile</code> pour p95/p99, agrégés par <code>le</code>.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 33.2</span>
+<p>Prometheus consomme 12 Go de mémoire et ses requêtes dépassent le délai. <code>topk(10, count by (__name__)({__name__=~".+"}))</code> montre une métrique avec 3 millions de séries. Que fais-tu ?</p>
+<details><summary>Corrigé</summary><div class="sol">Identifier le label à haute cardinalité (<code>count by (label)</code>), le supprimer à la source ou avec un <code>metric_relabel_configs</code> (drop du label ou de la métrique), et ajouter une règle d'équipe. Puis recording rules pour les requêtes fréquentes.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 33 — Métriques RED, USE et métier sur CrisisShield</span>
+<ol>
+<li>kube-prometheus-stack (installé au TP 31) : ServiceMonitor pour l'API, PodMonitor pour le worker Kafka, postgres-exporter branché sur CloudNativePG (il expose nativement des métriques : ajoute le PodMonitor), kafka-exporter pour Strimzi, blackbox-exporter qui sonde l'URL publique via l'Ingress.</li>
+<li>Ajoute trois métriques métier dans l'API (compteur d'incidents par priorité, gauge d'incidents ouverts, timer d'escalade avec histogramme).</li>
+<li>Écris 10 requêtes PromQL documentées (RED de l'API par route, USE des Pods, JVM, HikariCP, lag Kafka, disponibilité blackbox, métier) et 5 recording rules pour les plus lourdes.</li>
+<li>Trois dashboards en JSON versionnés et provisionnés par GitOps : service API (RED + SLO placeholder), ressources du namespace, métier. Variables <code>$namespace</code> et <code>$route</code>. Importe aussi le dashboard JVM Micrometer communautaire.</li>
+<li>Injecte un label à haute cardinalité (un tag Micrometer avec l'identifiant d'incident) volontairement, observe l'explosion des séries avec la requête de l'exercice 33.2, corrige avec un relabel puis à la source.</li>
+<li>Charge avec k6 pendant 10 minutes, capture les graphes RED, identifie la route la plus lente, explique pourquoi avec les métriques HikariCP ou GC.</li>
+<li>Rétention longue : ajoute Thanos sidecar + store sur MinIO (ou Mimir), vérifie une requête sur 30 jours (simule en réduisant la rétention locale à 2 h).</li>
+</ol>
+<p>Livrable : monitors, règles, dashboards JSON dans le dépôt de config, analyse de charge dans <code>tp33.md</code>, <code>docs/cours-metriques.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c33"> Chapitre 33 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 34 ===================== -->
+<article id="c34">
+<div class="chaphead"><span class="chapnum">Chapitre 34</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Traces et OpenTelemetry</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Expliquer trace, span, contexte et propagation</li><li>Instrumenter une application Java sans et avec code, via OpenTelemetry</li><li>Déployer un Collector et un backend de traces, et corréler les trois signaux</li><li>Choisir une stratégie d'échantillonnage</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Une trace = des spans reliés par la propagation du contexte (W3C traceparent, en-têtes Kafka).</li><li>OpenTelemetry : instrumenter une fois (agent Java sans code), Collector agent + gateway, exporter partout.</li><li>Tail sampling : garder toutes les erreurs et les lentes ; corréler par trace_id et exemplars.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 184" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Les trois signaux ne valent que reliés : trace_id dans les logs, exemplars dans les métriques. Depuis une alerte de latence : exemplar → trace → logs de cette trace → Pod et sa mémoire. En quatre clics."><defs><marker id="ah14" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="20" y="30" width="130" height="60" rx="7" class="soft"/><text x="85.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">Logs</text><text x="85.0" y="73.9" text-anchor="middle" class="lbl">événements</text><rect x="175" y="30" width="130" height="60" rx="7" class="green"/><text x="240.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">Métriques</text><text x="240.0" y="73.9" text-anchor="middle" class="lbl">agrégats</text><rect x="330" y="30" width="130" height="60" rx="7" class="purple"/><text x="395.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">Traces</text><text x="395.0" y="73.9" text-anchor="middle" class="lbl">parcours d&#x27;une requête</text><path d="M150,60 L175,60" class="arrow" marker-end="url(#ah14)"/><path d="M305,60 L330,60" class="arrow" marker-end="url(#ah14)"/><text x="162" y="48" text-anchor="middle" class="lbl">trace_id</text><text x="318" y="48" text-anchor="middle" class="lbl">exemplars</text><path d="M85,90 L220,140" class="arrow" marker-end="url(#ah14)"/><path d="M240,90 L240,140" class="arrow" marker-end="url(#ah14)"/><path d="M395,90 L260,140" class="arrow" marker-end="url(#ah14)"/><rect x="150" y="140" width="180" height="44" rx="7" class="box"/><text x="240.0" y="166.6" text-anchor="middle" font-size="13" font-weight="700">Grafana / OpenTelemetry</text></svg><figcaption>Les trois signaux ne valent que reliés : trace_id dans les logs, exemplars dans les métriques. Depuis une alerte de latence : exemplar → trace → logs de cette trace → Pod et sa mémoire. En quatre clics.</figcaption></figure>
+
+
+<h3>34.1 Concepts<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Une <strong>trace</strong> représente une requête de bout en bout ; elle est composée de <strong>spans</strong> (une opération : requête HTTP entrante, appel SQL, publication Kafka, appel sortant), chacun avec un début, une durée, des attributs, un statut, et un parent. La <strong>propagation du contexte</strong> (en-tête W3C <code>traceparent</code>, ou en-têtes Kafka) transmet l'identifiant de trace d'un service à l'autre ; sans elle, chaque service produit des traces orphelines.</p>
+<pre><code>trace 4bf92f35... (2 340 ms)
+└── GET /api/incidents/INC-2041/escalate        api          2 340 ms
+    ├── SELECT incident WHERE id = ?              postgres      12 ms
+    ├── POST http://notification/send             api → notif  2 180 ms   ◄── le problème est ici
+    │   └── POST /send                            notification 2 170 ms
+    │       └── SMTP connect                      notification 2 100 ms   ◄── timeout SMTP
+    └── kafka.publish incidents                   api            8 ms</code></pre>
+<p>Ce que les traces montrent que rien d'autre ne montre : <em>où</em> le temps passe entre services, les appels en cascade (N+1), les timeouts en chaîne, les retries invisibles.</p>
+
+<h3>34.2 OpenTelemetry<span class="badge tag-important">Important</span></h3>
+<p>OpenTelemetry (OTel, CNCF) est le standard unique pour produire et transporter traces, métriques et logs : API et SDK par langage, conventions sémantiques (noms d'attributs standardisés : <code>http.request.method</code>, <code>db.system</code>), protocole OTLP, et le <strong>Collector</strong>. Il remplace OpenTracing, OpenCensus et les agents propriétaires : instrumenter une fois, envoyer où l'on veut (Tempo, Jaeger, Datadog, Honeycomb...).</p>
+<pre><code>Application ─OTLP─► OTel Collector ─► Tempo / Jaeger      (traces)
+                    (receivers,     ─► Prometheus / Mimir  (métriques)
+                     processors,    ─► Loki                (logs)
+                     exporters)     ─► fournisseur SaaS
+
+# collector-config.yaml
+receivers:
+  otlp: {protocols: {grpc: {endpoint: 0.0.0.0:4317}, http: {endpoint: 0.0.0.0:4318}}}
+processors:
+  batch: {}
+  memory_limiter: {limit_mib: 512, check_interval: 1s}
+  k8sattributes: {}                          # ajoute namespace, pod, deployment aux signaux
+  tail_sampling:
+    policies:
+      - {name: errors, type: status_code, status_code: {status_codes: [ERROR]}}
+      - {name: slow, type: latency, latency: {threshold_ms: 1000}}
+      - {name: baseline, type: probabilistic, probabilistic: {sampling_percentage: 10}}
+exporters:
+  otlp/tempo: {endpoint: tempo:4317, tls: {insecure: true}}
+  prometheusremotewrite: {endpoint: http://mimir:9009/api/v1/push}
+  loki: {endpoint: http://loki:3100/loki/api/v1/push}
+service:
+  pipelines:
+    traces:  {receivers: [otlp], processors: [memory_limiter, k8sattributes, tail_sampling, batch], exporters: [otlp/tempo]}
+    metrics: {receivers: [otlp], processors: [memory_limiter, k8sattributes, batch], exporters: [prometheusremotewrite]}
+    logs:    {receivers: [otlp], processors: [memory_limiter, k8sattributes, batch], exporters: [loki]}</code></pre>
+<p>Déploiement : un Collector en DaemonSet (agent, proche des Pods) qui envoie à un Collector en Deployment (gateway, échantillonnage, export). L'OpenTelemetry Operator gère cela et l'injection automatique.</p>
+
+<h3>34.3 Instrumenter en Java<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Sans code</strong> : l'agent Java OTel (<code>-javaagent:opentelemetry-javaagent.jar</code>) instrumente automatiquement Spring MVC/WebFlux, JDBC, HikariCP, Kafka, RestTemplate/WebClient, gRPC, Redis... Sur Kubernetes, l'annotation <code>instrumentation.opentelemetry.io/inject-java: "true"</code> et une CRD <code>Instrumentation</code> font injecter l'agent par l'opérateur, sans toucher à l'image.</li>
+<li><strong>Spring Boot natif</strong> : Micrometer Tracing avec le bridge OTel (<code>micrometer-tracing-bridge-otel</code>) et l'exporter OTLP ; les identifiants arrivent dans le MDC pour les logs. Quarkus : extension <code>quarkus-opentelemetry</code>.</li>
+<li><strong>Avec code</strong>, pour les spans métier :</li>
+</ul>
+<pre><code>@WithSpan("escalate-incident")                 // annotation OTel
+public void escalate(@SpanAttribute("incident.id") String id, Priority to) {
+    Span.current().setAttribute("incident.priority.to", to.name());
+    ...
+    Span.current().addEvent("notification-sent");
+}</code></pre>
+<p>Variables d'environnement standard : <code>OTEL_SERVICE_NAME</code>, <code>OTEL_EXPORTER_OTLP_ENDPOINT</code>, <code>OTEL_RESOURCE_ATTRIBUTES=deployment.environment=prod</code>, <code>OTEL_TRACES_SAMPLER</code>.</p>
+
+<h3>34.4 Backends et corrélation<span class="badge tag-contexte">Bon à savoir</span></h3>
+<ul>
+<li><strong>Tempo</strong> (Grafana) : stockage objet, pas d'index sauf par identifiant et TraceQL, très économique, s'intègre à Grafana (logs → trace → métriques en un clic, <em>exemplars</em> reliant un point de latence à une trace).</li>
+<li><strong>Jaeger</strong> : le pionnier, interface dédiée, stockage Elasticsearch ou Cassandra ; accepte OTLP.</li>
+<li><strong>SaaS</strong> : Datadog, Honeycomb, New Relic, Dynatrace : puissants, chers, fréquents en grands comptes.</li>
+</ul>
+<pre><code># TraceQL : les traces lentes de l'escalade avec une erreur SMTP
+{ name = "escalate-incident" && duration > 1s } >> { span.db.system = "smtp" && status = error }</code></pre>
+<p>La corrélation est le but : depuis une alerte sur la latence p99, cliquer sur un exemplar → la trace → les logs de cette trace → le Pod et sa mémoire. Grafana avec Loki, Tempo, Prometheus/Mimir (la « pile LGTM ») le fait nativement.</p>
+
+<h3>34.5 Échantillonnage<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Tracer 100 % des requêtes coûte cher à fort trafic. <strong>Head sampling</strong> : décision au début de la trace (probabiliste, 10 %), simple mais on perd des erreurs. <strong>Tail sampling</strong> : décision après la trace complète dans le Collector (garder toutes les erreurs et les lentes, 10 % du reste), ce qu'il faut viser ; il exige que tous les spans d'une trace arrivent au même Collector (load balancing par trace id). Commencer à 100 % en staging, ajuster en prod.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Grafana Beyla</span><p>Auto-instrumentation par eBPF : métriques RED et traces OpenTelemetry de n'importe quel processus (Java, Go, Node, binaire inconnu) sans agent, sans changement de code ni d'image, legacy compris.</p><p><strong>Pourquoi ça différencie :</strong> Observer une application qu'on n'a pas le droit de modifier est un cas de mission fréquent ; Beyla y répond en dix minutes.</p><p><strong>À essayer en une heure :</strong> DaemonSet Beyla sur kind avec les métadonnées Kubernetes activées ; observe les traces du service « legacy » du TP 50 sans y toucher.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place le tracing distribué ? » OpenTelemetry comme standard, agent Java injecté par l'opérateur (zéro changement d'image), propagation W3C incluant Kafka, Collector en agent + gateway avec tail sampling, Tempo derrière Grafana, corrélation avec logs et métriques par trace_id et exemplars. Un exemple concret de ce que tu as trouvé avec une trace (le SMTP ci-dessus) vaut plus que la liste.</div>
+
+<div class="exo"><span class="tag">Exercice 34.1</span>
+<p>Les traces s'arrêtent au moment où l'API publie dans Kafka ; le consommateur produit des traces séparées. Cause et correction ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le contexte n'est pas propagé dans les en-têtes Kafka : le producteur ou le consommateur n'est pas instrumenté (agent OTel ou Spring Kafka avec observation activée, <code>spring.kafka.template.observation-enabled</code> et <code>listener.observation-enabled</code>). Avec l'agent, vérifier la version et que le consommateur crée bien un span enfant (mode <code>otel.instrumentation.kafka.experimental-span-attributes</code> selon le besoin).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 34.2</span>
+<p>Avec un head sampling à 5 %, l'équipe se plaint de ne jamais trouver la trace d'une erreur signalée par un utilisateur. Deux solutions.</p>
+<details><summary>Corrigé</summary><div class="sol">Tail sampling qui garde 100 % des traces en erreur et lentes ; ou forcer l'échantillonnage pour une population (en-tête de debug, utilisateurs internes, une organisation cliente en investigation). Et s'assurer que les logs, eux, sont conservés à 100 % pour les erreurs avec le trace_id, même si la trace a été échantillonnée.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 34 — Trois signaux corrélés sur CrisisShield</span>
+<ol>
+<li>Installe l'OpenTelemetry Operator, une CRD <code>Instrumentation</code> Java, et annote les Deployments de l'API et du worker : l'agent est injecté, sans reconstruire les images. Vérifie dans les logs de démarrage.</li>
+<li>Collector en agent (DaemonSet) et gateway (Deployment, 2 réplicas) avec load balancing par trace id, tail sampling (erreurs, > 1 s, 10 %), export vers Tempo (Helm, stockage MinIO), Mimir ou Prometheus remote write, et Loki. Grafana relié aux trois avec les liens de corrélation (derived fields Loki → Tempo, exemplars Prometheus → Tempo, Tempo → Loki).</li>
+<li>Ajoute deux spans métier annotés dans l'API. Vérifie la propagation API → Kafka → worker → PostgreSQL dans une seule trace.</li>
+<li>Injecte un problème : un appel sortant vers un service « notification » (un petit conteneur qui répond en 2 s aléatoirement). Retrouve-le depuis l'alerte de latence p99 → exemplar → trace → logs, et fais une capture de chaque étape.</li>
+<li>Écris trois requêtes TraceQL (erreurs par route, traces avec plus de 20 requêtes SQL, traces passant par le worker et dépassant 1 s).</li>
+<li>Mesure le volume de spans par minute à 100 %, puis avec le tail sampling, et le coût mémoire du Collector.</li>
+<li>Remplace l'agent par Micrometer Tracing natif dans l'API (dépendance et configuration OTLP), compare les spans obtenus et la charge JVM. Décide ce que tu gardes.</li>
+</ol>
+<p>Livrable : manifests OTel/Tempo dans le dépôt de config, captures de la corrélation, mesures dans <code>tp34.md</code>, <code>docs/cours-traces.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c34"> Chapitre 34 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 35 ===================== -->
+<article id="c35">
+<div class="chaphead"><span class="chapnum">Chapitre 35</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Alerting, SLI, SLO, budgets d'erreur</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Définir des SLI et SLO pertinents et calculer un budget d'erreur</li><li>Alerter sur les symptômes avec des règles de burn rate, pas sur les causes</li><li>Configurer Alertmanager : routage, regroupement, silences, escalade</li><li>Utiliser le budget d'erreur comme outil de décision entre vitesse et fiabilité</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>SLI centré utilisateur, SLO négocié avec le produit, budget d&#x27;erreur à dépenser.</li><li>Alerter sur le burn rate multi-fenêtres (symptôme), tickets pour les causes ; runbook obligatoire.</li><li>Alertmanager : regroupement, inhibition, silences, escalade ; revue mensuelle du bruit.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 152" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Le budget d&#x27;erreur se dépense ; le burn rate dit s&#x27;il faut réveiller quelqu&#x27;un. On alerte sur la vitesse à laquelle le budget brûle (symptôme), pas sur le CPU (cause)."><defs><marker id="ah15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><text x="20" y="22" class="glab">SLO 99,9 % sur 30 jours = 43 min de budget</text><rect x="20" y="34" width="440" height="34" rx="6" class="frame"/><rect x="20" y="34" width="290" height="34" rx="6" class="redfill"/><text x="165" y="56" text-anchor="middle" class="lblw">consommé : 29 min</text><text x="385" y="56" text-anchor="middle" class="lbl">reste : 14 min</text><rect x="20" y="92" width="210" height="56" rx="7" class="red"/><text x="125.0" y="116.0" text-anchor="middle" font-size="13" font-weight="700">Burn rate 14 ×</text><text x="125.0" y="133.1" text-anchor="middle" class="lbl">budget épuisé en 2 jours → page</text><rect x="250" y="92" width="210" height="56" rx="7" class="amber"/><text x="355.0" y="116.0" text-anchor="middle" font-size="13" font-weight="700">Burn rate 1 ×</text><text x="355.0" y="133.1" text-anchor="middle" class="lbl">épuisé pile à 30 jours → ticket</text></svg><figcaption>Le budget d'erreur se dépense ; le burn rate dit s'il faut réveiller quelqu'un. On alerte sur la vitesse à laquelle le budget brûle (symptôme), pas sur le CPU (cause).</figcaption></figure>
+
+
+<h3>35.1 SLI, SLO, SLA<span class="badge tag-coeur">Par cœur</span></h3>
+<ul>
+<li><strong>SLI</strong> (indicateur) : une mesure de ce que l'utilisateur vit. Disponibilité = requêtes réussies / requêtes totales ; latence = requêtes sous 300 ms / total ; fraîcheur des données ; taux de succès d'un parcours. Mesuré au plus près de l'utilisateur (ingress, ou sonde externe), pas sur le CPU.</li>
+<li><strong>SLO</strong> (objectif) : la cible sur une fenêtre. « 99,9 % des requêtes de l'API réussissent sur 30 jours glissants » ; « 95 % des requêtes sous 300 ms ».</li>
+<li><strong>SLA</strong> (accord) : l'engagement contractuel avec pénalités, toujours plus lâche que le SLO interne (SLA 99,5 % si SLO 99,9 %).</li>
+<li><strong>Budget d'erreur</strong> : 100 % − SLO. À 99,9 % sur 30 jours : 43 minutes d'indisponibilité, ou 0,1 % des requêtes en erreur. C'est un budget à <em>dépenser</em> : déploiements, expérimentations, maintenance. Épuisé → on gèle les changements et on travaille la fiabilité ; largement disponible → on peut prendre des risques.</li>
+</ul>
+<div class="tablewrap"><table>
+<tr><th>SLO</th><th>Indisponibilité autorisée par an</th><th>Par 30 jours</th><th>Ce que ça implique</th></tr>
+<tr><td>99 %</td><td>3,65 jours</td><td>7,2 h</td><td>Redémarrage manuel possible</td></tr>
+<tr><td>99,9 %</td><td>8,76 h</td><td>43 min</td><td>Astreinte, automatisation du rollback</td></tr>
+<tr><td>99,95 %</td><td>4,38 h</td><td>21 min</td><td>Multi-AZ, déploiements progressifs</td></tr>
+<tr><td>99,99 %</td><td>52 min</td><td>4,3 min</td><td>Multi-région, aucune intervention humaine dans la boucle</td></tr>
+</table></div>
+<p>Chaque neuf multiplie le coût. Le SLO se choisit avec le produit à partir de ce que les utilisateurs tolèrent, pas à partir de ce que la technique permet. Une application de gestion de crise a des exigences plus fortes sur la disponibilité que sur la latence ; un dashboard interne, l'inverse.</p>
+
+<h3>35.2 Alerter sur les symptômes : le burn rate<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Une alerte doit signifier : « un humain doit agir maintenant ». Les alertes sur les causes (CPU à 80 %, un Pod redémarré) réveillent pour rien ; les alertes sur les symptômes (le SLO est en train d'être consommé anormalement vite) réveillent quand ça compte. Le <strong>burn rate</strong> = vitesse de consommation du budget par rapport au rythme qui l'épuiserait exactement à la fin de la fenêtre. Burn rate 1 = tout le budget en 30 jours ; 14,4 = tout le budget en 2 jours.</p>
+<pre><code># Recording rules : SLI d'erreur sur plusieurs fenêtres
+- record: sli:api_error_ratio:rate5m
+  expr: sum(rate(http_server_requests_seconds_count{job="api",status=~"5.."}[5m])) / sum(rate(http_server_requests_seconds_count{job="api"}[5m]))
+- record: sli:api_error_ratio:rate1h
+  expr: ... [1h] ...
+- record: sli:api_error_ratio:rate6h
+  expr: ... [6h] ...
+
+# Alertes multi-fenêtres, multi-burn-rate (Google SRE Workbook), SLO 99,9 % → budget 0,001
+- alert: APIErrorBudgetBurnFast          # 2 % du budget en 1 h : page immédiate
+  expr: sli:api_error_ratio:rate1h > 14.4 * 0.001 and sli:api_error_ratio:rate5m > 14.4 * 0.001
+  for: 2m
+  labels: {severity: page, service: api}
+  annotations:
+    summary: "L'API consomme son budget d'erreur 14x trop vite"
+    runbook_url: https://runbooks.crisisshield.example/api/error-budget
+- alert: APIErrorBudgetBurnSlow          # 10 % du budget en 3 jours : ticket, pas de réveil
+  expr: sli:api_error_ratio:rate6h > 1 * 0.001 and sli:api_error_ratio:rate1h > 1 * 0.001
+  for: 1h
+  labels: {severity: ticket, service: api}</code></pre>
+<p>La double fenêtre (longue pour la signification, courte pour ne pas alerter après la fin du problème) évite les faux positifs et les alertes qui durent. Des outils génèrent ces règles à partir d'une définition de SLO : Sloth, Pyrra, Grafana SLO.</p>
+<p>Quelques alertes de cause restent utiles en <em>ticket</em> (pas en page) : disque plein dans 4 h, certificat expirant dans 14 jours, sauvegarde absente depuis 26 h, nœud NotReady, Pod en CrashLoopBackOff depuis 15 min.</p>
+
+<h3>35.3 Alertmanager<span class="badge tag-important">Important</span></h3>
+<pre><code>route:
+  receiver: slack-general
+  group_by: [alertname, service]
+  group_wait: 30s          # attendre d'autres alertes du même groupe avant d'envoyer
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+    - matchers: [severity="page"]
+      receiver: pagerduty-astreinte
+      continue: true                     # aussi vers Slack
+    - matchers: [severity="page"]
+      receiver: slack-incidents
+    - matchers: [severity="ticket"]
+      receiver: gitlab-issues
+inhibit_rules:
+  - source_matchers: [alertname="ClusterDown"]
+    target_matchers: [severity="page"]
+    equal: [cluster]                     # si le cluster est down, taire tout le reste
+receivers:
+  - name: pagerduty-astreinte
+    pagerduty_configs: [{routing_key_file: /etc/secrets/pd, severity: critical}]
+  - name: slack-incidents
+    slack_configs: [{api_url_file: /etc/secrets/slack, channel: "#incidents", title: '{{ .CommonAnnotations.summary }}'}]</code></pre>
+<ul>
+<li><strong>Regroupement</strong> : 50 Pods en erreur = une notification, pas 50.</li>
+<li><strong>Inhibition</strong> : une panne amont tait les alertes aval.</li>
+<li><strong>Silences</strong> : pendant une maintenance, avec durée et auteur.</li>
+<li><strong>Escalade</strong> : dans l'outil d'astreinte (PagerDuty, Opsgenie, Grafana OnCall) : non acquitté en 5 min → personne suivante.</li>
+<li>Chaque alerte de type page a un <strong>runbook</strong> lié : quoi vérifier, quoi faire, qui appeler.</li>
+</ul>
+<p>Hygiène : une alerte qui se déclenche sans action pendant deux semaines est supprimée ou rétrogradée. Une revue mensuelle des alertes (nombre, taux d'action, faux positifs) fait partie du processus. Le nombre de pages par semaine et par personne est une métrique de santé de l'équipe.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Robusta</span><p>Enrichit chaque alerte Prometheus avec le contexte utile (logs du Pod, événements, graphes, dernier déploiement) et propose des remédiations en un clic dans Slack ou Teams ; son outil KRR recommande les requests à partir de l'usage réel.</p><p><strong>Pourquoi ça différencie :</strong> Réduire le temps de diagnostic de l'astreinte avec des alertes enrichies est une amélioration visible immédiatement par les équipes.</p><p><strong>À essayer en une heure :</strong> Helm <code>robusta</code> sur kind branché sur ton Alertmanager et un webhook Slack de test ; déclenche un CrashLoop et lis l'alerte enrichie.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu conçois l'alerting ? » SLI centrés utilisateur, SLO négociés avec le produit, budget d'erreur, alertes de burn rate multi-fenêtres pour les pages, alertes de cause en ticket, Alertmanager avec regroupement et inhibition, runbook obligatoire, revue mensuelle du bruit. Et la phrase clé : « on alerte sur ce que l'utilisateur subit, pas sur ce que la machine fait ».</div>
+
+<div class="exo"><span class="tag">Exercice 35.1</span>
+<p>SLO de disponibilité 99,95 % sur 30 jours. Un incident de 12 minutes a eu lieu le 3, un autre de 6 minutes le 15. Quel budget reste-t-il, et l'équipe peut-elle faire une migration risquée le 20 ?</p>
+<details><summary>Corrigé</summary><div class="sol">Budget : 0,05 % × 30 j × 24 h × 60 = 21,6 min. Consommé : 18 min, reste 3,6 min (17 %). Une migration risquée n'est pas raisonnable sans mesures compensatoires (fenêtre annoncée, blue/green avec rollback en secondes, réalisée hors pic) ; sinon on attend que la fenêtre glissante libère du budget.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 35.2</span>
+<p>L'équipe reçoit 40 pages par semaine ; 35 se résolvent seules en cinq minutes. Diagnostic et plan.</p>
+<details><summary>Corrigé</summary><div class="sol">Alertes de cause, sans <code>for</code>, seuils trop sensibles, pas de regroupement. Plan : inventaire des alertes des 30 derniers jours avec action prise ; supprimer ou passer en ticket celles sans action ; convertir les principales en burn rate multi-fenêtres ; ajouter <code>for</code> ; regrouper ; mesurer les pages par semaine comme objectif d'équipe (cible < 2 par personne et par semaine).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 35 — SLO et alerting de CrisisShield</span>
+<ol>
+<li>Définis avec un « produit » imaginaire (écris le raisonnement) trois SLO pour CrisisShield : disponibilité de l'API, latence de la création d'incident, fraîcheur de la carte des incidents (délai entre événement Kafka et affichage). Justifie chaque cible.</li>
+<li>Génère les recording rules et alertes de burn rate avec Sloth ou Pyrra (CRD <code>ServiceLevel</code>) ; vérifie les règles produites et le dashboard SLO (budget restant, burn rate).</li>
+<li>Alertmanager : routes page/ticket/info, regroupement, inhibition « cluster down », receiver Slack (webhook vers un canal de test ou un simple conteneur qui affiche les webhooks reçus, par exemple <code>webhook.site</code> local ou un petit serveur Python), receiver « astreinte » simulé, silences via l'interface.</li>
+<li>Ajoute cinq alertes de cause en ticket (disque, certificat via blackbox/cert-manager metrics, sauvegarde CloudNativePG, CrashLoop, PVC presque plein) avec <code>runbook_url</code> pointant vers un dossier <code>runbooks/</code> que tu crées avec un runbook par alerte.</li>
+<li>Test : injecte 5 % d'erreurs 500 avec le service de fautes du TP 30 (ou une route qui échoue). Vérifie que l'alerte rapide part en moins de 5 minutes, que la lente ne part pas ; puis 0,2 % d'erreurs pendant 2 heures : la lente doit partir, pas la rapide.</li>
+<li>Revue : exporte l'historique des alertes de tes TP (Alertmanager API) et classe-les : action prise, bruit, à supprimer.</li>
+</ol>
+<p>Livrable : définitions de SLO, règles, configuration Alertmanager, runbooks dans le dépôt de config, preuves de test dans <code>tp35.md</code>, <code>docs/cours-slo-alerting.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c35"> Chapitre 35 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 36 ===================== -->
+<article id="c36">
+<div class="chaphead"><span class="chapnum">Chapitre 36</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Astreinte, gestion d'incident, post-mortems</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Organiser une astreinte soutenable</li><li>Conduire un incident : rôles, communication, décisions</li><li>Écrire un post-mortem sans blâme qui produit des actions réelles</li><li>Mesurer et améliorer la réponse aux incidents</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Astreinte soutenable : rotation à 5 ou 6, moins de 2 pages par semaine, compensation, passation.</li><li>Incident : rôles (le commandant ne débogue pas), mitiger avant de comprendre, communication à cadence fixe.</li><li>Post-mortem sans blâme dans les 5 jours, actions suivies jusqu&#x27;à fermeture ; game days pour s&#x27;entraîner.</li></ol></div>
+
+
+<h3>36.1 L'astreinte<span class="badge tag-contexte">Bon à savoir</span></h3>
+<ul>
+<li><strong>Rotation</strong> : une semaine par personne, au moins 5 à 6 personnes pour que chacun ne soit d'astreinte qu'une semaine sur six ; un primaire et un secondaire ; pas d'astreinte pour une équipe de deux (c'est un risque humain et un risque de service).</li>
+<li><strong>Conditions</strong> : compensation (légale en France : rémunération ou repos, cadre défini par accord), matériel, droit à la déconnexion hors astreinte, pas de déploiement risqué le vendredi soir pour celui qui n'est pas d'astreinte.</li>
+<li><strong>Charge</strong> : cible < 2 pages par semaine par personne ; au-delà, l'équipe travaille la fiabilité avant les fonctionnalités (c'est ce que le budget d'erreur formalise).</li>
+<li><strong>Outillage</strong> : PagerDuty, Opsgenie, Grafana OnCall ; planning, escalade, acquittement, historique. Runbooks accessibles hors du système en panne (pas uniquement dans le wiki qui tourne sur le cluster).</li>
+<li><strong>Passation</strong> : un point hebdomadaire de 15 minutes entre sortant et entrant : ce qui s'est passé, ce qui est fragile, ce qui est planifié.</li>
+</ul>
+
+<h3>36.2 Conduire un incident<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>Détection ─► Déclaration ─► Triage ─► Mitigation ─► Résolution ─► Post-mortem
+(alerte,     (canal dédié,   (sévérité,  (d'abord arrêter   (cause         (dans les 5 jours)
+ utilisateur) rôles)          impact)     l'impact)          corrigée)</code></pre>
+<ul>
+<li><strong>Sévérité</strong> : SEV1 (service majeur indisponible ou données à risque, tout le monde), SEV2 (dégradation importante, équipe d'astreinte), SEV3 (impact limité, heures ouvrées). Définie à l'avance, avec des exemples.</li>
+<li><strong>Rôles</strong> (à partir de SEV2) : <em>commandant d'incident</em> (coordonne, décide, ne débogue pas), <em>responsable technique</em> (investigue), <em>communicant</em> (statut interne et externe à intervalle fixe, ex. toutes les 30 min), <em>scribe</em> (chronologie horodatée). Une personne peut cumuler en petite équipe, mais le commandant ne débogue jamais.</li>
+<li><strong>Mitiger avant de comprendre</strong> : rollback, feature flag, bascule, redémarrage, augmentation de capacité. Comprendre vient après, quand les utilisateurs ne souffrent plus. Le réflexe « c'est le dernier déploiement ? » résout une majorité d'incidents.</li>
+<li><strong>Communication</strong> : page de statut (Statuspage, ou une page statique sur un hébergement indépendant), messages courts et factuels : impact, ce qu'on fait, prochaine mise à jour. Ne pas promettre d'heure de résolution.</li>
+<li><strong>Chronologie</strong> : tout est horodaté dans le canal d'incident (décisions, commandes, observations) ; c'est la matière du post-mortem. Un bot d'incident (incident.io, Rootly, ou un simple workflow Slack) automatise canal, rôles, chronologie.</li>
+</ul>
+
+<h3>36.3 Le post-mortem sans blâme<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Objectif : que le système (technique et organisationnel) devienne plus robuste, pas de trouver un coupable. Une personne qui a fait une erreur a agi rationnellement avec les informations et les outils qu'elle avait ; la question est « qu'est-ce qui a rendu cette erreur possible et son impact si grand ? ».</p>
+<pre><code># Post-mortem — INC-2026-0918 — Indisponibilité de l'API (SEV1)
+
+## Résumé
+Le 18/09 de 10:12 à 10:47 (35 min), l'API CrisisShield a renvoyé 100 % d'erreurs 500. 
+Impact : 340 utilisateurs, 12 incidents non créés pendant la fenêtre. Budget d'erreur consommé : 81 %.
+
+## Chronologie (UTC+2)
+10:05  Déploiement v1.7.0 en production (rolling)
+10:12  Alerte APIErrorBudgetBurnFast ; page de l'astreinte
+10:15  Acquittement ; canal #inc-0918 ouvert ; commandant : A., technique : B.
+10:19  Hypothèse : migration Flyway V17 a renommé la colonne `priority` ; v1.6 encore présente pendant le rolling
+10:24  Décision : rollback code v1.6 → échec, v1.6 ne connaît pas la nouvelle colonne
+10:31  Décision : migration corrective V18 rajoutant la colonne d'origine en vue
+10:44  V18 appliquée ; taux d'erreur redescend
+10:47  Résolution confirmée ; communication de fin
+
+## Cause(s)
+- La migration V17 n'était pas rétrocompatible (renommage au lieu d'expand/contract).
+- La revue de merge request n'a pas de checklist pour les migrations.
+- Le déploiement n'avait pas de canary : 100 % du trafic a basculé.
+- Le rollback n'a pas été testé avec une migration de schéma.
+
+## Ce qui a bien fonctionné
+- Alerte en 7 min, rôles tenus, communication toutes les 15 min.
+
+## Actions (propriétaire, échéance, ticket)
+- [ ] Checklist migration dans le template de MR (B., 25/09, #412)
+- [ ] Test automatique « ancienne version + nouveau schéma » dans la CI (C., 09/10, #413)
+- [ ] Canary 10 % pendant 10 min sur la prod via Argo Rollouts (A., 16/10, #414)
+- [ ] Exercice de rollback avec migration en staging, trimestriel (équipe, 30/10, #415)
+
+## Leçons
+Le rollback de code ne suffit pas quand le schéma a changé ; la compatibilité N-1 est une exigence de déploiement, pas une bonne pratique.</code></pre>
+<p>Règles : rédigé dans les 5 jours, revu en réunion (30 min, l'équipe et les parties prenantes), publié en interne (transparence), actions suivies comme des tickets prioritaires jusqu'à fermeture. Les post-mortems s'accumulent en base de connaissance ; on y relit les motifs récurrents (les migrations, les certificats, les quotas...).</p>
+
+<h3>36.4 Mesurer et s'entraîner<span class="badge tag-contexte">Bon à savoir</span></h3>
+<ul>
+<li>Métriques : MTTD (détection), MTTA (acquittement), MTTR (rétablissement), nombre d'incidents par sévérité, part détectée par alerte contre par utilisateur, pages par personne, actions de post-mortem fermées dans les délais.</li>
+<li><strong>Game days</strong> : exercices planifiés où l'on casse quelque chose en staging (ou en prod, avec précaution) et l'équipe répond comme pour un vrai incident. C'est le lien avec le chaos engineering (niveau 8).</li>
+<li>Formation de l'astreinte : shadowing (deux semaines en double), accès vérifiés avant la première semaine, runbooks testés.</li>
+</ul>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Dispatch (Netflix)</span><p>Plateforme de gestion d'incident open source : création automatique des canaux, assignation des rôles, chronologie, tâches, notifications, rapports et post-mortems, intégrée à Slack, Jira et Google Workspace.</p><p><strong>Pourquoi ça différencie :</strong> Proposer un outil d'incident complet et gratuit à une organisation qui gère ses incidents par e-mail, c'est un livrable de mission apprécié.</p><p><strong>À essayer en une heure :</strong> Compose du dépôt Netflix/dispatch, déclare un incident SEV2 fictif et exécute le processus du TP 36 dedans.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Raconte un incident que tu as géré. » Structure : contexte, détection, ton rôle, la mitigation choisie et pourquoi, la cause, ce qui a changé après. Insiste sur la mitigation avant la compréhension et sur le post-mortem sans blâme avec des actions réellement fermées. Ta double casquette Scrum Master te donne la légitimité sur la partie organisationnelle : utilise-la.</div>
+
+<div class="exo"><span class="tag">Exercice 36.1</span>
+<p>Pendant un SEV1, le commandant d'incident, meilleur expert de la base de données, commence à investiguer lui-même. Trois conséquences prévisibles ?</p>
+<details><summary>Corrigé</summary><div class="sol">Plus personne ne coordonne (décisions non prises, doublons, pistes oubliées) ; la communication s'arrête (parties prenantes qui interrompent l'investigation) ; la chronologie n'est plus tenue. Le commandant délègue l'investigation, même à quelqu'un de moins expert, ou passe le commandement.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 36.2</span>
+<p>Un post-mortem conclut : « cause : erreur humaine, l'ingénieur a lancé la commande sur la prod au lieu du staging. Action : être plus prudent. » Réécris cause et actions.</p>
+<details><summary>Corrigé</summary><div class="sol">Causes : les contextes prod et staging sont accessibles depuis le même poste sans distinction visuelle ni confirmation ; la commande destructive n'exige pas de confirmation ; l'accès direct en écriture à la prod existe hors pipeline. Actions : contextes nommés et colorés avec invite distincte, garde-fou sur les commandes destructives (plugin de confirmation, <code>kubectl</code> en lecture seule par défaut), suppression de l'accès en écriture direct au profit de GitOps, accès juste-à-temps tracé pour l'urgence.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 36 — Game day sur CrisisShield</span>
+<ol>
+<li>Rédige la politique d'incident de CrisisShield : sévérités avec exemples, rôles, canaux, cadence de communication, modèle de post-mortem (celui de 36.3), SLA de rédaction. Déploie une page de statut statique (un HTML sur S3/MinIO, mise à jour par script) indépendante du cluster.</li>
+<li>Installe Grafana OnCall (ou configure un receiver simulé) avec un planning à deux personnes fictives et une escalade ; branche Alertmanager dessus.</li>
+<li>Prépare trois scénarios de panne sans les révéler à « l'astreinte » (toi, plus tard, ou un binôme si tu en as un) : suppression du Secret de base, quota du namespace réduit à 1 Pod, certificat de l'Ingress expiré (change la durée dans cert-manager). Note pour chacun l'alerte attendue et le runbook.</li>
+<li>Joue chaque scénario en respectant le processus : déclaration, rôles (même seul, écris les messages qu'aurait envoyés chaque rôle), chronologie horodatée dans un fichier, mitigation, résolution. Mesure MTTD, MTTA, MTTR.</li>
+<li>Écris un post-mortem complet pour le scénario le plus intéressant, avec au moins trois actions concrètes, et exécute-en une (par exemple l'alerte de certificat qui manquait, ou le PDB).</li>
+<li>Bilan : quelles alertes ont manqué, quels runbooks étaient faux, quel accès n'était pas prêt. Corrige dans le dépôt de config.</li>
+</ol>
+<p>Livrable : <code>docs/incidents/politique.md</code>, <code>docs/incidents/postmortem-*.md</code>, page de statut, mesures dans <code>tp36.md</code>, <code>docs/cours-incidents.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c36"> Chapitre 36 terminé</label>
+</article>
+
+<!-- ===================== REVISION ===================== -->
+<section class="rev" id="rev">
+<h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 6</h2>
+<ol class="quiz">
+<li>Monitoring contre observabilité ; les trois signaux et ce qui les relie.</li>
+<li>Les six règles d'un bon log applicatif.</li>
+<li>Loki contre Elasticsearch : modèle d'indexation, coût, cas d'usage ; le piège des labels.</li>
+<li>Rétention et conformité des logs : ce que tu configures par défaut.</li>
+<li>Les quatre types de métriques Prometheus et la requête associée à chacun.</li>
+<li>Cardinalité : définition, exemple d'explosion, remède.</li>
+<li>RED, USE, quatre signaux d'or : écris les requêtes PromQL de RED.</li>
+<li>Pourquoi jamais de moyenne de latence.</li>
+<li>Thanos/Mimir : le problème qu'ils résolvent.</li>
+<li>Trace, span, propagation ; ce que les traces montrent que rien d'autre ne montre.</li>
+<li>OpenTelemetry : composants, Collector (receivers, processors, exporters), agent contre gateway.</li>
+<li>Instrumenter du Java sans changer l'image.</li>
+<li>Head contre tail sampling ; la politique que tu recommandes.</li>
+<li>Corrélation logs ↔ traces ↔ métriques : les mécanismes (trace_id, exemplars).</li>
+<li>SLI, SLO, SLA, budget d'erreur : définitions, calcul à 99,9 % sur 30 jours.</li>
+<li>Burn rate multi-fenêtres : pourquoi et comment.</li>
+<li>Alertmanager : regroupement, inhibition, silences, escalade ; runbook obligatoire.</li>
+<li>Une astreinte soutenable : rotation, charge cible, conditions.</li>
+<li>Rôles pendant un incident ; pourquoi mitiger avant de comprendre.</li>
+<li>Le post-mortem sans blâme : structure, règles, ce qui distingue une vraie cause d'une « erreur humaine ».</li>
+</ol>
+<p><strong>Prochain niveau</strong> : Sécurité (DevSecOps) — shift-left, SAST/DAST/SCA, SBOM, secrets avec Vault, sécurité des conteneurs et de Kubernetes, supply chain, zero trust et PKI, conformité.</p>
+</section>
+
+<div class="footnav"><a href="devops-niveau-5-kubernetes.html">← Niveau 5 — Kubernetes</a><a href="devops-niveau-7-securite-devsecops.html">Niveau 7 — Sécurité DevSecOps →</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='devops-n6-progress', THEME='devops-theme';
+  var boxes=document.querySelectorAll('input[data-ch]');
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  function render(){
+    var done=0; boxes.forEach(function(b){ if(b.checked) done++; });
+    var pct=Math.round(done/boxes.length*100);
+    document.getElementById('pct').textContent=pct+' %';
+    document.getElementById('bar').style.width=pct+'%';
+  }
+  var st=load();
+  boxes.forEach(function(b){ b.checked=!!st[b.dataset.ch]; b.addEventListener('change',function(){ st[b.dataset.ch]=b.checked; save(st); render(); }); });
+  render();
+  var root=document.documentElement;
+  try{ var t=localStorage.getItem(THEME); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.getElementById('theme').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur==='dark';
+    var next=dark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem(THEME,next); }catch(e){}
+  });
+})();
+</script>
+
+<script>
+(function(){
+  // Barre de lecture
+  var bar=document.createElement('div'); bar.className='readbar'; document.body.prepend(bar);
+  function upd(){ var h=document.documentElement; var max=h.scrollHeight-h.clientHeight; bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%'; }
+  window.addEventListener('scroll',upd,{passive:true}); upd();
+  // Bouton copier sur chaque bloc de code
+  document.querySelectorAll('pre').forEach(function(pre){
+    var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier'; b.setAttribute('aria-label','Copier le code');
+    b.addEventListener('click',function(){
+      var t=pre.innerText.replace(/^Copier\n?/,'').replace(/Copi\u00e9 !$/,'');
+      var done=function(){ b.textContent='Copi\u00e9 !'; b.classList.add('ok'); setTimeout(function(){ b.textContent='Copier'; b.classList.remove('ok'); },1500); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); }
+      else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); done(); }
+    });
+    pre.appendChild(b);
+  });
+  // Sommaire qui suit la lecture
+  var links=document.querySelectorAll('nav.toc a[href^="#"]');
+  if(links.length&&'IntersectionObserver' in window){
+    var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){a.classList.remove('active');}); var a=map[e.target.id]; if(a) a.classList.add('active'); } });
+    },{rootMargin:'-10% 0px -75% 0px'});
+    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el) io.observe(el); });
+  }
+  // Impression : ouvrir tous les corrig\u00e9s
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.open=true; }); });
+})();
+</script>
+
+<script>
+(function(){
+  // Tableaux : libellé de colonne sur chaque cellule pour l'affichage empilé
+  document.querySelectorAll('table').forEach(function(t){
+    var rows=t.rows; if(!rows.length) return;
+    var head=rows[0]; var ths=head.querySelectorAll('th');
+    if(!ths.length) return;
+    head.classList.add('head');
+    var labels=Array.prototype.map.call(head.cells,function(c){return c.textContent.trim();});
+    for(var i=1;i<rows.length;i++){
+      var cells=rows[i].cells;
+      for(var j=0;j<cells.length;j++){ if(cells[j].tagName==='TD') cells[j].setAttribute('data-label',labels[j]||''); }
+    }
+    t.classList.add('stack');
+  });
+  // Schémas ASCII : garder l'alignement (défilement horizontal) au lieu du repli
+  document.querySelectorAll('pre').forEach(function(p){
+    if(/[\u2500-\u257F\u25B6\u25C0\u25BA\u25C4\u2192\u2190\u2191\u2193]/.test(p.textContent)) p.classList.add('diagram');
+  });
+})();
+</script>
+</body>
+</html>

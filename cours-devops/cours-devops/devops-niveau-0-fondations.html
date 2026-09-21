@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cours DevOps — Niveau 0 : Fondations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="in">
+    <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
+    <div class="level">Parcours DevOps — Niveau 0 sur 9</div>
+    <h1>Fondations : du poste vide au premier service en ligne</h1>
+    <p class="lead">Six chapitres pour construire les bases que tout DevOps utilise chaque jour : Linux, réseau, scripting, Git, bases de données. Chaque chapitre se termine par des exercices corrigés et un travail pratique réalisable entièrement sous Docker, depuis Git Bash.</p>
+    <div class="meta">
+      <span>6 chapitres</span><span>≈ 30 h de travail</span><span>Prérequis : Docker Desktop installé</span>
+    </div>
+    <button class="theme" id="theme">Basculer clair / sombre</button>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <strong>Sommaire</strong>
+  <ol>
+    <li><a href="#c1" class="toc-junior">Qu'est-ce que le DevOps</a></li>
+    <li><a href="#c2" class="toc-junior">Linux essentiel</a></li>
+    <li><a href="#c3" class="toc-junior">Réseau</a></li>
+    <li><a href="#c4" class="toc-junior">Scripting Bash et Python</a></li>
+    <li><a href="#c5" class="toc-junior">Git</a></li>
+    <li><a href="#c6" class="toc-confirme">Données et architecture</a></li>
+    <li><a href="#rev">Révision du niveau</a></li>
+  </ol>
+<div class="legend">Niveau des chapitres : <span class="badge lvl-junior">Junior</span><span class="badge lvl-confirme">Confirmé</span> <span class="badge badge-niche">Techno de niche</span> = encadré différenciant dans chaque chapitre<br>Mémorisation : <span class="badge tag-coeur">Par cœur</span> <span class="badge tag-important">Important</span> <span class="badge tag-contexte">Bon à savoir</span></div>
+  <div class="prog">Progression : <span id="pct">0 %</span><div class="bar"><i id="bar"></i></div></div>
+</nav>
+
+<main>
+
+<!-- ===================== CHAPITRE 1 ===================== -->
+<article id="c1">
+<div class="chaphead"><span class="chapnum">Chapitre 1</span><span class="badge lvl-junior">Junior</span></div>
+<h2>Qu'est-ce que le DevOps</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Expliquer pourquoi le DevOps est né et quel problème il résout</li><li>Décrire les modèles CALMS et Three Ways</li><li>Distinguer DevOps, SRE, Platform Engineering et DevSecOps</li><li>Lire les quatre métriques DORA</li></ul></div>
+<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le DevOps répare un problème d&#x27;organisation : Dev et Ops avaient des objectifs contradictoires.</li><li>CALMS et les Three Ways en sont la grammaire ; DORA en est la mesure.</li><li>Ce n&#x27;est pas un poste ni une liste d&#x27;outils : en entretien, parle culture, pratiques, mesure.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 167" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Les métriques DORA : deux mesures de vitesse, deux de stabilité, qui progressent ensemble. Les équipes performantes améliorent les quatre en même temps : ce n&#x27;est pas un compromis."><defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="220" height="140" rx="10" class="frame"/><text x="20" y="22" class="glab">Vitesse</text><rect x="20" y="45" width="200" height="50" rx="7" class="soft"/><text x="120.0" y="74.5" text-anchor="middle" font-size="13" font-weight="700">Fréquence de déploiement</text><rect x="20" y="105" width="200" height="50" rx="7" class="soft"/><text x="120.0" y="134.6" text-anchor="middle" font-size="13" font-weight="700">Délai commit → production</text><rect x="250" y="30" width="220" height="140" rx="10" class="frame"/><text x="260" y="22" class="glab">Stabilité</text><rect x="260" y="45" width="200" height="50" rx="7" class="green"/><text x="360.0" y="74.5" text-anchor="middle" font-size="13" font-weight="700">Taux d&#x27;échec des changements</text><rect x="260" y="105" width="200" height="50" rx="7" class="green"/><text x="360.0" y="134.6" text-anchor="middle" font-size="13" font-weight="700">Temps de rétablissement</text></svg><figcaption>Les métriques DORA : deux mesures de vitesse, deux de stabilité, qui progressent ensemble. Les équipes performantes améliorent les quatre en même temps : ce n'est pas un compromis.</figcaption></figure>
+
+
+<h3>1.1 Le problème d'origine : le mur entre Dev et Ops<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Jusqu'aux années 2000, les équipes de développement livraient un logiciel « fini » à une équipe d'exploitation qui devait le faire tourner. Les développeurs étaient payés pour livrer des fonctionnalités vite ; les opérationnels étaient payés pour que rien ne tombe. Objectifs contradictoires, cycles de livraison de plusieurs mois, mises en production nocturnes, incidents dont personne ne se sent responsable.</p>
+<p>Le mot DevOps apparaît en 2009 (Patrick Debois, premiers « DevOpsDays »). L'idée : les mêmes personnes, ou des équipes qui collaborent réellement, sont responsables du code <em>et</em> de son fonctionnement en production. « You build it, you run it » (Werner Vogels, Amazon, 2006).</p>
+
+<h3>1.2 CALMS : les cinq piliers<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Pilier</th><th>Signification</th><th>Concrètement</th></tr>
+<tr><td>Culture</td><td>Responsabilité partagée, absence de blâme</td><td>Post-mortems sans coupable, équipes produit pluridisciplinaires</td></tr>
+<tr><td>Automation</td><td>Tout ce qui est répétitif est automatisé</td><td>Pipelines CI/CD, infrastructure as code, tests</td></tr>
+<tr><td>Lean</td><td>Petits lots, flux continu, réduction du gaspillage</td><td>Livrer souvent, limiter le travail en cours</td></tr>
+<tr><td>Measurement</td><td>Décisions fondées sur des mesures</td><td>Métriques DORA, monitoring, SLO</td></tr>
+<tr><td>Sharing</td><td>Connaissance partagée et documentée</td><td>Runbooks, revues de code, documentation vivante</td></tr>
+</table></div>
+
+<h3>1.3 Les Three Ways (The Phoenix Project, The DevOps Handbook)<span class="badge tag-contexte">Bon à savoir</span></h3>
+<ol>
+<li><strong>Flow</strong> : accélérer le flux de gauche à droite (de l'idée à la production). Réduire la taille des lots, éliminer les files d'attente, rendre le travail visible.</li>
+<li><strong>Feedback</strong> : accélérer le retour de droite à gauche. Tests automatiques, monitoring, alerting, télémétrie : détecter les problèmes tôt et près de leur cause.</li>
+<li><strong>Apprentissage continu</strong> : expérimenter, accepter l'échec comme source d'apprentissage, transformer les améliorations locales en améliorations globales.</li>
+</ol>
+
+<h3>1.4 DevOps, SRE, Platform Engineering, DevSecOps<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>DevOps</strong> : une culture et un ensemble de pratiques. Ce n'est pas un poste, même si le marché l'utilise comme titre.</li>
+<li><strong>SRE</strong> (Site Reliability Engineering, Google 2003) : une implémentation concrète du DevOps centrée sur la fiabilité, mesurée par des SLO et des budgets d'erreur. « Traiter l'exploitation comme un problème logiciel. »</li>
+<li><strong>Platform Engineering</strong> : construire une plateforme interne (IDP) que les équipes produit consomment en libre-service, pour éviter que chaque équipe réinvente son pipeline et son cluster.</li>
+<li><strong>DevSecOps</strong> : intégrer la sécurité dès le début du cycle (shift-left) au lieu d'un audit en fin de projet.</li>
+</ul>
+
+<h3>1.5 Mesurer : les métriques DORA<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Le rapport annuel « State of DevOps » (DORA, désormais Google) a identifié quatre métriques qui distinguent les équipes performantes :</p>
+<div class="tablewrap"><table>
+<tr><th>Métrique</th><th>Question</th><th>Équipe élite</th></tr>
+<tr><td>Deployment Frequency</td><td>À quelle fréquence livre-t-on en production ?</td><td>Plusieurs fois par jour</td></tr>
+<tr><td>Lead Time for Changes</td><td>Délai entre commit et production ?</td><td>Moins d'une heure</td></tr>
+<tr><td>Change Failure Rate</td><td>Quelle part des livraisons provoque un incident ?</td><td>0 à 15 %</td></tr>
+<tr><td>Time to Restore Service</td><td>Temps pour rétablir après incident ?</td><td>Moins d'une heure</td></tr>
+</table></div>
+<p>Retenir la logique : vitesse (les deux premières) <em>et</em> stabilité (les deux dernières) montent ensemble. Ce n'est pas un compromis. Depuis 2024, le rapport en ajoute une cinquième, le taux de retravail (part des déploiements qui corrigent un déploiement précédent) ; le chapitre 52 les mesure toutes les cinq.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Nix et les flakes</span><p>Environnements de développement et de build reproductibles au bit près : un fichier <code>flake.nix</code> décrit exactement les outils et leurs versions, identiques pour toute l'équipe et la CI. C'est aussi la base de NixOS et d'images de conteneurs sans distribution.</p><p><strong>Pourquoi ça différencie :</strong> Rares sont ceux qui le maîtrisent ; il répond à « ça marche sur ma machine » par construction, et c'est un excellent sujet de discussion sur la reproductibilité.</p><p><strong>À essayer en une heure :</strong> <code>docker run -it --rm nixos/nix nix-shell -p terraform kubectl --run "terraform version"</code></p></div>
+
+<div class="entretien"><strong>En entretien</strong> — question classique : « C'est quoi le DevOps pour vous ? » Réponse structurée : un problème (silos Dev/Ops), une culture (responsabilité partagée), des pratiques (CI/CD, IaC, observabilité), une mesure (DORA). Évite de réciter une liste d'outils.</div>
+
+<div class="exo"><span class="tag">Exercice 1.1 — Diagnostic</span>
+<p>Une équipe livre en production tous les trois mois, chaque mise en production mobilise six personnes un samedi, et 40 % des livraisons provoquent un retour arrière. Classe chaque symptôme selon la métrique DORA concernée et propose une première action par métrique.</p>
+<details><summary>Corrigé</summary><div class="sol">
+<ul><li>Tous les trois mois → Deployment Frequency faible. Action : réduire la taille des lots, livrer par fonctionnalité.</li>
+<li>Six personnes un samedi → symptôme d'un Lead Time long et d'un déploiement manuel. Action : automatiser le déploiement (pipeline), rendre le déploiement reproductible.</li>
+<li>40 % de retours arrière → Change Failure Rate élevé. Action : tests automatisés dans le pipeline, environnement de préproduction identique à la prod.</li>
+<li>Time to Restore n'est pas mesuré : commencer par le mesurer (heure de détection, heure de résolution).</li></ul>
+</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 1.2 — Vocabulaire</span>
+<p>Associe chaque phrase au bon concept : SRE, Platform Engineering, DevSecOps, Lean.<br>
+a) « On scanne les dépendances à chaque commit. » b) « Notre budget d'erreur du trimestre est consommé, on gèle les nouvelles features. » c) « Les équipes créent leur environnement en cliquant sur un portail. » d) « On limite à deux tickets en cours par développeur. »</p>
+<details><summary>Corrigé</summary><div class="sol">a) DevSecOps — b) SRE — c) Platform Engineering — d) Lean (limitation du WIP).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 1 — Cartographier une chaîne de livraison</span>
+<p>Prends un projet que tu connais (CrisisShield, un projet EPITECH ou un projet de mission). Sur une feuille ou un fichier Markdown :</p>
+<ol>
+<li>Dessine toutes les étapes entre « une idée » et « en production » : qui fait quoi, avec quel outil, combien de temps chaque étape attend.</li>
+<li>Identifie les trois attentes les plus longues (files d'attente, validations manuelles, environnement indisponible).</li>
+<li>Pour chacune, écris ce qu'une automatisation changerait.</li>
+<li>Estime les quatre métriques DORA actuelles du projet, même grossièrement.</li>
+</ol>
+<p>Livrable : un fichier <code>value-stream.md</code> que tu garderas et mettras à jour aux niveaux suivants.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c1"> Chapitre 1 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 2 ===================== -->
+<article id="c2">
+<div class="chaphead"><span class="chapnum">Chapitre 2</span><span class="badge lvl-junior">Junior</span></div>
+<h2>Linux essentiel</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Naviguer et manipuler fichiers, permissions et processus en ligne de commande</li><li>Lire et écrire des redirections et des pipes</li><li>Gérer un service avec systemd et lire ses logs</li><li>Diagnostiquer disque, mémoire et CPU</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Tout est fichier, tout est processus : navigation, permissions, signaux, redirections.</li><li>La méthode de diagnostic (uptime, free, df, ss, journalctl) vaut plus que la liste des commandes.</li><li>En conteneur, PID 1 doit gérer SIGTERM, sinon Docker tue au bout de 10 s.</li></ol></div>
+
+
+<div class="note">Tout se fait dans un conteneur. Lance un shell Ubuntu jetable avec <code>docker run -it --rm --name lab ubuntu:24.04 bash</code>. Sous Git Bash, préfixe la commande par <code>winpty</code> si le terminal ne répond pas : <code>winpty docker run -it --rm ubuntu:24.04 bash</code>.</div>
+
+<h3>2.1 Le système de fichiers<span class="badge tag-important">Important</span></h3>
+<p>Tout part de la racine <code>/</code>. Les répertoires à connaître :</p>
+<div class="tablewrap"><table>
+<tr><th>Répertoire</th><th>Contenu</th></tr>
+<tr><td><code>/etc</code></td><td>Configuration du système et des services</td></tr>
+<tr><td><code>/var/log</code></td><td>Journaux</td></tr>
+<tr><td><code>/var/lib</code></td><td>Données persistantes des services (bases de données, Docker)</td></tr>
+<tr><td><code>/home</code>, <code>/root</code></td><td>Répertoires personnels</td></tr>
+<tr><td><code>/usr/bin</code>, <code>/usr/local/bin</code></td><td>Binaires du système, binaires installés localement</td></tr>
+<tr><td><code>/tmp</code></td><td>Fichiers temporaires, vidé au redémarrage</td></tr>
+<tr><td><code>/proc</code>, <code>/sys</code></td><td>Systèmes de fichiers virtuels exposant le noyau (processus, matériel)</td></tr>
+<tr><td><code>/opt</code></td><td>Logiciels tiers autonomes</td></tr>
+</table></div>
+<pre><code>pwd                      # où suis-je
+ls -la /etc              # lister, avec fichiers cachés et détails
+cd /var/log && ls -lh    # tailles lisibles
+find / -name "*.conf" -size +10k 2>/dev/null   # chercher
+du -sh /var/*            # taille par répertoire
+df -h                    # espace disque par partition</code></pre>
+
+<h3>2.2 Permissions et utilisateurs<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Chaque fichier a un propriétaire, un groupe et trois triplets de droits : lecture (r=4), écriture (w=2), exécution (x=1), pour le propriétaire, le groupe, les autres.</p>
+<pre><code>-rwxr-x--- 1 app deploy 4096 sept. 18 10:00 deploy.sh
+# app peut tout, le groupe deploy peut lire et exécuter, les autres rien
+
+chmod 750 deploy.sh          # équivalent à u=rwx,g=rx,o=
+chown app:deploy deploy.sh
+useradd -m -s /bin/bash alice
+usermod -aG sudo alice       # ajouter au groupe sudo
+sudo -u alice whoami</code></pre>
+<p>Cas particuliers : sur un répertoire, <code>x</code> signifie « traverser ». Le bit <code>setuid</code> (4000) fait tourner un binaire avec les droits de son propriétaire (<code>/usr/bin/passwd</code>) : à surveiller en sécurité.</p>
+
+<h3>2.3 Processus<span class="badge tag-important">Important</span></h3>
+<pre><code>ps aux | head              # tous les processus
+ps -ef --forest            # arbre parent/enfant
+top    # ou htop           # temps réel
+kill -15 1234              # SIGTERM : demander l'arrêt propre
+kill -9 1234               # SIGKILL : tuer sans ménagement
+nohup ./long.sh &          # lancer en arrière-plan, survit à la déconnexion
+jobs ; fg ; bg             # gestion des jobs du shell</code></pre>
+<p>Un processus a un PID, un parent (PPID), un utilisateur, un état. Un processus <em>zombie</em> est terminé mais non « récolté » par son parent ; un <em>orphelin</em> est rattaché à PID 1. En conteneur, PID 1 est ton application : elle doit gérer SIGTERM correctement, sinon Docker attend 10 s puis tue.</p>
+
+<h3>2.4 Redirections, pipes, filtres<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>cmd > out.txt      # stdout vers fichier (écrase)
+cmd >> out.txt     # ajoute
+cmd 2> err.txt     # stderr
+cmd > all.txt 2>&1 # les deux
+cmd < in.txt       # stdin depuis fichier
+
+# La boîte à outils texte
+grep -rn "ERROR" /var/log/        # chercher récursivement, numéros de ligne
+grep -E "^(WARN|ERROR)" app.log   # regex étendue
+cut -d: -f1 /etc/passwd           # colonne 1, séparateur :
+awk '{print $1, $9}' access.log   # colonnes par position
+sed -i 's/8080/9090/g' app.conf   # remplacer sur place
+sort | uniq -c | sort -rn         # compter les occurrences
+wc -l ; head -n 20 ; tail -f app.log
+xargs                             # transformer stdin en arguments</code></pre>
+<p>Exemple complet, top 5 des adresses IP d'un journal Nginx :</p>
+<pre><code>awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -5</code></pre>
+
+<h3>2.5 Paquets et services<span class="badge tag-contexte">Bon à savoir</span></h3>
+<pre><code># Debian/Ubuntu
+apt update && apt install -y curl vim
+apt list --installed | grep curl
+# RHEL/Rocky
+dnf install -y curl
+
+# systemd
+systemctl status nginx
+systemctl start|stop|restart|enable|disable nginx
+journalctl -u nginx -f --since "1 hour ago"
+systemctl list-units --type=service --state=failed</code></pre>
+<p>Une unité systemd minimale, <code>/etc/systemd/system/app.service</code> :</p>
+<pre><code>[Unit]
+Description=Mon application
+After=network.target
+
+[Service]
+User=app
+WorkingDirectory=/opt/app
+ExecStart=/opt/app/run.sh
+Restart=on-failure
+Environment=PORT=8080
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+
+<h3>2.6 Diagnostic rapide d'une machine<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>uptime                 # charge sur 1, 5, 15 min
+free -h                # mémoire
+df -h ; df -i          # disque et inodes
+iostat -x 1 3          # I/O disque
+ss -tulpn              # ports en écoute et processus associés
+dmesg | tail           # messages noyau (OOM killer, disque)
+lsof -p 1234           # fichiers ouverts par un processus</code></pre>
+<p>Réflexe à retenir : charge élevée → est-ce CPU, I/O disque, ou mémoire (swap) ? <code>top</code> puis la colonne <code>wa</code> (I/O wait) répond souvent.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — eBPF avec bpftrace</span><p>Observer le noyau en direct, sans redémarrage ni instrumentation : fichiers ouverts par un processus, latence des I/O, connexions, appels système d'un conteneur précis. C'est la technologie derrière Cilium, Falco et Beyla.</p><p><strong>Pourquoi ça différencie :</strong> Le diagnostic « impossible » devient une ligne ; en entretien, savoir répondre « je regarderais avec bpftrace » sur une question de performance système marque immédiatement.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -it --privileged --pid=host quay.io/iovisor/bpftrace bpftrace -e 'tracepoint:syscalls:sys_enter_openat { printf("%s %s\n", comm, str(args->filename)); }'</code> (fonctionne sur la VM WSL de Docker Desktop)</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Un serveur répond lentement, tu fais quoi ? » Ordre attendu : <code>uptime</code>/<code>top</code> (CPU ou wait ?), <code>free</code> (swap ?), <code>df</code> (disque plein ? inodes ?), <code>ss</code> (le service écoute-t-il ?), <code>journalctl</code> (erreurs ?). Montre une méthode, pas une liste.</div>
+
+<div class="exo"><span class="tag">Exercice 2.1 — Permissions</span>
+<p>Un script <code>backup.sh</code> appartient à <code>root:ops</code> avec les droits <code>640</code>. L'utilisateur <code>bob</code>, membre du groupe <code>ops</code>, lance <code>./backup.sh</code> et obtient « Permission denied ». Pourquoi, et quelle commande corrige sans donner de droits aux autres utilisateurs ?</p>
+<details><summary>Corrigé</summary><div class="sol">640 = rw- r-- --- : le groupe peut lire mais pas exécuter. <code>chmod 750 backup.sh</code> (ou <code>chmod g+x</code>). Alternative sans changer les droits : <code>bash backup.sh</code>, car c'est bash qui lit le fichier.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 2.2 — Pipeline texte</span>
+<p>Écris une seule ligne qui affiche, à partir de <code>/etc/passwd</code>, le nombre d'utilisateurs dont le shell est <code>/bin/bash</code>.</p>
+<details><summary>Corrigé</summary><div class="sol"><code>grep -c '/bin/bash$' /etc/passwd</code> ou <code>awk -F: '$7=="/bin/bash"' /etc/passwd | wc -l</code>.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 2.3 — Processus</span>
+<p>Quelle est la différence entre <code>kill -15</code> et <code>kill -9</code> ? Pourquoi un conteneur Docker met-il parfois 10 secondes à s'arrêter ?</p>
+<details><summary>Corrigé</summary><div class="sol">SIGTERM (15) demande au processus de s'arrêter proprement (il peut fermer ses connexions, vider ses buffers) ; SIGKILL (9) est intercepté par le noyau, le processus n'a aucune chance de réagir. <code>docker stop</code> envoie SIGTERM à PID 1 ; si l'application ne le gère pas (cas fréquent avec un script shell lancé sans <code>exec</code>), Docker attend 10 s puis envoie SIGKILL.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 2 — Un serveur web sous Ubuntu, à la main</span>
+<pre><code>docker run -it --rm -p 8080:80 --name tp2 ubuntu:24.04 bash</code></pre>
+<ol>
+<li>Installe nginx (<code>apt update && apt install -y nginx</code>).</li>
+<li>Crée un utilisateur <code>webadmin</code> sans droits sudo. Donne-lui la propriété de <code>/var/www/html</code>.</li>
+<li>Remplace la page par défaut par une page « Bonjour DevOps », en tant que <code>webadmin</code> (<code>su - webadmin</code>).</li>
+<li>Lance nginx (<code>nginx</code> ou <code>service nginx start</code> — systemd n'est pas actif dans un conteneur, note pourquoi). Vérifie depuis Git Bash : <code>curl http://localhost:8080</code>.</li>
+<li>Génère 50 requêtes (<code>for i in $(seq 50); do curl -s localhost:8080 > /dev/null; done</code>) puis, dans le conteneur, calcule le nombre de requêtes par code HTTP à partir de <code>/var/log/nginx/access.log</code> avec un pipeline awk/sort/uniq.</li>
+<li>Trouve avec <code>ss -tulpn</code> quel processus écoute sur le port 80, puis arrête-le avec SIGTERM et vérifie qu'il est parti.</li>
+</ol>
+<p>Livrable : un fichier <code>tp2.md</code> avec chaque commande et son résultat, plus une phrase expliquant pourquoi systemd ne tourne pas dans un conteneur.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c2"> Chapitre 2 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 3 ===================== -->
+<article id="c3">
+<div class="chaphead"><span class="chapnum">Chapitre 3</span><span class="badge lvl-junior">Junior</span></div>
+<h2>Réseau</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Suivre une requête HTTP du navigateur au serveur, couche par couche</li><li>Lire une adresse IP, un masque, une table de routage</li><li>Expliquer DNS, TLS et le fonctionnement d'un certificat</li><li>Diagnostiquer « ça ne répond pas » avec les bons outils</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Une requête traverse DNS, TCP, TLS, HTTP : on diagnostique dans cet ordre.</li><li>Le CIDR, les ports et les codes HTTP se savent par cœur ; le 502 vient du reverse proxy.</li><li>TLS chiffre et authentifie : un certificat auto-signé chiffre mais ne prouve rien.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ce qui se passe quand tu tapes une URL HTTPS, et où chercher quand ça casse. Chaque étape peut échouer séparément : « Could not resolve » (DNS), « Connection refused » (TCP), « certificate » (TLS), 4xx/5xx (HTTP). On diagnostique de gauche à droite."><defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="84" height="60" rx="7" class="soft"/><text x="52.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">DNS</text><text x="52.0" y="73.9" text-anchor="middle" class="lbl">nom → IP</text><path d="M94,60 L104,60" class="arrow" marker-end="url(#ah2)"/><rect x="104" y="30" width="84" height="60" rx="7" class="soft"/><text x="146.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">TCP</text><text x="146.0" y="73.9" text-anchor="middle" class="lbl">poignée de main</text><path d="M188,60 L198,60" class="arrow" marker-end="url(#ah2)"/><rect x="198" y="30" width="84" height="60" rx="7" class="soft"/><text x="240.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">TLS</text><text x="240.0" y="73.9" text-anchor="middle" class="lbl">certificat, clé</text><path d="M282,60 L292,60" class="arrow" marker-end="url(#ah2)"/><rect x="292" y="30" width="84" height="60" rx="7" class="green"/><text x="334.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">HTTP</text><text x="334.0" y="73.9" text-anchor="middle" class="lbl">GET /users</text><path d="M376,60 L386,60" class="arrow" marker-end="url(#ah2)"/><rect x="386" y="30" width="84" height="60" rx="7" class="green"/><text x="428.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">Réponse</text><text x="428.0" y="73.9" text-anchor="middle" class="lbl">200, JSON</text></svg><figcaption>Ce qui se passe quand tu tapes une URL HTTPS, et où chercher quand ça casse. Chaque étape peut échouer séparément : « Could not resolve » (DNS), « Connection refused » (TCP), « certificate » (TLS), 4xx/5xx (HTTP). On diagnostique de gauche à droite.</figcaption></figure>
+
+
+<h3>3.1 Le modèle en couches, version utile<span class="badge tag-contexte">Bon à savoir</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Couche</th><th>Rôle</th><th>Exemples</th><th>Outils</th></tr>
+<tr><td>Application</td><td>Le protocole métier</td><td>HTTP, DNS, SSH, SMTP</td><td>curl, dig</td></tr>
+<tr><td>Transport</td><td>Ports, fiabilité</td><td>TCP, UDP</td><td>ss, nc</td></tr>
+<tr><td>Réseau</td><td>Adressage et routage entre réseaux</td><td>IP, ICMP</td><td>ip, ping, traceroute</td></tr>
+<tr><td>Liaison</td><td>Adressage local</td><td>Ethernet, ARP, Wi-Fi</td><td>ip link, arp</td></tr>
+</table></div>
+<p>Ce qui se passe quand tu tapes <code>https://api.example.com/users</code> :</p>
+<ol>
+<li>Résolution DNS : <code>api.example.com</code> → <code>203.0.113.10</code></li>
+<li>Poignée de main TCP (SYN, SYN-ACK, ACK) vers le port 443</li>
+<li>Poignée de main TLS : le serveur présente son certificat, négociation d'une clé de session</li>
+<li>Requête HTTP chiffrée : <code>GET /users</code>, en-têtes, éventuellement un corps</li>
+<li>Réponse : code de statut, en-têtes, corps</li>
+</ol>
+
+<h3>3.2 Adressage IP et sous-réseaux<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Une adresse IPv4 = 32 bits. Le masque indique quelle partie désigne le réseau. <code>10.0.1.0/24</code> : les 24 premiers bits sont fixes, il reste 8 bits pour les hôtes, soit 256 adresses (254 utilisables, la première est le réseau, la dernière le broadcast).</p>
+<div class="tablewrap"><table>
+<tr><th>CIDR</th><th>Masque</th><th>Adresses</th><th>Usage typique</th></tr>
+<tr><td>/32</td><td>255.255.255.255</td><td>1</td><td>Un hôte précis (règle firewall)</td></tr>
+<tr><td>/24</td><td>255.255.255.0</td><td>256</td><td>Un sous-réseau classique</td></tr>
+<tr><td>/16</td><td>255.255.0.0</td><td>65 536</td><td>Un VPC AWS entier</td></tr>
+<tr><td>/8</td><td>255.0.0.0</td><td>16 M</td><td>Plage privée 10.0.0.0/8</td></tr>
+</table></div>
+<p>Plages privées (RFC 1918) : <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code>. Elles ne sont pas routées sur Internet : c'est le NAT qui traduit vers une adresse publique. Docker utilise <code>172.17.0.0/16</code> par défaut.</p>
+<pre><code>ip addr                    # mes adresses
+ip route                   # ma table de routage ; "default via" = passerelle
+ping -c 3 8.8.8.8          # la couche IP fonctionne ?
+traceroute 8.8.8.8         # par où passe-t-on</code></pre>
+
+<h3>3.3 TCP, UDP et les ports<span class="badge tag-coeur">Par cœur</span></h3>
+<p>TCP garantit l'ordre et la livraison (connexion, accusés de réception, retransmission) : HTTP, SSH, bases de données. UDP envoie sans garantie : DNS, vidéo, métriques. Un port identifie l'application sur une machine ; les ports < 1024 sont réservés à root.</p>
+<div class="tablewrap"><table>
+<tr><th>Port</th><th>Service</th><th>Port</th><th>Service</th></tr>
+<tr><td>22</td><td>SSH</td><td>443</td><td>HTTPS</td></tr>
+<tr><td>53</td><td>DNS</td><td>3306</td><td>MySQL</td></tr>
+<tr><td>80</td><td>HTTP</td><td>5432</td><td>PostgreSQL</td></tr>
+<tr><td>6379</td><td>Redis</td><td>9092</td><td>Kafka</td></tr>
+</table></div>
+<pre><code>ss -tulpn                       # qui écoute
+nc -zv db.internal 5432         # le port répond-il ?
+curl -v https://example.com     # tout le dialogue, TLS compris
+curl -I ; curl -o /dev/null -w "%{http_code} %{time_total}\n" URL</code></pre>
+
+<h3>3.4 DNS<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Le DNS traduit un nom en adresse. La résolution est hiérarchique : résolveur local (cache) → serveurs racine → TLD (<code>.com</code>) → serveur autoritaire du domaine. Chaque réponse a un TTL (durée de cache).</p>
+<div class="tablewrap"><table>
+<tr><th>Type</th><th>Contenu</th></tr>
+<tr><td>A / AAAA</td><td>Nom → IPv4 / IPv6</td></tr>
+<tr><td>CNAME</td><td>Nom → autre nom (alias)</td></tr>
+<tr><td>MX</td><td>Serveurs de messagerie</td></tr>
+<tr><td>TXT</td><td>Texte libre : vérification de domaine, SPF, ACME</td></tr>
+<tr><td>NS</td><td>Serveurs autoritaires</td></tr>
+</table></div>
+<pre><code>dig api.example.com            # réponse complète
+dig +short example.com A
+dig @8.8.8.8 example.com       # interroger un résolveur précis
+cat /etc/resolv.conf           # mon résolveur
+cat /etc/hosts                 # surcharges locales, consultées avant le DNS</code></pre>
+<p>Dans Docker et Kubernetes, un DNS interne résout les noms de services : <code>db</code> dans un réseau Compose, <code>db.default.svc.cluster.local</code> dans Kubernetes.</p>
+
+<h3>3.5 HTTP<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Protocole texte requête/réponse, sans état. Une requête : méthode, chemin, version, en-têtes, corps optionnel.</p>
+<pre><code>GET /users/42 HTTP/1.1
+Host: api.example.com
+Accept: application/json
+Authorization: Bearer eyJ...
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: max-age=60
+
+{"id":42,"name":"Alice"}</code></pre>
+<p>Codes à connaître : 200 OK, 201 Created, 204 No Content, 301/302 redirection, 304 Not Modified, 400 requête invalide, 401 non authentifié, 403 non autorisé, 404 introuvable, 429 trop de requêtes, 500 erreur serveur, 502 Bad Gateway (le proxy n'a pas pu joindre l'application), 503 indisponible, 504 Gateway Timeout.</p>
+<p>Un <strong>reverse proxy</strong> (Nginx, Traefik, ALB) reçoit les requêtes et les transmet aux applications : terminaison TLS, répartition de charge, cache, en-têtes <code>X-Forwarded-For</code>. Un 502 vient presque toujours de lui.</p>
+
+<h3>3.6 TLS et certificats<span class="badge tag-coeur">Par cœur</span></h3>
+<p>TLS chiffre le transport et authentifie le serveur. Le serveur présente un certificat X.509 : sa clé publique, son nom (CN/SAN), signé par une autorité de certification (CA) dont le client possède le certificat racine. Chaîne de confiance : racine → intermédiaire → certificat du serveur.</p>
+<pre><code># voir la chaîne et la date d'expiration
+openssl s_client -connect example.com:443 -servername example.com &lt;/dev/null | openssl x509 -noout -dates -subject -issuer
+# générer une clé et une demande de certificat
+openssl req -new -newkey rsa:2048 -nodes -keyout srv.key -out srv.csr -subj "/CN=api.local"
+# certificat auto-signé pour un labo
+openssl req -x509 -newkey rsa:2048 -nodes -keyout srv.key -out srv.crt -days 365 -subj "/CN=api.local"</code></pre>
+<p>Let's Encrypt automatise l'obtention de certificats gratuits (protocole ACME) : un serveur prouve qu'il contrôle le domaine (défi HTTP ou DNS) et reçoit un certificat de 90 jours renouvelé automatiquement. mTLS : le client présente aussi un certificat (service mesh, API entre entreprises).</p>
+
+<h3>3.7 Pare-feu et NAT<span class="badge tag-important">Important</span></h3>
+<p>Un pare-feu filtre par adresse, port, protocole, direction. Règle d'or : tout refuser par défaut, ouvrir le nécessaire. Sur Linux : <code>iptables</code>/<code>nftables</code>, simplifié par <code>ufw</code>. Dans le cloud : security groups (stateful, sur l'instance) et NACL (stateless, sur le sous-réseau).</p>
+<pre><code>ufw default deny incoming
+ufw allow 22/tcp
+ufw allow 443/tcp
+ufw enable</code></pre>
+<p>Le NAT de Docker : <code>-p 8080:80</code> crée une règle qui redirige le port 8080 de l'hôte vers le port 80 du conteneur.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Caddy</span><p>Serveur web et reverse proxy avec HTTPS automatique (ACME pour le public, autorité de certification locale pour le labo), HTTP/3 (QUIC) natif, et une configuration de cinq lignes là où Nginx en demande cinquante.</p><p><strong>Pourquoi ça différencie :</strong> Connaître HTTP/3 et une PKI locale automatique te place en avance ; Caddy est aussi ce qui tourne derrière beaucoup d'outils internes modernes.</p><p><strong>À essayer en une heure :</strong> Un <code>Caddyfile</code> contenant <code>localhost { reverse_proxy app1:5678 }</code> puis <code>docker run -p 443:443 -v "$PWD/Caddyfile:/etc/caddy/Caddyfile" --network tp3_default caddy:2</code> : refais le TP 3 en trois lignes.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « L'application retourne 502, où cherches-tu ? » Réponse : le 502 est émis par le reverse proxy ; l'application derrière est injoignable ou répond mal. Vérifier que l'application écoute (<code>ss</code>), qu'elle est joignable depuis le proxy (<code>nc</code>, <code>curl</code> interne), ses logs, puis les logs du proxy. Bonus : distinguer 502 (refus/erreur) de 504 (timeout).</div>
+
+<div class="exo"><span class="tag">Exercice 3.1 — Sous-réseaux</span>
+<p>Un VPC est en <code>10.20.0.0/16</code>. Tu dois créer trois sous-réseaux de 256 adresses chacun. Donne leurs CIDR et la plage d'hôtes utilisables du premier.</p>
+<details><summary>Corrigé</summary><div class="sol"><code>10.20.0.0/24</code>, <code>10.20.1.0/24</code>, <code>10.20.2.0/24</code>. Hôtes du premier : 10.20.0.1 à 10.20.0.254 (AWS réserve en plus les 4 premières et la dernière).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 3.2 — Diagnostic</span>
+<p><code>curl https://app.interne</code> renvoie « Could not resolve host ». <code>curl https://10.0.5.7</code> renvoie une erreur de certificat. Explique chaque erreur et ce que tu ferais.</p>
+<details><summary>Corrigé</summary><div class="sol">Première : problème DNS, pas réseau. Vérifier <code>/etc/resolv.conf</code>, <code>dig app.interne</code>, ou ajouter une entrée <code>/etc/hosts</code> pour tester. Seconde : le réseau et TLS fonctionnent, mais le certificat n'est pas émis pour « 10.0.5.7 » (le SAN contient <code>app.interne</code>). Utiliser le nom, ou <code>curl --resolve app.interne:443:10.0.5.7</code>. Ne pas prendre l'habitude de <code>-k</code>.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 3.3 — TLS</span>
+<p>Pourquoi un certificat auto-signé produit-il un avertissement dans le navigateur alors que le chiffrement fonctionne parfaitement ?</p>
+<details><summary>Corrigé</summary><div class="sol">TLS fait deux choses : chiffrer et authentifier. Le chiffrement est là, mais personne de confiance (aucune CA connue du navigateur) n'atteste que cette clé appartient bien à ce domaine. Un attaquant en position d'interception pourrait présenter son propre certificat auto-signé.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 3 — Reverse proxy TLS devant deux applications</span>
+<p>Objectif : reproduire la topologie la plus courante en production. Crée un dossier <code>tp3</code> avec :</p>
+<pre><code># docker-compose.yml
+services:
+  app1:
+    image: hashicorp/http-echo
+    command: ["-text=Je suis app1"]
+  app2:
+    image: hashicorp/http-echo
+    command: ["-text=Je suis app2"]
+  proxy:
+    image: nginx:1.27
+    ports: ["8443:443"]
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on: [app1, app2]</code></pre>
+<ol>
+<li>Génère un certificat auto-signé pour <code>lab.local</code> avec openssl <em>dans un conteneur</em> : <code>docker run --rm -v "$PWD/certs:/c" alpine/openssl req -x509 -newkey rsa:2048 -nodes -keyout /c/lab.key -out /c/lab.crt -days 365 -subj "/CN=lab.local"</code>. Sous Git Bash, si le chemin est mal interprété, préfixe la commande par <code>MSYS_NO_PATHCONV=1</code>.</li>
+<li>Écris <code>nginx.conf</code> : écoute 443 en TLS, route <code>/app1</code> vers <code>app1:5678</code> et <code>/app2</code> vers <code>app2:5678</code>, ajoute l'en-tête <code>X-Forwarded-For</code>.</li>
+<li><code>docker compose up -d</code>, puis <code>curl -k https://localhost:8443/app1</code>.</li>
+<li>Arrête <code>app2</code> (<code>docker compose stop app2</code>) et observe le code HTTP retourné sur <code>/app2</code>. Explique-le.</li>
+<li>Depuis le conteneur proxy (<code>docker compose exec proxy sh</code>), montre que <code>app1</code> se résout par DNS (<code>getent hosts app1</code>) et que le port répond (<code>nc -zv app1 5678</code> ; installe nc avec <code>apt update && apt install -y netcat-openbsd</code> si absent).</li>
+</ol>
+<p>Livrable : le dossier <code>tp3</code> versionné (voir chapitre 5), sans les clés privées (fichier <code>.gitignore</code>).</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c3"> Chapitre 3 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 4 ===================== -->
+<article id="c4">
+<div class="chaphead"><span class="chapnum">Chapitre 4</span><span class="badge lvl-junior">Junior</span></div>
+<h2>Scripting : Bash, puis Python</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Écrire un script Bash robuste (options strictes, gestion d'erreurs, arguments)</li><li>Savoir quand passer de Bash à Python</li><li>Écrire un outil Python en ligne de commande qui appelle une API et manipule du JSON</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Bash pour enchaîner des commandes, avec set -euo pipefail et shellcheck ; Python dès qu&#x27;il y a de la logique.</li><li>Un script sérieux a des arguments, des codes de retour, des logs et un nettoyage (trap).</li><li>Tester ses scripts (Bats, pytest) distingue l&#x27;exploitation de la bidouille.</li></ol></div>
+
+
+<h3>4.1 Bash : le squelette d'un script sérieux<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>#!/usr/bin/env bash
+set -euo pipefail          # arrêt à la 1re erreur, variable non définie = erreur, erreur dans un pipe = erreur
+IFS=$'\n\t'
+
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly LOG_FILE="${LOG_FILE:-/tmp/deploy.log}"   # valeur par défaut
+
+usage() { echo "Usage: $0 -e &lt;env&gt; [-v]" >&2; exit 1; }
+log()   { printf '%s [%s] %s\n' "$(date +%FT%T)" "$1" "$2" | tee -a "$LOG_FILE"; }
+
+cleanup() { rm -rf "${TMP_DIR:-}"; }
+trap cleanup EXIT           # exécuté quoi qu'il arrive
+
+ENV=""; VERBOSE=0
+while getopts "e:v" opt; do
+  case $opt in
+    e) ENV="$OPTARG" ;;
+    v) VERBOSE=1 ;;
+    *) usage ;;
+  esac
+done
+[[ -z "$ENV" ]] && usage
+
+TMP_DIR="$(mktemp -d)"
+log INFO "Déploiement sur $ENV"
+
+if ! command -v docker >/dev/null; then
+  log ERROR "docker introuvable"; exit 2
+fi
+
+for svc in api worker; do
+  log INFO "Redémarrage de $svc"
+  docker compose restart "$svc" || { log ERROR "$svc a échoué"; exit 3; }
+done</code></pre>
+<p>Règles : toujours citer les variables (<code>"$var"</code>), <code>[[ ]]</code> plutôt que <code>[ ]</code>, <code>$( )</code> plutôt que les backticks, des fonctions courtes, des codes de retour explicites. Passe tout script dans <code>shellcheck</code> : <code>docker run --rm -v "$PWD:/mnt" koalaman/shellcheck deploy.sh</code>.</p>
+
+<h3>4.2 Structures utiles<span class="badge tag-important">Important</span></h3>
+<pre><code># Tableaux
+servers=(web1 web2 web3)
+for s in "${servers[@]}"; do ssh "$s" uptime; done
+echo "${#servers[@]}"        # taille
+
+# Tests fréquents
+[[ -f "$f" ]]      # fichier existe
+[[ -d "$d" ]]      # répertoire
+[[ -z "$s" ]]      # chaîne vide
+[[ "$a" == "$b" ]] ; (( n > 3 ))
+
+# Substitutions
+${var:-defaut} ${var:?message si absent} ${file%.*} ${file##*/}
+${var//ancien/nouveau}
+
+# Lire un fichier ligne à ligne
+while IFS= read -r line; do echo "$line"; done < fichier.txt
+
+# Exécuter en parallèle
+for h in "${servers[@]}"; do (ping -c1 "$h" >/dev/null && echo "$h ok") & done; wait</code></pre>
+
+<h3>4.3 Quand quitter Bash<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Bash est parfait pour enchaîner des commandes. Dès qu'il faut du JSON, des structures de données, des appels HTTP avec gestion d'erreurs, des tests unitaires ou plus de 100 lignes : Python. Entre les deux, <code>jq</code> sauve souvent la mise :</p>
+<pre><code>curl -s https://api.github.com/repos/kubernetes/kubernetes | jq '.stargazers_count'
+docker inspect app | jq -r '.[0].NetworkSettings.IPAddress'
+kubectl get pods -o json | jq -r '.items[] | select(.status.phase!="Running") | .metadata.name'</code></pre>
+
+<h3>4.4 Python pour l'automatisation<span class="badge tag-important">Important</span></h3>
+<p>Ce dont un DevOps se sert vraiment : <code>argparse</code>, <code>subprocess</code>, <code>pathlib</code>, <code>json</code>, <code>logging</code>, <code>requests</code> (ou <code>httpx</code>), <code>pyyaml</code>, et des tests avec <code>pytest</code>.</p>
+<pre><code>#!/usr/bin/env python3
+"""Vérifie la santé d'une liste de services et sort en erreur si l'un tombe."""
+import argparse, json, logging, sys
+from dataclasses import dataclass
+import requests
+
+log = logging.getLogger("healthcheck")
+
+@dataclass
+class Result:
+    name: str
+    url: str
+    ok: bool
+    status: int | None
+    ms: float | None
+
+def check(name: str, url: str, timeout: float) -> Result:
+    try:
+        r = requests.get(url, timeout=timeout)
+        return Result(name, url, r.ok, r.status_code, r.elapsed.total_seconds() * 1000)
+    except requests.RequestException as e:
+        log.warning("%s injoignable : %s", name, e)
+        return Result(name, url, False, None, None)
+
+def main() -> int:
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("config", help="fichier JSON {nom: url}")
+    p.add_argument("--timeout", type=float, default=3.0)
+    p.add_argument("--json", action="store_true", help="sortie JSON")
+    args = p.parse_args()
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+
+    with open(args.config, encoding="utf-8") as f:
+        services = json.load(f)
+
+    results = [check(n, u, args.timeout) for n, u in services.items()]
+    if args.json:
+        print(json.dumps([r.__dict__ for r in results], indent=2))
+    else:
+        for r in results:
+            print(f"{'OK ' if r.ok else 'KO '} {r.name:&lt;12} {r.status or '-':&gt;4} {r.ms or 0:&gt;7.0f} ms")
+    return 0 if all(r.ok for r in results) else 1
+
+if __name__ == "__main__":
+    sys.exit(main())</code></pre>
+<p>Exécution sans rien installer localement :</p>
+<pre><code>docker run --rm -v "$PWD:/w" -w /w python:3.12-slim sh -c "pip install -q requests && python healthcheck.py services.json"</code></pre>
+<p>Appeler une commande système proprement :</p>
+<pre><code>import subprocess
+out = subprocess.run(["docker", "ps", "--format", "{{json .}}"], capture_output=True, text=True, check=True)
+containers = [json.loads(l) for l in out.stdout.splitlines()]</code></pre>
+
+<h3>4.5 Tester un script<span class="badge tag-contexte">Bon à savoir</span></h3>
+<pre><code># test_healthcheck.py
+from healthcheck import check
+
+def test_service_down_returns_ko(monkeypatch):
+    import requests
+    def boom(*a, **k): raise requests.ConnectionError("refus")
+    monkeypatch.setattr(requests, "get", boom)
+    r = check("db", "http://db:1", 1)
+    assert r.ok is False and r.status is None
+
+# docker run --rm -v "$PWD:/w" -w /w python:3.12-slim sh -c "pip install -q requests pytest && pytest -q"</code></pre>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Bats-core</span><p>Un cadre de tests unitaires pour Bash : des fichiers <code>.bats</code> avec assertions, exécutables en CI, pour tester tes scripts d'exploitation comme du code.</p><p><strong>Pourquoi ça différencie :</strong> Presque personne ne teste ses scripts ; montrer une suite Bats sur <code>backup.sh</code> est un marqueur de sérieux rare.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -v "$PWD:/code" bats/bats test/</code> avec un test <code>@test "refuse une source absente" { run ./backup.sh -s /nope -d /tmp; [ "$status" -eq 2 ]; }</code></p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Bash ou Python ? » Réponse attendue : Bash pour la glue entre commandes et les hooks courts ; Python dès qu'il y a de la logique, des données structurées ou un besoin de tests. Cite <code>set -euo pipefail</code> et <code>shellcheck</code> : c'est ce qui distingue quelqu'un qui a écrit des scripts de prod.</div>
+
+<div class="exo"><span class="tag">Exercice 4.1 — Trouver le bug</span>
+<pre><code>#!/bin/bash
+for f in $(ls *.log); do
+  cp $f /backup/$f.bak
+done</code></pre>
+<p>Cite au moins trois problèmes.</p>
+<details><summary>Corrigé</summary><div class="sol">Pas de <code>set -euo pipefail</code> ; <code>$(ls ...)</code> casse sur les noms avec espaces (utiliser <code>for f in *.log</code>) ; variables non citées ; aucune vérification que <code>/backup</code> existe ; si aucun <code>.log</code>, la boucle traite la chaîne littérale <code>*.log</code> (ajouter <code>shopt -s nullglob</code>).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 4.2 — Bash</span>
+<p>Écris une fonction <code>retry</code> qui exécute une commande jusqu'à 5 fois avec 2 s d'attente entre chaque essai, et échoue avec le code de retour de la dernière tentative.</p>
+<details><summary>Corrigé</summary><div class="sol"><pre><code>retry() {
+  local n=0 max=5 delay=2
+  until "$@"; do
+    n=$((n+1))
+    (( n >= max )) && return $?
+    echo "Tentative $n échouée, nouvel essai dans ${delay}s" >&2
+    sleep "$delay"
+  done
+}
+retry curl -sf http://localhost:8080/health</code></pre></div></details></div>
+
+<div class="exo"><span class="tag">Exercice 4.3 — Python</span>
+<p>Modifie <code>healthcheck.py</code> pour accepter un fichier YAML au lieu de JSON, et pour renvoyer le code 2 si le fichier est illisible.</p>
+<details><summary>Corrigé</summary><div class="sol">Importer <code>yaml</code> (<code>pip install pyyaml</code>), remplacer <code>json.load</code> par <code>yaml.safe_load</code>, entourer l'ouverture d'un <code>try/except (OSError, yaml.YAMLError)</code> qui logue et <code>return 2</code>. Toujours <code>safe_load</code>, jamais <code>load</code> (exécution de code arbitraire).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 4 — Outil de sauvegarde et de vérification</span>
+<ol>
+<li><strong>Bash</strong> : écris <code>backup.sh -s &lt;dossier&gt; -d &lt;destination&gt; [-k N]</code> qui crée une archive <code>tar.gz</code> horodatée du dossier source, la place dans la destination, ne garde que les N plus récentes (défaut 7), journalise chaque étape et renvoie un code d'erreur distinct pour chaque cause d'échec. Il doit passer shellcheck sans avertissement.</li>
+<li><strong>Python</strong> : écris <code>verify_backups.py</code> qui liste les archives de la destination, vérifie que la plus récente a moins de 24 h et que son archive s'ouvre (<code>tarfile</code>), et sort en JSON un rapport <code>{"latest": ..., "age_hours": ..., "valid": true}</code>. Ajoute deux tests pytest.</li>
+<li>Fais tourner les deux depuis une image <code>python:3.12-slim</code> avec le dossier monté en volume, et lance la sauvegarde toutes les minutes avec cron dans un conteneur (image <code>alpine</code>, <code>crond -f</code>) pour observer la rotation.</li>
+</ol>
+<p>Livrable : dossier <code>tp4</code> avec les deux scripts, les tests et un <code>README.md</code> décrivant les commandes Docker exactes.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c4"> Chapitre 4 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 5 ===================== -->
+<article id="c5">
+<div class="chaphead"><span class="chapnum">Chapitre 5</span><span class="badge lvl-junior">Junior</span></div>
+<h2>Git</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Expliquer le modèle interne de Git (objets, références) et pourquoi il est rapide</li><li>Choisir entre merge et rebase, et réparer une situation cassée</li><li>Appliquer un workflow d'équipe (trunk-based ou GitFlow) et une convention de commits</li><li>Protéger un dépôt : branches protégées, signatures, hooks</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Git stocke des instantanés ; une branche est un pointeur ; le reflog est le filet de sécurité.</li><li>Rebase sur sa branche locale, merge ou squash pour intégrer, revert (jamais reset) sur main.</li><li>Conventional Commits et branches protégées automatisent versions et revues.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 152" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Les trois zones de Git et les commandes qui font passer d&#x27;une zone à l&#x27;autre. Une branche = un fichier de 41 octets qui contient le hash d&#x27;un commit. HEAD pointe sur la branche courante."><defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="40" width="140" height="60" rx="7" class="box"/><text x="80.0" y="65.9" text-anchor="middle" font-size="14" font-weight="700">Répertoire</text><text x="80.0" y="83.9" text-anchor="middle" font-size="14" font-weight="700">de travail</text><rect x="170" y="40" width="140" height="60" rx="7" class="soft"/><text x="240.0" y="65.9" text-anchor="middle" font-size="14" font-weight="700">Index</text><text x="240.0" y="83.9" text-anchor="middle" font-size="14" font-weight="700">(staging)</text><rect x="330" y="40" width="140" height="60" rx="7" class="green"/><text x="400.0" y="65.9" text-anchor="middle" font-size="14" font-weight="700">Dépôt</text><text x="400.0" y="83.9" text-anchor="middle" font-size="14" font-weight="700">(.git)</text><path d="M150,60 L170,60" class="arrow" marker-end="url(#ah3)"/><text x="160.0" y="50.0" text-anchor="middle" class="lbl">git add</text><path d="M310,60 L330,60" class="arrow" marker-end="url(#ah3)"/><text x="320.0" y="50.0" text-anchor="middle" class="lbl">git commit</text><path d="M400,100 C400,140 80,140 80,100" class="arrow" marker-end="url(#ah3)"/><text x="240" y="150" text-anchor="middle" class="lbl">git restore / git switch (revenir en arrière)</text></svg><figcaption>Les trois zones de Git et les commandes qui font passer d'une zone à l'autre. Une branche = un fichier de 41 octets qui contient le hash d'un commit. HEAD pointe sur la branche courante.</figcaption></figure>
+
+
+<h3>5.1 Le modèle : des instantanés, pas des différences<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Git stocke des <strong>objets</strong> identifiés par leur hash SHA-1 (bientôt SHA-256) : <em>blob</em> (contenu d'un fichier), <em>tree</em> (un répertoire), <em>commit</em> (un tree, un ou plusieurs parents, auteur, message). Une <strong>branche</strong> n'est qu'un fichier contenant le hash d'un commit ; <code>HEAD</code> pointe sur la branche courante. Créer une branche coûte 41 octets.</p>
+<p>Trois zones : le répertoire de travail, l'index (staging, ce qui ira dans le prochain commit), le dépôt (<code>.git</code>).</p>
+<pre><code>git init ; git clone URL
+git status ; git diff ; git diff --staged
+git add -p                 # ajouter morceau par morceau : à prendre en habitude
+git commit -m "feat(api): ajouter la pagination des utilisateurs"
+git log --oneline --graph --all
+git show HEAD~2
+git restore fichier ; git restore --staged fichier
+git stash ; git stash pop</code></pre>
+
+<h3>5.2 Branches, merge, rebase<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>git switch -c feature/pagination
+git switch main && git pull
+git merge feature/pagination        # crée un commit de merge (ou fast-forward)
+git rebase main                     # rejoue mes commits par-dessus main : historique linéaire
+git rebase -i HEAD~4                # réordonner, fusionner (squash), reformuler
+git cherry-pick abc123</code></pre>
+<p><strong>Merge</strong> conserve l'histoire réelle, y compris les commits de fusion. <strong>Rebase</strong> réécrit l'histoire pour la rendre linéaire. Règle absolue : ne jamais rebaser une branche déjà partagée (poussée et utilisée par d'autres). Sur sa branche de feature avant merge request : rebase pour un historique propre, puis le dépôt fusionne avec <code>--no-ff</code> ou squash selon la politique.</p>
+<p>Résoudre un conflit :</p>
+<pre><code>git status                 # fichiers en conflit
+# éditer, retirer les marqueurs &lt;&lt;&lt;&lt;&lt;&lt;&lt; ======= &gt;&gt;&gt;&gt;&gt;&gt;&gt;
+git add fichier
+git rebase --continue      # ou git merge --continue
+git rebase --abort         # tout annuler</code></pre>
+
+<h3>5.3 Réparer<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>git reflog                       # journal de tout ce qu'a pointé HEAD : le filet de sécurité
+git reset --hard HEAD@{3}        # revenir à cet état
+git reset --soft HEAD~1          # annuler le dernier commit en gardant les modifications indexées
+git revert abc123                # nouveau commit qui annule abc123 : la seule option sur main
+git commit --amend               # corriger le dernier commit (non poussé)
+git bisect start ; git bisect bad ; git bisect good v1.2   # trouver le commit fautif par dichotomie</code></pre>
+<p><code>reset</code> déplace la branche (réécrit), <code>revert</code> ajoute un commit (ne réécrit pas). En production, on revert.</p>
+
+<h3>5.4 Workflows d'équipe<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>Trunk-based</th><th>GitFlow</th></tr>
+<tr><td>Branches longues</td><td>Une seule : <code>main</code></td><td><code>main</code>, <code>develop</code>, <code>release/*</code>, <code>hotfix/*</code></td></tr>
+<tr><td>Branches de feature</td><td>Très courtes (< 2 jours), ou pas de branche + feature flags</td><td>Longues, fusionnées dans <code>develop</code></td></tr>
+<tr><td>Adapté à</td><td>Livraison continue, DORA élite</td><td>Versions planifiées, logiciels installés chez le client</td></tr>
+<tr><td>Risque</td><td>Exige une CI solide</td><td>Intégration tardive, gros conflits</td></tr>
+</table></div>
+<p>Convention de commits (<a href="https://www.conventionalcommits.org/fr/">Conventional Commits</a>) : <code>type(portée): description</code> avec <code>feat</code>, <code>fix</code>, <code>chore</code>, <code>docs</code>, <code>refactor</code>, <code>test</code>, <code>ci</code>. Un <code>!</code> ou un pied <code>BREAKING CHANGE:</code> signale une rupture. Cela permet de générer changelog et numéro de version (semantic-release).</p>
+<p>Versioning sémantique : <code>MAJEUR.MINEUR.CORRECTIF</code>. Rupture de compatibilité → majeur ; nouvelle fonctionnalité compatible → mineur ; correction → correctif. Un tag Git marque chaque version : <code>git tag -a v1.4.0 -m "..." && git push --tags</code>.</p>
+
+<h3>5.5 Sécuriser le dépôt<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Branches protégées</strong> : pas de push direct sur <code>main</code>, merge request obligatoire, au moins une revue, pipeline vert requis.</li>
+<li><strong>Commits signés</strong> (GPG ou SSH) : <code>git config commit.gpgsign true</code>. GitHub/GitLab affichent « Verified ».</li>
+<li><strong>Secrets</strong> : jamais dans l'historique. <code>.gitignore</code> pour <code>.env</code>, clés, certificats. Scanner avec gitleaks : <code>docker run --rm -v "$PWD:/repo" zricethezav/gitleaks detect -s /repo</code>. Un secret commité est compromis même après suppression : le révoquer.</li>
+<li><strong>Hooks</strong> : <code>pre-commit</code> pour lancer lint et détection de secrets avant chaque commit (framework <a href="https://pre-commit.com">pre-commit</a>).</li>
+<li><code>.gitattributes</code> pour normaliser les fins de ligne (<code>* text=auto eol=lf</code>), indispensable sous Windows : un script avec des <code>\r\n</code> ne s'exécute pas dans un conteneur Linux.</li>
+</ul>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Jujutsu (jj)</span><p>Un système de contrôle de version compatible Git (même dépôt, même serveur) qui repense l'expérience : le répertoire de travail est toujours un commit, les conflits sont enregistrés sans bloquer, toute réécriture d'historique est annulable avec <code>jj undo</code>.</p><p><strong>Pourquoi ça différencie :</strong> C'est l'outil qui monte dans les équipes plateforme et chez Google ; en parler avec précision montre une veille au-delà de Git.</p><p><strong>À essayer en une heure :</strong> Binaire depuis les releases GitHub de <code>jj-vcs/jj</code> dans un conteneur <code>debian:stable</code>, puis <code>jj git init --colocate</code> dans ton dépôt <code>devops-lab</code> et <code>jj log</code>.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Merge ou rebase ? » Ne pas répondre « ça dépend » sans suite. Dire : rebase sur ma branche locale pour rester à jour et garder un historique lisible ; merge (ou squash) pour intégrer dans <code>main</code> ; jamais de rebase sur une branche partagée ; revert et non reset sur <code>main</code>. Et cite le reflog comme filet de sécurité.</div>
+
+<div class="exo"><span class="tag">Exercice 5.1 — Situations</span>
+<p>Pour chaque cas, donne la commande : a) tu as commité sur <code>main</code> au lieu d'une branche, rien n'est poussé ; b) un commit poussé sur <code>main</code> hier casse la prod ; c) tu as fait <code>git reset --hard</code> par erreur et perdu deux commits.</p>
+<details><summary>Corrigé</summary><div class="sol">a) <code>git switch -c feature/x</code> (la branche part du commit fautif) puis <code>git switch main && git reset --hard origin/main</code>. b) <code>git revert &lt;hash&gt;</code> puis push. c) <code>git reflog</code>, repérer le hash, <code>git reset --hard &lt;hash&gt;</code> ou <code>git cherry-pick</code>.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 5.2 — Convention</span>
+<p>Reformule ces messages en Conventional Commits : « fix bug », « ajout de la page de login et correction du CSS du header », « BREAKING: on passe l'API en v2 ».</p>
+<details><summary>Corrigé</summary><div class="sol">« fix bug » n'est pas récupérable : il faut décrire, ex. <code>fix(auth): corriger l'expiration du jeton de rafraîchissement</code>. Le deuxième doit devenir deux commits : <code>feat(auth): ajouter la page de connexion</code> et <code>fix(ui): corriger le CSS de l'en-tête</code>. Troisième : <code>feat(api)!: passer l'API en v2</code> avec un pied <code>BREAKING CHANGE: les routes /v1 sont supprimées</code>.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 5 — Un dépôt de labo propre et protégé</span>
+<p>Crée un dépôt <code>devops-lab</code> (GitLab ou GitHub) qui contiendra tous tes TP. Git tourne dans Git Bash, c'est l'exception autorisée ; tout le reste passe par Docker.</p>
+<ol>
+<li>Structure : <code>tp1/</code>, <code>tp2/</code>, <code>tp3/</code>, <code>tp4/</code>, un <code>README.md</code>, un <code>.gitignore</code> (clés, <code>.env</code>, <code>__pycache__</code>), un <code>.gitattributes</code> forçant LF.</li>
+<li>Configure ton identité et la signature SSH des commits (<code>git config --global gpg.format ssh</code>, <code>user.signingkey</code>, <code>commit.gpgsign true</code>).</li>
+<li>Travaille en trunk-based : une branche par TP, commits Conventional, merge request vers <code>main</code>, suppression de la branche après merge.</li>
+<li>Protège <code>main</code> sur la plateforme : pas de push direct, une approbation requise.</li>
+<li>Provoque volontairement un conflit : modifie la même ligne du README sur deux branches, rebase l'une sur l'autre, résous.</li>
+<li>Commite un faux secret (<code>AWS_SECRET_ACCESS_KEY=abcd...</code>) dans un fichier, lance gitleaks via Docker, constate la détection, puis supprime-le de l'historique avec <code>git filter-repo</code> (image <code>docker run --rm -v "$PWD:/repo" -w /repo python:3.12-slim sh -c "pip install -q git-filter-repo && git filter-repo --path secret.txt --invert-paths --force"</code>) et force-pousse. Note dans le README pourquoi la clé serait de toute façon à révoquer.</li>
+<li>Tague <code>v0.1.0</code>.</li>
+</ol>
+<p>Livrable : l'URL du dépôt, historique lisible avec <code>git log --oneline --graph</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c5"> Chapitre 5 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 6 ===================== -->
+<article id="c6">
+<div class="chaphead"><span class="chapnum">Chapitre 6</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Données et architecture applicative</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Choisir entre SQL et NoSQL et expliquer ACID, index, transactions, réplication</li><li>Exploiter une base : sauvegarde, restauration, migration de schéma</li><li>Lire l'architecture d'une application : monolithe, microservices, 12 facteurs</li><li>Comprendre ce qu'un DevOps doit exiger d'une application pour l'exploiter</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>ACID, index et EXPLAIN pour le relationnel ; NoSQL seulement quand PostgreSQL plafonne.</li><li>Les migrations de schéma sont versionnées et compatibles N-1 (expand/contract).</li><li>Les 12 facteurs sont le contrat entre l&#x27;application et son exploitant.</li></ol></div>
+
+
+<h3>6.1 Bases relationnelles<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Données en tables reliées par des clés. Le langage SQL. Garanties <strong>ACID</strong> : Atomicité (tout ou rien), Cohérence (contraintes respectées), Isolation (transactions concurrentes ne se voient pas à moitié), Durabilité (commit = écrit sur disque). PostgreSQL est le choix par défaut aujourd'hui ; MySQL/MariaDB restent très présents.</p>
+<pre><code>-- Ce qu'un DevOps doit lire sans hésiter
+SELECT u.name, COUNT(o.id) AS commandes
+FROM users u LEFT JOIN orders o ON o.user_id = u.id
+WHERE u.created_at > now() - interval '30 days'
+GROUP BY u.name HAVING COUNT(o.id) > 3
+ORDER BY commandes DESC LIMIT 10;
+
+CREATE INDEX CONCURRENTLY idx_orders_user ON orders(user_id);  -- sans verrouiller la table
+EXPLAIN ANALYZE SELECT ... ;          -- lire le plan : Seq Scan sur une grosse table = index manquant</code></pre>
+<p>Notions d'exploitation :</p>
+<ul>
+<li><strong>Index</strong> : accélèrent les lectures, ralentissent les écritures. Un « Seq Scan » sur des millions de lignes est le premier suspect d'une lenteur.</li>
+<li><strong>Connexions</strong> : chaque connexion coûte de la mémoire. Un pool (HikariCP côté Java, PgBouncer côté serveur) est obligatoire.</li>
+<li><strong>Réplication</strong> : un primaire en écriture, des réplicas en lecture. Synchrone (pas de perte, plus lent) ou asynchrone (lag possible).</li>
+<li><strong>Sauvegardes</strong> : logique (<code>pg_dump</code>, portable, lente à restaurer) ou physique (<code>pg_basebackup</code> + archives WAL, restauration à un instant précis). Une sauvegarde non testée en restauration n'existe pas.</li>
+<li><strong>Migrations de schéma</strong> : versionnées avec Flyway ou Liquibase (Java), Alembic (Python). Jamais de <code>ALTER TABLE</code> à la main en prod. Migration compatible avec l'ancienne version du code (expand/contract) pour les déploiements sans interruption.</li>
+</ul>
+
+<h3>6.2 NoSQL : quand et lequel<span class="badge tag-contexte">Bon à savoir</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Famille</th><th>Exemples</th><th>Bon pour</th><th>Piège</th></tr>
+<tr><td>Clé-valeur</td><td>Redis, DynamoDB</td><td>Cache, sessions, compteurs, files simples</td><td>Redis en mémoire : dimensionner, persister si nécessaire</td></tr>
+<tr><td>Document</td><td>MongoDB, CouchDB</td><td>Schéma souple, objets imbriqués</td><td>Sans schéma ≠ sans discipline ; les jointures coûtent</td></tr>
+<tr><td>Colonnes larges</td><td>Cassandra, ScyllaDB</td><td>Écritures massives, multi-datacenter</td><td>Modéliser par requête, pas par entité</td></tr>
+<tr><td>Recherche</td><td>Elasticsearch, OpenSearch</td><td>Texte intégral, logs</td><td>Pas une base de vérité</td></tr>
+<tr><td>Graphe</td><td>Neo4j</td><td>Relations profondes</td><td>Niche</td></tr>
+</table></div>
+<p><strong>Théorème CAP</strong> : en cas de partition réseau, un système distribué choisit entre cohérence (refuser de répondre) et disponibilité (répondre avec des données peut-être périmées). Cassandra choisit la disponibilité, un PostgreSQL synchrone la cohérence.</p>
+
+<h3>6.3 Files de messages<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Découpler producteurs et consommateurs : le producteur écrit, le consommateur traite à son rythme, rien n'est perdu si le consommateur redémarre. RabbitMQ (file classique, routage riche), Kafka (journal distribué, rejouable, très haut débit, partitions et groupes de consommateurs), SQS/SNS chez AWS. Vocabulaire : at-least-once (doublons possibles → consommateur idempotent), dead-letter queue, backpressure.</p>
+
+<h3>6.4 Architecture applicative<span class="badge tag-important">Important</span></h3>
+<p><strong>Monolithe</strong> : une application, une base, un déploiement. Simple, rapide à développer, à privilégier au départ. <strong>Microservices</strong> : plusieurs services indépendants, chacun avec sa base, communiquant par HTTP/gRPC ou messages. Ils apportent l'autonomie des équipes et le passage à l'échelle ciblé, au prix d'une complexité opérationnelle énorme : réseau, observabilité distribuée, cohérence des données, versionnage des contrats. Un DevOps est celui qui rend cette complexité gérable ; c'est aussi celui qui doit dire quand elle n'est pas justifiée.</p>
+<p>Le contrat minimal entre une application et son exploitant : les <strong>Twelve-Factor App</strong>. Les facteurs qui comptent le plus pour toi :</p>
+<ol>
+<li><strong>Configuration dans l'environnement</strong> : la même image tourne en dev, préprod, prod ; seules les variables changent. Pas de <code>application-prod.properties</code> dans l'image.</li>
+<li><strong>Services externes comme ressources attachées</strong> : la base est une URL dans une variable, remplaçable.</li>
+<li><strong>Processus sans état</strong> : les sessions, fichiers uploadés, caches vivent ailleurs (Redis, S3). Sinon impossible d'avoir deux instances.</li>
+<li><strong>Logs sur stdout</strong> : l'application écrit, la plateforme collecte. Pas de fichier <code>app.log</code> à gérer.</li>
+<li><strong>Jetabilité</strong> : démarrage rapide, arrêt propre sur SIGTERM (finir les requêtes en cours, fermer les connexions).</li>
+<li><strong>Parité dev/prod</strong> : même base, même version, mêmes conteneurs.</li>
+</ol>
+<p>Ce qu'il faut ajouter en 2026 : des endpoints de santé (<code>/health/live</code>, <code>/health/ready</code>), des métriques exposées (<code>/metrics</code> au format Prometheus), un identifiant de corrélation propagé dans les logs, des timeouts et retries sur chaque appel sortant. Avec Spring Boot Actuator ou Quarkus SmallRye Health, c'est quelques lignes.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Atlas (Ariga)</span><p>Le schéma de base de données déclaré en HCL ou SQL ; l'outil calcule les migrations par différence, les lint (changement destructif, verrou long) et les planifie. Fonctionne avec ou à la place de Flyway/Liquibase.</p><p><strong>Pourquoi ça différencie :</strong> « Schema as code » avec analyse des risques de migration, c'est un cran au-dessus du versionnage de scripts.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm --network host arigaio/atlas schema inspect -u "postgres://postgres:lab@localhost:5432/shop?sslmode=disable"</code> puis <code>migrate lint</code> sur tes migrations du TP 6.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Qu'est-ce que tu demandes aux développeurs pour que leur application soit exploitable ? » Réponse : les 12 facteurs résumés (config par variables, stateless, logs stdout, arrêt propre), un healthcheck liveness/readiness, des métriques, des migrations de schéma versionnées et rétro-compatibles. Tu es Tech Lead Java : illustre avec Actuator et Flyway, ça crédibilise immédiatement.</div>
+
+<div class="exo"><span class="tag">Exercice 6.1 — Choix de base</span>
+<p>Pour chaque besoin, propose une technologie et justifie en une phrase : a) panier d'achat avec expiration 30 min ; b) facturation ; c) logs applicatifs de 40 microservices ; d) événements de clics à 200 000/s.</p>
+<details><summary>Corrigé</summary><div class="sol">a) Redis avec TTL. b) PostgreSQL : ACID et intégrité non négociables. c) OpenSearch/Elasticsearch ou Loki : recherche et rétention. d) Kafka en ingestion, puis stockage analytique (ClickHouse, S3 + Athena).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 6.2 — Migration sans interruption</span>
+<p>Tu dois renommer la colonne <code>email</code> en <code>email_address</code> dans une table de 50 M de lignes, avec deux versions de l'application qui tournent pendant le déploiement. Décris les étapes.</p>
+<details><summary>Corrigé</summary><div class="sol">Expand/contract : 1) ajouter <code>email_address</code> (nullable) ; 2) déployer un code qui écrit dans les deux colonnes et lit l'ancienne ; 3) copier les données par lots ; 4) déployer un code qui lit la nouvelle ; 5) supprimer <code>email</code> plus tard. Un <code>RENAME</code> direct casserait l'ancienne version pendant le déploiement.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 6.3 — 12 facteurs</span>
+<p>Une application Spring Boot stocke les fichiers uploadés dans <code>/var/app/uploads</code>, lit sa config dans <code>config-prod.yml</code> embarqué dans le jar et écrit ses logs dans <code>/var/log/app.log</code>. Quels facteurs sont violés et quelles conséquences sur un déploiement à deux instances ?</p>
+<details><summary>Corrigé</summary><div class="sol">Processus sans état (uploads locaux : un fichier envoyé à l'instance A est invisible depuis B → stockage objet S3/MinIO), configuration (config dans l'artefact : une image par environnement → variables d'environnement), logs (fichier local : perdu à la mort du conteneur, pas centralisé → stdout).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 6 — Exploiter PostgreSQL et remettre CrisisShield aux normes</span>
+<p><strong>Partie A — PostgreSQL sous Docker</strong></p>
+<pre><code>docker run -d --name pg -e POSTGRES_PASSWORD=lab -p 5432:5432 -v pgdata:/var/lib/postgresql/data postgres:16
+docker exec -it pg psql -U postgres</code></pre>
+<ol>
+<li>Crée une base <code>shop</code>, des tables <code>users</code> et <code>orders</code>, insère 1 M de commandes avec <code>generate_series</code>.</li>
+<li>Mesure une requête filtrant sur <code>orders.user_id</code> avec <code>EXPLAIN ANALYZE</code>, ajoute l'index, remesure. Note les deux temps.</li>
+<li>Sauvegarde avec <code>docker exec pg pg_dump -U postgres -Fc shop > shop.dump</code>, détruis le conteneur <em>et</em> le volume, recrée, restaure avec <code>pg_restore</code>. Chronomètre.</li>
+<li>Lance un second PostgreSQL en réplica en streaming (docker compose, <code>primary</code> + <code>replica</code>, avec <code>pg_basebackup</code>). Vérifie qu'une insertion sur le primaire apparaît sur le réplica et que le réplica refuse les écritures.</li>
+</ol>
+<p><strong>Partie B — Audit 12 facteurs de CrisisShield</strong></p>
+<ol>
+<li>Passe le backend Spring Boot au crible des 12 facteurs et des exigences d'exploitabilité (healthchecks, métriques, arrêt propre, migrations). Rédige un tableau : facteur, état actuel, écart, correction.</li>
+<li>Corrige au moins trois écarts : configuration par variables d'environnement, Actuator avec <code>/actuator/health/liveness</code> et <code>readiness</code>, Flyway pour le schéma.</li>
+<li>Vérifie l'arrêt propre : <code>docker stop</code> doit terminer en moins de 10 s avec un log de fermeture (<code>server.shutdown=graceful</code>).</li>
+</ol>
+<p>Livrable : <code>tp6/</code> avec les scripts SQL, le compose de réplication, les temps mesurés, et le tableau d'audit versionné dans le dépôt CrisisShield.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c6"> Chapitre 6 terminé</label>
+</article>
+
+<!-- ===================== REVISION ===================== -->
+<section class="rev" id="rev">
+<h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 0</h2>
+<p>Réponds à voix haute, comme en entretien, sans support. Un point par réponse solide ; en dessous de 15 sur 20, reprends les chapitres concernés.</p>
+<ol class="quiz">
+<li>Explique le DevOps sans citer un seul outil.</li>
+<li>Les quatre métriques DORA historiques, la cinquième ajoutée en 2024, et pourquoi vitesse et stabilité ne s'opposent pas.</li>
+<li>Que signifie <code>chmod 750</code> ? Que fait le bit setuid ?</li>
+<li>Un serveur est lent : ta méthode en cinq commandes.</li>
+<li>Pourquoi PID 1 doit gérer SIGTERM dans un conteneur.</li>
+<li>Écris un pipeline qui compte les codes HTTP dans un access.log.</li>
+<li>Combien d'adresses dans un /22 ? Trois plages privées.</li>
+<li>Ce qui se passe entre la saisie d'une URL HTTPS et l'affichage.</li>
+<li>Différence entre 401, 403, 502, 504.</li>
+<li>Comment TLS authentifie un serveur ; ce qu'apporte mTLS.</li>
+<li>Security group versus NACL.</li>
+<li>Que fait <code>set -euo pipefail</code> ? Pourquoi citer les variables ?</li>
+<li>Quand passer de Bash à Python.</li>
+<li>Qu'est-ce qu'une branche Git, physiquement ?</li>
+<li>Merge, rebase, revert, reset : quand et pourquoi.</li>
+<li>Trunk-based versus GitFlow ; ce que Conventional Commits permet d'automatiser.</li>
+<li>Un secret a été commité puis supprimé du dépôt : que fais-tu ?</li>
+<li>ACID ; à quoi sert un index ; comment lire un EXPLAIN.</li>
+<li>Migration de schéma sans interruption : le principe expand/contract.</li>
+<li>Les six facteurs des 12 qui conditionnent l'exploitabilité, avec un exemple Spring Boot.</li>
+</ol>
+<p><strong>Prochain niveau</strong> : Virtualisation et conteneurs — Docker en profondeur, images, réseaux, volumes, sécurité des images, Compose, registries.</p>
+</section>
+
+<div class="footnav"><a href="index.html">← Accueil du parcours</a><a href="devops-niveau-1-conteneurs.html">Niveau 1 — Virtualisation et conteneurs →</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='devops-n0-progress', THEME='devops-theme';
+  var boxes=document.querySelectorAll('input[data-ch]');
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  function render(){
+    var done=0; boxes.forEach(function(b){ if(b.checked) done++; });
+    var pct=Math.round(done/boxes.length*100);
+    document.getElementById('pct').textContent=pct+' %';
+    document.getElementById('bar').style.width=pct+'%';
+  }
+  var st=load();
+  boxes.forEach(function(b){ b.checked=!!st[b.dataset.ch]; b.addEventListener('change',function(){ st[b.dataset.ch]=b.checked; save(st); render(); }); });
+  render();
+  var root=document.documentElement;
+  try{ var t=localStorage.getItem(THEME); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.getElementById('theme').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur==='dark';
+    var next=dark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem(THEME,next); }catch(e){}
+  });
+})();
+</script>
+
+<script>
+(function(){
+  // Barre de lecture
+  var bar=document.createElement('div'); bar.className='readbar'; document.body.prepend(bar);
+  function upd(){ var h=document.documentElement; var max=h.scrollHeight-h.clientHeight; bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%'; }
+  window.addEventListener('scroll',upd,{passive:true}); upd();
+  // Bouton copier sur chaque bloc de code
+  document.querySelectorAll('pre').forEach(function(pre){
+    var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier'; b.setAttribute('aria-label','Copier le code');
+    b.addEventListener('click',function(){
+      var t=pre.innerText.replace(/^Copier\n?/,'').replace(/Copi\u00e9 !$/,'');
+      var done=function(){ b.textContent='Copi\u00e9 !'; b.classList.add('ok'); setTimeout(function(){ b.textContent='Copier'; b.classList.remove('ok'); },1500); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); }
+      else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); done(); }
+    });
+    pre.appendChild(b);
+  });
+  // Sommaire qui suit la lecture
+  var links=document.querySelectorAll('nav.toc a[href^="#"]');
+  if(links.length&&'IntersectionObserver' in window){
+    var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){a.classList.remove('active');}); var a=map[e.target.id]; if(a) a.classList.add('active'); } });
+    },{rootMargin:'-10% 0px -75% 0px'});
+    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el) io.observe(el); });
+  }
+  // Impression : ouvrir tous les corrig\u00e9s
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.open=true; }); });
+})();
+</script>
+
+<script>
+(function(){
+  // Tableaux : libellé de colonne sur chaque cellule pour l'affichage empilé
+  document.querySelectorAll('table').forEach(function(t){
+    var rows=t.rows; if(!rows.length) return;
+    var head=rows[0]; var ths=head.querySelectorAll('th');
+    if(!ths.length) return;
+    head.classList.add('head');
+    var labels=Array.prototype.map.call(head.cells,function(c){return c.textContent.trim();});
+    for(var i=1;i<rows.length;i++){
+      var cells=rows[i].cells;
+      for(var j=0;j<cells.length;j++){ if(cells[j].tagName==='TD') cells[j].setAttribute('data-label',labels[j]||''); }
+    }
+    t.classList.add('stack');
+  });
+  // Schémas ASCII : garder l'alignement (défilement horizontal) au lieu du repli
+  document.querySelectorAll('pre').forEach(function(p){
+    if(/[\u2500-\u257F\u25B6\u25C0\u25BA\u25C4\u2192\u2190\u2191\u2193]/.test(p.textContent)) p.classList.add('diagram');
+  });
+})();
+</script>
+</body>
+</html>

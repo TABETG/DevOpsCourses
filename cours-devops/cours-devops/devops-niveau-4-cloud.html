@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cours DevOps — Niveau 4 : Cloud</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="in">
+    <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
+    <div class="level">Parcours DevOps — Niveau 4 sur 9</div>
+    <h1>Cloud : AWS en profondeur, Azure, GCP, FinOps</h1>
+    <p class="lead">Cinq chapitres pour passer de « je sais que le cloud existe » à « je conçois, sécurise et facture une plateforme ». AWS sert de fil conducteur parce que c'est le plus demandé en mission ; Azure et GCP sont traités par équivalence. Les TP tournent sur LocalStack, et sur un vrai compte AWS Free Tier quand c'est indispensable, avec le coût annoncé à chaque fois.</p>
+    <div class="meta">
+      <span>5 chapitres</span><span>≈ 40 h de travail</span><span>Prérequis : Niveaux 0 à 3</span>
+    </div>
+    <button class="theme" id="theme">Basculer clair / sombre</button>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <strong>Sommaire</strong>
+  <ol start="20">
+    <li><a href="#c20" class="toc-confirme">Concepts du cloud</a></li>
+    <li><a href="#c21" class="toc-senior">AWS en profondeur</a></li>
+    <li><a href="#c22" class="toc-senior">Azure et GCP</a></li>
+    <li><a href="#c23" class="toc-senior">FinOps</a></li>
+    <li><a href="#c24" class="toc-expert">Multi-cloud et hybride</a></li>
+    <li><a href="#rev">Révision du niveau</a></li>
+  </ol>
+<div class="legend">Niveau des chapitres : <span class="badge lvl-confirme">Confirmé</span><span class="badge lvl-senior">Senior</span><span class="badge lvl-expert">Expert</span> <span class="badge badge-niche">Techno de niche</span> = encadré différenciant dans chaque chapitre<br>Mémorisation : <span class="badge tag-coeur">Par cœur</span> <span class="badge tag-important">Important</span> <span class="badge tag-contexte">Bon à savoir</span></div>
+  <div class="prog">Progression : <span id="pct">0 %</span><div class="bar"><i id="bar"></i></div></div>
+</nav>
+
+<main>
+
+<!-- ===================== CHAPITRE 20 ===================== -->
+<article id="c20">
+<div class="chaphead"><span class="chapnum">Chapitre 20</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Concepts du cloud</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Distinguer IaaS, PaaS, SaaS, FaaS et choisir le bon niveau d'abstraction</li><li>Expliquer régions, zones de disponibilité, edge, et concevoir pour la panne</li><li>Appliquer le modèle de responsabilité partagée</li><li>Lire une facture cloud et les cinq piliers d'une architecture bien conçue</li></ul></div>
+<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Choisir le niveau de service le plus haut qui satisfait les contraintes ; multi-AZ est le minimum.</li><li>Responsabilité partagée : la quasi-totalité des fuites vient du côté client (bucket, clé, security group).</li><li>Compte root avec MFA puis jamais utilisé ; budgets et alertes avant la première ressource.</li></ol></div>
+
+
+<h3>20.1 Les niveaux de service<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Modèle</th><th>Tu gères</th><th>Le fournisseur gère</th><th>Exemples</th></tr>
+<tr><td>Sur site</td><td>Tout, du bâtiment à l'application</td><td>Rien</td><td>Datacenter interne</td></tr>
+<tr><td>IaaS</td><td>OS, runtime, application, données</td><td>Matériel, virtualisation, réseau physique</td><td>EC2, Azure VM, Compute Engine</td></tr>
+<tr><td>CaaS</td><td>Conteneurs, application</td><td>Orchestrateur, nœuds (selon le mode)</td><td>ECS Fargate, EKS, AKS, GKE, Cloud Run</td></tr>
+<tr><td>PaaS</td><td>Application, données</td><td>Runtime, OS, mise à l'échelle</td><td>Elastic Beanstalk, App Service, App Engine, Heroku</td></tr>
+<tr><td>FaaS</td><td>Le code d'une fonction</td><td>Tout le reste, facturé à l'exécution</td><td>Lambda, Azure Functions, Cloud Functions</td></tr>
+<tr><td>SaaS</td><td>La configuration et les données</td><td>Tout</td><td>Gmail, Salesforce, GitLab.com</td></tr>
+</table></div>
+<p>Plus on monte, moins on opère et moins on contrôle. Le bon niveau est le plus haut qui satisfait les contraintes (réglementaires, techniques, coût). Une équipe DevOps de deux personnes ne devrait pas gérer des nœuds Kubernetes si Fargate ou Cloud Run suffisent.</p>
+
+<h3>20.2 Géographie : concevoir pour la panne<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Région</strong> : un ensemble de datacenters dans une zone géographique (Paris <code>eu-west-3</code>, Irlande <code>eu-west-1</code>, Francfort <code>eu-central-1</code>). Choix par latence, réglementation (RGPD, données de santé HDS), coût et disponibilité des services.</li>
+<li><strong>Zone de disponibilité (AZ)</strong> : un ou plusieurs datacenters isolés (alimentation, réseau) dans la région, reliés à faible latence. Une région a au moins trois AZ. La règle : toute production s'étend sur au moins deux AZ.</li>
+<li><strong>Edge / points de présence</strong> : CDN (CloudFront), DNS (Route 53), protection DDoS, au plus près des utilisateurs.</li>
+<li><strong>Pannes réelles</strong> : une AZ tombe quelques fois par an quelque part ; une région entière, rarement mais ça arrive (us-east-1). Multi-AZ est le minimum ; multi-région est un choix coûteux réservé aux besoins de continuité forts.</li>
+</ul>
+<p>Latence : intra-AZ < 1 ms, inter-AZ 1 à 2 ms (facturé), Paris–Irlande ≈ 20 ms, Paris–Virginie ≈ 80 ms. Une application bavarde entre AZ paie en latence et en transfert de données.</p>
+
+<h3>20.3 Responsabilité partagée<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Le fournisseur est responsable de la sécurité <em>du</em> cloud (datacenters, matériel, hyperviseur, services managés). Le client est responsable de la sécurité <em>dans</em> le cloud : identités et droits, configuration réseau, chiffrement des données, patchs des OS qu'il gère, code applicatif. La quasi-totalité des fuites cloud vient du côté client : bucket public, clé d'accès commitée, security group ouvert, rôle trop large.</p>
+
+<h3>20.4 Ce qui coûte<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Calcul (à la seconde ou à la requête), stockage (par Go-mois, par classe), <strong>transfert de données</strong> (sortant vers Internet et inter-région, souvent la surprise de la facture), requêtes (S3, API), services managés (par heure d'instance de base, par Go de logs ingérés), adresses IP publiques, NAT Gateway (par heure et par Go). Entrant : gratuit. Le chapitre 23 détaille.</p>
+
+<h3>20.5 Well-Architected : les piliers<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>AWS, Azure et Google publient chacun un cadre d'architecture. Piliers communs : excellence opérationnelle, sécurité, fiabilité, efficacité des performances, optimisation des coûts, durabilité. C'est une grille de revue : pour chaque pilier, des questions (« comment détectez-vous les incidents ? », « comment gérez-vous les identités ? »). En mission, une revue Well-Architected est un livrable classique de consultant.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Cloud Custodian</span><p>Des règles YAML évaluées sur les ressources cloud (AWS, Azure, GCP, Kubernetes) qui trouvent, notifient et corrigent : arrêter les instances non taguées, chiffrer les volumes, supprimer les adresses orphelines, planifiées en Lambda.</p><p><strong>Pourquoi ça différencie :</strong> Gouvernance et FinOps en code, avec action : très recherché, et complémentaire d'AWS Config qui ne fait que détecter.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -v "$PWD:/w" -w /w -e AWS_ENDPOINT_URL=http://localstack:4566 --network &lt;réseau&gt; cloudcustodian/c7n run -s out politique.yml</code> avec une règle qui marque les buckets sans tag <code>Owner</code>.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Pourquoi le cloud plutôt qu'un datacenter ? » Éviter la réponse marketing. Dire : élasticité (payer l'usage, absorber les pics), vitesse (une base répliquée en 10 minutes), services managés qui remplacent des équipes, résilience géographique accessible. Puis les contreparties : coût à l'usage qui dérape sans FinOps, dépendance, compétences, et souveraineté des données (sujet sensible en France : SecNumCloud, S3NS, Bleu, OVHcloud).</div>
+
+<div class="exo"><span class="tag">Exercice 20.1</span>
+<p>Une application interne, trafic stable, 200 utilisateurs, équipe de deux développeurs sans ops. Quel niveau de service et pourquoi pas les autres ?</p>
+<details><summary>Corrigé</summary><div class="sol">PaaS ou CaaS serverless (App Runner / Cloud Run / App Service) : zéro nœud à gérer, mise à l'échelle automatique, HTTPS fourni. IaaS demanderait de patcher des VM ; Kubernetes est disproportionné ; FaaS mal adapté à une application web classique avec état de session et connexions base persistantes.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 20.2</span>
+<p>Une fuite de données est due à une base RDS accessible publiquement avec un mot de passe faible. Qui est responsable au sens du modèle partagé, et quelles trois mesures auraient dû être en place ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le client : la configuration réseau et les identifiants sont de son côté. Mesures : sous-réseau privé sans accès public (<code>publicly_accessible = false</code>), security group n'autorisant que l'application, secret généré et tourné par Secrets Manager (ou authentification IAM). Bonus : détection par AWS Config / Security Hub de la règle « RDS public ».</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 20 — Compte AWS prêt pour la suite</span>
+<p>Ce TP est le seul qui exige un vrai compte. Coût : zéro si tu restes dans le Free Tier et que tu détruis tout.</p>
+<ol>
+<li>Crée un compte AWS. Active immédiatement le MFA sur le compte root, puis ne l'utilise plus jamais.</li>
+<li>Active AWS Organizations et crée un compte membre <code>sandbox</code> via Terraform (ressource <code>aws_organizations_account</code>) ; c'est là que tout se passera, isolé.</li>
+<li>Crée un budget de 5 € avec alerte e-mail à 50 % et 100 % (<code>aws_budgets_budget</code>). Active Cost Explorer.</li>
+<li>Configure l'accès par <strong>IAM Identity Center</strong> (SSO) avec un utilisateur et un permission set <code>AdministratorAccess</code> sur le sandbox, puis la CLI en conteneur : <code>docker run --rm -it -v "$HOME/.aws:/root/.aws" amazon/aws-cli sso login --profile sandbox</code>. Aucune clé d'accès permanente ne doit exister.</li>
+<li>Applique deux garde-fous par SCP sur le sandbox : interdire toute région autre que <code>eu-west-3</code> et <code>us-east-1</code> (nécessaire pour certains services globaux), et interdire la désactivation de CloudTrail.</li>
+<li>Écris <code>scripts/nuke-check.sh</code> qui liste tout ce qui coûte dans le sandbox (EC2, RDS, NAT, EIP, volumes, buckets) pour vérifier avant de fermer le poste. Regarde aussi <code>aws-nuke</code> (à manier avec précaution).</li>
+</ol>
+<p>Livrable : <code>infra/aws-bootstrap/</code> (organisation, budget, SCP), et <code>tp20.md</code> avec la capture du budget et de la connexion SSO.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c20"> Chapitre 20 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 21 ===================== -->
+<article id="c21">
+<div class="chaphead"><span class="chapnum">Chapitre 21</span><span class="badge lvl-senior">Senior</span></div>
+<h2>AWS en profondeur</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Écrire des politiques IAM au moindre privilège et utiliser des rôles plutôt que des clés</li><li>Concevoir un VPC de production : sous-réseaux, routage, NAT, endpoints, security groups</li><li>Choisir entre EC2, ECS Fargate, EKS et Lambda pour une charge donnée</li><li>Exploiter S3, RDS, et les briques d'observabilité et de sécurité natives</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>IAM : rôles plutôt que clés, OIDC pour la CI, moindre privilège vérifié par Access Analyzer.</li><li>VPC en trois niveaux sur trois AZ ; security groups par référence ; endpoints plutôt que NAT.</li><li>Fargate par défaut, EKS pour la plateforme, Lambda pour l&#x27;événementiel ; RDS Multi-AZ, S3 verrouillé.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 202" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Le VPC de production : trois zones, trois niveaux de sous-réseaux. Seul le public a une route vers Internet ; le privé sort par la NAT ou des endpoints ; les données ne sortent jamais."><defs><marker id="ah10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="20" y="10" width="440" height="30" rx="7" class="box"/><text x="240.0" y="29.6" text-anchor="middle" font-size="13" font-weight="700">Internet Gateway</text><text x="20" y="60" class="glab">AZ a</text><rect x="20" y="66" width="140" height="40" rx="7" class="soft"/><text x="90.0" y="90.2" text-anchor="middle" font-size="12" font-weight="700">public : ALB, NAT</text><rect x="20" y="114" width="140" height="40" rx="7" class="green"/><text x="90.0" y="138.2" text-anchor="middle" font-size="12" font-weight="700">privé : ECS, EKS</text><rect x="20" y="162" width="140" height="40" rx="7" class="amber"/><text x="90.0" y="186.2" text-anchor="middle" font-size="12" font-weight="700">données : RDS</text><text x="170" y="60" class="glab">AZ b</text><rect x="170" y="66" width="140" height="40" rx="7" class="soft"/><text x="240.0" y="90.2" text-anchor="middle" font-size="12" font-weight="700">public : ALB, NAT</text><rect x="170" y="114" width="140" height="40" rx="7" class="green"/><text x="240.0" y="138.2" text-anchor="middle" font-size="12" font-weight="700">privé : ECS, EKS</text><rect x="170" y="162" width="140" height="40" rx="7" class="amber"/><text x="240.0" y="186.2" text-anchor="middle" font-size="12" font-weight="700">données : RDS</text><text x="320" y="60" class="glab">AZ c</text><rect x="320" y="66" width="140" height="40" rx="7" class="soft"/><text x="390.0" y="90.2" text-anchor="middle" font-size="12" font-weight="700">public : ALB, NAT</text><rect x="320" y="114" width="140" height="40" rx="7" class="green"/><text x="390.0" y="138.2" text-anchor="middle" font-size="12" font-weight="700">privé : ECS, EKS</text><rect x="320" y="162" width="140" height="40" rx="7" class="amber"/><text x="390.0" y="186.2" text-anchor="middle" font-size="12" font-weight="700">données : RDS</text><path d="M240,40 L240,66" class="arrow" marker-end="url(#ah10)"/></svg><figcaption>Le VPC de production : trois zones, trois niveaux de sous-réseaux. Seul le public a une route vers Internet ; le privé sort par la NAT ou des endpoints ; les données ne sortent jamais.</figcaption></figure>
+
+
+<h3>21.1 IAM : le cœur de tout<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Tout appel d'API AWS est authentifié (qui) et autorisé (quoi) par IAM. Entités : <strong>utilisateurs</strong> (à éviter : préférer Identity Center), <strong>groupes</strong>, <strong>rôles</strong> (identité temporaire assumée par un service, une instance, un pipeline, un humain via SSO), <strong>politiques</strong> (documents JSON qui autorisent ou refusent).</p>
+<pre><code>{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "LireLesRapports",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::crisisshield-reports", "arn:aws:s3:::crisisshield-reports/*"],
+      "Condition": { "Bool": { "aws:SecureTransport": "true" } }
+    },
+    {
+      "Sid": "SecretDeLaBase",
+      "Effect": "Allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:secretsmanager:eu-west-3:123456789012:secret:crisisshield/prod/db-*"
+    }
+  ]
+}</code></pre>
+<p>Règles d'évaluation : refus explicite > autorisation explicite > refus implicite. Les politiques se cumulent : identité (attachée au rôle), ressource (bucket policy, trust policy d'un rôle), SCP (organisation), permission boundary, session. Une action n'est autorisée que si aucune couche ne refuse et qu'au moins une autorise.</p>
+<ul>
+<li><strong>Rôle pour EC2</strong> (instance profile), <strong>pour ECS</strong> (task role ≠ execution role), <strong>pour Lambda</strong> : l'application obtient des identifiants temporaires via le service de métadonnées ; aucun secret à gérer. IMDSv2 obligatoire.</li>
+<li><strong>Pipeline CI</strong> : fédération OIDC. GitLab ou GitHub présente un jeton signé, AWS le vérifie et délivre des identifiants de 15 minutes à 1 heure. Plus aucune clé statique en CI.</li>
+<li><strong>Humains</strong> : Identity Center, MFA, sessions courtes. Les clés d'accès longue durée sont un incident en attente.</li>
+<li><strong>Moindre privilège</strong> : commencer par IAM Access Analyzer (génère une politique à partir de l'usage réel dans CloudTrail), et affiner. Refuser <code>"Action": "*"</code> et <code>"Resource": "*"</code> en revue de code.</li>
+<li>Trust policy : qui peut assumer le rôle. C'est là que se cachent les erreurs graves (<code>"Principal": "*"</code>).</li>
+</ul>
+
+<h3>21.2 VPC : le réseau<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>VPC 10.20.0.0/16 (eu-west-3)
+├── AZ a                    AZ b                    AZ c
+│   public  10.20.0.0/24    10.20.1.0/24            10.20.2.0/24    ← ALB, NAT Gateway
+│   private 10.20.10.0/24   10.20.11.0/24           10.20.12.0/24   ← ECS, EKS, EC2 applicatifs
+│   data    10.20.20.0/24   10.20.21.0/24           10.20.22.0/24   ← RDS, ElastiCache
+├── Internet Gateway (entrée/sortie des sous-réseaux publics)
+├── NAT Gateway par AZ (sortie Internet des privés ; coûteux : ~35 €/mois + trafic)
+├── VPC Endpoints : S3, ECR, Secrets Manager, CloudWatch Logs (gratuit ou moins cher que la NAT)
+└── Route tables : public → IGW ; private → NAT ; data → aucune sortie Internet</code></pre>
+<ul>
+<li><strong>Security group</strong> : pare-feu stateful attaché à une interface. Autoriser par référence à un autre security group (« le SG de la base accepte 5432 depuis le SG de l'application ») plutôt que par CIDR : les règles suivent les instances.</li>
+<li><strong>NACL</strong> : stateless, au niveau du sous-réseau, à laisser par défaut sauf besoin de refus explicite.</li>
+<li><strong>ALB</strong> (couche 7, HTTP, terminaison TLS avec ACM, routage par chemin et hôte, WAF), <strong>NLB</strong> (couche 4, très haut débit, IP fixe), <strong>API Gateway</strong> (APIs serverless, quotas, authentification).</li>
+<li><strong>Route 53</strong> : DNS avec health checks, routage pondéré (canary), géographique, failover.</li>
+<li><strong>Connectivité</strong> : VPC peering (deux VPC), Transit Gateway (hub pour des dizaines de VPC et le site), Site-to-Site VPN, Direct Connect (fibre dédiée). PrivateLink pour exposer un service à un autre compte sans peering.</li>
+<li><strong>Flow Logs</strong> : journal des flux acceptés/refusés, indispensable pour déboguer « ça ne passe pas ».</li>
+</ul>
+
+<h3>21.3 Calcul : choisir le bon service<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Service</th><th>Tu gères</th><th>Idéal pour</th><th>À éviter pour</th></tr>
+<tr><td>EC2</td><td>VM, OS, patchs, capacité (ASG)</td><td>Legacy, licences, contrôle total, GPU</td><td>Applications conteneurisées neuves</td></tr>
+<tr><td>ECS sur Fargate</td><td>Définitions de tâches, services</td><td>Conteneurs sans gérer de nœuds, équipes petites</td><td>Besoins Kubernetes (opérateurs, écosystème)</td></tr>
+<tr><td>EKS</td><td>Manifests, add-ons, nœuds (ou Fargate/Auto Mode)</td><td>Plateformes multi-équipes, portabilité, écosystème CNCF</td><td>Une seule application simple</td></tr>
+<tr><td>Lambda</td><td>Le code</td><td>Événementiel, pics imprévisibles, glue entre services</td><td>Traitements longs (> 15 min), latence constante critique (cold start), gros débit continu (coût)</td></tr>
+<tr><td>App Runner</td><td>Une image</td><td>Service web simple, zéro infra</td><td>Contrôle réseau fin</td></tr>
+</table></div>
+<p>EC2 en détail : familles (t = burstable, m = équilibré, c = calcul, r = mémoire, g/p = GPU), génération (m7g = Graviton ARM, 20 à 40 % moins cher), tailles. Modèles d'achat : à la demande, Savings Plans (engagement 1 ou 3 ans, jusqu'à −72 %), Spot (capacité inutilisée, −90 %, reprise à tout moment avec 2 minutes de préavis : parfait pour CI, batch, nœuds Kubernetes tolérants). Autoscaling group : capacité min/désirée/max, politiques sur métriques, mise à jour par instance refresh avec golden image Packer.</p>
+<pre><code>// ECS : définition de tâche (extrait)
+{
+  "family": "crisisshield-api",
+  "cpu": "512", "memory": "1024",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "executionRoleArn": "arn:aws:iam::...:role/ecsExecutionRole",   // tirer l'image, lire les secrets, écrire les logs
+  "taskRoleArn": "arn:aws:iam::...:role/crisisshield-api",        // ce que l'application a le droit de faire
+  "containerDefinitions": [{
+    "name": "api",
+    "image": "123456789012.dkr.ecr.eu-west-3.amazonaws.com/crisisshield/api@sha256:...",
+    "portMappings": [{"containerPort": 8080}],
+    "secrets": [{"name": "SPRING_DATASOURCE_PASSWORD", "valueFrom": "arn:aws:secretsmanager:...:secret:crisisshield/prod/db:password::"}],
+    "logConfiguration": {"logDriver": "awslogs", "options": {"awslogs-group": "/crisisshield/api", "awslogs-region": "eu-west-3", "awslogs-stream-prefix": "api"}},
+    "healthCheck": {"command": ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health/liveness || exit 1"], "interval": 30, "startPeriod": 60},
+    "readonlyRootFilesystem": true,
+    "user": "1000"
+  }]
+}</code></pre>
+
+<h3>21.4 Stockage<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>S3</strong> : stockage objet, durabilité 11 neufs, illimité. Classes : Standard, Intelligent-Tiering, Standard-IA, Glacier (Instant, Flexible, Deep Archive). Règles de cycle de vie pour descendre de classe et expirer. Versioning, chiffrement par défaut (SSE-S3 ou SSE-KMS), Block Public Access au niveau compte, bucket policy, Object Lock (immutabilité, ransomware), réplication inter-région. Accès pré-signé pour les uploads depuis le navigateur. Hébergement statique derrière CloudFront pour le front React.</li>
+<li><strong>EBS</strong> : disque bloc d'une instance (gp3 par défaut, io2 pour les bases exigeantes), snapshots incrémentaux vers S3.</li>
+<li><strong>EFS</strong> : NFS partagé entre instances et conteneurs, élastique, plus cher.</li>
+<li><strong>ECR</strong> : registre d'images, scan intégré, politiques de cycle de vie, réplication.</li>
+</ul>
+
+<h3>21.5 Bases de données managées<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>RDS</strong> : PostgreSQL, MySQL, MariaDB, Oracle, SQL Server. Multi-AZ (réplica synchrone, bascule automatique en 60 à 120 s), réplicas de lecture, sauvegardes automatiques (rétention 1 à 35 jours, restauration à un instant précis), fenêtres de maintenance, Performance Insights. Authentification IAM possible. RDS Proxy pour mutualiser les connexions (Lambda, pics).</li>
+<li><strong>Aurora</strong> : PostgreSQL/MySQL compatibles, stockage distribué sur 3 AZ, jusqu'à 15 réplicas, bascule en secondes, Serverless v2 (capacité à la demande), Global Database (réplication inter-région < 1 s). Plus cher à l'instance, souvent moins cher à charge équivalente.</li>
+<li><strong>DynamoDB</strong> : clé-valeur/document serverless, latence de quelques ms à toute échelle, facturation à la requête ou provisionnée, TTL, streams, Global Tables. Modéliser par accès (single-table design).</li>
+<li><strong>ElastiCache</strong> (Redis/Valkey, Memcached), <strong>OpenSearch</strong>, <strong>MSK</strong> (Kafka managé), <strong>SQS/SNS/EventBridge</strong> pour la messagerie.</li>
+</ul>
+
+<h3>21.6 Lambda et le serverless<span class="badge tag-important">Important</span></h3>
+<p>Une fonction, un déclencheur (HTTP via API Gateway ou Function URL, événement S3, message SQS, planification EventBridge, flux DynamoDB), une durée max de 15 min, une mémoire de 128 Mo à 10 Go (le CPU suit), facturation par ms. Concepts : cold start (initialisation ; Java est le plus lent, mitigé par SnapStart ou GraalVM), concurrence réservée/provisionnée, couches, image de conteneur jusqu'à 10 Go. Déploiement : SAM, CDK, Terraform, Serverless Framework. Java : Spring Cloud Function, Quarkus (excellent en Lambda natif).</p>
+<pre><code>resource "aws_lambda_function" "report" {
+  function_name = "crisisshield-report"
+  package_type  = "Image"
+  image_uri     = "${aws_ecr_repository.report.repository_url}@${data.aws_ecr_image.report.image_digest}"
+  role          = aws_iam_role.report.arn
+  memory_size   = 1024
+  timeout       = 60
+  environment { variables = { BUCKET = aws_s3_bucket.reports.id } }
+  tracing_config { mode = "Active" }
+}
+resource "aws_lambda_event_source_mapping" "queue" {
+  event_source_arn = aws_sqs_queue.reports.arn
+  function_name    = aws_lambda_function.report.arn
+  batch_size       = 10
+}</code></pre>
+
+<h3>21.7 Observabilité et sécurité natives<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>CloudWatch</strong> : métriques (natives et custom), logs (groupes, rétention à définir sinon infinie et payante, Logs Insights), alarmes, dashboards, Container Insights. <strong>X-Ray</strong> : traces distribuées.</li>
+<li><strong>CloudTrail</strong> : tous les appels d'API, à activer sur l'organisation, envoyé dans un bucket verrouillé. C'est la base de toute investigation.</li>
+<li><strong>AWS Config</strong> : inventaire et conformité des ressources (règles : bucket public, chiffrement, MFA). <strong>Security Hub</strong> : agrégation, standards CIS / AWS Foundational. <strong>GuardDuty</strong> : détection de menaces (clés compromises, minage, appels suspects). <strong>Inspector</strong> : CVE sur EC2, ECR, Lambda. <strong>KMS</strong> : clés de chiffrement, avec rotation et politiques. <strong>Secrets Manager</strong> : secrets avec rotation automatique (RDS natif). <strong>WAF</strong> et <strong>Shield</strong> : protection applicative et DDoS. <strong>SSM Session Manager</strong> : shell sur une instance sans SSH ni port ouvert, tracé.</li>
+</ul>
+<p>CloudFormation est l'IaC natif d'AWS ; le CDK le génère depuis TypeScript/Python/Java. En mission, tu croiseras les deux ; Terraform reste le plus demandé.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — AWS Nitro Enclaves</span><p>Une machine virtuelle isolée, sans réseau ni stockage persistant, à côté d'une instance EC2 : elle produit un document d'attestation signé, et KMS ne déchiffre une clé que si l'enclave est attestée. Traitement de secrets, signature, HSM logiciel, confidential computing.</p><p><strong>Pourquoi ça différencie :</strong> Ton expérience PKI/HSM plus le confidential computing : un créneau où presque personne ne se positionne en France.</p><p><strong>À essayer en une heure :</strong> Sur une instance compatible (par exemple <code>m6i.xlarge</code>, quelques centimes) avec <code>nitro-cli</code>, construire l'enclave d'exemple, lire l'attestation, et documenter la comparaison avec un HSM.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Conçois l'infrastructure AWS d'une application web avec base de données. » Déroule : VPC 3 AZ, sous-réseaux publics/privés/données, ALB avec ACM et WAF dans le public, ECS Fargate (ou EKS) dans le privé avec rôle de tâche, RDS PostgreSQL Multi-AZ dans données avec Secrets Manager et rotation, S3 + CloudFront pour le front, endpoints VPC pour éviter la NAT, CloudWatch avec rétention, CloudTrail et GuardDuty, tout en Terraform avec state S3, déploiement par pipeline OIDC. Puis les coûts : NAT, transfert, dimensionnement RDS. C'est la question la plus fréquente ; répète-la jusqu'à la dérouler en trois minutes.</div>
+
+<div class="exo"><span class="tag">Exercice 21.1</span>
+<p>Une Lambda doit lire un objet dans le bucket <code>crisisshield-reports</code>. Elle échoue avec AccessDenied alors que sa politique d'identité autorise <code>s3:GetObject</code> sur <code>arn:aws:s3:::crisisshield-reports</code>. Pourquoi, et quelle autre cause possible ?</p>
+<details><summary>Corrigé</summary><div class="sol">L'ARN d'un objet est <code>arn:aws:s3:::crisisshield-reports/*</code> ; le bucket seul ne couvre pas les objets. Autre cause : la bucket policy ou une SCP refuse explicitement, ou l'objet est chiffré avec une clé KMS sur laquelle le rôle n'a pas <code>kms:Decrypt</code>.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 21.2</span>
+<p>Les tâches ECS dans les sous-réseaux privés n'arrivent pas à tirer leur image depuis ECR. Trois causes possibles dans l'ordre où tu les vérifies.</p>
+<details><summary>Corrigé</summary><div class="sol">1) Pas de route vers Internet (NAT) ni d'endpoints VPC pour ECR (<code>ecr.api</code>, <code>ecr.dkr</code>) et S3 (les couches sont dans S3) ; 2) le security group des tâches bloque la sortie 443 ou le security group des endpoints n'accepte pas les tâches ; 3) le rôle d'exécution n'a pas <code>ecr:GetAuthorizationToken</code> et <code>ecr:BatchGetImage</code>. Flow Logs et l'événement d'échec de la tâche (message <code>CannotPullContainerError</code>) orientent.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 21.3</span>
+<p>Un batch nocturne de 2 heures tourne sur une instance <code>m6i.xlarge</code> à la demande. Deux façons de diviser le coût par 5 ou plus.</p>
+<details><summary>Corrigé</summary><div class="sol">Instance Spot (−70 à −90 %) avec reprise sur interruption (le batch doit être idempotent et reprendre), et arrêt de l'instance en dehors des 2 heures (ou lancement à la demande par EventBridge + arrêt à la fin). Graviton (<code>m7g</code>) pour −20 % supplémentaires.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 21 — CrisisShield sur AWS, en Terraform, de bout en bout</span>
+<p>Deux modes : <strong>LocalStack</strong> pour tout développer et valider gratuitement (IAM, VPC, S3, ECR, Secrets Manager, Lambda, SQS sont bien émulés ; ECS et RDS le sont partiellement, en édition payante), puis <strong>sandbox AWS</strong> pour un déploiement réel de quelques heures. Coût estimé du déploiement réel avec NAT Gateway, ALB, RDS <code>db.t4g.micro</code> Multi-AZ, deux tâches Fargate : environ 0,25 €/heure ; détruis en fin de session.</p>
+<ol>
+<li><strong>Réseau</strong> : module <code>network</code> du TP 16 étendu : 3 AZ, sous-réseaux publics/privés/données, IGW, une seule NAT (choix coût documenté), endpoints S3 (gateway), ECR, Secrets Manager, CloudWatch Logs. Flow Logs activés vers CloudWatch avec rétention 7 jours.</li>
+<li><strong>Identités</strong> : rôle OIDC pour ton GitLab (trust policy limitée à ton projet et à la branche <code>main</code>), rôles d'exécution et de tâche ECS distincts, politique de tâche générée avec Access Analyzer après un premier tour trop large, puis resserrée.</li>
+<li><strong>Données</strong> : RDS PostgreSQL 16 Multi-AZ, chiffré KMS, non public, mot de passe généré et stocké dans Secrets Manager avec rotation activée, security group n'acceptant que le SG de l'API. Sauvegardes 7 jours.</li>
+<li><strong>Application</strong> : ECR avec scan à la poussée et cycle de vie (garder 10 images), cluster ECS, service Fargate de 2 tâches sur 2 AZ derrière un ALB HTTPS (certificat ACM sur un sous-domaine que tu possèdes, ou HTTP si aucun domaine), health check sur <code>/actuator/health/readiness</code>, déploiement rolling avec circuit breaker et rollback automatique. Logs dans CloudWatch, rétention 14 jours. Front React sur S3 privé derrière CloudFront avec Origin Access Control.</li>
+<li><strong>Serverless</strong> : une Lambda (image de conteneur, Quarkus ou Python) déclenchée par SQS qui génère un rapport PDF d'incident dans le bucket <code>reports</code> ; l'API publie dans la file. Tracing X-Ray activé.</li>
+<li><strong>Sécurité</strong> : CloudTrail organisation, GuardDuty, Security Hub avec le standard AWS Foundational, WAF sur l'ALB avec les règles managées de base. Note dans le compte rendu les 5 premiers findings de Security Hub et corrige-en 3.</li>
+<li><strong>Pipeline</strong> : le pipeline du niveau 2 pousse dans ECR via OIDC, puis met à jour le service ECS avec la nouvelle image par digest (<code>aws ecs update-service</code> ou Terraform). Smoke test sur l'URL de l'ALB. Job manuel <code>destroy</code>.</li>
+<li>Coupe le service RDS primaire (reboot with failover) et mesure le temps d'indisponibilité vu par un <code>curl</code> en boucle.</li>
+</ol>
+<p>Livrable : <code>infra/aws/</code> dans CrisisShield, schéma d'architecture (Mermaid ou draw.io) dans le README, coûts réels relevés dans Cost Explorer après destruction dans <code>tp21.md</code>, et <code>docs/cours-aws.md</code> : le déroulé d'entretien en trois minutes, écrit puis répété.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c21"> Chapitre 21 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 22 ===================== -->
+<article id="c22">
+<div class="chaphead"><span class="chapnum">Chapitre 22</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Azure et GCP : équivalences</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Transposer une architecture AWS en Azure et en GCP</li><li>Comprendre les modèles d'identité et d'organisation propres à chaque fournisseur</li><li>Savoir ce qui est réellement différent, au-delà des noms</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les trois clouds font la même chose sous des noms différents ; l&#x27;identité et le réseau diffèrent vraiment.</li><li>Azure = Entra ID et groupes de ressources ; GCP = VPC global, projets, Cloud Run et GKE.</li><li>Cloud de confiance : résidence des données ≠ souveraineté juridique ; SecNumCloud, Bleu, S3NS.</li></ol></div>
+
+
+<h3>22.1 Tableau d'équivalences<span class="badge tag-contexte">Bon à savoir</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Fonction</th><th>AWS</th><th>Azure</th><th>GCP</th></tr>
+<tr><td>Organisation</td><td>Organizations, comptes, OU, SCP</td><td>Tenant Entra ID, groupes d'administration, abonnements, groupes de ressources, Azure Policy</td><td>Organisation, dossiers, projets, Organization Policy</td></tr>
+<tr><td>Identité</td><td>IAM, Identity Center</td><td>Entra ID (ex Azure AD), RBAC, identités managées</td><td>Cloud IAM, comptes de service, Workload Identity</td></tr>
+<tr><td>Réseau</td><td>VPC, sous-réseaux par AZ, SG, NACL</td><td>VNet, sous-réseaux régionaux, NSG, ASG</td><td>VPC global, sous-réseaux régionaux, règles de pare-feu</td></tr>
+<tr><td>Répartition de charge</td><td>ALB, NLB</td><td>Application Gateway, Load Balancer, Front Door</td><td>Cloud Load Balancing (global)</td></tr>
+<tr><td>VM</td><td>EC2, ASG</td><td>Virtual Machines, VM Scale Sets</td><td>Compute Engine, Managed Instance Groups</td></tr>
+<tr><td>Conteneurs</td><td>ECS, EKS, App Runner</td><td>Container Apps, AKS, App Service</td><td>Cloud Run, GKE (Autopilot)</td></tr>
+<tr><td>Fonctions</td><td>Lambda</td><td>Azure Functions</td><td>Cloud Functions / Cloud Run functions</td></tr>
+<tr><td>Objets</td><td>S3</td><td>Blob Storage</td><td>Cloud Storage</td></tr>
+<tr><td>Base relationnelle</td><td>RDS, Aurora</td><td>Azure Database for PostgreSQL Flexible Server, SQL Database</td><td>Cloud SQL, AlloyDB, Spanner</td></tr>
+<tr><td>NoSQL</td><td>DynamoDB</td><td>Cosmos DB</td><td>Firestore, Bigtable</td></tr>
+<tr><td>Messagerie</td><td>SQS, SNS, EventBridge, MSK</td><td>Service Bus, Event Grid, Event Hubs</td><td>Pub/Sub</td></tr>
+<tr><td>Secrets et clés</td><td>Secrets Manager, KMS</td><td>Key Vault</td><td>Secret Manager, Cloud KMS</td></tr>
+<tr><td>Registre</td><td>ECR</td><td>Container Registry</td><td>Artifact Registry</td></tr>
+<tr><td>Observabilité</td><td>CloudWatch, X-Ray</td><td>Azure Monitor, Log Analytics, Application Insights</td><td>Cloud Monitoring, Cloud Logging, Cloud Trace</td></tr>
+<tr><td>Audit</td><td>CloudTrail</td><td>Activity Log</td><td>Cloud Audit Logs</td></tr>
+<tr><td>Posture de sécurité</td><td>Security Hub, GuardDuty</td><td>Microsoft Defender for Cloud</td><td>Security Command Center</td></tr>
+<tr><td>IaC natif</td><td>CloudFormation, CDK</td><td>ARM, Bicep</td><td>Deployment Manager (retiré), Terraform recommandé</td></tr>
+<tr><td>CLI</td><td><code>aws</code></td><td><code>az</code></td><td><code>gcloud</code></td></tr>
+</table></div>
+
+<h3>22.2 Ce qui est vraiment différent<span class="badge tag-contexte">Bon à savoir</span></h3>
+<ul>
+<li><strong>Azure</strong> : tout est rattaché à Entra ID, ce qui en fait le choix naturel des entreprises Microsoft 365. Les <em>groupes de ressources</em> sont l'unité de gestion (cycle de vie, droits). Les <em>identités managées</em> jouent le rôle des rôles IAM. Le réseau est régional (un sous-réseau couvre toutes les zones). Azure Policy est plus riche que les SCP. Bicep est un IaC natif agréable. Azure DevOps est encore très présent pour les pipelines. En France : forte présence dans les grands comptes et le public, offre Bleu (Orange/Capgemini) pour la souveraineté.</li>
+<li><strong>GCP</strong> : le VPC est <em>global</em> (un réseau couvre toutes les régions), l'équilibreur de charge est global avec anycast, les projets sont l'unité d'isolation et de facturation. Kubernetes y est né : GKE Autopilot est le meilleur Kubernetes managé. BigQuery domine l'analytique. Cloud Run est le CaaS serverless le plus simple du marché. Comptes de service et Workload Identity Federation pour l'OIDC. En France : S3NS (Thales) pour la souveraineté.</li>
+<li><strong>Facturation</strong> : Azure et GCP facturent aussi à la seconde ; GCP applique des remises automatiques à l'usage soutenu ; Azure a Hybrid Benefit pour les licences Windows/SQL Server.</li>
+</ul>
+
+<h3>22.3 Terraform multi-fournisseurs<span class="badge tag-contexte">Bon à savoir</span></h3>
+<pre><code>provider "azurerm" { features {} ; subscription_id = var.sub }
+resource "azurerm_resource_group" "rg" { name = "crisisshield-prod", location = "francecentral" }
+resource "azurerm_container_app" "api" { ... identity { type = "SystemAssigned" } ... }
+
+provider "google" { project = "crisisshield-prod", region = "europe-west9" }   # Paris
+resource "google_cloud_run_v2_service" "api" {
+  name = "crisisshield-api" ; location = "europe-west9"
+  template { containers { image = "europe-west9-docker.pkg.dev/crisisshield-prod/apps/api@sha256:..." } }
+}</code></pre>
+<p>Le vocabulaire change, la démarche est la même : identités sans secrets, réseau privé, chiffrement, IaC, pipeline OIDC.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Steampipe</span><p>Interroger AWS, Azure, GCP, GitHub, Kubernetes en SQL : chaque API devient une table PostgreSQL virtuelle ; des mods prêts (CIS, ISO 27001, RGPD) produisent des rapports de conformité multi-cloud en minutes. Powerpipe pour les tableaux de bord.</p><p><strong>Pourquoi ça différencie :</strong> L'audit multi-cloud en SQL, c'est spectaculaire en démonstration client et ça remplace des heures de clics.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -it -e AWS_ENDPOINT_URL=http://localstack:4566 --network &lt;réseau&gt; turbot/steampipe query "select name, region from aws_s3_bucket"</code>, puis <code>steampipe check</code> avec le mod AWS Compliance.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — On te demandera rarement de maîtriser les trois. On te demandera de ne pas être perdu. Sache dire : « je suis AWS d'abord ; sur Azure, je sais que la structure est tenant/abonnement/groupe de ressources avec Entra ID et identités managées, et que Container Apps et AKS remplacent ECS et EKS ». Pour un client Azure, cette phrase suffit à passer le premier filtre ; le reste s'apprend en deux semaines.</div>
+
+<div class="exo"><span class="tag">Exercice 22.1</span>
+<p>Traduis en Azure puis en GCP : « ECS Fargate derrière un ALB, RDS PostgreSQL Multi-AZ, secrets dans Secrets Manager, rôle de tâche IAM, images dans ECR ».</p>
+<details><summary>Corrigé</summary><div class="sol">Azure : Container Apps (ou AKS) derrière Application Gateway, Azure Database for PostgreSQL Flexible Server avec haute disponibilité zone-redondante, Key Vault, identité managée, Container Registry. GCP : Cloud Run derrière Cloud Load Balancing, Cloud SQL PostgreSQL en haute disponibilité régionale, Secret Manager, compte de service, Artifact Registry.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 22.2</span>
+<p>Un client dit « nos données doivent rester en France, sur un cloud de confiance ». Que réponds-tu sur les trois fournisseurs ?</p>
+<details><summary>Corrigé</summary><div class="sol">Les trois ont une région à Paris (résidence des données), mais restent soumis au droit américain (Cloud Act) : cela ne suffit pas pour « cloud de confiance » au sens SecNumCloud. Options : Bleu (Azure opéré par Orange/Capgemini), S3NS (GCP opéré par Thales), ou des acteurs français qualifiés (OVHcloud, Outscale, Scaleway selon les offres). La bonne réponse commence par « quelle est la contrainte exacte : résidence, souveraineté juridique ou qualification SecNumCloud ? ».</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 22 — Le même service sur trois clouds, sans compte</span>
+<ol>
+<li>Écris, sans les appliquer, les modules Terraform <code>service-azure</code> (Container Apps + PostgreSQL Flexible + Key Vault + identité managée) et <code>service-gcp</code> (Cloud Run + Cloud SQL + Secret Manager + compte de service) équivalents à ton module AWS du TP 21. <code>terraform validate</code> doit passer (les providers se téléchargent sans compte) ; <code>plan</code> nécessite des identifiants, tu peux t'arrêter avant.</li>
+<li>Passe les trois modules dans Trivy config et Checkov, compare les findings.</li>
+<li>Si tu veux aller au bout gratuitement : Azure offre 200 $ de crédit et GCP 300 $ pour un nouveau compte ; Cloud Run et Container Apps ont un palier gratuit. Déploie l'image de l'API CrisisShield sur Cloud Run (le plus simple : <code>gcloud run deploy</code> depuis <code>google/cloud-sdk</code> en conteneur), mesure le cold start.</li>
+<li>Rédige un tableau comparatif d'une page : services, modèle d'identité, réseau, coût estimé mensuel du service (calculatrices officielles), et un avis.</li>
+</ol>
+<p>Livrable : les deux modules, le comparatif dans <code>tp22.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c22"> Chapitre 22 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 23 ===================== -->
+<article id="c23">
+<div class="chaphead"><span class="chapnum">Chapitre 23</span><span class="badge lvl-senior">Senior</span></div>
+<h2>FinOps</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Rendre les coûts visibles, attribuables et prévisibles</li><li>Appliquer les leviers d'optimisation dans le bon ordre</li><li>Mettre en place un processus FinOps léger dans une équipe</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>FinOps : informer (tags, attribution), optimiser (leviers dans l&#x27;ordre), opérer (revue mensuelle).</li><li>Éteindre, redimensionner, changer d&#x27;architecture, puis seulement s&#x27;engager (Savings Plans).</li><li>NAT, transfert de données, logs sans rétention, IPv4 publiques : les postes surprises.</li></ol></div>
+
+
+<h3>23.1 Le problème<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Dans un datacenter, le coût est fixe et décidé une fois. Dans le cloud, chaque développeur avec des droits de création est un acheteur. Sans discipline, la facture croît de 20 à 30 % par an à usage constant : ressources oubliées, surdimensionnement, environnements de test allumés la nuit, logs sans rétention, transfert de données non anticipé. FinOps (FinOps Foundation) : rendre chaque équipe responsable de ses coûts avec les données pour décider. Trois phases : informer, optimiser, opérer.</p>
+
+<h3>23.2 Informer : voir et attribuer<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Tagging obligatoire</strong> : <code>Project</code>, <code>Environment</code>, <code>Owner</code>, <code>CostCenter</code>. Imposé par IaC (tags par défaut du provider) et par politique (SCP ou AWS Config qui refuse ou signale les ressources non taguées). Les tags activés pour la facturation apparaissent dans Cost Explorer.</li>
+<li><strong>Un compte par environnement et par équipe</strong> : l'attribution devient triviale.</li>
+<li><strong>Outils</strong> : Cost Explorer et Cost and Usage Report (AWS), Cost Management (Azure, GCP), Kubecost/OpenCost pour Kubernetes, Infracost dans les merge requests.</li>
+<li><strong>Budgets et alertes</strong> par compte et par projet ; détection d'anomalies (AWS Cost Anomaly Detection).</li>
+<li><strong>Unité de coût</strong> : coût par utilisateur, par transaction, par incident traité. C'est ce qui permet de dire si une hausse est saine (plus de clients) ou non.</li>
+</ul>
+
+<h3>23.3 Optimiser : les leviers, dans l'ordre<span class="badge tag-coeur">Par cœur</span></h3>
+<ol>
+<li><strong>Éteindre</strong> : environnements de dev/test hors heures ouvrées (−65 % sur ces environnements), ressources orphelines (volumes EBS détachés, EIP non associées, snapshots anciens, load balancers sans cible, NAT inutilisées).</li>
+<li><strong>Redimensionner</strong> : Compute Optimizer / recommandations, instances utilisées à 10 % de CPU, RDS surdimensionnées, gp2 → gp3, logs avec rétention.</li>
+<li><strong>Changer d'architecture</strong> : Graviton/ARM, Spot pour ce qui tolère l'interruption, serverless pour les charges intermittentes, endpoints VPC au lieu de NAT, S3 Intelligent-Tiering et cycle de vie, cache pour réduire les requêtes.</li>
+<li><strong>S'engager</strong> : Savings Plans et instances réservées sur la charge de base stable, seulement après les étapes précédentes (on ne s'engage pas sur du gaspillage). Couverture cible : 70 à 80 % de la base.</li>
+<li><strong>Négocier</strong> : au-delà de quelques centaines de milliers d'euros par an, contrats d'entreprise (EDP) avec remise.</li>
+</ol>
+<p>Ordre de grandeur des postes surprises : NAT Gateway (35 €/mois par AZ + 0,045 €/Go), transfert inter-AZ (0,01 €/Go dans chaque sens), sortie Internet (0,09 €/Go), CloudWatch Logs ingestion (0,50 €/Go), adresses IPv4 publiques (3,6 €/mois chacune depuis 2024), snapshots accumulés.</p>
+
+<h3>23.4 Opérer : le processus<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Revue mensuelle de 30 minutes par équipe : top 10 des coûts, variation, anomalies, actions. Un rapport automatique posté dans le canal de l'équipe. Les recommandations sont converties en tickets avec un gain estimé. Les développeurs voient le coût de leur merge request (Infracost) avant de fusionner. Objectif : que le coût soit une métrique d'ingénierie comme la latence, pas un sujet réservé à la direction financière.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Kepler et Cloud Carbon Footprint</span><p>Kepler (CNCF) mesure par eBPF la consommation énergétique de chaque Pod et l'exporte dans Prometheus ; Cloud Carbon Footprint estime les émissions CO2 par compte cloud. C'est le GreenOps.</p><p><strong>Pourquoi ça différencie :</strong> Les DSI y sont désormais contraintes par la directive CSRD ; un consultant capable de l'outiller est rare et demandé.</p><p><strong>À essayer en une heure :</strong> Helm <code>kepler</code> sur kind, dashboard Grafana « énergie par namespace », puis le lien avec OpenCost : coût et carbone par équipe côte à côte.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « La facture AWS a augmenté de 40 % en six mois, que fais-tu ? » Méthode : Cost Explorer par service et par tag pour trouver le poste, vérifier si l'unité de coût a augmenté aussi (croissance saine ?), puis les leviers dans l'ordre : éteindre, redimensionner, architecture, engagement. Donne un exemple chiffré (NAT, logs). Termine par la mise en place du processus pour que ça ne se reproduise pas.</div>
+
+<div class="exo"><span class="tag">Exercice 23.1</span>
+<p>Un environnement de staging (2 tâches Fargate, RDS <code>db.t4g.medium</code> Multi-AZ, NAT Gateway, ALB) coûte 380 €/mois. L'équipe l'utilise de 9 h à 19 h en semaine. Propose des économies chiffrées.</p>
+<details><summary>Corrigé</summary><div class="sol">Arrêt hors heures ouvrées : les heures utiles sont 50/168 ≈ 30 % de la semaine → environ −65 % sur Fargate et RDS (RDS peut être arrêtée 7 jours, redémarrage par planification). Multi-AZ inutile en staging : −50 % sur RDS. NAT remplacée par des endpoints VPC ou une instance NAT <code>t4g.nano</code> : −30 €/mois. Estimation : de 380 € à 100 à 130 €/mois.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 23.2</span>
+<p>Pourquoi ne pas acheter des Savings Plans dès le premier mois ?</p>
+<details><summary>Corrigé</summary><div class="sol">L'engagement porte sur un montant horaire pendant 1 ou 3 ans ; s'il couvre du gaspillage ou une architecture qu'on va changer (passage à Graviton, à Spot, au serverless), on paie pour rien. Optimiser d'abord, observer la base stable 2 à 3 mois, s'engager ensuite sur 70 à 80 % de cette base.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 23 — FinOps sur CrisisShield</span>
+<ol>
+<li>Ajoute <code>default_tags</code> au provider AWS de tous tes modules et une règle AWS Config <code>required-tags</code>. Vérifie dans Cost Explorer (après activation des tags de répartition) que 100 % du coût du sandbox est attribué.</li>
+<li>Intègre Infracost dans le pipeline (image <code>infracost/infracost</code>) : le commentaire de merge request affiche le delta de coût mensuel. Fais une merge request qui passe RDS en <code>db.r6g.large</code> et observe.</li>
+<li>Écris <code>scripts/schedule-env.sh</code> et deux règles EventBridge (Terraform) qui arrêtent le service ECS (desired count 0) et RDS à 19 h et les relancent à 9 h en semaine. Estime l'économie mensuelle.</li>
+<li>Écris <code>scripts/orphans.sh</code> (CLI AWS en conteneur) qui liste volumes détachés, EIP libres, snapshots de plus de 90 jours, groupes de logs sans rétention. Corrige ceux de ton sandbox.</li>
+<li>Construis une estimation complète de la production CrisisShield à 3 tailles (100, 10 000, 1 M d'utilisateurs) avec la calculatrice AWS, et identifie le poste dominant à chaque taille. Présente-le dans un tableau avec l'unité de coût par utilisateur.</li>
+</ol>
+<p>Livrable : configuration, scripts, tableau dans <code>tp23.md</code>, et <code>docs/cours-finops.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c23"> Chapitre 23 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 24 ===================== -->
+<article id="c24">
+<div class="chaphead"><span class="chapnum">Chapitre 24</span><span class="badge lvl-expert">Expert</span></div>
+<h2>Multi-cloud et hybride</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Distinguer multi-cloud subi, choisi et portable, et évaluer le coût réel de chacun</li><li>Concevoir une connectivité hybride entre un site et le cloud</li><li>Reconnaître la couche d'abstraction utile (Kubernetes, Terraform) et ses limites</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Multi-cloud subi, choisi par service, ou portable : le troisième est rarement justifié.</li><li>La vraie dépendance est dans les données et les compétences ; formats ouverts et plan de sortie testé.</li><li>Hybride : plan d&#x27;adressage sans chevauchement, DNS et identités fédérés, liaison dédiée si latence.</li></ol></div>
+
+
+<h3>24.1 Les trois multi-clouds<span class="badge tag-contexte">Bon à savoir</span></h3>
+<ul>
+<li><strong>Subi</strong> : par acquisitions, par équipes autonomes, par choix historiques. Le plus fréquent. L'enjeu est de gouverner (identités, sécurité, coûts) sans tout unifier.</li>
+<li><strong>Choisi par service</strong> : AWS pour la plateforme, GCP pour BigQuery, Azure pour Microsoft 365 et Entra ID. Raisonnable si les frontières sont nettes et le transfert de données limité (la sortie de données est facturée par chacun).</li>
+<li><strong>Portable</strong> (« la même application partout, pour ne pas dépendre ») : le plus coûteux et le moins souvent justifié. Il impose le plus petit dénominateur commun (pas de services managés spécifiques), double les compétences et les pipelines, et la « portabilité » n'est presque jamais exercée. Justifiable pour des exigences réglementaires de réversibilité (finance, DORA européen) ou de continuité extrême.</li>
+</ul>
+<p>Ce qui est portable de fait : conteneurs, Kubernetes, Terraform (même outil, code différent par fournisseur), PostgreSQL, Kafka, l'observabilité OpenTelemetry. Ce qui ne l'est pas : IAM, réseau, services managés propriétaires (DynamoDB, Cosmos, BigQuery), les fonctions.</p>
+
+<h3>24.2 Hybride : site et cloud<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Presque toutes les grandes entreprises sont hybrides : datacenter existant, mainframe, contraintes de latence ou de souveraineté, migration progressive.</p>
+<ul>
+<li><strong>Connectivité</strong> : VPN Site-to-Site (rapide à mettre en place, débit limité, sur Internet), liaison dédiée (Direct Connect, ExpressRoute, Cloud Interconnect : latence stable, débit élevé, semaines de mise en place), Transit Gateway comme hub. Plan d'adressage sans chevauchement, DNS hybride (résolveurs conditionnels : Route 53 Resolver).</li>
+<li><strong>Identité</strong> : fédération de l'annuaire (Entra ID, AD) vers le cloud ; une seule identité.</li>
+<li><strong>Extension du cloud sur site</strong> : AWS Outposts, Azure Arc / Azure Stack, Google Distributed Cloud : les API cloud sur du matériel chez toi. Kubernetes sur site (OpenShift, Rancher, Tanzu) piloté depuis le cloud.</li>
+<li><strong>Migration</strong> : les « 6 R » (rehost, replatform, refactor, repurchase, retire, retain), traitées au niveau 9.</li>
+</ul>
+
+<h3>24.3 Gouverner plusieurs clouds<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Une couche transverse minimale : identités fédérées (un fournisseur d'identité), IaC unique (Terraform), pipeline unique, observabilité unifiée (OpenTelemetry vers un backend commun : Grafana, Datadog), posture de sécurité (CSPM multi-cloud : Wiz, Prisma, Defender for Cloud multi-cloud), FinOps consolidé (FOCUS, le format de facturation commun de la FinOps Foundation), et des politiques as code communes (OPA). Sans cela, multi-cloud = plusieurs silos.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — NetBird et Headscale</span><p>Réseaux maillés WireGuard zero trust auto-hébergés : chaque machine, conteneur ou poste rejoint le maillage par identité OIDC (Keycloak), avec listes de contrôle par groupe, traversée de NAT et DNS interne, sans VPN central ni port ouvert.</p><p><strong>Pourquoi ça différencie :</strong> Relier site, clouds et postes en zero trust sans appliance : très différenciant face aux VPN classiques.</p><p><strong>À essayer en une heure :</strong> Compose officiel de NetBird avec ton Keycloak comme IdP ; relie le conteneur « legacy » du TP 24 et une instance LocalStack au maillage et écris une ACL.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Faut-il être multi-cloud pour éviter la dépendance ? » Réponse d'expert : la dépendance réelle est dans les données et les compétences, pas dans les API. Le coût de la portabilité est certain, son bénéfice hypothétique. Préférer : bien choisir un fournisseur principal, garder les données dans des formats ouverts (PostgreSQL, Parquet, Kafka), documenter un plan de sortie, et n'utiliser un second cloud que pour un service qui le justifie. Mentionne la réglementation quand elle impose la réversibilité.</div>
+
+<div class="exo"><span class="tag">Exercice 24.1</span>
+<p>Un client veut que CrisisShield tourne « sur AWS et Azure en actif-actif pour ne dépendre de personne ». Quelles questions poses-tu et que recommandes-tu ?</p>
+<details><summary>Corrigé</summary><div class="sol">Quelle contrainte réelle (réglementaire, contractuelle, peur) ? Quel RTO/RPO ? Quel budget ? La base de données en actif-actif entre deux clouds est le vrai problème (latence, cohérence, coût de sortie). Recommander : un cloud principal multi-région, données dans des formats ouverts, plan de réversibilité testé annuellement (restaurer sur l'autre cloud), et si l'actif-actif est imposé, une architecture qui l'accepte (partition des utilisateurs par cloud, pas de base partagée).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 24 — Hybride en local et plan de réversibilité</span>
+<ol>
+<li>Simule le « site » avec ton poste : monte un VPN WireGuard (conteneur <code>linuxserver/wireguard</code>) entre un conteneur local et une instance <code>t4g.nano</code> dans ton VPC AWS (ou entre deux réseaux Docker si tu restes hors cloud). Fais communiquer un conteneur « legacy » local avec l'API sur AWS par adresse privée. Documente le plan d'adressage.</li>
+<li>Mets en place un DNS hybride : un CoreDNS local qui transfère <code>*.aws.internal</code> vers le résolveur du VPC, et l'inverse avec Route 53 Resolver inbound (ou simule avec deux CoreDNS).</li>
+<li>Rédige le plan de réversibilité de CrisisShield : inventaire de ce qui est portable et de ce qui ne l'est pas dans ton infra AWS du TP 21, procédure de restauration des données sur Cloud Run + Cloud SQL (TP 22), estimation de durée et de coût. Exécute la partie données : <code>pg_dump</code> depuis RDS, restauration dans un PostgreSQL local, vérification d'intégrité.</li>
+<li>Consolide les coûts AWS et GCP de tes TP au format FOCUS (un CSV avec les colonnes principales) et produis un graphique par fournisseur et par service.</li>
+</ol>
+<p>Livrable : configuration VPN et DNS, plan de réversibilité dans <code>docs/reversibilite.md</code> de CrisisShield, CSV et graphique dans <code>tp24.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c24"> Chapitre 24 terminé</label>
+</article>
+
+<!-- ===================== REVISION ===================== -->
+<section class="rev" id="rev">
+<h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 4</h2>
+<ol class="quiz">
+<li>IaaS, CaaS, PaaS, FaaS, SaaS : ce que tu gères dans chacun, et comment tu choisis.</li>
+<li>Région, AZ, edge : pourquoi multi-AZ est le minimum et multi-région rarement justifié.</li>
+<li>Responsabilité partagée : trois exemples de chaque côté.</li>
+<li>Les postes de facture surprises.</li>
+<li>IAM : ordre d'évaluation des politiques ; identité contre ressource contre SCP.</li>
+<li>Pourquoi plus aucune clé d'accès statique, et comment (rôles, OIDC, Identity Center).</li>
+<li>Dessine un VPC de production en trois AZ avec ses tables de routage.</li>
+<li>Security group contre NACL ; règles par référence de SG.</li>
+<li>NAT Gateway contre endpoints VPC : coût et sécurité.</li>
+<li>EC2, ECS Fargate, EKS, Lambda, App Runner : critères de choix.</li>
+<li>Spot, Savings Plans, Graviton : quand et combien.</li>
+<li>S3 : classes, cycle de vie, protection contre l'exposition et le ransomware.</li>
+<li>RDS Multi-AZ contre réplica de lecture contre Aurora.</li>
+<li>Lambda : limites, cold start, comment Java s'y comporte.</li>
+<li>CloudTrail, Config, GuardDuty, Security Hub, Inspector : rôle de chacun.</li>
+<li>Traduire une architecture AWS en Azure et GCP.</li>
+<li>Ce qui est structurellement différent chez Azure et chez GCP.</li>
+<li>Cloud de confiance, SecNumCloud, Bleu, S3NS : de quoi il s'agit.</li>
+<li>FinOps : informer, optimiser, opérer ; les leviers dans l'ordre.</li>
+<li>Multi-cloud subi, choisi, portable ; où est la vraie dépendance.</li>
+</ol>
+<p><strong>Prochain niveau</strong> : Kubernetes — architecture, objets, stockage, Helm, GitOps avec ArgoCD, service mesh, autoscaling.</p>
+</section>
+
+<div class="footnav"><a href="devops-niveau-3-infrastructure-as-code.html">← Niveau 3 — Infrastructure as Code</a><a href="devops-niveau-5-kubernetes.html">Niveau 5 — Kubernetes →</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='devops-n4-progress', THEME='devops-theme';
+  var boxes=document.querySelectorAll('input[data-ch]');
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  function render(){
+    var done=0; boxes.forEach(function(b){ if(b.checked) done++; });
+    var pct=Math.round(done/boxes.length*100);
+    document.getElementById('pct').textContent=pct+' %';
+    document.getElementById('bar').style.width=pct+'%';
+  }
+  var st=load();
+  boxes.forEach(function(b){ b.checked=!!st[b.dataset.ch]; b.addEventListener('change',function(){ st[b.dataset.ch]=b.checked; save(st); render(); }); });
+  render();
+  var root=document.documentElement;
+  try{ var t=localStorage.getItem(THEME); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.getElementById('theme').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur==='dark';
+    var next=dark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem(THEME,next); }catch(e){}
+  });
+})();
+</script>
+
+<script>
+(function(){
+  // Barre de lecture
+  var bar=document.createElement('div'); bar.className='readbar'; document.body.prepend(bar);
+  function upd(){ var h=document.documentElement; var max=h.scrollHeight-h.clientHeight; bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%'; }
+  window.addEventListener('scroll',upd,{passive:true}); upd();
+  // Bouton copier sur chaque bloc de code
+  document.querySelectorAll('pre').forEach(function(pre){
+    var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier'; b.setAttribute('aria-label','Copier le code');
+    b.addEventListener('click',function(){
+      var t=pre.innerText.replace(/^Copier\n?/,'').replace(/Copi\u00e9 !$/,'');
+      var done=function(){ b.textContent='Copi\u00e9 !'; b.classList.add('ok'); setTimeout(function(){ b.textContent='Copier'; b.classList.remove('ok'); },1500); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); }
+      else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); done(); }
+    });
+    pre.appendChild(b);
+  });
+  // Sommaire qui suit la lecture
+  var links=document.querySelectorAll('nav.toc a[href^="#"]');
+  if(links.length&&'IntersectionObserver' in window){
+    var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){a.classList.remove('active');}); var a=map[e.target.id]; if(a) a.classList.add('active'); } });
+    },{rootMargin:'-10% 0px -75% 0px'});
+    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el) io.observe(el); });
+  }
+  // Impression : ouvrir tous les corrig\u00e9s
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.open=true; }); });
+})();
+</script>
+
+<script>
+(function(){
+  // Tableaux : libellé de colonne sur chaque cellule pour l'affichage empilé
+  document.querySelectorAll('table').forEach(function(t){
+    var rows=t.rows; if(!rows.length) return;
+    var head=rows[0]; var ths=head.querySelectorAll('th');
+    if(!ths.length) return;
+    head.classList.add('head');
+    var labels=Array.prototype.map.call(head.cells,function(c){return c.textContent.trim();});
+    for(var i=1;i<rows.length;i++){
+      var cells=rows[i].cells;
+      for(var j=0;j<cells.length;j++){ if(cells[j].tagName==='TD') cells[j].setAttribute('data-label',labels[j]||''); }
+    }
+    t.classList.add('stack');
+  });
+  // Schémas ASCII : garder l'alignement (défilement horizontal) au lieu du repli
+  document.querySelectorAll('pre').forEach(function(p){
+    if(/[\u2500-\u257F\u25B6\u25C0\u25BA\u25C4\u2192\u2190\u2191\u2193]/.test(p.textContent)) p.classList.add('diagram');
+  });
+})();
+</script>
+</body>
+</html>

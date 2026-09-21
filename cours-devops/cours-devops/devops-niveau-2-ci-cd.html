@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cours DevOps — Niveau 2 : Intégration et livraison continues</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="in">
+    <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
+    <div class="level">Parcours DevOps — Niveau 2 sur 9</div>
+    <h1>Intégration et livraison continues</h1>
+    <p class="lead">Cinq chapitres pour transformer un dépôt Git en usine de livraison : principes, pipelines GitLab CI et GitHub Actions, tests et quality gates, gestion des versions, puis les stratégies de déploiement qui rendent la mise en production banale. Les runners tournent dans Docker.</p>
+    <div class="meta">
+      <span>5 chapitres</span><span>≈ 30 h de travail</span><span>Prérequis : Niveaux 0 et 1</span>
+    </div>
+    <button class="theme" id="theme">Basculer clair / sombre</button>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <strong>Sommaire</strong>
+  <ol start="11">
+    <li><a href="#c11" class="toc-confirme">Principes CI/CD, pipelines, artefacts</a></li>
+    <li><a href="#c12" class="toc-confirme">GitLab CI, GitHub Actions, Jenkins</a></li>
+    <li><a href="#c13" class="toc-confirme">Tests et quality gates</a></li>
+    <li><a href="#c14" class="toc-confirme">Dépendances et versioning</a></li>
+    <li><a href="#c15" class="toc-senior">Stratégies de déploiement</a></li>
+    <li><a href="#rev">Révision du niveau</a></li>
+  </ol>
+<div class="legend">Niveau des chapitres : <span class="badge lvl-confirme">Confirmé</span><span class="badge lvl-senior">Senior</span> <span class="badge badge-niche">Techno de niche</span> = encadré différenciant dans chaque chapitre<br>Mémorisation : <span class="badge tag-coeur">Par cœur</span> <span class="badge tag-important">Important</span> <span class="badge tag-contexte">Bon à savoir</span></div>
+  <div class="prog">Progression : <span id="pct">0 %</span><div class="bar"><i id="bar"></i></div></div>
+</nav>
+
+<main>
+
+<!-- ===================== CHAPITRE 11 ===================== -->
+<article id="c11">
+<div class="chaphead"><span class="chapnum">Chapitre 11</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Principes CI/CD, pipelines, artefacts</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Distinguer intégration continue, livraison continue et déploiement continu</li><li>Décomposer un pipeline en étapes, jobs, artefacts et caches</li><li>Appliquer la règle « construire une fois, déployer partout »</li><li>Mesurer et accélérer un pipeline</li></ul></div>
+<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>CI : chaque commit est construit et testé. CD : chaque commit est déployable. Déploiement continu : il part seul.</li><li>Construire une fois, déployer partout : la même image, identifiée par digest, en staging et en prod.</li><li>Un pipeline lent tue la CI : paralléliser, cacher, découper les tests, échouer vite.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 174" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Un pipeline type : feedback rapide d&#x27;abord, puis l&#x27;image unique promue d&#x27;environnement en environnement. Une seule image, construite une fois, identifiée par digest, promue de staging à prod."><defs><marker id="ah6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="105" height="56" rx="7" class="soft"/><text x="62.5" y="53.9" text-anchor="middle" font-size="14" font-weight="700">build</text><text x="62.5" y="71.9" text-anchor="middle" class="lbl">compile</text><path d="M115,58 L128,58" class="arrow" marker-end="url(#ah6)"/><rect x="128" y="30" width="105" height="56" rx="7" class="soft"/><text x="180.5" y="53.9" text-anchor="middle" font-size="14" font-weight="700">test</text><text x="180.5" y="71.9" text-anchor="middle" class="lbl">unit, lint</text><path d="M233,58 L246,58" class="arrow" marker-end="url(#ah6)"/><rect x="246" y="30" width="105" height="56" rx="7" class="soft"/><text x="298.5" y="53.9" text-anchor="middle" font-size="14" font-weight="700">package</text><text x="298.5" y="71.9" text-anchor="middle" class="lbl">image</text><path d="M351,58 L364,58" class="arrow" marker-end="url(#ah6)"/><rect x="364" y="30" width="105" height="56" rx="7" class="soft"/><text x="416.5" y="53.9" text-anchor="middle" font-size="14" font-weight="700">scan</text><text x="416.5" y="71.9" text-anchor="middle" class="lbl">Trivy, SAST</text><path d="M420,86 L420,105 L62,105 L62,118" class="arrow" marker-end="url(#ah6)"/><rect x="10" y="120" width="145" height="56" rx="7" class="green"/><text x="82.5" y="143.9" text-anchor="middle" font-size="14" font-weight="700">deploy staging</text><text x="82.5" y="161.9" text-anchor="middle" class="lbl">auto</text><path d="M155,148 L170,148" class="arrow" marker-end="url(#ah6)"/><rect x="170" y="120" width="145" height="56" rx="7" class="green"/><text x="242.5" y="143.9" text-anchor="middle" font-size="14" font-weight="700">tests e2e</text><text x="242.5" y="161.9" text-anchor="middle" class="lbl">smoke, contrat</text><path d="M315,148 L330,148" class="arrow" marker-end="url(#ah6)"/><rect x="330" y="120" width="145" height="56" rx="7" class="amber"/><text x="402.5" y="143.9" text-anchor="middle" font-size="14" font-weight="700">deploy prod</text><text x="402.5" y="161.9" text-anchor="middle" class="lbl">manuel ou auto</text></svg><figcaption>Un pipeline type : feedback rapide d'abord, puis l'image unique promue d'environnement en environnement. Une seule image, construite une fois, identifiée par digest, promue de staging à prod.</figcaption></figure>
+
+
+<h3>11.1 Les trois niveaux<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>Intégration continue (CI)</th><th>Livraison continue (CD)</th><th>Déploiement continu</th></tr>
+<tr><td>Principe</td><td>Chaque commit est construit et testé automatiquement</td><td>Chaque commit produit un artefact déployable, prêt à partir en prod sur décision humaine</td><td>Chaque commit qui passe les tests va en production sans intervention</td></tr>
+<tr><td>Ce que ça exige</td><td>Tests automatisés, build reproductible</td><td>Environnements automatisés, déploiement scripté</td><td>Confiance totale dans les tests, observabilité, retour arrière automatique</td></tr>
+<tr><td>Fréquence typique</td><td>Plusieurs fois par jour</td><td>À la demande</td><td>Des dizaines de fois par jour</td></tr>
+</table></div>
+<p>La CI n'est pas un outil, c'est une discipline : intégrer sur la branche principale au moins une fois par jour, et réparer immédiatement un build cassé (le pipeline rouge est la priorité de l'équipe).</p>
+
+<h3>11.2 Anatomie d'un pipeline<span class="badge tag-important">Important</span></h3>
+<pre><code>commit ──► build ──► test ──► package ──► scan ──► deploy staging ──► tests e2e ──► deploy prod
+           (compile)  (unit,    (image      (Trivy,   (automatique)    (smoke,       (manuel ou auto)
+                       lint)     Docker)     SAST)                      contrat)</code></pre>
+<ul>
+<li><strong>Étape</strong> (stage) : groupe de jobs qui s'exécutent en parallèle ; l'étape suivante attend que tous soient verts.</li>
+<li><strong>Job</strong> : une unité de travail dans un conteneur (image, script, variables).</li>
+<li><strong>Artefact</strong> : fichier produit par un job et transmis aux suivants (jar, rapport de tests, image). Il a une durée de vie.</li>
+<li><strong>Cache</strong> : accélère (dépendances Maven, npm) mais n'est pas garanti ; le pipeline doit fonctionner sans.</li>
+<li><strong>Runner / agent</strong> : la machine qui exécute les jobs. Partagé ou dédié, souvent lui-même conteneurisé.</li>
+</ul>
+<p><strong>Construire une fois, déployer partout</strong> : l'image construite au job <code>package</code> est celle qui va en staging puis en production, identifiée par digest. Reconstruire pour chaque environnement, c'est déployer autre chose que ce qu'on a testé.</p>
+
+<h3>11.3 Un pipeline rapide<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Un pipeline lent tue la CI : les développeurs cessent d'attendre le résultat. Objectif : moins de 10 minutes jusqu'au feedback principal. Leviers :</p>
+<ol>
+<li>Paralléliser (lint, tests unitaires, scan en même temps).</li>
+<li>Cacher les dépendances et les couches Docker (<code>--cache-from</code>, BuildKit).</li>
+<li>Découper les tests : rapides d'abord, lents (intégration, e2e) après ou la nuit.</li>
+<li>Ne déclencher que ce qui a changé (<code>rules: changes:</code> dans un monorepo).</li>
+<li>Runners dimensionnés, images de job petites.</li>
+<li><code>fail fast</code> : interrompre le pipeline dès qu'un job critique échoue.</li>
+</ol>
+
+<h3>11.4 Secrets et variables dans la CI<span class="badge tag-important">Important</span></h3>
+<p>Les identifiants (registre, cloud, base) sont stockés comme variables protégées et masquées de la plateforme, jamais dans le dépôt. Principe du moindre privilège : un token par usage, avec portée minimale et expiration. Encore mieux : plus de secrets statiques du tout, le pipeline s'authentifie par OIDC auprès du cloud (AWS <code>AssumeRoleWithWebIdentity</code>) avec un jeton de courte durée.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Dagger</span><p>Des pipelines écrits en code (Go, Python, TypeScript, Java via l'API) et exécutés dans des conteneurs BuildKit : strictement identiques en local et en CI, avec cache intelligent et composition de modules. Le YAML de GitLab ou GitHub ne fait plus qu'appeler <code>dagger call</code>.</p><p><strong>Pourquoi ça différencie :</strong> Il met fin au « ça marche dans la CI mais pas sur mon poste » et à la duplication GitLab/GitHub/Jenkins ; encore peu maîtrisé en France.</p><p><strong>À essayer en une heure :</strong> Installer le CLI dans un conteneur avec accès au socket Docker, <code>dagger init --sdk=python</code>, puis <code>dagger call build --source=.</code> pour reconstruire l'image CrisisShield.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Livraison continue ou déploiement continu chez vous ? » Sache expliquer la différence et ce qui manque pour passer de l'une à l'autre (couverture de tests, observabilité, feature flags, rollback automatique). Et cite « build once, deploy everywhere » avec le digest : c'est le détail qui montre que tu as vécu une prod.</div>
+
+<div class="exo"><span class="tag">Exercice 11.1</span>
+<p>Un pipeline dure 45 minutes : compile 3 min, tests unitaires 8 min, tests d'intégration 25 min, build image 5 min, scan 4 min, tout en séquence. Propose une réorganisation et estime la nouvelle durée jusqu'au premier feedback utile et jusqu'à l'image scannée.</p>
+<details><summary>Corrigé</summary><div class="sol">Étape 1 : compile (3). Étape 2 en parallèle : tests unitaires (8), build image (5) puis scan (4) enchaînés (9). Étape 3 : tests d'intégration sur l'image (25), ou déplacés en pipeline nocturne / déclenché seulement sur merge vers main. Premier feedback : 11 min ; image scannée : 12 min ; pipeline complet 37 min, ou 12 min si l'intégration est sortie du chemin critique.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 11.2</span>
+<p>Pourquoi un cache ne doit-il jamais être nécessaire au succès d'un pipeline, alors qu'un artefact peut l'être ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le cache est opportuniste : il peut être absent (nouveau runner, expiration, clé changée) ; le job doit alors simplement être plus lent. L'artefact est un produit explicite d'un job précédent, garanti par la plateforme dans le même pipeline.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 11 — Un runner GitLab dans Docker</span>
+<p>Tu vas installer ta propre usine, entièrement conteneurisée.</p>
+<ol>
+<li>Lance GitLab CE en local avec Compose (image <code>gitlab/gitlab-ce</code>, 4 Go de RAM minimum, ports 8929 et 2224, volumes pour config, logs et data). Attends le démarrage (plusieurs minutes), récupère le mot de passe root dans <code>/etc/gitlab/initial_root_password</code>.</li>
+<li>Lance un runner : image <code>gitlab/gitlab-runner</code>, avec le socket Docker monté (exécuteur <code>docker</code>). Enregistre-le avec le token du projet. Ajoute <code>volumes = ["/var/run/docker.sock:/var/run/docker.sock"]</code> dans <code>config.toml</code> pour permettre le build d'images. Note dans le compte rendu pourquoi c'est une faille de sécurité et quelle alternative existe (Kaniko, BuildKit rootless).</li>
+<li>Pousse ton dépôt <code>devops-lab</code> sur ce GitLab et vérifie qu'un <code>.gitlab-ci.yml</code> minimal (un job <code>echo</code>) s'exécute.</li>
+</ol>
+<p>Alternative si ta machine manque de mémoire : utilise gitlab.com avec un runner local enregistré dessus (les runners partagés suffisent aussi pour ce niveau).</p>
+<p>Livrable : <code>infra/gitlab/compose.yaml</code> dans devops-lab, et <code>tp11.md</code> avec la capture du premier pipeline vert.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c11"> Chapitre 11 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 12 ===================== -->
+<article id="c12">
+<div class="chaphead"><span class="chapnum">Chapitre 12</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>GitLab CI, GitHub Actions, Jenkins</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Écrire un pipeline GitLab CI complet avec étapes, règles, cache, artefacts et environnements</li><li>Transposer le même pipeline en GitHub Actions</li><li>Comprendre Jenkins assez pour en reprendre un en mission</li><li>Factoriser avec des templates et des pipelines réutilisables</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>GitLab CI et GitHub Actions font le même travail ; rules/needs d&#x27;un côté, on/if/needs de l&#x27;autre.</li><li>Épingler actions et images de job par SHA ou digest ; permissions minimales ; OIDC pour le cloud.</li><li>Jenkins : savoir reprendre un Jenkinsfile et expliquer pourquoi on migre.</li></ol></div>
+
+
+<h3>12.1 GitLab CI<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code># .gitlab-ci.yml
+stages: [build, test, package, deploy]
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  IMAGE: $CI_REGISTRY_IMAGE/api
+  DOCKER_TLS_CERTDIR: ""
+
+default:
+  image: eclipse-temurin:21-jdk
+  cache:
+    key: {files: [pom.xml]}
+    paths: [.m2/repository]
+
+build:
+  stage: build
+  script: ./mvnw -q compile
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+
+unit-tests:
+  stage: test
+  script: ./mvnw -q test
+  artifacts:
+    when: always
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+    paths: [target/site/jacoco]
+    expire_in: 1 week
+  coverage: '/Total.*?([0-9]{1,3})%/'
+
+lint:
+  stage: test
+  image: koalaman/shellcheck-alpine
+  script: shellcheck scripts/*.sh
+  rules:
+    - changes: [scripts/**]
+
+package:
+  stage: package
+  image: docker:27
+  services: [docker:27-dind]
+  needs: [unit-tests]
+  before_script: echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  script:
+    - docker build --cache-from "$IMAGE:latest-cache" -t "$IMAGE:sha-$CI_COMMIT_SHORT_SHA" .
+    - docker push "$IMAGE:sha-$CI_COMMIT_SHORT_SHA"
+    - docker tag "$IMAGE:sha-$CI_COMMIT_SHORT_SHA" "$IMAGE:latest-cache" && docker push "$IMAGE:latest-cache"
+
+scan:
+  stage: package
+  image: aquasec/trivy
+  needs: [package]
+  script: trivy image --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed "$IMAGE:sha-$CI_COMMIT_SHORT_SHA"
+  allow_failure: false
+
+deploy-staging:
+  stage: deploy
+  image: alpine:3.20
+  needs: [scan]
+  environment:
+    name: staging
+    url: https://staging.crisisshield.example
+  script: ./scripts/deploy.sh staging "$IMAGE:sha-$CI_COMMIT_SHORT_SHA"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+deploy-prod:
+  stage: deploy
+  image: alpine:3.20
+  needs: [deploy-staging]
+  environment:
+    name: production
+    url: https://crisisshield.example
+  script: ./scripts/deploy.sh prod "$IMAGE:sha-$CI_COMMIT_SHORT_SHA"
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+      when: manual</code></pre>
+<p>À retenir :</p>
+<ul>
+<li><code>rules</code> remplace <code>only/except</code>. Une règle sans <code>when</code> vaut <code>on_success</code> ; aucune règle vérifiée = job absent.</li>
+<li><code>needs</code> crée un graphe (DAG) : le job démarre dès que ses dépendances sont vertes, sans attendre toute l'étape.</li>
+<li><code>artifacts:reports:junit</code> affiche les tests dans la merge request. <code>coverage</code> extrait le pourcentage par regex.</li>
+<li><code>environment</code> donne l'historique des déploiements, le bouton de rollback et les variables scopées par environnement.</li>
+<li><code>when: manual</code> = livraison continue ; retirer la ligne = déploiement continu.</li>
+<li>Variables prédéfinies : <code>CI_COMMIT_SHA</code>, <code>CI_COMMIT_TAG</code>, <code>CI_PIPELINE_SOURCE</code>, <code>CI_REGISTRY_*</code>, <code>CI_JOB_TOKEN</code>.</li>
+<li>Factorisation : <code>include:</code> (fichiers locaux, autres projets, templates GitLab), <code>extends:</code>, ancres YAML, et <code>!reference</code>. Les composants CI (catalogue) sont la version moderne.</li>
+</ul>
+<p>Construire des images : <code>docker:dind</code> est le plus simple mais privilégié. Alternatives sans démon : Kaniko (<code>gcr.io/kaniko-project/executor</code>) ou BuildKit rootless.</p>
+
+<h3>12.2 GitHub Actions<span class="badge tag-important">Important</span></h3>
+<pre><code># .github/workflows/ci.yml
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write        # OIDC pour signer / assumer un rôle cloud
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - run: ./mvnw -q verify
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: reports, path: target/surefire-reports}
+
+  package:
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with: {registry: ghcr.io, username: ${{ github.actor }}, password: ${{ secrets.GITHUB_TOKEN }}}
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ghcr.io/${{ github.repository }}/api
+          tags: |
+            type=sha,prefix=sha-
+            type=semver,pattern={{version}}
+      - uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: aquasecurity/trivy-action@0.28.0
+        with: {image-ref: ghcr.io/${{ github.repository }}/api:sha-${{ github.sha }}, severity: 'HIGH,CRITICAL', exit-code: '1', ignore-unfixed: true}
+
+  deploy-prod:
+    needs: package
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: production        # les approbateurs sont configurés dans le dépôt
+    steps:
+      - run: ./scripts/deploy.sh prod ghcr.io/${{ github.repository }}/api:${{ github.ref_name }}</code></pre>
+<p>Correspondances : stage/job GitLab → job GitHub (parallèles par défaut, <code>needs</code> pour ordonner) ; <code>rules</code> → <code>on:</code> et <code>if:</code> ; <code>include</code> → actions réutilisables (<code>uses:</code>) et <em>reusable workflows</em> (<code>workflow_call</code>) ; <code>environment</code> existe dans les deux ; runners → <code>runs-on</code>, self-hosted possibles. Épingler les actions par SHA de commit plutôt que par tag pour se protéger d'une action compromise (incident tj-actions, 2025). Réduire <code>permissions</code> au minimum.</p>
+<p>Tester en local : <code>docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD:/w" -w /w catthehacker/ubuntu:act-latest</code> avec l'outil <code>act</code>, ou plus simplement exécuter chaque <code>run:</code> dans le conteneur correspondant.</p>
+
+<h3>12.3 Jenkins<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Le vétéran (2011), encore massivement présent dans les grands comptes. Serveur Java, plugins (des milliers, c'est sa force et sa faiblesse), agents. Le pipeline se décrit dans un <code>Jenkinsfile</code> en Groovy :</p>
+<pre><code>pipeline {
+  agent { docker { image 'eclipse-temurin:21-jdk' } }
+  options { timeout(time: 30, unit: 'MINUTES') }
+  environment { IMAGE = "registry.example/crisisshield/api" }
+  stages {
+    stage('Build') { steps { sh './mvnw -q compile' } }
+    stage('Test') {
+      steps { sh './mvnw -q test' }
+      post { always { junit 'target/surefire-reports/*.xml' } }
+    }
+    stage('Package') {
+      when { branch 'main' }
+      agent { label 'docker' }
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'registry', usernameVariable: 'U', passwordVariable: 'P')]) {
+          sh 'echo "$P" | docker login -u "$U" --password-stdin registry.example'
+          sh "docker build -t $IMAGE:sha-${GIT_COMMIT.take(7)} . && docker push $IMAGE:sha-${GIT_COMMIT.take(7)}"
+        }
+      }
+    }
+    stage('Deploy prod') {
+      when { tag pattern: 'v\\d+\\.\\d+\\.\\d+', comparator: 'REGEXP' }
+      input { message 'Déployer en production ?' }
+      steps { sh "./scripts/deploy.sh prod $IMAGE:${TAG_NAME}" }
+    }
+  }
+  post { failure { mail to: 'equipe@example', subject: "Échec ${env.JOB_NAME}" } }
+}</code></pre>
+<p>Ce qu'on te demandera en mission : reprendre des Jenkinsfiles existants, gérer les agents (souvent des VM vieillissantes), migrer vers GitLab CI ou GitHub Actions. Bibliothèques partagées (<code>@Library</code>) pour factoriser. Configuration as Code (plugin JCasC) pour reconstruire un Jenkins sans clic. Faiblesses classiques : plugins non mis à jour, credentials globaux, agents avec docker.sock.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Tekton</span><p>CI/CD natif Kubernetes : Tasks, Pipelines et PipelineRuns sont des CRD exécutées en Pods ; c'est le moteur d'OpenShift Pipelines, et Tekton Chains signe automatiquement chaque artefact produit (provenance SLSA).</p><p><strong>Pourquoi ça différencie :</strong> OpenShift est omniprésent dans les grands comptes français ; connaître Tekton te rend opérationnel le premier jour sur ces plateformes.</p><p><strong>À essayer en une heure :</strong> <code>kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml</code> sur kind, puis une Task qui construit l'image CrisisShield avec Kaniko.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « GitLab CI ou GitHub Actions ? » Les deux font le même travail. Différences réelles : GitLab est une plateforme intégrée (registre, environnements, SAST inclus, auto-hébergeable) très répandue en France dans le public et la banque ; GitHub Actions a l'écosystème d'actions le plus riche et le meilleur OIDC. Jenkins : tu sais le reprendre, tu sais expliquer pourquoi on en sort.</div>
+
+<div class="exo"><span class="tag">Exercice 12.1</span>
+<p>Dans le pipeline GitLab ci-dessus, le job <code>lint</code> n'apparaît jamais dans les pipelines de merge request alors que <code>scripts/</code> a changé. Pourquoi ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le job n'a qu'une règle <code>changes:</code>, sans <code>if:</code> sur la source du pipeline, et le projet n'a pas de <code>workflow:rules</code> qui crée des pipelines de merge request : GitLab ne lance alors que des pipelines de branche, où <code>changes</code> se compare au commit précédent (souvent vide après un rebase ou un push forcé). Correction : un bloc <code>workflow:rules</code> qui autorise les pipelines de merge request, et sur le job une règle qui combine <code>if: $CI_PIPELINE_SOURCE == "merge_request_event"</code> et <code>changes: [scripts/**]</code> ; dans un pipeline de MR, la comparaison se fait avec la branche cible, ce qui est fiable.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 12.2</span>
+<p>Transpose le job <code>scan</code> GitLab en étape GitHub Actions <em>sans</em> utiliser l'action Trivy, uniquement avec <code>docker run</code>.</p>
+<details><summary>Corrigé</summary><div class="sol"><pre><code>- run: |
+    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+      aquasec/trivy image --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed \
+      ghcr.io/${{ github.repository }}/api:sha-${{ github.sha }}</code></pre></div></details></div>
+
+<div class="exo"><span class="tag">Exercice 12.3</span>
+<p>Pourquoi épingler une action GitHub par SHA plutôt que par tag <code>@v4</code> ?</p>
+<details><summary>Corrigé</summary><div class="sol">Un tag est mutable : le mainteneur (ou un attaquant ayant compromis le dépôt de l'action) peut le déplacer vers un commit malveillant, qui s'exécutera avec les secrets de tous les pipelines qui l'utilisent. Le SHA est immuable. Dependabot peut mettre à jour les SHA.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 12 — Le pipeline complet de CrisisShield</span>
+<ol>
+<li>Écris le <code>.gitlab-ci.yml</code> de CrisisShield : build et tests backend (Maven avec cache), build et tests frontend (npm), build des deux images avec Kaniko (pas de dind), scan Trivy bloquant, SBOM en artefact, signature Cosign keyless, déploiement staging automatique sur <code>main</code> (le <code>deploy.sh</code> fait un <code>docker compose pull &amp;&amp; up -d</code> sur ton poste via le runner, ou sur une VM si tu en as une), déploiement prod manuel sur tag.</li>
+<li>Utilise <code>needs</code> pour que le scan du backend n'attende pas les tests du frontend. Vérifie le DAG dans l'onglet Pipeline.</li>
+<li>Ajoute un template <code>.docker-build</code> avec <code>extends:</code> pour ne pas dupliquer les deux jobs de build d'image.</li>
+<li>Rapports JUnit et couverture visibles dans la merge request. Objectif : pipeline vert en moins de 8 minutes sur ton runner.</li>
+<li>Écris la version GitHub Actions équivalente dans <code>.github/workflows/ci.yml</code> (même si tu ne l'exécutes pas), actions épinglées par SHA, permissions minimales.</li>
+<li>Bonus : un <code>Jenkinsfile</code> équivalent, et lance Jenkins dans Docker (<code>jenkins/jenkins:lts</code>) pour l'exécuter une fois.</li>
+</ol>
+<p>Livrable : les trois fichiers de pipeline dans CrisisShield, et <code>docs/cours-ci-cd.md</code> : ce qui a été fait, les choix (Kaniko, needs, keyless), et la réponse d'entretien.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c12"> Chapitre 12 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 13 ===================== -->
+<article id="c13">
+<div class="chaphead"><span class="chapnum">Chapitre 13</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Tests automatisés et quality gates</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Placer chaque type de test au bon endroit du pipeline</li><li>Lancer des tests d'intégration avec de vraies dépendances (Testcontainers)</li><li>Mettre en place SonarQube et un quality gate bloquant</li><li>Ajouter les analyses de sécurité : SAST, SCA, DAST, secrets</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Chaque type de test a sa place dans le pipeline, du plus rapide au plus lent.</li><li>Testcontainers remplace H2 et les mocks fragiles par de vraies dépendances.</li><li>Quality gate sur le nouveau code ; analyses de sécurité d&#x27;abord en observation, puis bloquantes.</li></ol></div>
+
+
+<h3>13.1 La pyramide, version pipeline<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Type</th><th>Portée</th><th>Durée</th><th>Où dans le pipeline</th><th>Outils</th></tr>
+<tr><td>Statique</td><td>Style, bugs évidents, sécurité du code</td><td>Secondes</td><td>Première étape, et en pre-commit</td><td>Checkstyle, ESLint, shellcheck, Semgrep, SonarQube</td></tr>
+<tr><td>Unitaire</td><td>Une classe, sans I/O</td><td>Secondes à minutes</td><td>Sur chaque commit</td><td>JUnit 5, pytest, Vitest</td></tr>
+<tr><td>Intégration</td><td>Le service avec sa base, sa file</td><td>Minutes</td><td>Sur chaque commit si < 5 min, sinon sur merge</td><td>Testcontainers, Spring Boot Test</td></tr>
+<tr><td>Contrat</td><td>Compatibilité entre producteur et consommateur d'API</td><td>Minutes</td><td>Sur chaque commit du producteur et du consommateur</td><td>Pact, Spring Cloud Contract</td></tr>
+<tr><td>Bout en bout (e2e)</td><td>Parcours utilisateur sur un environnement déployé</td><td>Dizaines de minutes</td><td>Après déploiement staging</td><td>Playwright, Cypress</td></tr>
+<tr><td>Fumée (smoke)</td><td>« Ça répond ? » après déploiement</td><td>Secondes</td><td>Après chaque déploiement, prod incluse</td><td>curl, k6</td></tr>
+<tr><td>Performance</td><td>Charge, latence</td><td>Long</td><td>Nocturne, avant release</td><td>k6, Gatling, JMeter</td></tr>
+</table></div>
+<p>Un test qui échoue parfois (« flaky ») est pire qu'un test absent : il apprend à l'équipe à ignorer le rouge. Mettre en quarantaine et corriger, ne pas relancer en boucle.</p>
+
+<h3>13.2 Tests d'intégration avec Testcontainers<span class="badge tag-important">Important</span></h3>
+<p>Testcontainers lance de vrais conteneurs (PostgreSQL, Kafka, Redis) pendant les tests, puis les détruit. Fini les H2 qui ne se comportent pas comme PostgreSQL.</p>
+<pre><code>@SpringBootTest
+@Testcontainers
+class IncidentRepositoryIT {
+
+    @Container
+    @ServiceConnection   // Spring Boot 3.1+ : configure la datasource automatiquement
+    static PostgreSQLContainer&lt;?&gt; postgres = new PostgreSQLContainer&lt;&gt;("postgres:16-alpine");
+
+    @Autowired IncidentRepository repo;
+
+    @Test
+    void savesAndFindsByStatus() {
+        repo.save(new Incident("Inondation", Status.OPEN));
+        assertThat(repo.findByStatus(Status.OPEN)).hasSize(1);
+    }
+}</code></pre>
+<p>Dans la CI, le job a besoin d'accéder à un démon Docker : dind, ou socket monté (voir chapitre 12). Les migrations Flyway tournent au démarrage du test : le schéma est testé aussi.</p>
+
+<h3>13.3 SonarQube et le quality gate<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>SonarQube analyse le code (bugs, vulnérabilités, code smells, duplication, couverture) et applique un <strong>quality gate</strong> : un ensemble de seuils dont l'échec fait échouer le pipeline. Le gate par défaut « Sonar way » porte sur le <em>nouveau</em> code : couverture ≥ 80 %, duplication < 3 %, zéro nouveau bug ou vulnérabilité. C'est la bonne approche : on n'exige pas de nettoyer le passé, on empêche de l'aggraver.</p>
+<pre><code># Compose : SonarQube local
+services:
+  sonarqube:
+    image: sonarqube:lts-community
+    ports: ["9000:9000"]
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://sonardb:5432/sonar
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar
+    volumes: [sonar_data:/opt/sonarqube/data, sonar_ext:/opt/sonarqube/extensions]
+  sonardb:
+    image: postgres:16-alpine
+    environment: {POSTGRES_USER: sonar, POSTGRES_PASSWORD: sonar, POSTGRES_DB: sonar}
+volumes: {sonar_data: {}, sonar_ext: {}}
+
+# Job GitLab
+sonar:
+  stage: test
+  image: eclipse-temurin:21-jdk
+  needs: [unit-tests]
+  script: ./mvnw -q sonar:sonar -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.token=$SONAR_TOKEN -Dsonar.qualitygate.wait=true</code></pre>
+<p><code>sonar.qualitygate.wait=true</code> fait échouer le job si le gate échoue. Couverture : JaCoCo (Java) génère le rapport que Sonar lit. Pour le front : ESLint + Vitest avec <code>--coverage</code>, rapport LCOV.</p>
+
+<h3>13.4 Les analyses de sécurité dans le pipeline<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Analyse</th><th>Ce qu'elle cherche</th><th>Outils</th><th>Moment</th></tr>
+<tr><td>Secrets</td><td>Clés, mots de passe dans le code</td><td>gitleaks, GitLab Secret Detection</td><td>Pre-commit et chaque commit</td></tr>
+<tr><td>SAST</td><td>Vulnérabilités dans le code source (injection, XSS)</td><td>Semgrep, SonarQube, CodeQL, SpotBugs</td><td>Chaque commit</td></tr>
+<tr><td>SCA</td><td>Dépendances vulnérables (CVE dans les jar, npm)</td><td>OWASP Dependency-Check, Trivy fs, Snyk, Dependabot</td><td>Chaque commit, plus surveillance continue</td></tr>
+<tr><td>Image</td><td>CVE de l'OS et des paquets de l'image</td><td>Trivy, Grype</td><td>Après le build</td></tr>
+<tr><td>IaC</td><td>Mauvaises configurations Terraform, Kubernetes, Dockerfile</td><td>Trivy config, Checkov, tfsec</td><td>Chaque commit</td></tr>
+<tr><td>DAST</td><td>Vulnérabilités de l'application qui tourne</td><td>OWASP ZAP</td><td>Sur staging</td></tr>
+</table></div>
+<pre><code>semgrep:
+  image: semgrep/semgrep
+  script: semgrep ci --config auto        # règles pour Java, JS, Dockerfile...
+
+dependency-check:
+  image: owasp/dependency-check
+  script: /usr/share/dependency-check/bin/dependency-check.sh --scan . --format JSON --failOnCVSS 7
+
+zap:
+  stage: deploy
+  needs: [deploy-staging]
+  image: ghcr.io/zaproxy/zaproxy:stable
+  script: zap-baseline.py -t https://staging.crisisshield.example -r zap.html
+  artifacts: {paths: [zap.html]}
+  allow_failure: true</code></pre>
+<p>Gérer le bruit : commencer non bloquant, trier, définir les seuils, puis rendre bloquant. Un pipeline qui échoue pour 200 alertes inexploitables est désactivé en une semaine.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — PIT (pitest) : mutation testing</span><p>L'outil modifie ton code Java (inverse une condition, supprime un appel) et vérifie que les tests échouent ; s'ils passent encore, le mutant « survit » : la couverture était là, la vérification non.</p><p><strong>Pourquoi ça différencie :</strong> Distinguer couverture et efficacité des tests est une réponse d'expert ; un score de mutation dans le quality gate est très rare.</p><p><strong>À essayer en une heure :</strong> <code>./mvnw org.pitest:pitest-maven:mutationCoverage</code> dans le conteneur Maven du pipeline, rapport HTML en artefact, seuil sur le score de mutation.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place la qualité dans une équipe qui n'a pas de tests ? » Réponse : quality gate sur le nouveau code seulement, tests d'intégration réels avec Testcontainers plutôt que des mocks fragiles, analyses de sécurité d'abord en mode observation puis bloquantes, et la règle des tests flaky. Ta double casquette Tech Lead + DevSecOps est exactement ce que cette question mesure.</div>
+
+<div class="exo"><span class="tag">Exercice 13.1</span>
+<p>Classe : a) « le formulaire de création d'incident fonctionne dans Chrome » ; b) « <code>PriorityCalculator</code> renvoie CRITIQUE pour un score > 90 » ; c) « l'API répond 200 sur /health après déploiement » ; d) « l'entité Incident est bien persistée avec sa relation vers Zone » ; e) « le consommateur du service Notification accepte encore la réponse du producteur ».</p>
+<details><summary>Corrigé</summary><div class="sol">a) e2e ; b) unitaire ; c) smoke ; d) intégration (Testcontainers) ; e) contrat (Pact).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 13.2</span>
+<p>SAST contre SCA contre DAST : une phrase chacune, et un exemple de faille que seul chacun détecte.</p>
+<details><summary>Corrigé</summary><div class="sol">SAST lit le code : une requête SQL concaténée. SCA lit les dépendances : Log4j 2.14 vulnérable à Log4Shell. DAST attaque l'application déployée : un en-tête de sécurité absent, une configuration serveur qui n'apparaît pas dans le code.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 13 — Quality gate bloquant sur CrisisShield</span>
+<ol>
+<li>Lance SonarQube via le Compose ci-dessus. Crée le projet, génère un token, stocke-le en variable masquée de la CI.</li>
+<li>Ajoute JaCoCo au <code>pom.xml</code>, le job <code>sonar</code> avec <code>qualitygate.wait</code>. Fais échouer volontairement le gate (un commit sans test), puis répare.</li>
+<li>Écris au moins trois tests d'intégration Testcontainers sur le backend (PostgreSQL), et vérifie qu'ils tournent dans la CI.</li>
+<li>Ajoute les jobs gitleaks, Semgrep, Dependency-Check (ou Trivy fs) en <code>allow_failure: true</code>, analyse les résultats, puis passe gitleaks et Semgrep en bloquant avec un fichier d'exceptions justifié.</li>
+<li>Après le déploiement staging, ajoute un smoke test (curl sur <code>/actuator/health</code> et sur un endpoint métier) et un ZAP baseline dont le rapport HTML est un artefact.</li>
+<li>Introduis volontairement une injection SQL dans une méthode, constate quelle analyse la détecte, corrige.</li>
+</ol>
+<p>Livrable : pipeline enrichi, <code>docs/cours-qualite-securite.md</code> avec tableau des analyses, seuils choisis et justification, et la démonstration de la détection de l'injection.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c13"> Chapitre 13 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 14 ===================== -->
+<article id="c14">
+<div class="chaphead"><span class="chapnum">Chapitre 14</span><span class="badge lvl-confirme">Confirmé</span></div>
+<h2>Dépendances et versioning</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Verrouiller les dépendances pour des builds reproductibles</li><li>Automatiser les mises à jour sans casser</li><li>Générer version, changelog et release à partir des commits</li><li>Héberger ses propres artefacts et images</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Reproductibilité = lockfiles partout (Maven, npm, pip, Docker par digest, Terraform).</li><li>Renovate ouvre les MR de mise à jour ; auto-merge des correctifs, majeures à la main.</li><li>semantic-release calcule version et changelog à partir des commits ; Nexus proxifie et gouverne.</li></ol></div>
+
+
+<h3>14.1 Reproductibilité<span class="badge tag-important">Important</span></h3>
+<p>Un build est reproductible quand deux exécutions à partir du même commit donnent le même résultat. Ennemis : plages de versions (<code>^1.2.0</code>), <code>latest</code>, dépendances transitives non fixées, dépôts distants qui changent.</p>
+<ul>
+<li><strong>Maven</strong> : versions exactes, <code>dependencyManagement</code> (BOM), plugin <code>enforcer</code> pour interdire les plages, et <code>./mvnw</code> (wrapper) pour fixer la version de Maven.</li>
+<li><strong>npm</strong> : <code>package-lock.json</code> commité, <code>npm ci</code> en CI (jamais <code>npm install</code>).</li>
+<li><strong>Python</strong> : <code>requirements.txt</code> figé avec hashes (<code>pip-compile --generate-hashes</code>), ou <code>uv</code>/<code>poetry.lock</code>.</li>
+<li><strong>Docker</strong> : base par digest, <code>apt-get install pkg=version</code>.</li>
+<li><strong>Terraform</strong> : <code>.terraform.lock.hcl</code> commité, <code>required_version</code>.</li>
+</ul>
+
+<h3>14.2 Mettre à jour sans peur<span class="badge tag-important">Important</span></h3>
+<p>Renovate (auto-hébergeable, très configurable) ou Dependabot (GitHub) ouvrent automatiquement une merge request par mise à jour, le pipeline la teste, on fusionne. Stratégie : regrouper les mineures, auto-fusionner les correctifs si le pipeline est vert, traiter les majeures à la main. Un SCA (chapitre 13) priorise celles qui corrigent des CVE.</p>
+<pre><code>// renovate.json
+{
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {"matchUpdateTypes": ["patch"], "automerge": true},
+    {"matchUpdateTypes": ["minor"], "groupName": "mineures"},
+    {"matchManagers": ["dockerfile"], "pinDigests": true}
+  ],
+  "schedule": ["before 6am on monday"]
+}
+// exécution : docker run --rm -e RENOVATE_TOKEN -e RENOVATE_ENDPOINT renovate/renovate crisisshield/backend</code></pre>
+
+<h3>14.3 Versioning et release automatisés<span class="badge tag-important">Important</span></h3>
+<p>Chapitre 5 : Conventional Commits + SemVer. Ici on ferme la boucle : <strong>semantic-release</strong> (ou <code>release-please</code>, ou le plugin Maven <code>jgitver</code>) lit les commits depuis le dernier tag, calcule la version (fix → correctif, feat → mineur, BREAKING → majeur), génère le changelog, crée le tag et la release, et déclenche le pipeline de tag qui publie l'image versionnée.</p>
+<pre><code>release:
+  stage: deploy
+  image: node:22-alpine
+  rules: [{if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH}]
+  script:
+    - npm i -g semantic-release @semantic-release/gitlab @semantic-release/changelog @semantic-release/git
+    - semantic-release
+# .releaserc : branches main, plugins commit-analyzer, release-notes-generator, changelog, gitlab, git</code></pre>
+<p>Règles d'équipe : pas de version bricolée à la main, la version dans le code (<code>pom.xml</code>) est celle que l'outil injecte ; la merge request est squashée avec un titre Conventional Commit vérifié par un hook ou un job (<code>commitlint</code>).</p>
+
+<h3>14.4 Héberger ses artefacts<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Un gestionnaire d'artefacts (Nexus, Artifactory, GitLab Package Registry) sert de proxy et de cache vers Maven Central, npm, PyPI ; héberge les bibliothèques internes ; et permet de bloquer les dépendances interdites (licences, CVE). Indispensable en entreprise sans accès Internet direct, et bon pour la vitesse des builds.</p>
+<pre><code>docker run -d --name nexus -p 8081:8081 -v nexus-data:/nexus-data sonatype/nexus3
+# puis ~/.m2/settings.xml (dans le conteneur de build) : &lt;mirror&gt; vers http://nexus:8081/repository/maven-public/</code></pre>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — diffoscope et les builds reproductibles</span><p>diffoscope compare deux artefacts (jar, image, paquet) au bit près et explique chaque différence : horodatage, ordre des entrées, chemins absolus. Avec <code>project.build.outputTimestamp</code> côté Maven et <code>SOURCE_DATE_EPOCH</code> côté BuildKit, deux builds du même commit deviennent identiques.</p><p><strong>Pourquoi ça différencie :</strong> La reproductibilité est l'ultime preuve d'intégrité de la chaîne (SLSA) ; savoir la mesurer et la corriger est une compétence de niche très valorisée.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -v "$PWD:/w" -w /w registry.salsa.debian.org/reproducible-builds/diffoscope a.jar b.jar</code> sur deux builds successifs du backend, puis corriger jusqu'à l'identité.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu gères les montées de version des dépendances ? » Renovate avec auto-merge des correctifs sur pipeline vert, regroupement des mineures, majeures manuelles, SCA pour prioriser la sécurité, et lockfiles partout pour que « ça marchait hier » ait un sens. Si tu ajoutes « proxy Nexus pour la conformité et les licences », tu parles le langage des grands comptes.</div>
+
+<div class="exo"><span class="tag">Exercice 14.1</span>
+<p>Un build npm réussit sur le poste du développeur et échoue en CI avec une erreur dans une dépendance transitive. Le <code>package-lock.json</code> est commité. Cause probable ?</p>
+<details><summary>Corrigé</summary><div class="sol">La CI utilise <code>npm install</code> au lieu de <code>npm ci</code>, ou une version de Node différente (le lockfile ne fixe pas Node : ajouter <code>.nvmrc</code> / <code>engines</code> et une image épinglée). Vérifier aussi que le lock n'est pas ignoré par un <code>.gitignore</code> ou un <code>.dockerignore</code>.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 14.2</span>
+<p>Depuis le tag <code>v2.3.1</code>, les commits sont : <code>fix(api): ...</code>, <code>feat(ui): ...</code>, <code>docs: ...</code>, <code>refactor(api)!: ...</code> avec pied BREAKING CHANGE. Quelle version semantic-release produit-il ?</p>
+<details><summary>Corrigé</summary><div class="sol"><code>v3.0.0</code> : la rupture l'emporte sur tout le reste.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 14 — Releases automatiques et proxy d'artefacts</span>
+<ol>
+<li>Ajoute le job <code>release</code> semantic-release au pipeline CrisisShield. Ajoute <code>commitlint</code> en job de merge request. Produis <code>v1.0.0</code> puis, avec un commit <code>feat</code>, <code>v1.1.0</code> ; vérifie le changelog généré et l'image taguée.</li>
+<li>Lance Renovate en mode conteneur contre ton GitLab local. Observe les merge requests ouvertes, configure l'auto-merge des correctifs.</li>
+<li>Lance Nexus, configure un proxy Maven Central et npm, fais passer les builds CI par Nexus (<code>settings.xml</code> et <code>.npmrc</code> injectés par variables). Mesure la différence de temps de build entre le premier et le second passage.</li>
+<li>Applique l'enforcer Maven pour interdire les plages de versions et les dépendances en SNAPSHOT dans une release.</li>
+</ol>
+<p>Livrable : configuration Renovate, <code>.releaserc</code>, <code>infra/nexus/compose.yaml</code>, temps mesurés dans <code>tp14.md</code>, et <code>docs/cours-versioning.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c14"> Chapitre 14 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 15 ===================== -->
+<article id="c15">
+<div class="chaphead"><span class="chapnum">Chapitre 15</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Stratégies de déploiement</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Choisir entre recreate, rolling, blue/green, canary selon le risque et le coût</li><li>Séparer déploiement et activation avec les feature flags</li><li>Concevoir un retour arrière en moins de deux minutes</li><li>Gérer la base de données dans un déploiement sans interruption</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Recreate, rolling, blue/green, canary : interruption, coût, rollback, quand.</li><li>Rolling et canary font coexister deux versions : le schéma et les API doivent être compatibles N-1.</li><li>Feature flags : déployer n&#x27;est pas activer ; rollback par digest en une commande, sans build.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 242" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blue/green pour un rollback instantané ; canary pour valider sur du trafic réel."><defs><marker id="ah7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><text x="20" y="22" class="glab">Blue/green : on bascule 100 % du trafic</text><rect x="20" y="32" width="90" height="44" rx="7" class="box"/><text x="65.0" y="58.5" text-anchor="middle" font-size="13" font-weight="700">Proxy</text><rect x="150" y="32" width="100" height="44" rx="7" class="soft"/><text x="200.0" y="58.5" text-anchor="middle" font-size="13" font-weight="700">Blue v1</text><rect x="150" y="86" width="100" height="44" rx="7" class="green"/><text x="200.0" y="112.5" text-anchor="middle" font-size="13" font-weight="700">Green v2</text><path d="M110,54 L150,54" class="arrow" marker-end="url(#ah7)"/><text x="130.0" y="46.0" text-anchor="middle" class="lbl">100 %</text><path d="M110,58 L150,104" class="arrow dashed" marker-end="url(#ah7)"/><text x="120" y="118" text-anchor="start" class="lbl">bascule</text><text x="270" y="60" text-anchor="start" class="lbl">Rollback : rebasculer</text><text x="270" y="76" text-anchor="start" class="lbl">sur blue, en secondes.</text><text x="20" y="156" class="glab">Canary : on augmente progressivement</text><rect x="20" y="166" width="90" height="44" rx="7" class="box"/><text x="65.0" y="192.6" text-anchor="middle" font-size="13" font-weight="700">Proxy</text><rect x="150" y="166" width="100" height="44" rx="7" class="soft"/><text x="200.0" y="192.6" text-anchor="middle" font-size="13" font-weight="700">v1</text><rect x="150" y="220" width="100" height="44" rx="7" class="green"/><text x="200.0" y="246.6" text-anchor="middle" font-size="13" font-weight="700">v2</text><path d="M110,184 L150,184" class="arrow" marker-end="url(#ah7)"/><text x="130.0" y="176.0" text-anchor="middle" class="lbl">90 %</text><path d="M110,192 L150,238" class="arrow" marker-end="url(#ah7)"/><text x="160.0" y="221.0" text-anchor="middle" class="lbl">10 %</text><text x="270" y="190" text-anchor="start" class="lbl">10 → 50 → 100 % si les</text><text x="270" y="206" text-anchor="start" class="lbl">métriques restent bonnes.</text><text x="270" y="222" text-anchor="start" class="lbl">Sinon : couper le canari.</text></svg><figcaption>Blue/green pour un rollback instantané ; canary pour valider sur du trafic réel.</figcaption></figure>
+
+
+<h3>15.1 Les stratégies<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Stratégie</th><th>Principe</th><th>Interruption</th><th>Coût</th><th>Rollback</th><th>Quand</th></tr>
+<tr><td>Recreate</td><td>Arrêter l'ancienne, démarrer la nouvelle</td><td>Oui</td><td>Nul</td><td>Redéployer l'ancienne</td><td>Environnements de dev, applis qui ne supportent pas deux versions</td></tr>
+<tr><td>Rolling</td><td>Remplacer les instances une par une</td><td>Non</td><td>Faible</td><td>Rolling inverse (lent)</td><td>Le défaut Kubernetes ; les deux versions coexistent pendant la mise à jour</td></tr>
+<tr><td>Blue/green</td><td>Deux environnements complets, on bascule le trafic</td><td>Non</td><td>Double</td><td>Instantané : rebasculer</td><td>Releases risquées, besoin de rollback immédiat</td></tr>
+<tr><td>Canary</td><td>Nouvelle version pour 1 %, 10 %, 50 % du trafic, avec mesure</td><td>Non</td><td>Faible</td><td>Couper le canari</td><td>Fort trafic, validation par métriques réelles</td></tr>
+<tr><td>Shadow</td><td>Trafic dupliqué vers la nouvelle version, réponses ignorées</td><td>Non</td><td>Double</td><td>Sans objet</td><td>Valider performance sans risque utilisateur</td></tr>
+<tr><td>A/B</td><td>Deux versions pour deux populations, mesure produit</td><td>Non</td><td>Faible</td><td>Désactiver</td><td>Décision produit, pas technique</td></tr>
+</table></div>
+<p>Rolling et canary imposent une contrainte forte : deux versions du code tournent en même temps, sur le même schéma de base, devant les mêmes clients. Cela conditionne les migrations (15.4) et la compatibilité des API (versionner, ne jamais retirer un champ dans la même release qu'on l'introduit).</p>
+
+<h3>15.2 Blue/green avec un reverse proxy<span class="badge tag-contexte">Bon à savoir</span></h3>
+<pre><code># nginx : upstream pointant sur la couleur active
+upstream app { server app-blue:8080; }        # ← devient app-green:8080 à la bascule
+server { listen 443 ssl; location / { proxy_pass http://app; } }
+
+# scripts/switch.sh
+#!/usr/bin/env bash
+set -euo pipefail
+target="$1"   # blue | green
+docker compose up -d "app-$target"
+until curl -sf "http://localhost:$( [[ $target == blue ]] && echo 8081 || echo 8082 )/actuator/health/readiness"; do sleep 2; done
+sed -i "s/app-\(blue\|green\)/app-$target/" nginx/upstream.conf
+docker compose exec proxy nginx -s reload
+echo "Trafic sur $target"</code></pre>
+<p>Avec Traefik, la bascule est un changement de label ; avec un ALB AWS, un changement de target group ; avec Kubernetes, un changement de sélecteur de Service. Le principe reste identique : la nouvelle version est prête et testée <em>avant</em> de recevoir du trafic.</p>
+
+<h3>15.3 Feature flags : déployer n'est pas activer<span class="badge tag-important">Important</span></h3>
+<p>Le code de la fonctionnalité est en production, désactivé. On l'active pour les employés, puis 5 % des utilisateurs, puis tous, sans redéploiement. Si problème, on désactive en une seconde. C'est ce qui rend le trunk-based development possible : la fonctionnalité inachevée est fusionnée, cachée derrière un flag.</p>
+<pre><code>// Spring Boot avec OpenFeature + flagd, ou Unleash, ou une simple table
+if (features.isEnabled("nouvelle-carte-incidents", user)) {
+    return newMapService.render(zone);
+}
+return legacyMapService.render(zone);</code></pre>
+<p>Discipline : chaque flag a un propriétaire et une date de suppression. Les flags oubliés sont de la dette. Types : release (temporaire), ops (kill switch permanent, ex. désactiver l'export PDF en cas de charge), expérimentation, permission.</p>
+
+<h3>15.4 La base de données<span class="badge tag-coeur">Par cœur</span></h3>
+<p>Le code se déploie et se retire en secondes ; un schéma, non. Règles :</p>
+<ol>
+<li>Migrations versionnées (Flyway) exécutées <em>avant</em> le nouveau code, jamais dans le même déploiement qu'une suppression.</li>
+<li>Chaque migration est compatible avec la version N-1 du code (expand/contract, chapitre 6).</li>
+<li>Pas de migration longue bloquante en heures de pointe : <code>CREATE INDEX CONCURRENTLY</code>, copies par lots.</li>
+<li>Rollback = déployer l'ancien code, pas annuler la migration. Les migrations « down » sont rarement sûres.</li>
+<li>Migration de données massive : job séparé, reprise possible, mesuré.</li>
+</ol>
+
+<h3>15.5 Rollback et santé du déploiement<span class="badge tag-important">Important</span></h3>
+<p>Un déploiement n'est terminé que lorsque les vérifications post-déploiement passent : readiness, smoke tests, puis quelques minutes de métriques (taux d'erreur, latence p95) comparées à la version précédente. Automatiser le retour arrière si les seuils sont dépassés (Argo Rollouts, Flagger, ou un simple script qui surveille Prometheus, niveau 6). Toujours garder l'image précédente disponible par digest ; le rollback ne doit jamais nécessiter un build.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Flipt</span><p>Feature flags open source, déclaratifs : les flags vivent dans des fichiers YAML du dépôt (mode GitOps), avec segmentation, rollouts pondérés, et un fournisseur OpenFeature pour Java et JavaScript.</p><p><strong>Pourquoi ça différencie :</strong> Des flags versionnés et revus comme du code, sans SaaS, c'est le choix des plateformes souveraines.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -p 8080:8080 docker.flipt.io/flipt/flipt</code>, puis le provider OpenFeature Flipt dans CrisisShield et le fichier <code>features.yaml</code> dans le dépôt de config.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu déploies sans interruption ? » Choisis une stratégie et déroule tout : image immuable prête, migration expand compatible, bascule blue/green ou rolling avec readiness, smoke, observation des métriques, rollback par digest en une commande, contract retiré à la release suivante. Mentionne les feature flags pour découpler déploiement et activation.</div>
+
+<div class="exo"><span class="tag">Exercice 15.1</span>
+<p>Choisis la stratégie et justifie : a) application interne de 20 utilisateurs, mise à jour hebdomadaire ; b) API de paiement à 5 000 requêtes/s ; c) refonte complète du front ; d) correction urgente d'une faille.</p>
+<details><summary>Corrigé</summary><div class="sol">a) Rolling ou même recreate en dehors des heures : le coût de blue/green n'est pas justifié. b) Canary avec analyse automatique des métriques. c) Blue/green pour un rollback instantané, plus feature flag ou A/B pour l'activer progressivement. d) Rolling rapide, ou blue/green si déjà en place ; ce qui compte est la vitesse et la vérification, pas la sophistication.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 15.2</span>
+<p>Pendant un rolling update, des utilisateurs reçoivent des erreurs 500 : la nouvelle version lit une colonne <code>priority_level</code> que l'ancienne n'écrit pas. Qu'est-ce qui a été mal fait, et comment corriger le processus ?</p>
+<details><summary>Corrigé</summary><div class="sol">La migration et le changement de code ne sont pas compatibles N-1 : l'ancienne version insère sans la colonne, la nouvelle la suppose remplie. Il fallait ajouter la colonne avec une valeur par défaut (ou nullable et tolérée par le code), déployer, puis seulement rendre la colonne obligatoire à la release suivante.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 15 — Blue/green et feature flag sur CrisisShield</span>
+<ol>
+<li>Dans le Compose de production du TP 9, déclare <code>api-blue</code> et <code>api-green</code> (même image, tag paramétré par variables <code>BLUE_TAG</code> et <code>GREEN_TAG</code>), et le proxy avec un fichier d'upstream monté.</li>
+<li>Écris <code>scripts/switch.sh</code> (section 15.2) et <code>scripts/rollback.sh</code>. Chronomètre la bascule et le retour arrière : objectif sous 30 secondes.</li>
+<li>Branche le pipeline : le déploiement prod sur tag déploie sur la couleur inactive, lance les smoke tests, bascule, puis un job manuel <code>rollback</code> reste disponible pendant 24 h.</li>
+<li>Ajoute une migration Flyway qui introduit une colonne <code>priority_level</code> en respectant expand/contract, sur trois releases (<code>v1.2.0</code> expand, <code>v1.3.0</code> lecture, <code>v1.4.0</code> contract). Prouve avec le blue/green que les deux versions coexistent sans erreur pendant la bascule (un script <code>curl</code> en boucle qui compte les codes ≠ 200).</li>
+<li>Implémente un feature flag (OpenFeature + flagd dans le Compose, ou une table avec un endpoint d'administration) devant une fonctionnalité de CrisisShield, active-le pour un utilisateur, puis pour tous, sans redéployer.</li>
+</ol>
+<p>Livrable : scripts, pipeline, migrations, mesures dans <code>tp15.md</code>, et <code>docs/cours-deploiement.md</code> avec le déroulé complet à raconter en entretien.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c15"> Chapitre 15 terminé</label>
+</article>
+
+<!-- ===================== REVISION ===================== -->
+<section class="rev" id="rev">
+<h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 2</h2>
+<ol class="quiz">
+<li>CI, livraison continue, déploiement continu : définitions et ce qui manque pour passer de l'un à l'autre.</li>
+<li>Étape, job, artefact, cache, runner : rôle de chacun.</li>
+<li>« Build once, deploy everywhere » : pourquoi, et comment le garantir.</li>
+<li>Six leviers pour accélérer un pipeline.</li>
+<li>Comment un pipeline s'authentifie sans secret statique.</li>
+<li><code>rules</code> et <code>needs</code> dans GitLab CI : comportement.</li>
+<li>Pourquoi dind est un problème et ce qui le remplace.</li>
+<li>Correspondances GitLab CI ↔ GitHub Actions.</li>
+<li>Pourquoi épingler une action par SHA.</li>
+<li>Ce que tu fais en arrivant sur un Jenkins existant.</li>
+<li>Où placer chaque type de test dans le pipeline.</li>
+<li>Pourquoi Testcontainers plutôt que H2 ou des mocks.</li>
+<li>Quality gate sur le nouveau code : pourquoi cette approche.</li>
+<li>SAST, SCA, DAST, secrets, IaC : un outil et un exemple chacun.</li>
+<li>Comment introduire des analyses de sécurité sans que l'équipe les désactive.</li>
+<li>Reproductibilité : le mécanisme de verrouillage dans quatre écosystèmes.</li>
+<li>Renovate : ta politique d'auto-merge.</li>
+<li>Comment semantic-release calcule une version.</li>
+<li>Recreate, rolling, blue/green, canary : interruption, coût, rollback.</li>
+<li>Déployer sans interruption avec une migration de schéma : le déroulé complet.</li>
+</ol>
+<p><strong>Prochain niveau</strong> : Infrastructure as Code — Terraform, Ansible, Packer, immutabilité et GitOps.</p>
+</section>
+
+<div class="footnav"><a href="devops-niveau-1-conteneurs.html">← Niveau 1 — Virtualisation et conteneurs</a><a href="devops-niveau-3-infrastructure-as-code.html">Niveau 3 — Infrastructure as Code →</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='devops-n2-progress', THEME='devops-theme';
+  var boxes=document.querySelectorAll('input[data-ch]');
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  function render(){
+    var done=0; boxes.forEach(function(b){ if(b.checked) done++; });
+    var pct=Math.round(done/boxes.length*100);
+    document.getElementById('pct').textContent=pct+' %';
+    document.getElementById('bar').style.width=pct+'%';
+  }
+  var st=load();
+  boxes.forEach(function(b){ b.checked=!!st[b.dataset.ch]; b.addEventListener('change',function(){ st[b.dataset.ch]=b.checked; save(st); render(); }); });
+  render();
+  var root=document.documentElement;
+  try{ var t=localStorage.getItem(THEME); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.getElementById('theme').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur==='dark';
+    var next=dark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem(THEME,next); }catch(e){}
+  });
+})();
+</script>
+
+<script>
+(function(){
+  // Barre de lecture
+  var bar=document.createElement('div'); bar.className='readbar'; document.body.prepend(bar);
+  function upd(){ var h=document.documentElement; var max=h.scrollHeight-h.clientHeight; bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%'; }
+  window.addEventListener('scroll',upd,{passive:true}); upd();
+  // Bouton copier sur chaque bloc de code
+  document.querySelectorAll('pre').forEach(function(pre){
+    var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier'; b.setAttribute('aria-label','Copier le code');
+    b.addEventListener('click',function(){
+      var t=pre.innerText.replace(/^Copier\n?/,'').replace(/Copi\u00e9 !$/,'');
+      var done=function(){ b.textContent='Copi\u00e9 !'; b.classList.add('ok'); setTimeout(function(){ b.textContent='Copier'; b.classList.remove('ok'); },1500); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); }
+      else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); done(); }
+    });
+    pre.appendChild(b);
+  });
+  // Sommaire qui suit la lecture
+  var links=document.querySelectorAll('nav.toc a[href^="#"]');
+  if(links.length&&'IntersectionObserver' in window){
+    var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){a.classList.remove('active');}); var a=map[e.target.id]; if(a) a.classList.add('active'); } });
+    },{rootMargin:'-10% 0px -75% 0px'});
+    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el) io.observe(el); });
+  }
+  // Impression : ouvrir tous les corrig\u00e9s
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.open=true; }); });
+})();
+</script>
+
+<script>
+(function(){
+  // Tableaux : libellé de colonne sur chaque cellule pour l'affichage empilé
+  document.querySelectorAll('table').forEach(function(t){
+    var rows=t.rows; if(!rows.length) return;
+    var head=rows[0]; var ths=head.querySelectorAll('th');
+    if(!ths.length) return;
+    head.classList.add('head');
+    var labels=Array.prototype.map.call(head.cells,function(c){return c.textContent.trim();});
+    for(var i=1;i<rows.length;i++){
+      var cells=rows[i].cells;
+      for(var j=0;j<cells.length;j++){ if(cells[j].tagName==='TD') cells[j].setAttribute('data-label',labels[j]||''); }
+    }
+    t.classList.add('stack');
+  });
+  // Schémas ASCII : garder l'alignement (défilement horizontal) au lieu du repli
+  document.querySelectorAll('pre').forEach(function(p){
+    if(/[\u2500-\u257F\u25B6\u25C0\u25BA\u25C4\u2192\u2190\u2191\u2193]/.test(p.textContent)) p.classList.add('diagram');
+  });
+})();
+</script>
+</body>
+</html>

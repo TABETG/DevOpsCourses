@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cours DevOps — Niveau 8 : SRE et architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="in">
+    <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
+    <div class="level">Parcours DevOps — Niveau 8 sur 9</div>
+    <h1>SRE et architecture : concevoir pour la panne, l'échelle et les équipes</h1>
+    <p class="lead">Six chapitres pour passer de « je sais exploiter » à « je conçois ce qui sera exploitable » : résilience et chaos engineering, haute disponibilité et reprise d'activité, performance et capacité, architectures microservices et événementielles, bases de données en production, puis le platform engineering qui industrialise tout ce qui précède pour d'autres équipes.</p>
+    <div class="meta">
+      <span>6 chapitres</span><span>≈ 45 h de travail</span><span>Prérequis : Niveaux 0 à 7</span>
+    </div>
+    <button class="theme" id="theme">Basculer clair / sombre</button>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <strong>Sommaire</strong>
+  <ol start="43">
+    <li><a href="#c43" class="toc-senior">Fiabilité, résilience, chaos engineering</a></li>
+    <li><a href="#c44" class="toc-expert">Haute disponibilité et reprise d'activité</a></li>
+    <li><a href="#c45" class="toc-senior">Performance, charge, capacité</a></li>
+    <li><a href="#c46" class="toc-expert">Microservices, événementiel, serverless</a></li>
+    <li><a href="#c47" class="toc-expert">Bases de données en production</a></li>
+    <li><a href="#c48" class="toc-expert">Platform engineering</a></li>
+    <li><a href="#rev">Révision du niveau</a></li>
+  </ol>
+<div class="legend">Niveau des chapitres : <span class="badge lvl-senior">Senior</span><span class="badge lvl-expert">Expert</span> <span class="badge badge-niche">Techno de niche</span> = encadré différenciant dans chaque chapitre<br>Mémorisation : <span class="badge tag-coeur">Par cœur</span> <span class="badge tag-important">Important</span> <span class="badge tag-contexte">Bon à savoir</span></div>
+  <div class="prog">Progression : <span id="pct">0 %</span><div class="bar"><i id="bar"></i></div></div>
+</nav>
+
+<main>
+
+<!-- ===================== CHAPITRE 43 ===================== -->
+<article id="c43">
+<div class="chaphead"><span class="chapnum">Chapitre 43</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Fiabilité, résilience, chaos engineering</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Appliquer les principes SRE au-delà des SLO : toil, automatisation, revue de lancement</li><li>Concevoir des services résilients : timeouts, retries, circuit breakers, bulkheads, dégradation</li><li>Conduire un programme de chaos engineering avec hypothèses et mesures</li></ul></div>
+<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Timeouts, retries idempotents, circuit breaker, bulkheads, dégradation, load shedding, idempotence, backpressure.</li><li>Une seule couche de retries, sinon tempête ; le pool de connexions est le goulot classique.</li><li>Chaos engineering : hypothèse, injection contrôlée, mesure, correction ; staging puis prod.</li></ol></div>
+
+
+<h3>43.1 SRE : le reste du modèle<span class="badge tag-contexte">Bon à savoir</span></h3>
+<ul>
+<li><strong>Toil</strong> : le travail manuel, répétitif, automatisable, sans valeur durable (redémarrer, redimensionner, appliquer un patch à la main). Google plafonne le toil à 50 % du temps SRE ; au-delà, on automatise ou on rend le problème au développement. Mesurer le toil (tickets, temps) est la première étape.</li>
+<li><strong>Revue de lancement (Production Readiness Review)</strong> : avant qu'un service entre en production, une checklist : SLO définis, observabilité en place, runbooks, capacité estimée, dépendances connues, plan de rollback, sécurité validée, astreinte identifiée. Un service qui ne passe pas la revue n'a pas de support SRE.</li>
+<li><strong>Politique de budget d'erreur</strong> (chapitre 35), écrite et signée par produit et ingénierie.</li>
+<li><strong>Engagement du SRE</strong> : les SRE peuvent rendre un service à l'équipe de développement s'il génère trop de toil ou d'incidents ; l'inverse de l'exploitation subie.</li>
+</ul>
+
+<h3>43.2 Patrons de résilience<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Patron</th><th>Problème</th><th>Règle</th></tr>
+<tr><td>Timeout</td><td>Un appel qui ne répond jamais bloque un thread, puis tous</td><td>Toujours un timeout, court, sur chaque appel sortant ; budget de temps propagé (deadline)</td></tr>
+<tr><td>Retry</td><td>Erreurs transitoires</td><td>Seulement sur erreurs transitoires et opérations idempotentes ; backoff exponentiel avec jitter ; borné ; jamais de retry en cascade à chaque couche</td></tr>
+<tr><td>Circuit breaker</td><td>Un service en panne reçoit encore des appels qui échouent lentement</td><td>Après N échecs, ouvrir : échec immédiat ; réessayer prudemment (half-open) ; libère les ressources et laisse le service se rétablir</td></tr>
+<tr><td>Bulkhead</td><td>Une dépendance lente consomme tout le pool de threads/connexions</td><td>Pools séparés par dépendance ; une dépendance en panne n'abîme que sa cloison</td></tr>
+<tr><td>Dégradation gracieuse</td><td>Une fonction secondaire tombe et rend tout indisponible</td><td>Fallback : cache, valeur par défaut, fonctionnalité désactivée (feature flag ops), file d'attente ; le cœur continue</td></tr>
+<tr><td>Rate limiting / load shedding</td><td>Surcharge : tout le monde devient lent, puis tout tombe</td><td>Limiter par client ; rejeter tôt (429/503) plutôt que tout ralentir ; prioriser les requêtes importantes</td></tr>
+<tr><td>Idempotence</td><td>Retries et messages en double créent des doublons</td><td>Clé d'idempotence sur les écritures ; consommateurs Kafka idempotents</td></tr>
+<tr><td>Backpressure</td><td>Un producteur submerge un consommateur</td><td>Files bornées, signaux de ralentissement, KEDA sur le lag</td></tr>
+</table></div>
+<pre><code>// Resilience4j avec Spring Boot : le client Notification
+@CircuitBreaker(name = "notification", fallbackMethod = "queueForLater")
+@Retry(name = "notification")
+@TimeLimiter(name = "notification")
+@Bulkhead(name = "notification", type = Bulkhead.Type.THREADPOOL)
+public CompletableFuture&lt;Void&gt; notify(Incident incident) { ... }
+
+CompletableFuture&lt;Void&gt; queueForLater(Incident incident, Throwable t) {
+    outbox.enqueue(incident);          // dégradation : on notifiera plus tard, l'incident est créé quand même
+    return CompletableFuture.completedFuture(null);
+}
+
+// application.yaml
+resilience4j:
+  circuitbreaker.instances.notification: {slidingWindowSize: 20, failureRateThreshold: 50, waitDurationInOpenState: 30s, permittedNumberOfCallsInHalfOpenState: 3}
+  retry.instances.notification:          {maxAttempts: 3, waitDuration: 200ms, enableExponentialBackoff: true, exponentialBackoffMultiplier: 2, retryExceptions: [java.io.IOException]}
+  timelimiter.instances.notification:    {timeoutDuration: 2s}
+  bulkhead.instances.notification:       {maxConcurrentCalls: 20}</code></pre>
+<p>Le mesh (chapitre 30) fournit timeouts, retries et circuit breaking au niveau réseau ; l'application garde la dégradation et l'idempotence, qui sont métier. Les deux ne doivent pas faire de retries en même temps (multiplication).</p>
+
+<h3>43.3 Chaos engineering<span class="badge tag-important">Important</span></h3>
+<p>Discipline d'expérimentation : formuler une hypothèse sur l'état stable (« si un Pod de l'API meurt, le taux d'erreur reste sous 0,1 % »), injecter la panne de façon contrôlée, mesurer, apprendre, corriger. Ce n'est pas casser au hasard : c'est tester la résilience comme on teste le code.</p>
+<ul>
+<li><strong>Périmètre progressif</strong> : staging, puis production sur une petite portion avec bouton d'arrêt, en heures ouvrées, avec l'astreinte prévenue.</li>
+<li><strong>Catalogue d'expériences</strong> : mort d'un Pod, d'un nœud, d'une AZ ; latence et erreurs injectées sur une dépendance ; saturation CPU/mémoire/disque ; partition réseau ; perte de DNS ; expiration de certificat ; panne de la base primaire ; rotation de secret ; pic de charge.</li>
+<li><strong>Outils</strong> : Chaos Mesh et Litmus (Kubernetes, CRD d'expériences), Gremlin (SaaS), AWS Fault Injection Service (pannes AZ, API cloud), Toxiproxy (latence et coupures réseau entre services, parfait en tests d'intégration), Istio fault injection.</li>
+<li><strong>Game days</strong> (chapitre 36) : la version humaine, où l'on teste aussi le processus d'incident.</li>
+</ul>
+<pre><code># Chaos Mesh : latence de 500 ms sur 50 % des appels de l'API vers la base pendant 5 minutes
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata: {name: db-latency, namespace: crisisshield}
+spec:
+  action: delay
+  mode: all
+  selector: {namespaces: [crisisshield], labelSelectors: {app.kubernetes.io/name: api}}
+  direction: to
+  target: {mode: all, selector: {namespaces: [crisisshield], labelSelectors: {cnpg.io/cluster: db}}}
+  delay: {latency: 500ms, correlation: "50"}
+  duration: 5m</code></pre>
+<p>Résultat attendu : latence p99 en hausse, taux d'erreur stable (timeouts et pool dimensionnés), pas de cascade vers le front. Résultat fréquent la première fois : le pool HikariCP s'épuise, les threads Tomcat bloquent, l'API devient indisponible pour tous. C'est exactement ce que l'expérience doit révéler avant qu'un incident réel ne le fasse.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Byteman</span><p>Injection de fautes dans la JVM à chaud, sans modifier le code : des règles textuelles qui lèvent une exception dans une méthode précise, ajoutent une latence, corrompent une valeur ; le chaos engineering au niveau applicatif, en complément de Chaos Mesh.</p><p><strong>Pourquoi ça différencie :</strong> Le chaos réseau tout le monde en parle ; le chaos dans la JVM, presque personne. Et c'est ton langage.</p><p><strong>À essayer en une heure :</strong> <code>-javaagent:byteman.jar=script:regles.btm</code> sur l'API avec une règle « lever IOException dans NotificationClient.send une fois sur trois », et vérifier que le fallback du TP 43 tient.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu rends une application résiliente ? » Les patrons dans l'ordre : timeouts partout, retries bornés et idempotents, circuit breaker, bulkheads, dégradation gracieuse avec feature flags ops, load shedding ; puis la preuve : chaos engineering avec hypothèses mesurées, en staging puis en prod. Donne l'exemple HikariCP : c'est concret et Java.</div>
+
+<div class="exo"><span class="tag">Exercice 43.1</span>
+<p>Le front appelle l'API avec 3 retries, l'API appelle Notification avec 3 retries, le mesh ajoute 3 retries à chaque saut. Notification tombe. Combien d'appels reçoit-il par requête utilisateur, et que faut-il faire ?</p>
+<details><summary>Corrigé</summary><div class="sol">Jusqu'à 3 × 3 × 3 × 3 = 81 appels (retries du front, du mesh front→API, de l'API, du mesh API→Notification) : une « tempête de retries » qui achève le service. Règle : retry à un seul niveau (le plus proche de l'appel, ou le mesh, pas les deux), circuit breaker pour arrêter d'insister, et un budget de retries global (Envoy retry budget).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 43.2</span>
+<p>Rédige l'hypothèse, la méthode et les critères d'arrêt d'une expérience de chaos « perte d'une AZ » sur l'infrastructure AWS du niveau 4.</p>
+<details><summary>Corrigé</summary><div class="sol">Hypothèse : la perte de l'AZ a (33 % des tâches Fargate, un réplica RDS) maintient la disponibilité au-dessus de 99,9 % et la latence p99 sous 500 ms, avec bascule RDS en moins de 2 minutes. Méthode : AWS FIS avec l'action de perturbation d'AZ (ou retrait des sous-réseaux a du service ECS + reboot with failover RDS) pendant 15 minutes, en heures ouvrées, astreinte prévenue, boucle de mesure sur l'ALB et les SLO. Arrêt : taux d'erreur > 1 % pendant 1 minute ou bascule RDS > 3 minutes → rollback de l'expérience et post-mortem.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 43 — Rendre CrisisShield résilient, et le prouver</span>
+<ol>
+<li>Production Readiness Review : rédige la checklist de CrisisShield et remplis-la honnêtement à partir des niveaux précédents ; liste les manques.</li>
+<li>Resilience4j sur tous les appels sortants de l'API (base via pool, Notification, Keycloak, Kafka) : timeouts, retries idempotents avec backoff, circuit breakers, bulkheads, fallbacks (outbox pour les notifications). Expose les métriques Resilience4j dans Prometheus et un dashboard. Un endpoint de création d'incident idempotent par clé.</li>
+<li>Toxiproxy en test d'intégration (Testcontainers) : latence de 3 s sur PostgreSQL et coupure de Notification ; les tests vérifient les timeouts et le fallback.</li>
+<li>Chaos Mesh sur kind : catalogue de six expériences (PodChaos kill API, NetworkChaos latence base, NetworkChaos partition API↔Kafka, StressChaos mémoire, DNSChaos, TimeChaos). Pour chacune : hypothèse écrite, mesure des SLO pendant l'expérience (dashboard SLO du chapitre 35), résultat, correction si l'hypothèse est réfutée. La première exécution de la latence base doit révéler l'épuisement du pool : corrige (timeouts HikariCP, bulkhead), rejoue.</li>
+<li>Load shedding : rate limiting par organisation à l'ingress (ingress-nginx ou Envoy) et rejet précoce dans l'API au-delà d'un seuil de requêtes en cours ; sous k6, prouve que les clients prioritaires restent servis.</li>
+<li>Rédige la politique de chaos engineering de CrisisShield (périmètre, fréquence, rôles, critères d'arrêt) et planifie une expérience mensuelle en CI (Chaos Mesh Schedule) en staging.</li>
+</ol>
+<p>Livrable : code Resilience4j et tests, <code>k8s/chaos/</code>, rapports d'expériences dans <code>tp43.md</code>, <code>docs/cours-resilience.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c43"> Chapitre 43 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 44 ===================== -->
+<article id="c44">
+<div class="chaphead"><span class="chapnum">Chapitre 44</span><span class="badge lvl-expert">Expert</span></div>
+<h2>Haute disponibilité et reprise d'activité</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Définir RTO et RPO avec le métier et en déduire l'architecture et le coût</li><li>Éliminer les points uniques de défaillance couche par couche</li><li>Concevoir et tester un plan de reprise d'activité (PRA), y compris multi-région</li><li>Protéger contre le ransomware et la suppression accidentelle</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>RTO et RPO se décident avec le métier, en euros ; quatre stratégies de coût croissant.</li><li>3-2-1, immutabilité, compte de sauvegarde isolé, restauration testée automatiquement.</li><li>Le PRA est du code, testé au moins une fois par an ; l&#x27;IdP et le monitoring en font partie.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Quatre stratégies de reprise : plus le RTO/RPO baisse, plus le coût monte. Le RTO/RPO se décide avec le métier, en euros. Les données sont le vrai sujet du multi-région."><defs><marker id="ah19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><path d="M30,150 L450,150" class="axis"/><text x="450" y="168" text-anchor="end" class="lbl">coût ↑</text><text x="30" y="168" text-anchor="start" class="lbl">RTO / RPO ↓</text><rect x="30" y="96" width="100" height="56" rx="7" class="box"/><text x="80.0" y="120.2" text-anchor="middle" font-size="12" font-weight="700">Sauvegarde</text><text x="80.0" y="136.2" text-anchor="middle" class="lbl">heures, ×1</text><rect x="138" y="74" width="100" height="56" rx="7" class="soft"/><text x="188.0" y="98.2" text-anchor="middle" font-size="12" font-weight="700">Pilot light</text><text x="188.0" y="114.2" text-anchor="middle" class="lbl">minutes, ×2</text><rect x="246" y="52" width="100" height="56" rx="7" class="green"/><text x="296.0" y="76.2" text-anchor="middle" font-size="12" font-weight="700">Warm standby</text><text x="296.0" y="92.2" text-anchor="middle" class="lbl">secondes, ×4</text><rect x="354" y="30" width="100" height="56" rx="7" class="amber"/><text x="404.0" y="54.2" text-anchor="middle" font-size="12" font-weight="700">Actif-actif</text><text x="404.0" y="70.2" text-anchor="middle" class="lbl">≈ 0, ×8+</text></svg><figcaption>Quatre stratégies de reprise : plus le RTO/RPO baisse, plus le coût monte. Le RTO/RPO se décide avec le métier, en euros. Les données sont le vrai sujet du multi-région.</figcaption></figure>
+
+
+<h3>44.1 RTO, RPO et les niveaux<span class="badge tag-coeur">Par cœur</span></h3>
+<p><strong>RTO</strong> (Recovery Time Objective) : combien de temps le service peut être indisponible. <strong>RPO</strong> (Recovery Point Objective) : combien de données on peut perdre (l'intervalle depuis la dernière copie). Ce sont des décisions métier chiffrées en euros : chaque heure de RTO en moins et chaque minute de RPO en moins coûtent plus cher.</p>
+<div class="tablewrap"><table>
+<tr><th>Stratégie</th><th>RTO</th><th>RPO</th><th>Principe</th><th>Coût relatif</th></tr>
+<tr><td>Sauvegarde et restauration</td><td>Heures à jours</td><td>Heures (dernière sauvegarde)</td><td>Sauvegardes hors site ; on reconstruit avec l'IaC</td><td>1</td></tr>
+<tr><td>Pilot light</td><td>Dizaines de minutes à heures</td><td>Minutes</td><td>Données répliquées en continu ; le calcul est éteint mais déployable en IaC</td><td>2</td></tr>
+<tr><td>Warm standby</td><td>Minutes</td><td>Secondes à minutes</td><td>Environnement secondaire réduit qui tourne ; on l'agrandit à la bascule</td><td>4</td></tr>
+<tr><td>Actif-actif multi-région</td><td>Secondes (bascule DNS/anycast)</td><td>Proche de zéro</td><td>Les deux régions servent ; données répliquées dans les deux sens ou partitionnées</td><td>8+, et complexité des données</td></tr>
+</table></div>
+<p>Distinguer <strong>haute disponibilité</strong> (survivre aux pannes courantes : un serveur, une AZ ; automatique ; multi-AZ) et <strong>reprise d'activité</strong> (survivre à un sinistre : région, ransomware, erreur humaine massive ; souvent une décision humaine ; multi-région ou hors site).</p>
+
+<h3>44.2 Éliminer les SPOF, couche par couche<span class="badge tag-important">Important</span></h3>
+<pre><code>DNS            : Route 53 avec health checks et failover ; TTL courts sur les enregistrements de bascule
+Entrée         : ALB multi-AZ ; CDN devant (absorbe et cache) ; WAF
+Calcul         : ≥ 2 réplicas sur ≥ 2 AZ ; topologySpread ; PDB ; autoscaling ; nœuds remplaçables
+Données        : base Multi-AZ synchrone (bascule automatique) ; réplicas de lecture ; sauvegardes continues (PITR)
+Cache / files  : Redis en cluster multi-AZ ; Kafka avec replication factor 3, min.insync.replicas 2, brokers sur 3 AZ
+Stockage objet : S3 est multi-AZ par conception ; réplication inter-région pour le PRA
+Secrets / IdP  : Vault HA (Raft 3-5 nœuds), Keycloak en cluster ; le PRA inclut l'IdP sinon personne ne se connecte
+Observabilité  : hors du cluster surveillé, ou au moins dans une autre AZ ; alerte « le monitoring est en panne »
+CI/CD et GitOps: le dépôt Git répliqué ; ArgoCD réinstallable en IaC ; on doit pouvoir déployer pendant l'incident
+Humains        : astreinte multi-personnes, documentation accessible hors des systèmes en panne, accès d'urgence</code></pre>
+<p>Un SPOF fréquent oublié : le compte cloud lui-même (compromission root, suppression). Comptes séparés, MFA matériel, sauvegardes dans un compte isolé.</p>
+
+<h3>44.3 Sauvegardes : les règles<span class="badge tag-coeur">Par cœur</span></h3>
+<ul>
+<li><strong>3-2-1</strong> : trois copies, deux supports, une hors site (autre région, autre compte, autre fournisseur).</li>
+<li><strong>Immutabilité</strong> : S3 Object Lock en mode compliance, ou coffre isolé (AWS Backup Vault Lock) : ni un administrateur ni un ransomware ne peuvent supprimer avant la fin de la rétention.</li>
+<li><strong>Chiffrement</strong> avec des clés que le compte compromis ne contrôle pas (KMS dans le compte de sauvegarde).</li>
+<li><strong>Portée</strong> : bases (PITR + snapshots), volumes, stockage objet (versioning + réplication), configuration (Git, mais aussi l'état Terraform, les secrets Vault avec leurs snapshots Raft, les realms Keycloak, les dashboards), et les images (registre répliqué).</li>
+<li><strong>Test de restauration</strong> : automatisé et régulier (restaurer la base de la veille dans un environnement isolé, lancer les tests, mesurer la durée) ; une sauvegarde jamais restaurée n'existe pas. Velero pour Kubernetes (ressources + volumes) ; CloudNativePG et AWS Backup pour les bases.</li>
+<li><strong>Rétention</strong> : cohérente avec le RGPD et les obligations légales ; documentée.</li>
+</ul>
+
+<h3>44.4 Multi-région<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Le calcul est facile à répliquer (IaC, images) ; les <strong>données</strong> sont le problème. Options : réplication asynchrone vers une région passive (Aurora Global Database, réplication S3, MirrorMaker 2 pour Kafka) avec un RPO de secondes et une bascule décidée ; actif-actif avec partition des utilisateurs par région (chaque donnée a une région maître) ; bases distribuées multi-maître (Spanner, CockroachDB, DynamoDB Global Tables) au prix de la latence ou de la cohérence. Le DNS (Route 53 failover, latency, ou Global Accelerator anycast) route les utilisateurs. Tout doit être déployé par le même pipeline dans les deux régions, sinon la seconde dérive et ne fonctionne pas le jour J.</p>
+
+<h3>44.5 Le PRA<span class="badge tag-important">Important</span></h3>
+<pre><code>1. Périmètre et objectifs : services critiques, RTO/RPO par service, scénarios couverts (région, ransomware, suppression, fournisseur)
+2. Architecture cible par scénario (44.1) et écarts actuels
+3. Procédures : bascule (qui décide, comment, dans quel ordre : données → secrets/IdP → calcul → DNS → vérification), retour arrière (failback), communication
+4. Prérequis vérifiés en continu : réplication à jour (alerte sur le lag), IaC applicable dans la région secondaire (plan nocturne), accès d'urgence valides, documentation hors ligne
+5. Tests : table-top trimestriel, bascule réelle annuelle (ou semestrielle pour les critiques), mesure du RTO/RPO réels, post-mortem du test
+6. Maintenance : revue à chaque changement d'architecture ; le PRA est du code (scripts de bascule versionnés et testés)</code></pre>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Kanister</span><p>Sauvegardes applicatives pour Kubernetes (CNCF, Veeam) par Blueprints : hooks avant et après (gel, dump cohérent, restauration) spécifiques à chaque application stateful, intégrables à Velero et Kopia.</p><p><strong>Pourquoi ça différencie :</strong> Une sauvegarde de volume n'est pas une sauvegarde cohérente ; savoir le dire et l'outiller sépare les profils.</p><p><strong>À essayer en une heure :</strong> Helm <code>kanister</code> sur kind, Blueprint PostgreSQL avec <code>pg_dump</code> vers MinIO, ActionSet de sauvegarde puis de restauration mesurée.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu conçois la reprise d'activité ? » Partir des RTO/RPO métier et du coût par stratégie, distinguer HA et PRA, dérouler les SPOF par couche (avec l'IdP et le monitoring, souvent oubliés), 3-2-1 immutable dans un compte isolé, test de restauration automatisé, bascule multi-région où les données sont le vrai sujet, et un PRA en code testé au moins annuellement. Avec DORA et NIS2 (niveau 7), les tests deviennent obligatoires : dis-le.</div>
+
+<div class="exo"><span class="tag">Exercice 44.1</span>
+<p>Un ransomware chiffre les serveurs et supprime les sauvegardes accessibles avec les identifiants volés. Quelles mesures auraient préservé la capacité de restauration ?</p>
+<details><summary>Corrigé</summary><div class="sol">Sauvegardes dans un compte séparé avec accès en écriture seule depuis la prod (pas de suppression), Object Lock/Vault Lock (immutabilité), clés KMS du compte de sauvegarde, MFA delete, alerte sur toute tentative de suppression, et un test de restauration récent prouvant que ces sauvegardes fonctionnent. Plus l'IaC pour reconstruire l'infrastructure de zéro.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 44.2</span>
+<p>RTO 15 minutes, RPO 1 minute, budget limité, une seule équipe. Quelle stratégie, et quelle est la première chose qui échouera lors du test ?</p>
+<details><summary>Corrigé</summary><div class="sol">Warm standby : base répliquée en continu vers la région secondaire (Aurora Global ou réplication logique), calcul réduit qui tourne, IaC identique, bascule DNS scriptée. Ce qui échoue d'abord en général : l'IdP ou les secrets ne sont pas répliqués (personne ne peut se connecter), ou une configuration diverge (variable d'environnement, certificat) parce que la région secondaire n'était pas déployée par le même pipeline.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 44 — PRA de CrisisShield, exécuté</span>
+<ol>
+<li>Définis RTO/RPO pour trois services (API/base, notifications, reporting) avec justification métier et coût estimé par stratégie ; choisis.</li>
+<li>Sauvegardes : Velero sur kind (vers MinIO) pour les ressources et volumes ; CloudNativePG vers un second MinIO « hors site » avec Object Lock ; snapshots Raft de Vault ; export Keycloak ; state Terraform versionné dans un bucket verrouillé. Script <code>restore-test.sh</code> planifié chaque nuit en CI : restaure la base de la veille dans un namespace isolé, lance les tests d'intégration, mesure et publie la durée (métrique Prometheus <code>backup_restore_test_duration_seconds</code> + alerte si absent depuis 26 h).</li>
+<li>Simule un ransomware : avec un compte « compromis » (ServiceAccount de l'API), tente de supprimer les sauvegardes ; le refus doit être prouvé.</li>
+<li>Second cluster kind = « région secondaire » : même dépôt de config, ApplicationSet ArgoCD qui cible les deux clusters, réplication CloudNativePG entre clusters (réplica cluster), MirrorMaker 2 pour Kafka, Vault en réplication (performance replication est Enterprise ; utilise des snapshots restaurés ou un second Vault avec les mêmes secrets synchronisés par External Secrets depuis un backend commun).</li>
+<li>Bascule réelle : script <code>failover.sh</code> (promotion de la base, activation des workloads, bascule DNS simulée par un CoreDNS local ou le fichier hosts), chronométré ; boucle <code>curl</code> pendant la bascule pour mesurer le RTO réel ; insertion continue de données pour mesurer le RPO réel. Puis failback.</li>
+<li>Avec compte AWS (optionnel, quelques euros) : réplication S3 inter-région et Aurora Global Database sur l'infra du niveau 4 ; test de bascule managée.</li>
+<li>Rédige le PRA (structure 44.5), le rapport de test avec RTO/RPO mesurés contre objectifs, et le post-mortem du test.</li>
+</ol>
+<p>Livrable : <code>infra/backup/</code>, scripts de bascule, <code>docs/pra.md</code>, rapport dans <code>tp44.md</code>, <code>docs/cours-ha-pra.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c44"> Chapitre 44 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 45 ===================== -->
+<article id="c45">
+<div class="chaphead"><span class="chapnum">Chapitre 45</span><span class="badge lvl-senior">Senior</span></div>
+<h2>Performance, tests de charge, capacité</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Concevoir et exécuter des tests de charge représentatifs, et lire leurs résultats</li><li>Diagnostiquer un goulot d'étranglement de la requête au noyau, JVM comprise</li><li>Planifier la capacité à partir des tendances et des événements métier</li><li>Optimiser dans le bon ordre : mesurer, cibler, vérifier</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Six types de tests de charge ; boucle ouverte (arrival rate) pour voir la vraie dégradation.</li><li>Traces d&#x27;abord, puis USE sur la ressource suspecte, puis profilage (JFR, Pyroscope).</li><li>Mesurer, cibler le goulot dominant, éliminer avant d&#x27;accélérer, re-mesurer, garder le test en CI.</li></ol></div>
+
+
+<h3>45.1 Tests de charge<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Type</th><th>Question</th><th>Profil</th></tr>
+<tr><td>Fumée</td><td>Le script fonctionne-t-il ?</td><td>1 à 5 utilisateurs virtuels, 1 minute</td></tr>
+<tr><td>Charge</td><td>Tient-on la charge nominale et de pointe avec les SLO ?</td><td>Montée progressive jusqu'au pic attendu, plateau 10 à 30 min</td></tr>
+<tr><td>Stress</td><td>Où est le point de rupture, et comment tombe-t-on ?</td><td>Au-delà du pic jusqu'à la dégradation</td></tr>
+<tr><td>Endurance (soak)</td><td>Fuites mémoire, épuisement de ressources, dérive dans le temps ?</td><td>Charge nominale pendant des heures</td></tr>
+<tr><td>Pic (spike)</td><td>Réaction à une hausse brutale ?</td><td>0 → 10× en secondes, puis retour</td></tr>
+<tr><td>Rupture (breakpoint)</td><td>Capacité maximale absolue ?</td><td>Montée continue jusqu'à l'échec</td></tr>
+</table></div>
+<pre><code>// k6 : scénario réaliste avec seuils = SLO
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export const options = {
+  scenarios: {
+    operateurs: { executor: 'ramping-arrival-rate', startRate: 10, timeUnit: '1s',
+      preAllocatedVUs: 50, maxVUs: 500,
+      stages: [{ target: 100, duration: '5m' }, { target: 100, duration: '20m' }, { target: 0, duration: '2m' }] },
+  },
+  thresholds: {
+    http_req_failed: ['rate<0.001'],                          // SLO disponibilité 99,9 %
+    'http_req_duration{name:create}': ['p(95)<300', 'p(99)<800'],
+    'http_req_duration{name:list}':   ['p(95)<200'],
+  },
+};
+
+const token = __ENV.TOKEN;
+export default function () {
+  const h = { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, tags: {} };
+  const list = http.get(`${__ENV.BASE}/api/incidents?zone=Nord`, { ...h, tags: { name: 'list' } });
+  check(list, { 'list 200': r => r.status === 200 });
+  if (Math.random() < 0.2) {
+    const created = http.post(`${__ENV.BASE}/api/incidents`,
+      JSON.stringify({ title: `Test ${__VU}-${__ITER}`, zone: 'Nord', priority: 'MEDIUM' }), { ...h, tags: { name: 'create' } });
+    check(created, { 'create 201': r => r.status === 201 });
+  }
+  sleep(1);
+}
+// docker run --rm -i -e BASE -e TOKEN -v "$PWD:/w" grafana/k6 run /w/load.js --out experimental-prometheus-rw</code></pre>
+<p>Règles : données réalistes (volumes de base proches de la prod, distribution des requêtes issue des logs réels), environnement isolé et dimensionné comme la prod (sinon on mesure l'environnement, pas l'application), <code>arrival-rate</code> plutôt que VU fixes (le système ouvert reflète le trafic réel), résultats dans Prometheus pour corréler avec les métriques du système, tests dans la CI (fumée à chaque MR, charge avant release, endurance nocturne). Gatling (Scala/Java, très présent en France) et JMeter sont les alternatives ; Locust en Python.</p>
+
+<h3>45.2 Diagnostiquer<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>Méthode USE sur chaque ressource, du haut vers le bas :
+Ingress / LB     : connexions actives, 5xx, latence upstream (le proxy attend l'app ?)
+Application      : threads Tomcat occupés (server.tomcat.threads), file d'attente, temps par route (traces !)
+JVM              : GC (pause, fréquence), heap après GC (fuite ?), threads bloqués (thread dump), allocation
+Pool de connexions: HikariCP actives/en attente/timeout → la base est le goulot ou le pool est trop petit
+Base             : requêtes lentes (pg_stat_statements), locks, index manquants (EXPLAIN), connexions, I/O, cache hit ratio
+Kafka            : lag, throttling, ISR
+Nœud             : CPU steal, throttling cgroup (container_cpu_cfs_throttled_seconds_total), mémoire, I/O wait, réseau
+Externe          : latence des dépendances (traces), DNS</code></pre>
+<ul>
+<li><strong>Traces</strong> d'abord (chapitre 34) : elles disent où le temps passe. Puis les métriques de la ressource suspecte. Puis le profilage.</li>
+<li><strong>Profilage JVM en production</strong> : JFR (Java Flight Recorder, intégré, faible surcoût), async-profiler, et le profilage continu (Grafana Pyroscope, Parca) qui donne des flame graphs permanents par service. C'est le quatrième signal.</li>
+<li><strong>Pièges Java en conteneur</strong> : limite CPU → throttling → pauses GC longues ; <code>MaxRAMPercentage</code> mal réglé → OOMKill ou heap sous-utilisé ; threads virtuels (Java 21) qui changent le dimensionnement des pools ; démarrage lent → readiness et HPA à adapter ; CDS/AOT/GraalVM pour le démarrage.</li>
+<li><strong>Base</strong> : 80 % des lenteurs applicatives sont des requêtes N+1, des index manquants ou des transactions longues ; <code>pg_stat_statements</code> trié par temps total est le premier écran à ouvrir.</li>
+</ul>
+
+<h3>45.3 Optimiser dans l'ordre<span class="badge tag-important">Important</span></h3>
+<ol>
+<li>Mesurer avec un objectif (SLO) : sans cible, on optimise sans fin.</li>
+<li>Trouver le goulot dominant (loi d'Amdahl : accélérer ce qui n'est pas dominant ne sert à rien).</li>
+<li>Éliminer avant d'accélérer : requêtes inutiles, appels en cascade, sérialisation excessive, logs synchrones.</li>
+<li>Cache au bon niveau (CDN, HTTP, applicatif, requête), avec invalidation pensée.</li>
+<li>Asynchrone pour ce qui n'a pas besoin de réponse immédiate (outbox, Kafka).</li>
+<li>Scale horizontal (chapitre 31), puis vertical si nécessaire.</li>
+<li>Re-mesurer, et garder le test de charge en CI pour empêcher la régression.</li>
+</ol>
+
+<h3>45.4 Planification de capacité<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Prévoir plutôt que subir : tendances d'usage (utilisateurs, requêtes, données) projetées à 6 à 12 mois avec <code>predict_linear</code> et les métriques métier, événements connus (campagne, saison, migration de clients), marge de sécurité (30 à 50 % au-dessus du pic prévu), tests de charge pour convertir « 2× utilisateurs » en « N Pods, telle base, tel coût », et le lien FinOps (chapitre 23) : engagements sur la base prévue. Dans le cloud, la capacité se réserve moins qu'on ne la planifie, mais les quotas de compte, les limites de la base (connexions, IOPS) et les coûts, eux, se planifient.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Cryostat</span><p>JDK Flight Recorder à l'échelle sur Kubernetes : démarrer et collecter des enregistrements JFR sur tous les Pods Java, règles automatiques (CPU au-dessus de 80 % pendant 2 minutes déclenche un enregistrement), analyse et export vers Grafana.</p><p><strong>Pourquoi ça différencie :</strong> Le profilage Java en production, industrialisé : un différenciateur net pour un expert Java devenu DevOps.</p><p><strong>À essayer en une heure :</strong> Opérateur Cryostat sur kind, JMX activé dans l'API, une règle automatique, et un enregistrement analysé pendant la charge k6 du TP 45.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « L'application est lente en production, comment tu procèdes ? » Méthode : SLO et symptôme précis (quelle route, quel percentile, depuis quand, corrélé à quel changement), traces pour localiser, USE sur la ressource, hypothèse, correction ciblée, mesure, test de charge en CI pour ne pas régresser. Cite HikariCP, pg_stat_statements, throttling CPU cgroup et JFR : c'est du vécu Java en conteneur.</div>
+
+<div class="exo"><span class="tag">Exercice 45.1</span>
+<p>Sous charge, la latence p99 monte à 5 s, le CPU des Pods est à 40 %, HikariCP affiche 10 connexions actives sur 10 et 30 threads en attente. La base est à 15 % de CPU. Diagnostic ?</p>
+<details><summary>Corrigé</summary><div class="sol">Le pool est le goulot, pas la base ni le CPU : soit le pool est trop petit, soit les transactions gardent les connexions trop longtemps (appel externe dans une transaction, requêtes lentes par index manquant, transactions longues). Vérifier <code>pg_stat_statements</code> et <code>pg_stat_activity</code> (état idle in transaction), tracer la durée des transactions, réduire leur portée avant d'agrandir le pool (une base à 15 % supporte un pool plus grand, mais l'augmenter cache le vrai problème).</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 45.2</span>
+<p>Pourquoi un test de charge avec 200 utilisateurs virtuels en boucle fermée peut-il masquer un problème que 200 requêtes par seconde en boucle ouverte révèlent ?</p>
+<details><summary>Corrigé</summary><div class="sol">En boucle fermée, quand le système ralentit, les VU attendent leur réponse et envoient moins de requêtes : la charge s'adapte au système (coordinated omission). En boucle ouverte (arrival rate), les requêtes continuent d'arriver au rythme prévu quoi qu'il arrive, comme de vrais utilisateurs : les files s'allongent, la latence explose, on voit la vraie dégradation.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 45 — Campagne de performance sur CrisisShield</span>
+<ol>
+<li>Génère un jeu de données réaliste (100 000 incidents, 500 organisations, 5 000 utilisateurs) par script, et un profil de charge à partir des logs d'accès de tes TP précédents (répartition par route).</li>
+<li>Scripts k6 pour les six types de tests avec seuils = SLO ; résultats vers Prometheus ; dashboard « test de charge » superposant k6 et les métriques système (RED, HikariCP, GC, throttling).</li>
+<li>Test de charge : trouve le premier goulot avec la méthode 45.2 (traces → USE). Corrige (index, N+1, pool, cache, asynchrone), rejoue, documente chaque itération avec le gain mesuré. Objectif : doubler le débit à SLO constant.</li>
+<li>Stress et rupture : détermine la capacité maximale par Pod (requêtes/s à SLO), puis vérifie que le HPA (chapitre 31) maintient les SLO jusqu'à 5× le nominal.</li>
+<li>Endurance 4 h : surveille le heap après GC et les descripteurs de fichiers ; introduis volontairement une fuite (cache non borné) et montre comment elle se voit sur le graphe puis dans un heap dump.</li>
+<li>Profilage continu : Pyroscope avec l'agent Java ; identifie la méthode la plus coûteuse pendant la charge ; optimise-la.</li>
+<li>Pièges conteneur : compare la latence p99 avec et sans limite CPU (throttling visible dans <code>container_cpu_cfs_throttled_seconds_total</code>) et avec deux réglages de <code>MaxRAMPercentage</code>.</li>
+<li>Capacité : à partir des mesures, écris le plan de capacité à 12 mois pour 3 scénarios de croissance avec Pods, taille de base, coût mensuel (calculatrice AWS), et les quotas à demander.</li>
+</ol>
+<p>Livrable : <code>perf/</code> (scripts k6, jeux de données, rapports itératifs), dashboard, plan de capacité dans <code>tp45.md</code>, <code>docs/cours-performance.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c45"> Chapitre 45 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 46 ===================== -->
+<article id="c46">
+<div class="chaphead"><span class="chapnum">Chapitre 46</span><span class="badge lvl-expert">Expert</span></div>
+<h2>Architectures : microservices, événementiel, serverless</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Décider entre monolithe modulaire et microservices avec des critères, et découper correctement</li><li>Concevoir une architecture événementielle fiable avec Kafka : outbox, idempotence, schémas, ordre</li><li>Gérer la cohérence des données distribuées : sagas, CQRS, event sourcing</li><li>Exploiter des API : versionnage, contrats, passerelle, découverte</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Monolithe modulaire d&#x27;abord ; extraire par domaine quand une équipe ou une contrainte le justifie.</li><li>Kafka : clé de partition = ordre, acks=all, consommateurs idempotents, outbox transactionnel, schémas compatibles.</li><li>Sagas, CQRS, event sourcing : cohérence à terme assumée, à expliquer au produit.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 138" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="L&#x27;outbox transactionnel : l&#x27;événement et la donnée sont écrits atomiquement. Base OK et Kafka KO ? Rien n&#x27;est perdu : l&#x27;outbox sera relue. Kafka OK et base rollback ? Impossible. Le consommateur est idempotent : recevoir deux fois n&#x27;est pas un problème."><defs><marker id="ah20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="40" width="90" height="56" rx="7" class="green"/><text x="55.0" y="72.5" text-anchor="middle" font-size="13" font-weight="700">API</text><path d="M100,68 L120,68" class="arrow" marker-end="url(#ah20)"/><rect x="120" y="24" width="170" height="88" rx="8" class="frame"/><text x="128" y="18" class="glab">Une seule transaction</text><rect x="130" y="34" width="150" height="32" rx="7" class="amber"/><text x="205.0" y="54.2" text-anchor="middle" font-size="12" font-weight="700">INSERT incident</text><rect x="130" y="72" width="150" height="32" rx="7" class="amber"/><text x="205.0" y="92.2" text-anchor="middle" font-size="12" font-weight="700">INSERT outbox</text><path d="M290,88 L320,88" class="arrow" marker-end="url(#ah20)"/><rect x="320" y="60" width="70" height="56" rx="7" class="purple"/><text x="355.0" y="92.2" text-anchor="middle" font-size="12" font-weight="700">Debezium</text><path d="M390,88 L410,88" class="arrow" marker-end="url(#ah20)"/><rect x="410" y="60" width="60" height="56" rx="7" class="box"/><text x="440.0" y="92.2" text-anchor="middle" font-size="12" font-weight="700">Kafka</text></svg><figcaption>L'outbox transactionnel : l'événement et la donnée sont écrits atomiquement. Base OK et Kafka KO ? Rien n'est perdu : l'outbox sera relue. Kafka OK et base rollback ? Impossible. Le consommateur est idempotent : recevoir deux fois n'est pas un problème.</figcaption></figure>
+
+
+<h3>46.1 Monolithe modulaire d'abord<span class="badge tag-important">Important</span></h3>
+<p>Les microservices résolvent un problème d'<em>organisation</em> (des équipes autonomes qui déploient indépendamment) plus qu'un problème technique. Leur coût : réseau partout (latence, pannes partielles), données réparties (plus de transaction globale), observabilité distribuée, versionnage de contrats, N pipelines et N astreintes. Sous 5 à 8 développeurs ou sans frontières métier claires, un <strong>monolithe modulaire</strong> (modules à frontières explicites, comme Spring Modulith ou des modules Maven avec règles ArchUnit) donne l'essentiel des bénéfices sans les coûts. On extrait un service quand une équipe, une contrainte d'échelle ou de technologie le justifie ; le découpage se fait par <strong>domaine</strong> (bounded contexts du DDD), jamais par couche technique.</p>
+<p>Pour CrisisShield : « incidents », « notifications », « cartographie », « reporting » sont des contextes candidats ; « base de données » et « API » ne le sont pas.</p>
+
+<h3>46.2 Communication<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Mode</th><th>Quand</th><th>Points d'attention</th></tr>
+<tr><td>Synchrone REST/HTTP</td><td>Requête-réponse, lecture, interaction utilisateur</td><td>Couplage temporel (l'appelé doit être là), timeouts, versionnage, OpenAPI</td></tr>
+<tr><td>Synchrone gRPC</td><td>Service à service à fort débit, typage fort</td><td>Protobuf, HTTP/2, load balancing L7 (le mesh aide)</td></tr>
+<tr><td>Asynchrone par événements</td><td>Découplage, fan-out, traitements différés, intégration</td><td>Livraison au moins une fois, ordre, schémas, idempotence, observabilité</td></tr>
+<tr><td>Asynchrone par commandes/files</td><td>Travail à exécuter par un seul consommateur</td><td>SQS, RabbitMQ ; dead-letter, visibilité</td></tr>
+</table></div>
+
+<h3>46.3 Kafka en production<span class="badge tag-coeur">Par cœur</span></h3>
+<ul>
+<li><strong>Topics et partitions</strong> : la partition est l'unité de parallélisme et d'ordre ; clé de partition = ce dont on veut l'ordre (l'identifiant d'incident) ; nombre de partitions dimensionné pour la croissance (difficile à changer sans casser l'ordre) ; replication factor 3, <code>min.insync.replicas=2</code>, <code>acks=all</code> côté producteur pour ne rien perdre.</li>
+<li><strong>Consommateurs</strong> : groupes, rééquilibrage (coopératif pour éviter les arrêts), commit d'offset après traitement (pas auto), traitement idempotent (le message peut arriver deux fois), dead-letter topic après N échecs, lag surveillé (KEDA).</li>
+<li><strong>Outbox transactionnel</strong> : le service écrit l'événement dans une table <code>outbox</code> dans la même transaction que la donnée métier ; un relais (Debezium en CDC, ou un poller) le publie dans Kafka. Sans cela, on perd des événements (base OK, Kafka KO) ou on en publie de faux (Kafka OK, base rollback).</li>
+<li><strong>Schémas</strong> : Schema Registry avec Avro ou Protobuf, compatibilité backward imposée (on ajoute des champs optionnels, on ne retire ni ne renomme), le schéma est un contrat versionné dans Git et vérifié en CI.</li>
+<li><strong>Exactly-once</strong> : transactions Kafka pour les pipelines Kafka → Kafka (Streams) ; sinon at-least-once + idempotence, plus simple et suffisant.</li>
+<li><strong>Exploitation</strong> : Strimzi (niveau 5) ou MSK ; rétention et compaction par topic ; ACL et mTLS ; Cruise Control pour l'équilibrage ; MirrorMaker 2 pour le PRA ; conventions de nommage des topics ; catalogue.</li>
+</ul>
+<pre><code>// Outbox avec Spring : même transaction, publication par Debezium (CDC PostgreSQL → Kafka)
+@Transactional
+public Incident create(CreateIncident cmd) {
+    Incident incident = incidents.save(Incident.from(cmd));
+    outbox.save(OutboxEvent.of("incident", incident.id(), "IncidentCreated", incidentCreatedPayload(incident)));
+    return incident;
+}
+// Table outbox : id, aggregate_type, aggregate_id, type, payload (jsonb), created_at
+// Debezium Outbox Event Router : route vers le topic "incident.events" avec la clé aggregate_id</code></pre>
+
+<h3>46.4 Cohérence distribuée<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Saga</strong> : une transaction métier répartie sur plusieurs services = une suite d'étapes locales avec compensations en cas d'échec (annuler la réservation si le paiement échoue). Chorégraphie (par événements, simple mais difficile à suivre) ou orchestration (un coordinateur : Temporal, Camunda, ou un service dédié). Une saga n'est pas ACID : les états intermédiaires sont visibles ; on conçoit pour (statuts « en cours »).</li>
+<li><strong>CQRS</strong> : séparer le modèle d'écriture (commandes, cohérent) du modèle de lecture (projections optimisées, dénormalisées, alimentées par événements). Utile quand lectures et écritures ont des besoins différents ; introduit une cohérence à terme visible par l'utilisateur.</li>
+<li><strong>Event sourcing</strong> : l'état est la suite des événements, rejouable ; audit parfait, projections multiples ; complexité de versionnage des événements et de requêtage. Rarement justifié en entier ; souvent, l'outbox et un journal d'audit suffisent.</li>
+<li><strong>Cohérence à terme</strong> : accepter et l'expliquer au produit ; UI qui montre l'état « en cours » ; idempotence et ordre par clé rendent le système convergent.</li>
+</ul>
+
+<h3>46.5 API : contrats et passerelle<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Contrat d'abord</strong> : OpenAPI versionné dans Git, généré ou validé en CI, tests de contrat (Pact) entre consommateur et producteur, changements compatibles (ajout de champ) sans nouvelle version ; rupture = nouvelle version majeure (<code>/v2</code>) avec période de cohabitation et dépréciation annoncée (en-tête <code>Sunset</code>).</li>
+<li><strong>Passerelle d'API</strong> (Kong, APISIX, AWS API Gateway, Gateway API + Envoy) : authentification, quotas, rate limiting par client, transformation, cache, observabilité, monétisation ; ne pas y mettre de logique métier.</li>
+<li><strong>Découverte</strong> : dans Kubernetes, le DNS des Services suffit ; hors Kubernetes, Consul ou le mesh.</li>
+<li><strong>Résilience et sécurité</strong> : chapitres 43 et 41 s'appliquent à chaque API.</li>
+</ul>
+
+<h3>46.6 Serverless et fonctions<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Lambda et équivalents (chapitre 21) pour le glue, l'événementiel à faible débit, les pics rares, les traitements ponctuels. Patrons : fonction par événement (S3, SQS, EventBridge), Step Functions/Temporal pour orchestrer, API Gateway devant. Limites : cold start (Java : SnapStart, GraalVM natif via Quarkus), durée, état inexistant, coût à fort débit continu (au-delà d'un certain volume, des conteneurs coûtent moins), débogage et tests locaux plus difficiles (LocalStack, SAM). Pour CrisisShield, le rapport PDF et les notifications par lot sont de bons candidats ; l'API centrale, non.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Dapr</span><p>Runtime applicatif distribué (CNCF) en sidecar : invocation de services, pub/sub (Kafka, RabbitMQ), état, secrets, workflows, résilience, via une API HTTP/gRPC identique quel que soit le langage ; SDK Java et Spring Boot.</p><p><strong>Pourquoi ça différencie :</strong> Découpler les applications des courtiers et des bases par une API standard, c'est l'architecture portable dont parlent les DSI ; peu l'ont vue tourner.</p><p><strong>À essayer en une heure :</strong> <code>dapr init -k</code> sur kind (image <code>daprio/dapr</code>), composant pub/sub Kafka, et l'événement IncidentCreated publié via Dapr plutôt que le client Kafka direct ; compare le code.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Monolithe ou microservices ? » Critères (taille d'équipe, frontières de domaine, besoins d'échelle différenciés, autonomie de déploiement), le monolithe modulaire comme défaut, l'extraction progressive par domaine. Puis la partie événementielle qui fait la différence : outbox transactionnel, idempotence, schémas compatibles, ordre par clé, dead-letter, lag. Tu as Kafka dans ta stack : raconte l'outbox avec Debezium.</div>
+
+<div class="exo"><span class="tag">Exercice 46.1</span>
+<p>Le service Incidents écrit en base puis publie dans Kafka. Une fois par semaine, un incident existe sans que Notification ne l'ait su. Explique et corrige.</p>
+<details><summary>Corrigé</summary><div class="sol">Écriture en deux temps sans atomicité : la base a commité, la publication Kafka a échoué (timeout, broker indisponible, crash entre les deux). Outbox transactionnel : l'événement est dans la même transaction, un relais (Debezium) le publie de façon fiable avec reprise. Notification est idempotent car le relais peut republier.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 46.2</span>
+<p>On passe le topic <code>incident.events</code> de 6 à 12 partitions pour absorber la charge. Quel effet sur l'ordre des événements d'un même incident ?</p>
+<details><summary>Corrigé</summary><div class="sol">La fonction de partition change : les nouveaux événements d'un incident peuvent aller sur une autre partition que les anciens, et un consommateur peut traiter le « clôturé » avant le « créé » restés sur l'ancienne partition. Prévoir large dès le départ, ou migrer vers un nouveau topic avec un consommateur qui gère la transition, ou rendre les consommateurs tolérants au désordre par version d'agrégat.</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 46 — CrisisShield en architecture événementielle propre</span>
+<ol>
+<li>Cartographie des contextes (DDD) de CrisisShield ; règles ArchUnit ou Spring Modulith dans le monolithe pour interdire les dépendances entre modules hors API publique ; pipeline qui échoue si une règle est violée.</li>
+<li>Extrais « Notification » en service séparé (Quarkus, pour varier et pour la suite serverless) : contrat OpenAPI et événements Avro versionnés dans un dépôt de contrats, Schema Registry (Apicurio ou Confluent via Strimzi), compatibilité backward vérifiée en CI.</li>
+<li>Outbox transactionnel avec Debezium (Kafka Connect via Strimzi, connecteur PostgreSQL sur CloudNativePG avec slot de réplication) et Outbox Event Router. Prouve l'atomicité : tue Kafka pendant des créations, tout est publié après reprise, aucun doublon côté Notification (idempotence par identifiant d'événement).</li>
+<li>Dead-letter topic et retraitement outillé (un petit outil CLI) ; lag surveillé et scaling KEDA (déjà en place) ; ordre par clé prouvé par un test qui crée, escalade, clôture 10 000 incidents en rafale.</li>
+<li>Saga orchestrée avec Temporal (Helm) pour « déclarer une crise » (créer les incidents liés, mobiliser les équipes, notifier, avec compensation si la mobilisation échoue) ; observe une exécution avec échec et compensation dans l'interface Temporal.</li>
+<li>CQRS léger : projection « carte des incidents » alimentée par événements dans une table dénormalisée (ou Elasticsearch), lecture par un endpoint dédié ; mesure le gain de latence.</li>
+<li>Serverless : le générateur de rapport en Quarkus natif sur Lambda (LocalStack, ou AWS si compte) déclenché par un événement, cold start mesuré contre la version JVM.</li>
+<li>Tests de contrat Pact entre le front et l'API, et entre l'API et Notification, exécutés dans les deux pipelines.</li>
+</ol>
+<p>Livrable : nouveaux services et contrats, connecteurs Debezium, workflows Temporal, preuves dans <code>tp46.md</code>, <code>docs/cours-architecture.md</code> avec les schémas et les décisions (ADR).</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c46"> Chapitre 46 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 47 ===================== -->
+<article id="c47">
+<div class="chaphead"><span class="chapnum">Chapitre 47</span><span class="badge lvl-expert">Expert</span></div>
+<h2>Bases de données en production</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Exploiter PostgreSQL à l'échelle : connexions, réplication, partitionnement, maintenance</li><li>Concevoir les migrations et les changements de schéma à risque</li><li>Choisir entre lecture répartie, cache, sharding et bases spécialisées</li><li>Surveiller et diagnostiquer une base comme un DBA le ferait</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>PgBouncer devant PostgreSQL ; pools applicatifs petits ; lecture répartie avec read-your-writes.</li><li>Changements de schéma : lock_timeout, index concurrents, NOT VALID puis VALIDATE, lots, expand/contract.</li><li>Partitionner avant de sharder ; autovacuum et wraparound sous surveillance ; restauration testée.</li></ol></div>
+
+
+<h3>47.1 Connexions et pooling<span class="badge tag-important">Important</span></h3>
+<p>PostgreSQL crée un processus par connexion : quelques centaines au maximum. Avec 20 Pods × 10 connexions HikariCP, on atteint 200 ; avec l'autoscaling, on dépasse. <strong>PgBouncer</strong> (ou le pooler intégré de CloudNativePG, ou RDS Proxy) mutualise côté serveur : les applications ouvrent des milliers de connexions logiques, la base en voit quelques dizaines. Mode <em>transaction</em> (le plus efficace, mais pas de prepared statements nommés ni de <code>SET</code> de session sans précaution). Dimensionner HikariCP petit (le nombre de cœurs de la base × 2 au total, réparti) : plus de connexions ne signifie pas plus de débit.</p>
+
+<h3>47.2 Réplication et lecture répartie<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Physique (streaming)</strong> : le réplica rejoue le WAL ; synchrone (RPO zéro, latence d'écriture) ou asynchrone (lag). Sert à la haute disponibilité et aux lectures. Un réplica est en lecture seule et identique.</li>
+<li><strong>Logique</strong> : publication/souscription de tables ; pour migrer entre versions majeures sans coupure, alimenter un autre système, ou répliquer une partie. Debezium (CDC) s'appuie dessus.</li>
+<li><strong>Lecture répartie</strong> : router les requêtes de lecture tolérantes au lag vers les réplicas (<code>db-ro</code> de CloudNativePG, endpoints de lecture RDS/Aurora) ; l'application choisit par transaction (<code>@Transactional(readOnly = true)</code> avec un routing datasource). Piège : lire immédiatement après avoir écrit, sur un réplica en retard (read-your-writes) : router ces lectures vers le primaire.</li>
+</ul>
+
+<h3>47.3 Grandir : partitionnement, sharding, spécialisation<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>Partitionnement déclaratif</strong> : une grosse table découpée par plage (date) ou hash ; les requêtes filtrées sur la clé ne lisent qu'une partition ; la purge = <code>DROP PARTITION</code> instantané au lieu d'un <code>DELETE</code> de millions de lignes. Indispensable pour les tables d'événements et d'audit (les incidents par mois).</li>
+<li><strong>Archivage</strong> : les données froides vers un stockage moins cher (S3 + Parquet, interrogé par Athena/DuckDB) ; la base reste petite et rapide.</li>
+<li><strong>Cache</strong> : Redis pour les lectures chaudes (sessions, référentiels, résultats coûteux), avec TTL et invalidation par événement ; cache HTTP au CDN pour le public.</li>
+<li><strong>Sharding</strong> : répartir les lignes sur plusieurs bases par clé (organisation) ; dernier recours (jointures inter-shards impossibles, rééquilibrage difficile) ; Citus (extension PostgreSQL distribuée), Vitess (MySQL), ou bases nativement distribuées (CockroachDB, YugabyteDB, Spanner) au prix de la latence.</li>
+<li><strong>Spécialisation</strong> : la recherche plein texte vers Elasticsearch/OpenSearch, les séries temporelles vers TimescaleDB ou ClickHouse, le graphe vers Neo4j, l'analytique vers un entrepôt (BigQuery, Snowflake, ClickHouse) alimenté par CDC. PostgreSQL couvre beaucoup (JSONB, full-text, PostGIS pour la géolocalisation de CrisisShield) : spécialiser seulement quand il plafonne.</li>
+</ul>
+
+<h3>47.4 Changements de schéma à risque<span class="badge tag-coeur">Par cœur</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Opération</th><th>Risque</th><th>Méthode sûre</th></tr>
+<tr><td>Ajouter une colonne avec DEFAULT</td><td>Réécriture de la table (versions anciennes) ; verrou</td><td>PostgreSQL 11+ : DEFAULT non volatile est instantané ; sinon ajouter nullable, remplir par lots, puis DEFAULT</td></tr>
+<tr><td>Ajouter un index</td><td>Verrou d'écriture pendant la construction</td><td><code>CREATE INDEX CONCURRENTLY</code> (hors transaction : Flyway <code>-- flyway:executeInTransaction false</code>)</td></tr>
+<tr><td>Ajouter une contrainte NOT NULL / FK / CHECK</td><td>Scan complet sous verrou</td><td><code>ADD CONSTRAINT ... NOT VALID</code> puis <code>VALIDATE CONSTRAINT</code> (verrou léger)</td></tr>
+<tr><td>Changer le type d'une colonne</td><td>Réécriture complète</td><td>Nouvelle colonne, double écriture, copie par lots, bascule, suppression (expand/contract)</td></tr>
+<tr><td>Renommer</td><td>Casse la version N-1</td><td>Expand/contract sur plusieurs releases (chapitres 6, 15)</td></tr>
+<tr><td>Supprimer une colonne</td><td>Irréversible, casse N-1</td><td>Cesser de l'utiliser, attendre une release, puis supprimer</td></tr>
+<tr><td>Grosse mise à jour de données</td><td>Verrous longs, WAL énorme, réplicas en retard</td><td>Par lots de quelques milliers avec pause, hors pointe, reprise possible</td></tr>
+</table></div>
+<p>Toujours : <code>lock_timeout</code> court sur les migrations (échouer vite plutôt que bloquer la prod derrière un verrou en attente), <code>statement_timeout</code>, migration testée sur une copie de la prod avec le volume réel, plan de retour (le code N-1 doit fonctionner). Outils : Flyway/Liquibase pour le versionnage, <code>pg_online_schema_change</code>/<code>pgroll</code> pour les changements lourds, gh-ost pour MySQL.</p>
+
+<h3>47.5 Maintenance et surveillance<span class="badge tag-important">Important</span></h3>
+<ul>
+<li><strong>VACUUM et autovacuum</strong> : PostgreSQL ne réutilise l'espace des lignes mortes qu'après vacuum ; un autovacuum mal réglé sur une table très mise à jour → bloat, ralentissement, et le risque de wraparound des identifiants de transaction (arrêt de la base). Surveiller <code>n_dead_tup</code>, l'âge des transactions, régler par table.</li>
+<li><strong>Statistiques</strong> : <code>ANALYZE</code> à jour pour de bons plans ; <code>pg_stat_statements</code> pour les requêtes coûteuses ; <code>auto_explain</code> pour les plans des requêtes lentes ; <code>pg_stat_activity</code> pour les sessions bloquées et <code>idle in transaction</code>.</li>
+<li><strong>Mises à jour</strong> : mineures sans coupure (opérateur, RDS), majeures par réplication logique ou <code>pg_upgrade</code> avec fenêtre ; suivre le calendrier de fin de support (5 ans par version).</li>
+<li><strong>Sécurité</strong> : rôles par usage (lecture, écriture, migration, admin), pas de superuser applicatif, TLS, <code>pg_hba</code> strict, chiffrement au repos, journal d'audit (<code>pgaudit</code>) pour les référentiels, données sensibles chiffrées ou masquées (chapitre 42).</li>
+<li><strong>Métriques à alerter</strong> : réplication (lag, réplica déconnecté), connexions proches du max, transactions longues, bloat, âge du wraparound, cache hit ratio en baisse, disque, sauvegardes (chapitre 44), verrous en attente.</li>
+</ul>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — pgroll</span><p>Migrations PostgreSQL sans interruption qui servent deux versions du schéma en même temps (vues versionnées) : expand/contract automatisé, l'ancienne et la nouvelle application coexistent, rollback instantané tant que la migration n'est pas « complétée ».</p><p><strong>Pourquoi ça différencie :</strong> L'expand/contract outillé, c'est la réponse experte à « comment vous renommez une colonne en prod » ; peu d'équipes connaissent.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm --network host ghcr.io/xataio/pgroll:latest init --postgres-url ...</code> puis <code>start</code> et <code>complete</code> sur le renommage de colonne du TP 15, avec les deux versions de l'API en parallèle.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Comment tu fais évoluer une base de 500 Go sans coupure ? » Migrations expand/contract avec <code>lock_timeout</code>, index concurrents, contraintes NOT VALID puis VALIDATE, mises à jour par lots, testées sur une copie ; réplication logique pour la version majeure ; PgBouncer pour les connexions ; partitionnement par date pour les grosses tables ; lecture répartie avec read-your-writes ; autovacuum surveillé. Et la règle « le code N-1 fonctionne toujours ».</div>
+
+<div class="exo"><span class="tag">Exercice 47.1</span>
+<p>Une migration <code>ALTER TABLE incidents ADD CONSTRAINT fk_zone FOREIGN KEY (zone_id) REFERENCES zones(id)</code> bloque la production pendant 20 minutes. Pourquoi, et comment l'écrire ?</p>
+<details><summary>Corrigé</summary><div class="sol">L'ajout valide toutes les lignes existantes sous un verrou qui bloque les écritures, et si une autre transaction tient un verrou, la migration attend et met en file tout le monde derrière elle. Écrire <code>SET lock_timeout = '3s'; ALTER TABLE ... ADD CONSTRAINT fk_zone ... NOT VALID;</code> puis, séparément, <code>ALTER TABLE ... VALIDATE CONSTRAINT fk_zone;</code> qui ne prend qu'un verrou léger. Et un index sur <code>zone_id</code> créé <code>CONCURRENTLY</code> avant.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 47.2</span>
+<p>Après un déploiement qui double le nombre de Pods, la base refuse les connexions : « too many clients ». Solution immédiate et structurelle ?</p>
+<details><summary>Corrigé</summary><div class="sol">Immédiat : réduire le pool HikariCP par Pod (redéploiement de config) ou revenir au nombre de Pods précédent. Structurel : PgBouncer/pooler en mode transaction entre l'application et la base, pool applicatif petit, <code>max_connections</code> dimensionné avec marge, alerte sur le taux d'utilisation des connexions, et le calcul « Pods max × pool » vérifié dans la revue de capacité (chapitre 45).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 47 — Exploiter la base de CrisisShield comme un DBA</span>
+<ol>
+<li>Active le pooler CloudNativePG (PgBouncer) en mode transaction ; réduis HikariCP à 5 par Pod ; sous charge k6 avec 20 Pods, prouve que la base voit moins de 50 connexions et que le débit est identique ou meilleur.</li>
+<li>Lecture répartie : routing datasource Spring vers <code>db-ro</code> pour les transactions <code>readOnly</code>, avec read-your-writes (les lectures qui suivent une écriture dans la même requête vont au primaire). Test qui échoue sans cette règle (lag simulé avec Chaos Mesh).</li>
+<li>Partitionne la table des incidents par mois (migration en expand/contract depuis la table existante, par lots, sans coupure, prouvée par la boucle <code>curl</code>) ; purge d'un mois par <code>DETACH</code> + archivage en Parquet vers MinIO ; requête d'archive avec DuckDB dans un conteneur.</li>
+<li>Migrations à risque : rejoue les sept opérations du tableau 47.4 sur une copie de 5 M de lignes, une fois « naïvement » en mesurant le verrou (une session qui écrit en boucle mesure son blocage), une fois avec la méthode sûre. Tableau des durées de blocage. Ajoute <code>lock_timeout</code> et <code>statement_timeout</code> à la configuration Flyway.</li>
+<li>Version majeure : migre PostgreSQL 16 → 17 par réplication logique entre deux clusters CloudNativePG (ou l'outil de mise à jour majeure de l'opérateur), avec bascule en moins d'une minute mesurée.</li>
+<li>Maintenance : provoque du bloat (mises à jour massives) et observe <code>n_dead_tup</code>, règle l'autovacuum par table, mesure ; alerte sur l'âge du wraparound et les transactions longues ; <code>pg_stat_statements</code> et <code>auto_explain</code> exposés dans un dashboard « top requêtes ».</li>
+<li>Sécurité : rôles applicatifs sans superuser, migration avec un rôle dédié, <code>pgaudit</code> vers Loki, PostGIS pour la géolocalisation des incidents avec index spatial (et son coût mesuré).</li>
+</ol>
+<p>Livrable : migrations, configuration pooler/routing, scripts d'archivage, mesures dans <code>tp47.md</code>, <code>docs/cours-bases-production.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c47"> Chapitre 47 terminé</label>
+</article>
+
+<!-- ===================== CHAPITRE 48 ===================== -->
+<article id="c48">
+<div class="chaphead"><span class="chapnum">Chapitre 48</span><span class="badge lvl-expert">Expert</span></div>
+<h2>Platform engineering et Internal Developer Platform</h2>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
+<ul><li>Expliquer pourquoi le platform engineering est la suite logique du DevOps à l'échelle</li><li>Concevoir une plateforme interne comme un produit : golden paths, libre-service, abstractions</li><li>Construire un portail avec Backstage et des composants en libre-service (Crossplane, templates)</li><li>Mesurer l'adoption et la valeur d'une plateforme</li></ul></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>La plateforme interne réduit la charge cognitive : golden paths, libre-service, conformité par construction.</li><li>Backstage pour l&#x27;interface, Crossplane et templates pour le libre-service, ArgoCD pour livrer.</li><li>C&#x27;est un produit : adoption, délai de création d&#x27;un service, DORA et satisfaction mesurés.</li></ol></div>
+<figure class="fig"><svg viewBox="0 0 480 224" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="L&#x27;Internal Developer Platform : ce que le développeur demande, ce que la plateforme fait. La plateforme est un produit : des utilisateurs, une adoption mesurée, des chemins recommandés, pas une cage."><defs><marker id="ah21" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="20" y="20" width="440" height="40" rx="7" class="green"/><text x="240.0" y="44.5" text-anchor="middle" font-size="13" font-weight="700">Développeur : « un service Java avec une base et un topic »</text><path d="M240,60 L240,74" class="arrow" marker-end="url(#ah21)"/><rect x="20" y="74" width="440" height="40" rx="7" class="purple"/><text x="240.0" y="98.5" text-anchor="middle" font-size="13" font-weight="700">Portail (Backstage) : templates, catalogue, scorecards, docs</text><path d="M240,114 L240,128" class="arrow" marker-end="url(#ah21)"/><rect x="20" y="128" width="440" height="40" rx="7" class="soft"/><text x="240.0" y="152.6" text-anchor="middle" font-size="13" font-weight="700">Golden paths : pipeline, GitOps, observabilité, sécurité par défaut</text><path d="M240,168 L240,182" class="arrow" marker-end="url(#ah21)"/><rect x="20" y="182" width="440" height="40" rx="7" class="amber"/><text x="240.0" y="206.6" text-anchor="middle" font-size="13" font-weight="700">Plateforme : Kubernetes, Crossplane, politiques, secrets, landing zone</text></svg><figcaption>L'Internal Developer Platform : ce que le développeur demande, ce que la plateforme fait. La plateforme est un produit : des utilisateurs, une adoption mesurée, des chemins recommandés, pas une cage.</figcaption></figure>
+
+
+<h3>48.1 Le problème à l'échelle<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Avec dix équipes, « you build it, you run it » signifie dix pipelines différents, dix façons de déployer, dix niveaux de sécurité, et chaque développeur qui doit connaître Kubernetes, Terraform, Vault, Prometheus. La charge cognitive explose ; la sécurité et la fiabilité dépendent de l'équipe la moins outillée. Le <strong>platform engineering</strong> construit une <strong>Internal Developer Platform</strong> (IDP) : un ensemble d'outils, de services et de <em>golden paths</em> (chemins recommandés, outillés, sûrs par défaut) que les équipes produit consomment en libre-service, sans avoir à maîtriser tout ce qui se trouve dessous. Les niveaux 0 à 7 de ce cours sont ce que la plateforme encapsule.</p>
+
+<h3>48.2 La plateforme comme produit<span class="badge tag-coeur">Par cœur</span></h3>
+<ul>
+<li><strong>Des utilisateurs</strong> : les développeurs ; on les interroge, on mesure leur satisfaction, on itère. Une plateforme imposée sans adoption est un échec.</li>
+<li><strong>Une équipe plateforme</strong> (Team Topologies : <em>platform team</em> qui sert des <em>stream-aligned teams</em>, avec des <em>enabling teams</em> pour accompagner) : produit, ingénierie, documentation, support.</li>
+<li><strong>Des golden paths</strong>, pas des cages : le chemin recommandé est facile, sûr et complet (créer un service = dépôt, pipeline, image, déploiement, observabilité, alerting, secrets, en dix minutes) ; sortir du chemin reste possible, avec plus de responsabilité.</li>
+<li><strong>Des abstractions au bon niveau</strong> : un développeur déclare « un service web Java avec une base PostgreSQL et un topic Kafka », pas 400 lignes de YAML. L'abstraction cache la complexité sans cacher ce qui compte (SLO, coût, sécurité).</li>
+<li><strong>Auto-service et politique intégrée</strong> : ce qu'on obtient par la plateforme est conforme par construction (Kyverno, quotas, signatures, réseau) ; la sécurité ne freine plus, elle est le défaut.</li>
+</ul>
+
+<h3>48.3 Les composants<span class="badge tag-important">Important</span></h3>
+<div class="tablewrap"><table>
+<tr><th>Couche</th><th>Rôle</th><th>Outils</th></tr>
+<tr><td>Portail</td><td>Catalogue des services et propriétaires, documentation, templates de création, scorecards, vue des déploiements et incidents</td><td>Backstage (CNCF, de Spotify), Port, Cortex, OpsLevel</td></tr>
+<tr><td>Templates et scaffolding</td><td>Créer un service conforme en un clic : dépôt, CI, Dockerfile, chart, dashboards, alertes</td><td>Backstage Scaffolder, Cookiecutter, Copier</td></tr>
+<tr><td>Infrastructure en libre-service</td><td>Demander une base, un bucket, une file, un cluster par une ressource Kubernetes ou un formulaire, provisionnés par des compositions revues</td><td>Crossplane (compositions XRD), Terraform via un contrôleur (tofu-controller, Terraform Cloud), Kratix</td></tr>
+<tr><td>Déploiement</td><td>GitOps standardisé, promotion, rollout progressif</td><td>ArgoCD ApplicationSets, Argo Rollouts, Kargo</td></tr>
+<tr><td>Observabilité par défaut</td><td>Chaque service a ses dashboards, SLO et alertes générés</td><td>Templates Grafana, Sloth/Pyrra, OTel auto-instrumentation</td></tr>
+<tr><td>Sécurité par défaut</td><td>Politiques, scan, signatures, secrets, identités</td><td>Niveau 7</td></tr>
+<tr><td>Environnements éphémères</td><td>Un environnement par merge request, détruit à la fermeture</td><td>ArgoCD ApplicationSet pull request generator, vCluster, namespaces dynamiques</td></tr>
+<tr><td>Développement</td><td>Environnement local reproductible</td><td>Dev Containers, Tilt/Skaffold, Telepresence, Nix</td></tr>
+<tr><td>FinOps et gouvernance</td><td>Coût par équipe, quotas, conformité</td><td>OpenCost, Kyverno, rapports</td></tr>
+</table></div>
+<pre><code># Crossplane : le développeur demande une base ; la composition (revue par la plateforme) la crée conforme
+apiVersion: platform.crisisshield.example/v1alpha1
+kind: PostgreSQLInstance
+metadata: {name: incidents-db, namespace: team-incidents}
+spec:
+  size: small            # la composition traduit en instances, stockage, sauvegardes, alertes, secret ESO
+  environment: prod
+  writeConnectionSecretToRef: {name: incidents-db-conn}
+---
+# Backstage : catalog-info.yaml à la racine de chaque dépôt
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: crisisshield-api
+  description: API de gestion des incidents
+  annotations:
+    gitlab.com/project-slug: crisisshield/backend
+    argocd/app-name: crisisshield-prod
+    grafana/dashboard-selector: "service=crisisshield-api"
+    pagerduty.com/service-id: P123
+spec:
+  type: service
+  lifecycle: production
+  owner: team-incidents
+  system: crisisshield
+  providesApis: [incidents-api]
+  dependsOn: [resource:incidents-db, component:notification]</code></pre>
+
+<h3>48.4 Mesurer<span class="badge tag-important">Important</span></h3>
+<p>Adoption (part des services sur les golden paths), délai de création d'un service prêt pour la production (heures, pas semaines), métriques DORA des équipes utilisatrices (niveau 9), tickets vers l'équipe plateforme (moins = mieux, sauf si personne ne l'utilise), satisfaction développeur (enquête trimestrielle, cadre SPACE), coût de la plateforme par service hébergé, scorecards de production readiness par service (SLO définis, alertes, runbook, propriétaire, dépendances à jour). Le rapport DORA suit désormais le platform engineering comme facteur de performance.</p>
+
+<h3>48.5 Pièges<span class="badge tag-contexte">Bon à savoir</span></h3>
+<p>Construire pour soi et non pour les utilisateurs ; abstraire trop tôt (avant d'avoir trois équipes avec le même besoin) ; le portail-vitrine sans libre-service réel derrière ; la plateforme obligatoire sans support ; ignorer la migration des services existants ; sous-investir dans la documentation, qui est l'interface principale de la plateforme.</p>
+
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Score</span><p>Une spécification ouverte de charge de travail (<code>score.yaml</code>) indépendante de la plateforme : le développeur décrit conteneur, ressources (base, file, bucket) et variables ; <code>score-compose</code> génère du Compose pour le poste, <code>score-k8s</code> ou Humanitec/Kratix du Kubernetes pour la prod.</p><p><strong>Pourquoi ça différencie :</strong> C'est l'abstraction développeur dont parle le platform engineering, matérialisée par un standard ; en parler avec un exemple qui tourne est rare.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -v "$PWD:/w" -w /w ghcr.io/score-spec/score-compose:latest init</code>, un <code>score.yaml</code> pour l'API CrisisShield, génération Compose puis Kubernetes, et comparaison avec ta composition Crossplane.</p></div>
+
+<div class="entretien"><strong>En entretien</strong> — « Qu'est-ce que le platform engineering et comment tu le mettrais en place ? » Le problème (charge cognitive, hétérogénéité), la plateforme comme produit avec des golden paths, l'abstraction au bon niveau (Crossplane, templates), le portail (Backstage) comme interface, la conformité par construction, la mesure (délai de création, adoption, DORA, satisfaction), et le démarrage : un golden path pour le cas le plus fréquent, avec une équipe pilote volontaire.</div>
+
+<div class="exo"><span class="tag">Exercice 48.1</span>
+<p>Une équipe demande une exception : elle veut déployer avec ses propres scripts hors du golden path. Que réponds-tu ?</p>
+<details><summary>Corrigé</summary><div class="sol">Comprendre le besoin (le golden path a peut-être une lacune à corriger pour tous). Si l'exception est justifiée : possible, mais l'équipe assume ce que la plateforme n'apporte plus (conformité, observabilité, support) et cela se voit dans sa scorecard ; les politiques non négociables (signatures, réseau, secrets) restent appliquées par l'admission quel que soit le chemin. La plateforme n'est pas une cage, mais la sécurité de base n'est pas optionnelle.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 48.2</span>
+<p>Quelle est la différence entre une composition Crossplane et un module Terraform, du point de vue d'un développeur et de la plateforme ?</p>
+<details><summary>Corrigé</summary><div class="sol">Pour le développeur : la composition s'utilise comme une ressource Kubernetes (dans son namespace, en GitOps, avec le même outillage que son application), sans connaître Terraform ni le cloud. Pour la plateforme : Crossplane réconcilie en continu (dérive corrigée) et expose une API versionnée (XRD) ; Terraform est exécuté à la demande avec un state. Beaucoup de plateformes combinent : Crossplane pour le libre-service applicatif, Terraform pour les fondations (comptes, réseau, clusters).</div></details></div>
+
+<div class="tp"><span class="tag">Travail pratique 48 — Une plateforme interne pour CrisisShield et les suivants</span>
+<ol>
+<li>Backstage (Helm sur kind, ou Compose) avec le catalogue des composants de CrisisShield (API, front, Notification, base, Kafka, contrats d'API), les intégrations GitLab, ArgoCD, Grafana, Kubernetes ; TechDocs générés depuis les <code>docs/</code> de chaque dépôt (tous les cours que tu as écrits deviennent la documentation de la plateforme).</li>
+<li>Template Scaffolder « service Java Quarkus/Spring » qui crée : dépôt GitLab avec CODEOWNERS, pipeline complet (niveau 2 + 7), Dockerfile durci, chart ou overlays, ApplicationSet ArgoCD, ServiceMonitor, dashboards, SLO Sloth, alertes, External Secrets, NetworkPolicies, <code>catalog-info.yaml</code>. Crée un service « Cartographie » avec, en moins de 15 minutes, jusqu'au premier déploiement en staging.</li>
+<li>Crossplane : XRD et composition <code>PostgreSQLInstance</code> (tailles small/medium/large) qui crée un cluster CloudNativePG avec sauvegardes, pooler, PodMonitor, alertes et secret de connexion ; composition <code>KafkaTopic</code> vers Strimzi avec conventions et ACL. Le nouveau service « Cartographie » les consomme en GitOps.</li>
+<li>Environnements éphémères : ApplicationSet avec le générateur de merge requests GitLab qui déploie chaque MR dans un namespace <code>mr-&lt;id&gt;</code> avec une base éphémère (composition, taille tiny) et une URL de prévisualisation postée dans la MR ; destruction à la fermeture. Vérifie le coût par OpenCost.</li>
+<li>Scorecards : dans Backstage (plugin tech-insights ou une page générée), une scorecard par service : propriétaire, SLO, alertes, runbook, signatures, CVE critiques, dépendances à jour, dernier test de restauration ; calcul automatisé par script depuis tes systèmes.</li>
+<li>Dev Container pour CrisisShield (<code>.devcontainer/</code>) : tout l'outillage du cours en conteneur, Tilt pour le déploiement local sur kind ; c'est aussi la réponse définitive à « le local est interdit ».</li>
+<li>Rédige la fiche produit de la plateforme (utilisateurs, golden paths, ce qu'elle garantit, ce qu'elle ne fait pas, roadmap, métriques) et un plan de lancement pour une entreprise de 10 équipes : pilote, migration, support.</li>
+</ol>
+<p>Livrable : <code>platform/</code> (Backstage, templates, compositions, ApplicationSets), nouveau service créé par template, scorecards, fiche produit, <code>tp48.md</code>, <code>docs/cours-platform-engineering.md</code>.</p>
+</div>
+<label class="check"><input type="checkbox" data-ch="c48"> Chapitre 48 terminé</label>
+</article>
+
+<!-- ===================== REVISION ===================== -->
+<section class="rev" id="rev">
+<h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 8</h2>
+<ol class="quiz">
+<li>Toil, revue de lancement, politique de budget d'erreur : définitions et usage.</li>
+<li>Les huit patrons de résilience et la règle de chacun ; la tempête de retries.</li>
+<li>Chaos engineering : méthode (hypothèse, injection, mesure), périmètre progressif, outils.</li>
+<li>RTO, RPO, les quatre stratégies de reprise et leur coût.</li>
+<li>Les SPOF par couche, dont les trois qu'on oublie.</li>
+<li>Sauvegardes : 3-2-1, immutabilité, compte isolé, test de restauration automatisé.</li>
+<li>Multi-région : pourquoi les données sont le problème, et les options.</li>
+<li>Le PRA en six points ; pourquoi il doit être du code testé.</li>
+<li>Les six types de tests de charge ; boucle ouverte contre fermée.</li>
+<li>La méthode de diagnostic du LB au noyau ; les pièges Java en conteneur.</li>
+<li>Optimiser dans l'ordre ; loi d'Amdahl.</li>
+<li>Planification de capacité : entrées, marge, lien FinOps.</li>
+<li>Monolithe modulaire contre microservices : critères, découpage par domaine.</li>
+<li>Kafka en production : partitions et ordre, acks, idempotence, outbox, schémas, dead-letter.</li>
+<li>Saga, CQRS, event sourcing : quand et à quel prix.</li>
+<li>API : contrat d'abord, compatibilité, versionnage, passerelle.</li>
+<li>Connexions PostgreSQL : pourquoi PgBouncer, comment dimensionner.</li>
+<li>Les sept changements de schéma à risque et leur méthode sûre ; <code>lock_timeout</code>.</li>
+<li>Partitionnement, archivage, cache, sharding, spécialisation : l'ordre de recours.</li>
+<li>Platform engineering : problème, produit, golden paths, composants, mesure, pièges.</li>
+</ol>
+<p><strong>Dernier niveau</strong> : Expert et leadership — plateformes à l'échelle et multi-tenant, migration legacy, gouvernance et politique as code, métriques DORA et maturité, conduite du changement, IA appliquée au DevOps.</p>
+</section>
+
+<div class="footnav"><a href="devops-niveau-7-securite-devsecops.html">← Niveau 7 — Sécurité DevSecOps</a><a href="devops-niveau-9-expert-leadership.html">Niveau 9 — Expert et leadership →</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='devops-n8-progress', THEME='devops-theme';
+  var boxes=document.querySelectorAll('input[data-ch]');
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  function render(){
+    var done=0; boxes.forEach(function(b){ if(b.checked) done++; });
+    var pct=Math.round(done/boxes.length*100);
+    document.getElementById('pct').textContent=pct+' %';
+    document.getElementById('bar').style.width=pct+'%';
+  }
+  var st=load();
+  boxes.forEach(function(b){ b.checked=!!st[b.dataset.ch]; b.addEventListener('change',function(){ st[b.dataset.ch]=b.checked; save(st); render(); }); });
+  render();
+  var root=document.documentElement;
+  try{ var t=localStorage.getItem(THEME); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.getElementById('theme').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur==='dark';
+    var next=dark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem(THEME,next); }catch(e){}
+  });
+})();
+</script>
+
+<script>
+(function(){
+  // Barre de lecture
+  var bar=document.createElement('div'); bar.className='readbar'; document.body.prepend(bar);
+  function upd(){ var h=document.documentElement; var max=h.scrollHeight-h.clientHeight; bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%'; }
+  window.addEventListener('scroll',upd,{passive:true}); upd();
+  // Bouton copier sur chaque bloc de code
+  document.querySelectorAll('pre').forEach(function(pre){
+    var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier'; b.setAttribute('aria-label','Copier le code');
+    b.addEventListener('click',function(){
+      var t=pre.innerText.replace(/^Copier\n?/,'').replace(/Copi\u00e9 !$/,'');
+      var done=function(){ b.textContent='Copi\u00e9 !'; b.classList.add('ok'); setTimeout(function(){ b.textContent='Copier'; b.classList.remove('ok'); },1500); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); }
+      else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); done(); }
+    });
+    pre.appendChild(b);
+  });
+  // Sommaire qui suit la lecture
+  var links=document.querySelectorAll('nav.toc a[href^="#"]');
+  if(links.length&&'IntersectionObserver' in window){
+    var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){a.classList.remove('active');}); var a=map[e.target.id]; if(a) a.classList.add('active'); } });
+    },{rootMargin:'-10% 0px -75% 0px'});
+    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el) io.observe(el); });
+  }
+  // Impression : ouvrir tous les corrig\u00e9s
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.open=true; }); });
+})();
+</script>
+
+<script>
+(function(){
+  // Tableaux : libellé de colonne sur chaque cellule pour l'affichage empilé
+  document.querySelectorAll('table').forEach(function(t){
+    var rows=t.rows; if(!rows.length) return;
+    var head=rows[0]; var ths=head.querySelectorAll('th');
+    if(!ths.length) return;
+    head.classList.add('head');
+    var labels=Array.prototype.map.call(head.cells,function(c){return c.textContent.trim();});
+    for(var i=1;i<rows.length;i++){
+      var cells=rows[i].cells;
+      for(var j=0;j<cells.length;j++){ if(cells[j].tagName==='TD') cells[j].setAttribute('data-label',labels[j]||''); }
+    }
+    t.classList.add('stack');
+  });
+  // Schémas ASCII : garder l'alignement (défilement horizontal) au lieu du repli
+  document.querySelectorAll('pre').forEach(function(p){
+    if(/[\u2500-\u257F\u25B6\u25C0\u25BA\u25C4\u2192\u2190\u2191\u2193]/.test(p.textContent)) p.classList.add('diagram');
+  });
+})();
+</script>
+</body>
+</html>
