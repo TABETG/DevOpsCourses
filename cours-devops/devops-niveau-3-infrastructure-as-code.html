@@ -374,7 +374,7 @@ body{padding-bottom:6.5rem}
     <h1>Infrastructure as Code</h1>
     <p class="lead">Quatre chapitres pour ne plus jamais cliquer dans une console : Terraform pour créer l'infrastructure, Ansible pour la configurer, Packer pour fabriquer des images, puis les principes d'immutabilité et de GitOps qui font de Git la seule source de vérité. Les outils tournent dans Docker, l'infrastructure cible est locale (LocalStack, conteneurs) pour ne rien payer avant le niveau Cloud.</p>
     <div class="meta">
-      <span>4 chapitres</span><span>≈ 21 h de travail</span><span>Prérequis : Niveaux 0 à 2</span>
+      <span>4 chapitres</span><span>≈ 22 h de travail</span><span>Prérequis : Niveaux 0 à 2</span>
     </div>
     <button class="theme" id="theme">Basculer clair / sombre</button>
   </div>
@@ -400,9 +400,9 @@ body{padding-bottom:6.5rem}
 <article id="c16">
 <div class="chaphead"><span class="chapnum">Chapitre 16</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Terraform / OpenTofu</h2>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Terraform compare code, state et réalité ; plan avant apply, toujours.</li><li>State distant, chiffré, verrouillé, un par environnement et domaine ; for_each plutôt que count.</li><li>import, moved, state mv, force-unlock : les outils de réparation ; apply uniquement depuis la CI.</li></ol></div>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Terraform compare code, state et réalité ; plan avant apply, toujours.</li><li>State distant, chiffré, verrouillé, un par environnement et domaine ; for_each plutôt que count.</li><li>import, moved, state mv, force-unlock : les outils de réparation ; apply uniquement depuis la CI.</li><li>Lire le plan en entier, chercher « forces replacement », ne jamais appliquer pour voir ; dynamic, for_each, alias de providers et check sont le quotidien.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
-<ul><li>Expliquer le modèle déclaratif, le state et le cycle plan/apply</li><li>Structurer un projet en modules et environnements</li><li>Gérer un state distant, verrouillé, et sortir d'un state corrompu</li><li>Tester, valider et sécuriser du code Terraform dans la CI</li></ul></div>
+<ul><li>Expliquer le modèle déclaratif, le state et le cycle plan/apply</li><li>Structurer un projet en modules et environnements</li><li>Gérer un state distant, verrouillé, et sortir d'un state corrompu</li><li>Tester, valider et sécuriser du code Terraform dans la CI</li><li>Écrire du HCL avancé (dynamic, for, alias de providers, check, moved, ephemeral) et diagnostiquer les erreurs fréquentes</li></ul></div>
 <figure class="fig"><svg viewBox="0 0 480 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Terraform compare trois choses : le code, le state, la réalité. Le state contient les identifiants réels et des secrets : distant, chiffré, verrouillé, jamais commité."><defs><marker id="ah8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="170" y="20" width="140" height="50" rx="7" class="soft"/><text x="240.0" y="41.0" text-anchor="middle" font-size="13" font-weight="700">Code (.tf)</text><text x="240.0" y="58.0" text-anchor="middle" font-size="13" font-weight="700">ce que je veux</text><rect x="20" y="140" width="160" height="50" rx="7" class="amber"/><text x="100.0" y="161.1" text-anchor="middle" font-size="13" font-weight="700">State</text><text x="100.0" y="178.1" text-anchor="middle" font-size="13" font-weight="700">ce que Terraform croit</text><rect x="300" y="140" width="160" height="50" rx="7" class="green"/><text x="380.0" y="161.1" text-anchor="middle" font-size="13" font-weight="700">Réalité (API cloud)</text><text x="380.0" y="178.1" text-anchor="middle" font-size="13" font-weight="700">ce qui existe</text><path d="M200,70 L110,140" class="arrow" marker-end="url(#ah8)"/><text x="125.0" y="101.0" text-anchor="middle" class="lbl">plan = diff</text><path d="M280,70 L370,140" class="arrow" marker-end="url(#ah8)"/><text x="355.0" y="101.0" text-anchor="middle" class="lbl">apply</text><path d="M180,165 L300,165" class="arrow" marker-end="url(#ah8)"/><text x="240.0" y="157.0" text-anchor="middle" class="lbl">refresh</text></svg><figcaption>Terraform compare trois choses : le code, le state, la réalité. Le state contient les identifiants réels et des secrets : distant, chiffré, verrouillé, jamais commité.</figcaption></figure>
 
 
@@ -543,6 +543,99 @@ apply:
 <p>Le plan est posté en commentaire de la merge request (outil <code>tfcmt</code> ou Atlantis) : le relecteur voit exactement ce qui va changer. Tests : <code>terraform test</code> (natif depuis 1.6, fichiers <code>.tftest.hcl</code>), Terratest (Go) pour des tests d'intégration réels. Sécurité : Trivy config / Checkov / tfsec détectent un bucket public, un security group ouvert, un chiffrement absent. Coûts : Infracost affiche le delta de coût dans la merge request.</p>
 <p>Sans compte cloud : <strong>LocalStack</strong> émule les API AWS (S3, IAM, EC2, Lambda, DynamoDB...) dans un conteneur, avec le provider AWS pointé sur <code>http://localstack:4566</code>. Le provider <code>docker</code> (kreuzwerker) permet aussi de gérer des conteneurs, réseaux et volumes locaux en Terraform.</p>
 
+<h3>16.7 Le langage, niveau mission<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code># Expressions : for, if, splat, dynamic
+locals {
+  subnets      = { for k, v in var.subnets : k => v if v.enabled }              # filtrer une map
+  subnet_ids   = [for s in aws_subnet.private : s.id]                           # liste depuis for_each
+  tags_by_env  = merge(local.tags, var.environment == "prod" ? { Backup = "true" } : {})
+  instance_type = var.environment == "prod" ? "m7g.large" : "t4g.small"
+}
+
+resource "aws_security_group" "api" {
+  name   = "${local.name}-api"
+  vpc_id = aws_vpc.main.id
+  dynamic "ingress" {                                  # un bloc par élément, sans copier-coller
+    for_each = var.allowed_ports
+    content {
+      from_port       = ingress.value
+      to_port         = ingress.value
+      protocol        = "tcp"
+      security_groups = [aws_security_group.alb.id]
+    }
+  }
+  lifecycle {
+    create_before_destroy = true
+    precondition {                                     # échoue au plan avec un message clair
+      condition     = length(var.allowed_ports) > 0
+      error_message = "allowed_ports ne peut pas être vide."
+    }
+  }
+}
+
+# Plusieurs régions ou comptes : alias de provider
+provider "aws" { alias = "dr", region = "eu-west-1" }
+resource "aws_s3_bucket" "replica" { provider = aws.dr, bucket = "${local.name}-replica" }
+module "network_dr" { source = "../../modules/network", providers = { aws = aws.dr }, cidr = "10.30.0.0/16" }
+
+# Assumer un rôle dans un autre compte
+provider "aws" { alias = "security", assume_role { role_arn = "arn:aws:iam::222222222222:role/terraform" } }
+
+# Vérifications continues (1.5+) : évaluées à chaque plan, ne bloquent pas, alertent
+check "certificate_valid" {
+  data "aws_acm_certificate" "api" { domain = "api.crisisshield.example" }
+  assert {
+    condition     = data.aws_acm_certificate.api.status == "ISSUED"
+    error_message = "Le certificat de l'API n'est pas émis."
+  }
+}
+
+# Refactoring déclaratif, sans toucher au state à la main
+moved   { from = aws_instance.web,        to = module.service.aws_instance.web }
+removed { from = aws_s3_bucket.legacy,    lifecycle { destroy = false } }      # 1.7+ : oublier sans détruire
+import  { to = aws_s3_bucket.logs,        id = "crisisshield-logs" }
+
+# Valeurs sensibles et éphémères
+variable "db_password" { type = string, sensitive = true }                     # masqué dans plan et outputs
+ephemeral "aws_secretsmanager_secret_version" "db" { secret_id = "crisisshield/prod/db" }   # 1.10+ : jamais écrit dans le state
+output "db_endpoint" { value = aws_db_instance.main.endpoint }
+output "db_password" { value = var.db_password, sensitive = true }</code></pre>
+<ul>
+<li><strong>Fonctions à connaître sans réfléchir</strong> : <code>merge</code>, <code>lookup</code>, <code>try</code>, <code>coalesce</code>, <code>cidrsubnet</code>, <code>templatefile</code>, <code>jsonencode</code>/<code>yamldecode</code>, <code>flatten</code>, <code>zipmap</code>, <code>setproduct</code>, <code>format</code>, <code>regex</code>, <code>can</code>. <code>terraform console</code> pour les tester sur le state réel.</li>
+<li><strong>Types</strong> : <code>object({ name = string, size = optional(number, 20) })</code> avec valeurs par défaut ; <code>validation</code> sur chaque variable exposée par un module ; <code>nullable = false</code>.</li>
+<li><strong>Modules</strong> : une interface minimale (peu de variables, des objets), des outputs pour tout ce qu'un autre module pourrait consommer, un <code>README</code> généré (<code>terraform-docs</code>), une version par tag Git ou registre privé, des exemples dans <code>examples/</code> qui servent de tests. Composer des petits modules plutôt qu'un module « tout-en-un » à 80 variables.</li>
+<li><strong>Provisioners</strong> (<code>local-exec</code>, <code>remote-exec</code>) : dernier recours ; ils ne sont pas idempotents et cassent le modèle. Préférer <code>user_data</code>, Packer, Ansible, ou un opérateur.</li>
+<li><strong>OpenTofu</strong> : mêmes fichiers ; en plus, chiffrement du state côté client, <code>for_each</code> sur les providers, fonctions fournies par des providers. Choix par licence et politique interne, pas par fonctionnalité.</li>
+</ul>
+
+<h3>16.8 Exploitation quotidienne, débogage, erreurs fréquentes<span class="badge tag-coeur">Par cœur</span></h3>
+<pre><code>terraform plan -out=tfplan -input=false -lock-timeout=5m          # attendre un verrou plutôt qu'échouer
+terraform apply tfplan                                            # jamais apply sans plan sauvegardé en prod
+terraform plan -refresh=false                                     # rapide : ne relit pas le cloud (à ne pas faire avant un apply)
+terraform plan -target=module.db                                  # chirurgie ; laisse le graphe incohérent, à réserver aux incidents
+terraform apply -replace=aws_instance.web                         # forcer une recréation
+terraform state list | grep aws_instance ; terraform state show ADRESSE
+terraform state pull > backup.tfstate                             # sauvegarde avant toute manipulation
+terraform providers lock -platform=linux_amd64 -platform=windows_amd64   # lockfile multi-plateforme (Git Bash + CI)
+terraform graph | dot -Tsvg > graph.svg                           # dépendances, cycles
+TF_LOG=DEBUG TF_LOG_PATH=tf.log terraform plan                    # appels API du provider
+terraform test                                                    # fichiers *.tftest.hcl, avec mock_provider pour ne rien créer
+terraform output -raw kubeconfig > ~/.kube/config                 # sortie brute
+terraform fmt -recursive -check ; terraform validate              # en pre-commit et en CI</code></pre>
+<div class="tablewrap"><table>
+<tr><th>Symptôme</th><th>Cause probable</th><th>Remède</th></tr>
+<tr><td><code>Error acquiring the state lock</code></td><td>Un apply précédent a été interrompu, ou un collègue applique en même temps</td><td>Vérifier qu'aucun apply ne tourne, puis <code>force-unlock ID</code> ; en CI, <code>resource_group</code> et <code>-lock-timeout</code></td></tr>
+<tr><td><code>Provider produced inconsistent final plan</code></td><td>Le provider a changé une valeur après le plan (souvent un bug de provider ou une valeur calculée)</td><td>Relancer plan+apply ; épingler ou mettre à jour le provider ; isoler avec <code>-target</code> en dernier recours</td></tr>
+<tr><td>Le plan veut recréer une ressource « sans raison »</td><td>Attribut à remplacement forcé (nom, AZ, type de stockage), <code>count</code> décalé, valeur qui change à chaque plan (timestamp, <code>uuid()</code>)</td><td>Lire la ligne <code># forces replacement</code> ; <code>for_each</code> ; <code>ignore_changes</code> sur ce que le cloud modifie (tags automatiques, <code>desired_count</code> géré par l'autoscaling)</td></tr>
+<tr><td>Dérive permanente sur des tags ou des règles</td><td>Un autre système écrit sur la ressource (autoscaler, console, contrôleur)</td><td><code>ignore_changes</code> ciblé, ou une seule source de vérité</td></tr>
+<tr><td><code>Cycle:</code> au plan</td><td>Deux ressources se référencent mutuellement (SG A → SG B → SG A)</td><td>Séparer les règles (<code>aws_security_group_rule</code>) ou casser la dépendance avec une ressource intermédiaire</td></tr>
+<tr><td><code>depends_on</code> partout et plan lent</td><td>Dépendances implicites ignorées, state trop gros</td><td>Référencer les attributs, supprimer les <code>depends_on</code> inutiles, découper le state</td></tr>
+<tr><td>Le state contient un secret en clair</td><td>Toute valeur d'attribut est stockée</td><td>Backend chiffré et accès restreint ; <code>ephemeral</code> ; générer le secret dans Vault/Secrets Manager plutôt que dans Terraform</td></tr>
+<tr><td>Apply réussi mais rien ne marche</td><td>Terraform valide l'API, pas le fonctionnement</td><td>Smoke test après apply dans le pipeline ; <code>check</code> blocks ; Terratest pour un vrai test d'intégration</td></tr>
+<tr><td>Le lockfile échoue en CI Linux après un init sous Windows</td><td>Hashes d'une seule plateforme</td><td><code>providers lock</code> avec les deux plateformes, commité</td></tr>
+<tr><td>Le state a été supprimé ou corrompu</td><td>Bucket sans versioning, manipulation manuelle</td><td>Restaurer la version précédente du bucket ; sinon <code>import</code> ressource par ressource depuis les tags</td></tr>
+</table></div>
+<p>Méthode devant un plan inattendu : lire le plan en entier avant d'agir ; chercher <code>forces replacement</code> et <code>-/+</code> ; comparer avec <code>state show</code> ; ne jamais « appliquer pour voir » en production ; si la ressource est une base de données, s'arrêter et sauvegarder. Un <code>apply</code> en production se fait depuis la CI, après un plan revu, avec un plan sauvegardé, dans une fenêtre, avec un retour arrière connu (le commit précédent).</p>
 <div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Pulumi en Java ou Kotlin</span><p>L'infrastructure décrite dans un vrai langage : boucles, types, tests JUnit, packages Maven, mêmes fournisseurs que Terraform (par pont), état stocké dans S3 ou Pulumi Cloud.</p><p><strong>Pourquoi ça différencie :</strong> Pour un expert Java, c'est un argument immédiat : « l'infra testée avec les mêmes outils que le code ». Peu de consultants IaC le pratiquent.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -it -v "$PWD:/w" -w /w pulumi/pulumi-java pulumi new aws-java</code> puis pointer le fournisseur AWS vers LocalStack et recréer le module réseau du TP 16.</p></div>
 
 <div class="entretien"><strong>En entretien</strong> — « Deux personnes lancent <code>apply</code> en même temps, que se passe-t-il ? » Sans verrou : corruption du state. Avec backend S3 + verrou : la seconde attend ou échoue. Enchaîne : state distant chiffré versionné, un state par environnement et domaine, <code>apply</code> uniquement depuis la CI avec <code>resource_group</code>, plan revu en merge request. Puis « et si le state est corrompu ? » : restaurer la version S3 précédente, <code>refresh-only</code>, <code>import</code> au pire.</div>
@@ -559,6 +652,21 @@ apply:
 <p>Où sont les secrets dans un projet Terraform, et comment les protéger ?</p>
 <details><summary>Corrigé</summary><div class="sol">Dans les variables (ne pas les mettre dans <code>tfvars</code> commités : passer par <code>TF_VAR_x</code> depuis la CI ou un gestionnaire de secrets), dans le state (chiffrement du backend, accès restreint, <code>sensitive = true</code> pour masquer l'affichage), dans les outputs (<code>sensitive = true</code>). Idéalement, Terraform crée le secret dans Vault ou Secrets Manager et l'application l'y lit : le secret ne transite pas.</div></details></div>
 
+<div class="exo"><span class="tag">Exercice 16.4</span>
+<p>Un module doit créer N buckets à partir d'une liste de noms, chacun avec versioning si un booléen est vrai, et exposer la map nom → ARN. Écris-le avec <code>for_each</code>, <code>dynamic</code> ou une expression conditionnelle, et un output.</p>
+<details><summary>Corrigé</summary><div class="sol"><pre><code>variable "buckets" { type = map(object({ versioned = optional(bool, false) })) }
+resource "aws_s3_bucket" "b" { for_each = var.buckets, bucket = each.key }
+resource "aws_s3_bucket_versioning" "v" {
+  for_each = { for k, v in var.buckets : k => v if v.versioned }
+  bucket   = aws_s3_bucket.b[each.key].id
+  versioning_configuration { status = "Enabled" }
+}
+output "arns" { value = { for k, b in aws_s3_bucket.b : k => b.arn } }</code></pre></div></details></div>
+
+<div class="exo"><span class="tag">Exercice 16.5</span>
+<p>Le pipeline échoue avec <code>Error acquiring the state lock</code> depuis 20 minutes. Déroule ta procédure, avec les vérifications avant le <code>force-unlock</code>.</p>
+<details><summary>Corrigé</summary><div class="sol">Lire le message : il donne l'ID du verrou, qui l'a posé, quand, et depuis quelle machine. Vérifier qu'aucun job ne tourne (pipelines en cours, un collègue en local). Si le poseur est un job mort depuis plus longtemps que la durée d'un apply, <code>terraform force-unlock ID</code> ; puis <code>plan</code> pour vérifier que le state est cohérent (un apply interrompu peut avoir créé des ressources non enregistrées : les importer). Prévention : <code>resource_group</code> en CI, <code>-lock-timeout</code>, et jamais d'apply local sur l'environnement de prod.</div></details></div>
+
 <div class="tp"><span class="tag">Travail pratique 16 — Terraform contre LocalStack et Docker</span>
 <p>Environnement : un <code>compose.yaml</code> avec <code>localstack/localstack</code> (port 4566) ; Terraform s'exécute avec <code>docker run --rm -v "$PWD:/w" -w /w --network &lt;réseau-compose&gt; hashicorp/terraform:1.9</code> — écris un petit script <code>tf.sh</code> qui encapsule cette commande.</p>
 <ol>
@@ -568,7 +676,7 @@ apply:
 <li><strong>Import</strong> : crée un bucket à la main avec <code>awslocal s3 mb</code>, puis adopte-le en Terraform avec un bloc <code>import</code> et <code>-generate-config-out</code>.</li>
 <li><strong>Refactoring</strong> : renomme une ressource avec un bloc <code>moved</code> et prouve que le plan est vide.</li>
 <li><strong>CI</strong> : pipeline fmt, validate, Trivy config (fais-le échouer avec un bucket public, corrige), plan en artefact, apply manuel avec <code>resource_group</code>. Écris deux tests <code>.tftest.hcl</code> sur le module network.</li>
-</ol>
+<li>Langage : réécris le module réseau avec <code>dynamic</code> pour les règles de security group, des variables typées <code>object</code> avec <code>optional</code> et <code>validation</code>, une <code>precondition</code>, un bloc <code>check</code>, et un alias de provider pour une seconde région LocalStack (deux conteneurs LocalStack ou deux régions du même). <code>terraform-docs</code> génère le README du module.</li><li>Débogage : provoque et répare chacun des cas du tableau 16.8 que LocalStack permet (verrou orphelin, cycle de security groups, remplacement forcé, dérive de tags avec <code>ignore_changes</code>, lockfile multi-plateforme entre Git Bash et le conteneur CI). Note pour chacun la ligne du plan qui t'a mis sur la piste.</li><li>Tests : trois <code>.tftest.hcl</code> avec <code>mock_provider</code> (sans rien créer) sur le module réseau, plus un <code>terraform test</code> réel contre LocalStack en CI ; un <code>removed</code> block pour sortir une ressource du state sans la détruire.</li></ol>
 <p>Livrable : <code>infra/</code> dans devops-lab, pipeline vert, <code>tp16.md</code> avec le déroulé de la réparation du verrou.</p>
 </div>
 <label class="check"><input type="checkbox" data-ch="c16"> Chapitre 16 terminé</label>
@@ -580,7 +688,7 @@ apply:
 <h2>Ansible</h2>
 <div class="bref"><span class="tag">En 30 secondes</span><ol><li>Ansible configure par SSH, sans agent, de façon idempotente : relancer ne change rien.</li><li>Rôles, handlers, templates, inventaire dynamique par tags ; Molecule et ansible-lint en CI.</li><li>Dans un monde conteneurisé, il prépare les hôtes et orchestre les opérations ; il ne déploie plus l&#x27;application.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
-<ul><li>Décrire des machines dans un inventaire et les configurer avec des playbooks idempotents</li><li>Structurer en rôles réutilisables et testés</li><li>Protéger les secrets avec Vault</li><li>Positionner Ansible par rapport à Terraform et aux conteneurs</li></ul></div>
+<ul><li>Décrire des machines dans un inventaire et les configurer avec des playbooks idempotents</li><li>Structurer en rôles réutilisables et testés</li><li>Protéger les secrets avec Vault</li><li>Positionner Ansible par rapport à Terraform et aux conteneurs</li><li>Maîtriser la précédence des variables, block/rescue, serial, delegate, async, les stratégies et la configuration de performance</li></ul></div>
 
 
 <h3>17.1 Principes<span class="badge tag-contexte">Bon à savoir</span></h3>
@@ -675,6 +783,112 @@ ansible-playbook ... --vault-password-file ~/.vault_pass   # ou --ask-vault-pass
 <h3>17.6 Ansible aujourd'hui<span class="badge tag-contexte">Bon à savoir</span></h3>
 <p>Avec les conteneurs, la configuration est dans l'image ; Ansible perd son rôle historique de « configurer des serveurs applicatifs ». Il reste incontournable pour : préparer les hôtes (Docker, agents, durcissement), gérer ce qui n'est pas conteneurisé (bases, appliances réseau, Windows via WinRM), orchestrer des opérations (patching, rotation), et le legacy en mission. Terraform crée, Ansible configure, Docker/Kubernetes exécutent : les trois cohabitent.</p>
 
+<h3>17.7 Ansible en profondeur : variables, flux, stratégies<span class="badge tag-coeur">Par cœur</span></h3>
+<p><strong>Précédence des variables</strong> (de la plus faible à la plus forte ; retenir les repères, pas les 22 niveaux) : <code>defaults/</code> d'un rôle &lt; <code>group_vars/all</code> &lt; <code>group_vars/&lt;groupe&gt;</code> &lt; <code>host_vars/</code> &lt; variables du play &lt; <code>vars/</code> d'un rôle &lt; variables de bloc et de tâche &lt; <code>set_fact</code> et <code>register</code> &lt; <code>--extra-vars</code> (toujours gagnant). Règle pratique : les rôles exposent leurs réglages dans <code>defaults/</code>, l'inventaire les surcharge, <code>-e</code> sert aux exécutions ponctuelles.</p>
+<pre><code>- name: Déployer l'API avec reprise sur erreur
+  hosts: web
+  serial: "25%"                     # rolling : un quart des hôtes à la fois
+  max_fail_percentage: 0            # on s'arrête au premier hôte en échec
+  any_errors_fatal: true
+  become: true
+  tasks:
+    - name: Retirer l'hôte du load balancer
+      ansible.builtin.uri: { url: "https://lb.internal/api/drain/{{ inventory_hostname }}", method: POST }
+      delegate_to: localhost         # exécuté depuis le contrôleur, pour chaque hôte
+
+    - name: Déployer, avec retour arrière si échec
+      block:
+        - name: Nouvelle version
+          community.docker.docker_compose_v2:
+            project_src: /opt/crisisshield
+          register: deploy
+        - name: Attendre que l'API réponde
+          ansible.builtin.uri: { url: "http://localhost:8080/actuator/health/readiness", status_code: 200 }
+          register: health
+          until: health.status == 200
+          retries: 30
+          delay: 2
+      rescue:
+        - name: Revenir à la version précédente
+          ansible.builtin.command: /opt/crisisshield/rollback.sh
+          changed_when: true
+        - ansible.builtin.fail: { msg: "Déploiement annulé sur {{ inventory_hostname }}" }
+      always:
+        - name: Remettre l'hôte dans le load balancer
+          ansible.builtin.uri: { url: "https://lb.internal/api/undrain/{{ inventory_hostname }}", method: POST }
+          delegate_to: localhost
+
+    - name: Tâche longue sans bloquer (async)
+      ansible.builtin.command: /opt/tools/reindex.sh
+      async: 1800
+      poll: 0
+      register: reindex
+    - name: Vérifier plus tard
+      ansible.builtin.async_status: { jid: "{{ reindex.ansible_job_id }}" }
+      register: job
+      until: job.finished
+      retries: 60
+      delay: 30
+
+    - name: Une seule fois pour tout le groupe
+      ansible.builtin.command: /opt/tools/notify-release.sh
+      run_once: true
+      delegate_to: "{{ groups['web'][0] }}"
+
+    - name: Boucle sur une structure, avec libellé lisible
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        groups: "{{ item.groups | join(',') }}"
+      loop: "{{ users }}"
+      loop_control: { label: "{{ item.name }}" }
+      when: item.state | default('present') == 'present'
+
+    - name: Idempotence forcée sur une commande
+      ansible.builtin.command: /opt/tools/migrate.sh
+      register: mig
+      changed_when: "'applied' in mig.stdout"
+      failed_when: mig.rc not in [0, 3]</code></pre>
+<ul>
+<li><strong>Stratégies</strong> : <code>linear</code> (défaut, tâche par tâche sur tous les hôtes), <code>free</code> (chaque hôte avance à son rythme : plus rapide, ordre non garanti), <code>debug</code>. <code>serial</code> et <code>throttle</code> contrôlent la vague et la concurrence.</li>
+<li><strong>Filtres et lookups à connaître</strong> : <code>default</code>, <code>combine</code>, <code>dict2items</code>/<code>items2dict</code>, <code>selectattr</code>/<code>map(attribute=)</code>, <code>json_query</code>, <code>to_nice_yaml</code>, <code>b64encode</code>, <code>regex_replace</code>, <code>ipaddr</code> ; <code>lookup('file')</code>, <code>lookup('env')</code>, <code>lookup('ansible.builtin.password')</code>, <code>lookup('community.hashi_vault.hashi_vault')</code>. Tester dans un playbook avec <code>ansible.builtin.debug</code>.</li>
+<li><strong>Templates</strong> : contrôle des blancs (<code>{%- -%}</code>), macros, <code>{{ ansible_managed }}</code> en entête, <code>validate:</code> sur les fichiers de config, <code>backup: true</code>.</li>
+<li><strong>Tags et reprise</strong> : <code>--tags</code>, <code>--skip-tags</code>, <code>--start-at-task</code>, <code>--step</code>, <code>--limit @retry</code> (rejouer seulement les hôtes en échec).</li>
+<li><strong>Vault</strong> : plusieurs identités (<code>--vault-id prod@prompt</code>), chiffrer une valeur plutôt qu'un fichier (<code>encrypt_string</code>) pour garder le diff lisible.</li>
+</ul>
+
+<h3>17.8 Performance, configuration, erreurs fréquentes<span class="badge tag-important">Important</span></h3>
+<pre><code># ansible.cfg : ce qui change tout
+[defaults]
+inventory          = inventory/
+forks              = 50                 # parallélisme (défaut 5 : trop bas)
+gathering          = smart              # facts en cache
+fact_caching       = jsonfile
+fact_caching_connection = /tmp/facts
+fact_caching_timeout = 3600
+host_key_checking  = True               # False seulement en labo jetable
+interpreter_python = auto_silent
+stdout_callback    = yaml
+retry_files_enabled = True
+[ssh_connection]
+pipelining         = True               # divise par deux le nombre de connexions SSH
+ssh_args           = -o ControlMaster=auto -o ControlPersist=60s</code></pre>
+<div class="tablewrap"><table>
+<tr><th>Symptôme</th><th>Cause probable</th><th>Remède</th></tr>
+<tr><td><code>UNREACHABLE</code></td><td>SSH : clé, utilisateur, port, host key inconnue, hôte non résolu</td><td><code>ansible HOTE -m ping -vvv</code> ; vérifier <code>ansible_user</code>, <code>ansible_ssh_private_key_file</code>, <code>ansible_port</code> ; <code>ssh-keyscan</code> dans <code>known_hosts</code></td></tr>
+<tr><td><code>Missing sudo password</code></td><td><code>become</code> sans NOPASSWD</td><td><code>--ask-become-pass</code>, ou sudoers configuré par un rôle de bootstrap</td></tr>
+<tr><td><code>/usr/bin/python: not found</code></td><td>Cible minimale sans Python</td><td><code>ansible.builtin.raw: apt-get install -y python3</code> en premier, <code>gather_facts: false</code> pour cette tâche</td></tr>
+<tr><td>Le playbook est lent</td><td>forks à 5, pas de pipelining, facts recollectés à chaque play</td><td>Config ci-dessus ; <code>gather_facts: false</code> quand inutile ; <code>strategy: free</code> ; Mitogen pour aller plus loin</td></tr>
+<tr><td><code>changed</code> à chaque exécution</td><td><code>shell</code>/<code>command</code> sans <code>creates</code>/<code>changed_when</code>, template avec horodatage</td><td>Modules idempotents ; <code>changed_when</code> ; retirer les valeurs volatiles des templates</td></tr>
+<tr><td>Une variable n'a pas la valeur attendue</td><td>Précédence ; typo entre <code>group_vars/web.yml</code> et le nom du groupe</td><td><code>ansible-inventory --host HOTE</code> ; <code>debug: var=</code> ; <code>ansible-playbook --list-hosts</code></td></tr>
+<tr><td>Le handler n'a pas tourné</td><td>Aucune tâche n'a notifié, ou le play a échoué avant la fin</td><td><code>meta: flush_handlers</code> pour forcer à un point précis ; <code>--force-handlers</code></td></tr>
+<tr><td>Secret affiché dans les logs</td><td>Sortie de module non masquée</td><td><code>no_log: true</code> sur la tâche</td></tr>
+<tr><td>Ça marche en local, pas en CI</td><td>Version d'Ansible ou de collection, clé SSH, <code>host_key_checking</code></td><td>Image Ansible épinglée, <code>requirements.yml</code> avec versions, clé dans Vault, <code>known_hosts</code> provisionné</td></tr>
+</table></div>
+<ul>
+<li><strong>Windows</strong> : WinRM ou SSH, modules <code>ansible.windows.*</code>, <code>win_updates</code>, <code>win_feature</code> ; très demandé dans les DSI mixtes.</li>
+<li><strong>À l'échelle</strong> : AWX (open source) ou Ansible Automation Platform (Red Hat) pour l'ordonnancement, les credentials, le RBAC, l'audit et les workflows ; Semaphore comme alternative légère ; <code>ansible-pull</code> pour des nœuds qui se configurent eux-mêmes depuis Git.</li>
+<li><strong>Qualité</strong> : <code>ansible-lint</code> avec un profil (<code>production</code>), Molecule avec plusieurs scénarios (Debian, RHEL), <code>--check --diff</code> en merge request, noms complets des modules, collections épinglées.</li>
+</ul>
 <div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Event-Driven Ansible</span><p>Des rulebooks qui écoutent des sources d'événements (webhook Alertmanager, Kafka, Prometheus, Git) et déclenchent des playbooks quand une condition est vraie : remédiation automatique déterministe, pilotée par événements.</p><p><strong>Pourquoi ça différencie :</strong> C'est l'Ansible « exploitation moderne » (Ansible Automation Platform) ; savoir brancher une alerte sur une remédiation encadrée est exactement le sujet du chapitre 54.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -it -p 5000:5000 -v "$PWD:/rb" quay.io/ansible/ansible-rulebook ansible-rulebook -i /rb/inventory.yml --rulebook /rb/alertes.yml</code> avec une source webhook branchée sur Alertmanager.</p></div>
 
 <div class="entretien"><strong>En entretien</strong> — « Terraform ou Ansible ? » Ce n'est pas un choix : Terraform gère le cycle de vie des ressources avec un state ; Ansible applique une configuration sans state, de façon idempotente, en SSH. Ansible peut créer des VM, Terraform peut lancer des scripts, mais chacun est mauvais dans le rôle de l'autre. Ajoute : inventaire dynamique par tags pour les relier.</div>
@@ -687,6 +901,14 @@ ansible-playbook ... --vault-password-file ~/.vault_pass   # ou --ask-vault-pass
 <p>Pourquoi recharger nginx dans un handler plutôt que dans une tâche juste après le template ?</p>
 <details><summary>Corrigé</summary><div class="sol">Le handler ne s'exécute que si une tâche l'a notifié suite à un changement réel, et une seule fois même si plusieurs tâches le notifient. Une tâche ordinaire rechargerait nginx à chaque passage, inutilement, et plusieurs fois.</div></details></div>
 
+<div class="exo"><span class="tag">Exercice 17.3</span>
+<p>Un playbook de mise à jour touche 40 serveurs web derrière un load balancer. Écris le squelette qui garantit : jamais plus de 10 % hors service, arrêt global au premier échec, retrait et remise dans le load balancer, retour arrière automatique sur l'hôte en échec.</p>
+<details><summary>Corrigé</summary><div class="sol"><code>serial: "10%"</code>, <code>max_fail_percentage: 0</code>, <code>any_errors_fatal: true</code> ; tâche de retrait en <code>delegate_to: localhost</code> ; <code>block</code> avec le déploiement et l'attente de readiness (<code>until</code>/<code>retries</code>), <code>rescue</code> qui exécute le rollback puis <code>fail</code>, <code>always</code> qui remet l'hôte dans le load balancer. C'est le playbook de la section 17.7.</div></details></div>
+
+<div class="exo"><span class="tag">Exercice 17.4</span>
+<p>Tu définis <code>api_version: 1.4.0</code> dans <code>group_vars/web.yml</code>, mais le playbook déploie <code>1.3.0</code>. Cite quatre endroits qui peuvent gagner sur ta valeur et la commande qui tranche.</p>
+<details><summary>Corrigé</summary><div class="sol"><code>host_vars/</code> de l'hôte, <code>vars:</code> du play, <code>vars/main.yml</code> d'un rôle, un <code>set_fact</code> ou <code>--extra-vars</code> dans le pipeline. Trancher : <code>ansible-inventory --host HOTE --yaml</code> montre les variables d'inventaire ; une tâche <code>debug: var=api_version</code> au début du play montre la valeur effective, et <code>-vvv</code> montre les <code>-e</code> passés.</div></details></div>
+
 <div class="tp"><span class="tag">Travail pratique 17 — Des « serveurs » en conteneurs, configurés par Ansible</span>
 <p>Cibles : trois conteneurs Ubuntu avec SSH, lancés par Compose (image construite à partir d'<code>ubuntu:24.04</code> avec <code>openssh-server</code>, un utilisateur <code>deploy</code> et ta clé publique dans <code>authorized_keys</code>). Ansible tourne dans son conteneur sur le même réseau.</p>
 <ol>
@@ -697,7 +919,7 @@ ansible-playbook ... --vault-password-file ~/.vault_pass   # ou --ask-vault-pass
 <li>Idempotence : second passage entièrement <code>ok</code>. Prouve-le avec la sortie du récapitulatif.</li>
 <li>Molecule sur le rôle <code>common</code> (driver docker), avec un test qui vérifie que <code>PermitRootLogin no</code> est présent. <code>ansible-lint</code> propre. Les deux dans la CI.</li>
 <li>Opération ad hoc : un playbook <code>rotate-secret.yml</code> qui change le mot de passe de la base dans le vault, le redéploie sur <code>db1</code> puis sur les <code>web</code>, dans cet ordre, avec <code>serial: 1</code>.</li>
-</ol>
+<li>Flux et stratégies : réécris le déploiement de l'API avec <code>serial</code>, <code>block/rescue/always</code>, retrait et remise dans un « load balancer » simulé (le proxy nginx du TP 3, piloté par un endpoint ou un fichier), <code>until</code> sur la readiness, et un rollback. Provoque un échec sur un hôte et vérifie l'arrêt global et le retour arrière. Compare la durée en <code>strategy: linear</code> et <code>free</code> avec <code>forks</code> à 5 puis à 50 et le pipelining.</li><li>Variables : reproduis l'exercice 17.4 en créant volontairement le conflit, tranche avec <code>ansible-inventory --host</code>, puis range les variables selon la règle (defaults du rôle, inventaire, extra-vars ponctuels). Deux identités de vault (<code>dev</code>, <code>prod</code>) et une valeur chiffrée inline.</li><li>Erreurs : reproduis cinq lignes du tableau 17.8 (UNREACHABLE, Python absent, become, changed permanent, secret dans les logs) et corrige chacune ; <code>ansible-lint</code> profil <code>production</code> vert.</li></ol>
 <p>Livrable : <code>ansible/</code> dans devops-lab, sortie Molecule dans <code>tp17.md</code>, et <code>docs/cours-ansible.md</code> dans CrisisShield expliquant comment un hôte est préparé pour recevoir l'application.</p>
 </div>
 <label class="check"><input type="checkbox" data-ch="c17"> Chapitre 17 terminé</label>
@@ -880,14 +1102,14 @@ crisisshield-config/     (dépôt de configuration : l'état désiré)
 <li><code>count</code> contre <code>for_each</code>.</li>
 <li>Les trois options du bloc <code>lifecycle</code> et un cas d'usage chacune.</li>
 <li>Comment tu découpes les states d'un projet, et pourquoi pas les workspaces.</li>
-<li><code>import</code>, <code>state mv</code>, <code>moved</code>, <code>force-unlock</code> : quand.</li>
+<li><code>import</code>, <code>state mv</code>, <code>moved</code>, <code>force-unlock</code> : quand.</li><li><code>dynamic</code>, <code>for_each</code> avec filtre, alias de providers, <code>check</code>, <code>removed</code>, <code>ephemeral</code> : un exemple chacun.</li><li>Cinq erreurs Terraform fréquentes et leur remède ; la méthode devant un plan inattendu.</li>
 <li>Un pipeline Terraform : étapes et garde-fous.</li>
 <li>LocalStack et le provider Docker : à quoi ils servent.</li>
 <li>Idempotence : définition et comment la prouver avec Ansible.</li>
 <li>Handlers : comportement exact.</li>
 <li>Inventaire dynamique : le lien entre Terraform et Ansible.</li>
 <li>Molecule et ansible-lint : ce qu'ils vérifient.</li>
-<li>Ansible Vault contre HashiCorp Vault.</li>
+<li>Ansible Vault contre HashiCorp Vault.</li><li>Précédence des variables Ansible ; <code>block/rescue/always</code>, <code>serial</code>, <code>delegate_to</code>, <code>run_once</code>, <code>async</code>, <code>until</code>.</li><li>Les réglages d'<code>ansible.cfg</code> qui changent la vitesse ; cinq erreurs fréquentes et leur remède.</li>
 <li>Le rôle d'Ansible dans un monde conteneurisé.</li>
 <li>Packer : source, provisioner, post-processor ; cycle de vie d'une golden image.</li>
 <li>Vagrant : à quoi il servait, ce qui l'a remplacé.</li>

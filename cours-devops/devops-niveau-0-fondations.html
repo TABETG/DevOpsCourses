@@ -489,7 +489,7 @@ a) « On scanne les dépendances à chaque commit. » b) « Notre budget d'erreu
 <ul><li>Naviguer et manipuler fichiers, permissions et processus en ligne de commande</li><li>Lire et écrire des redirections et des pipes</li><li>Gérer un service avec systemd et lire ses logs</li><li>Diagnostiquer disque, mémoire et CPU</li></ul></div>
 
 
-<div class="note">Tout se fait dans un conteneur. Lance un shell Ubuntu jetable avec <code>docker run -it --rm --name lab ubuntu:24.04 bash</code>. Sous Git Bash, préfixe la commande par <code>winpty</code> si le terminal ne répond pas : <code>winpty docker run -it --rm ubuntu:24.04 bash</code>.</div>
+<div class="note">Tout se fait dans un conteneur, jamais dans Git Bash ni MobaXterm : ce sont des émulations Windows où <code>ss</code>, <code>journalctl</code>, <code>systemctl</code> n'existent pas et où <code>df</code> montre <code>C:</code>. Lance un shell Ubuntu jetable avec <code>winpty docker run -it --rm --name lab ubuntu:24.04 bash</code>, puis installe les outils de diagnostic, absents de l'image minimale : <code>apt update &amp;&amp; apt install -y procps iproute2 lsof</code>. <code>journalctl</code> ne fonctionnera pas dans un conteneur (pas de systemd) : l'équivalent est <code>docker logs</code> ; sur une vraie VM Linux (WSL avec <code>wsl -d Ubuntu</code>, ou ton EC2 du niveau 4), il fonctionne.</div>
 
 <h3>2.1 Le système de fichiers<span class="badge tag-important">Important</span></h3>
 <p>Tout part de la racine <code>/</code>. Les répertoires à connaître :</p>
