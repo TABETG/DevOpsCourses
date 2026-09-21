@@ -206,7 +206,8 @@ nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{bac
 @media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-x:hidden}
-a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
 pre{overflow-wrap:normal}
 /* Repli pour les navigateurs sans color-mix */
 tr:nth-child(even) td{background:var(--bg)}
@@ -369,7 +370,7 @@ body{padding-bottom:6.5rem}
 <header class="hero">
   <div class="in">
     <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
-    <div class="level">Parcours DevOps — Niveau 7 sur 9</div>
+    <div class="level">Parcours DevOps — Niveau 7 · étape 8 sur 10</div>
     <h1>Sécurité : DevSecOps de bout en bout</h1>
     <p class="lead">Six chapitres pour faire de la sécurité une propriété de la chaîne, pas un audit final. Shift-left et analyses dans le pipeline, gestion des secrets avec Vault, durcissement des conteneurs et de Kubernetes avec politiques as code, chaîne d'approvisionnement signée, zero trust, authentification (OAuth 2.1, OpenID Connect, Keycloak) et PKI, puis les référentiels de conformité qui structurent une mission. C'est le niveau qui porte ton positionnement : chaque TP produit une preuve montrable en entretien.</p>
     <div class="meta">
@@ -401,10 +402,9 @@ body{padding-bottom:6.5rem}
 <article id="c37">
 <div class="chaphead"><span class="chapnum">Chapitre 37</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Shift-left : SAST, DAST, SCA, SBOM</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Modéliser les menaces (STRIDE) avant de coder ; ASVS comme exigences.</li><li>Chaque analyse à sa place, résultats agrégés (DefectDojo), bruit maîtrisé, SLA de correction.</li><li>SBOM à chaque build ; prioriser par EPSS, KEV et reachability ; VEX pour documenter le non-exploitable.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Modéliser les menaces d'une application avant d'écrire un test</li><li>Placer chaque analyse de sécurité au bon endroit de la chaîne et en gérer le bruit</li><li>Exploiter un SBOM et prioriser les vulnérabilités avec EPSS, KEV et VEX</li><li>Construire un programme de sécurité applicative mesurable</li></ul></div>
-<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Modéliser les menaces (STRIDE) avant de coder ; ASVS comme exigences.</li><li>Chaque analyse à sa place, résultats agrégés (DefectDojo), bruit maîtrisé, SLA de correction.</li><li>SBOM à chaque build ; prioriser par EPSS, KEV et reachability ; VEX pour documenter le non-exploitable.</li></ol></div>
 
 
 <h3>37.1 Shift-left et modélisation des menaces<span class="badge tag-important">Important</span></h3>
@@ -501,9 +501,9 @@ docker run --rm schemathesis/schemathesis run https://staging.crisisshield.examp
 <article id="c38">
 <div class="chaphead"><span class="chapnum">Chapitre 38</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Gestion des secrets : Vault, KMS, sealed secrets</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Supprimer le secret (identité) &gt; dynamique &gt; statique centralisé et tourné &gt; chiffré dans Git.</li><li>Vault : auth Kubernetes, politiques, moteurs database/PKI/Transit, audit ; livré par agent, opérateur ou SDK.</li><li>KMS et chiffrement d&#x27;enveloppe pour les données ; HSM pour les clés critiques.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Déployer et exploiter HashiCorp Vault (ou OpenBao) : moteurs, authentification, politiques</li><li>Distribuer des secrets dynamiques et de courte durée aux applications et aux pipelines</li><li>Chiffrer avec KMS et le chiffrement d'enveloppe</li><li>Supprimer les secrets statiques partout où c'est possible</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Supprimer le secret (identité) &gt; dynamique &gt; statique centralisé et tourné &gt; chiffré dans Git.</li><li>Vault : auth Kubernetes, politiques, moteurs database/PKI/Transit, audit ; livré par agent, opérateur ou SDK.</li><li>KMS et chiffrement d&#x27;enveloppe pour les données ; HSM pour les clés critiques.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Un secret dynamique : créé à la demande, lié à une instance, révoqué à l&#x27;expiration. Hiérarchie : supprimer le secret (identité) &gt; dynamique &gt; statique centralisé et tourné &gt; chiffré dans Git."><defs><marker id="ah16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="40" width="110" height="56" rx="7" class="green"/><text x="65.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">Pod API</text><text x="65.0" y="81.0" text-anchor="middle" class="lbl">token de SA</text><path d="M120,68 L150,68" class="arrow" marker-end="url(#ah16)"/><text x="135.0" y="60.0" text-anchor="middle" class="lbl">1. auth</text><rect x="150" y="40" width="110" height="56" rx="7" class="purple"/><text x="205.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">Vault</text><text x="205.0" y="81.0" text-anchor="middle" class="lbl">politique, TTL 1 h</text><path d="M260,68 L290,68" class="arrow" marker-end="url(#ah16)"/><text x="275.0" y="60.0" text-anchor="middle" class="lbl">2. crée</text><rect x="290" y="40" width="170" height="56" rx="7" class="amber"/><text x="375.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">PostgreSQL</text><text x="375.0" y="81.0" text-anchor="middle" class="lbl">rôle temporaire v-kube-…</text><path d="M345,96 L345,130 L65,130 L65,96" class="arrow dashed" marker-end="url(#ah16)"/><text x="205" y="146" text-anchor="middle" class="lbl">3. l&#x27;API se connecte avec des identifiants qui expirent et sont révocables</text></svg><figcaption>Un secret dynamique : créé à la demande, lié à une instance, révoqué à l'expiration. Hiérarchie : supprimer le secret (identité) > dynamique > statique centralisé et tourné > chiffré dans Git.</figcaption></figure>
 
 
@@ -627,9 +627,9 @@ v write -f transit/keys/crisisshield/rotate     # nouvelle version ; rewrap poss
 <article id="c39">
 <div class="chaphead"><span class="chapnum">Chapitre 39</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Sécurité des conteneurs et de Kubernetes</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les 4 C : cloud, cluster, conteneur, code ; chaque couche protège la suivante.</li><li>PSA restricted par namespace (warn → audit → enforce), Kyverno pour le reste, Falco à l&#x27;exécution.</li><li>kube-bench, kubescape, Trivy Operator : mesurer la posture et la suivre.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Durcir un cluster selon le CIS Benchmark et les Pod Security Standards</li><li>Écrire et appliquer des politiques as code avec Kyverno ou OPA Gatekeeper</li><li>Détecter les comportements suspects à l'exécution avec Falco</li><li>Concevoir l'isolation multi-locataire et la posture d'un cluster</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les 4 C : cloud, cluster, conteneur, code ; chaque couche protège la suivante.</li><li>PSA restricted par namespace (warn → audit → enforce), Kyverno pour le reste, Falco à l&#x27;exécution.</li><li>kube-bench, kubescape, Trivy Operator : mesurer la posture et la suivre.</li></ol></div>
 
 
 <h3>39.1 Le modèle des 4 C<span class="badge tag-coeur">Par cœur</span></h3>
@@ -771,9 +771,9 @@ spec:
 <article id="c40">
 <div class="chaphead"><span class="chapnum">Chapitre 40</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Chaîne d'approvisionnement : signatures, Sigstore, SLSA</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>SolarWinds, Codecov, XZ, tj-actions : le build et les dépendances sont des cibles.</li><li>Sigstore keyless : signature liée à l&#x27;identité du job ; Rekor pour la transparence ; vérification à l&#x27;admission.</li><li>SLSA L3 : runner éphémère, provenance signée, paramètres non modifiables ; builds reproductibles.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Expliquer les attaques sur la supply chain logicielle et ce qui les rend possibles</li><li>Signer et attester sans clé avec Sigstore, et vérifier à l'admission</li><li>Atteindre un niveau SLSA et produire de la provenance</li><li>Sécuriser les dépendances, le pipeline lui-même et les outils de build</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>SolarWinds, Codecov, XZ, tj-actions : le build et les dépendances sont des cibles.</li><li>Sigstore keyless : signature liée à l&#x27;identité du job ; Rekor pour la transparence ; vérification à l&#x27;admission.</li><li>SLSA L3 : runner éphémère, provenance signée, paramètres non modifiables ; builds reproductibles.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="De la source au cluster : chaque étape produit une preuve vérifiée à la suivante. Trois questions à tout artefact : d&#x27;où vient-il ? a-t-il été modifié ? que contient-il ? Le déploiement référence le digest vérifié, jamais un tag."><defs><marker id="ah17" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="84" height="60" rx="7" class="soft"/><text x="52.0" y="56.0" text-anchor="middle" font-size="13" font-weight="700">Source</text><text x="52.0" y="73.0" text-anchor="middle" class="lbl">MR revue</text><path d="M94,60 L104,60" class="arrow" marker-end="url(#ah17)"/><rect x="104" y="30" width="84" height="60" rx="7" class="soft"/><text x="146.0" y="56.0" text-anchor="middle" font-size="13" font-weight="700">Build</text><text x="146.0" y="73.0" text-anchor="middle" class="lbl">runner éphémère</text><path d="M188,60 L198,60" class="arrow" marker-end="url(#ah17)"/><rect x="198" y="30" width="84" height="60" rx="7" class="soft"/><text x="240.0" y="56.0" text-anchor="middle" font-size="13" font-weight="700">Attester</text><text x="240.0" y="73.0" text-anchor="middle" class="lbl">SBOM, provenance</text><path d="M282,60 L292,60" class="arrow" marker-end="url(#ah17)"/><rect x="292" y="30" width="84" height="60" rx="7" class="soft"/><text x="334.0" y="56.0" text-anchor="middle" font-size="13" font-weight="700">Signer</text><text x="334.0" y="73.0" text-anchor="middle" class="lbl">Sigstore keyless</text><path d="M376,60 L386,60" class="arrow" marker-end="url(#ah17)"/><rect x="386" y="30" width="84" height="60" rx="7" class="green"/><text x="428.0" y="56.0" text-anchor="middle" font-size="13" font-weight="700">Admission</text><text x="428.0" y="73.0" text-anchor="middle" class="lbl">Kyverno vérifie</text></svg><figcaption>De la source au cluster : chaque étape produit une preuve vérifiée à la suivante. Trois questions à tout artefact : d'où vient-il ? a-t-il été modifié ? que contient-il ? Le déploiement référence le digest vérifié, jamais un tag.</figcaption></figure>
 
 
@@ -861,9 +861,9 @@ cosign sign-blob --yes --bundle release.bundle release.tar.gz</code></pre>
 <article id="c41">
 <div class="chaphead"><span class="chapnum">Chapitre 41</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Zero trust, PKI, IAM avancé</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Zero trust : vérifier à chaque saut, humains (MFA, JIT) et charges (SPIFFE, mTLS).</li><li>PKI : racine hors ligne, intermédiaire en ligne (Vault), certificats courts renouvelés par cert-manager.</li><li>Authentification : Argon2id, MFA par passkeys, SSO OIDC, sessions durcies, récupération de compte aussi forte que la connexion.</li><li>OAuth 2.1 : code + PKCE partout, jetons courts avec audience, refresh rotation, BFF pour le navigateur, validation JWT en sept points ; IDOR est la faille numéro un des API.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Traduire les principes zero trust en architecture concrète</li><li>Concevoir et exploiter une PKI interne : hiérarchie, cycle de vie, automatisation</li><li>Mettre en place l'identité des charges de travail (SPIFFE/SPIRE) et des humains (OIDC, MFA, JIT)</li><li>Concevoir l'authentification des humains : mots de passe, MFA et passkeys, SSO, sessions, récupération de compte</li><li>Maîtriser OAuth 2.1 et OpenID Connect : flux, jetons, validation complète d'un JWT, BFF</li><li>Implémenter avec Spring Security, Quarkus et React sur Keycloak, tests négatifs compris</li><li>Authentifier services, partenaires et webhooks sans compte partagé</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Zero trust : vérifier à chaque saut, humains (MFA, JIT) et charges (SPIFFE, mTLS).</li><li>PKI : racine hors ligne, intermédiaire en ligne (Vault), certificats courts renouvelés par cert-manager.</li><li>Authentification : Argon2id, MFA par passkeys, SSO OIDC, sessions durcies, récupération de compte aussi forte que la connexion.</li><li>OAuth 2.1 : code + PKCE partout, jetons courts avec audience, refresh rotation, BFF pour le navigateur, validation JWT en sept points ; IDOR est la faille numéro un des API.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Zero trust : vérifier à chaque saut, pour les humains comme pour les charges de travail. Chaque saut est authentifié, autorisé, chiffré, journalisé, de courte durée. Pas de confiance implicite au réseau : « à l&#x27;intérieur » n&#x27;existe plus."><defs><marker id="ah18" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="40" width="100" height="56" rx="7" class="box"/><text x="60.0" y="64.2" text-anchor="middle" font-size="12" font-weight="700">Humain +</text><text x="60.0" y="80.2" text-anchor="middle" font-size="12" font-weight="700">appareil</text><path d="M110,68 L130,68" class="arrow" marker-end="url(#ah18)"/><text x="120.0" y="60.0" text-anchor="middle" class="lbl">MFA</text><rect x="130" y="40" width="90" height="56" rx="7" class="purple"/><text x="175.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">IdP</text><text x="175.0" y="81.0" text-anchor="middle" class="lbl">Keycloak</text><path d="M220,68 L240,68" class="arrow" marker-end="url(#ah18)"/><text x="230.0" y="60.0" text-anchor="middle" class="lbl">jeton court</text><rect x="240" y="40" width="100" height="56" rx="7" class="green"/><text x="290.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">Service</text><text x="290.0" y="81.0" text-anchor="middle" class="lbl">SPIFFE, mTLS</text><path d="M340,68 L360,68" class="arrow" marker-end="url(#ah18)"/><text x="350.0" y="60.0" text-anchor="middle" class="lbl">identité</text><rect x="360" y="40" width="110" height="56" rx="7" class="amber"/><text x="415.0" y="64.0" text-anchor="middle" font-size="13" font-weight="700">Base / secrets</text><text x="415.0" y="81.0" text-anchor="middle" class="lbl">par identité</text></svg><figcaption>Zero trust : vérifier à chaque saut, pour les humains comme pour les charges de travail. Chaque saut est authentifié, autorisé, chiffré, journalisé, de courte durée. Pas de confiance implicite au réseau : « à l'intérieur » n'existe plus.</figcaption></figure>
 
 
@@ -1067,9 +1067,9 @@ quarkus.oidc.token.audience=crisisshield-api
 <article id="c42">
 <div class="chaphead"><span class="chapnum">Chapitre 42</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Conformité : ISO 27001, SOC 2, RGPD et référentiels français</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Un contrôle = une politique, une implémentation, une preuve ; le DevSecOps automatise les deux dernières.</li><li>ISO 27001 pour tous, SOC 2 pour le SaaS, RGPD obligatoire, NIS2 et DORA qui arrivent, SecNumCloud pour l&#x27;État.</li><li>La conformité papier ne tient pas ; la plateforme rend la politique vraie et la preuve gratuite.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Lire un référentiel et le traduire en contrôles techniques automatisés</li><li>Produire des preuves de conformité en continu à partir de la plateforme</li><li>Intégrer le RGPD dans la conception et l'exploitation</li><li>Te repérer dans les référentiels rencontrés en mission en France</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Un contrôle = une politique, une implémentation, une preuve ; le DevSecOps automatise les deux dernières.</li><li>ISO 27001 pour tous, SOC 2 pour le SaaS, RGPD obligatoire, NIS2 et DORA qui arrivent, SecNumCloud pour l&#x27;État.</li><li>La conformité papier ne tient pas ; la plateforme rend la politique vraie et la preuve gratuite.</li></ol></div>
 
 
 <h3>42.1 Les référentiels<span class="badge tag-coeur">Par cœur</span></h3>
@@ -1157,6 +1157,7 @@ ISO 27001 A.8.25-A.8.29 Développement sécurisé
 <!-- ===================== REVISION ===================== -->
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 7</h2>
+<p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
 <ol class="quiz">
 <li>STRIDE sur une fonctionnalité de ton choix, en deux minutes.</li>
 <li>La cartographie des analyses de sécurité : étape, outil, mode bloquant ou non.</li>
@@ -1268,7 +1269,7 @@ ISO 27001 A.8.25-A.8.29 Développement sécurisé
 
 <script>
 (function(){
-  var KEY='devops-n7-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"37": 390, "38": 390, "39": 390, "40": 400, "41": 355, "42": 410}; var EXO=5; var REV=20;
+  var KEY='devops-n7-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"37": 360, "38": 420, "39": 420, "40": 360, "41": 480, "42": 300}; var EXO=5; var REV=20;
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
   var st=load(); st.done=st.done||{}; st.spent=st.spent||{}; st.streak=st.streak||0; st.session=st.session||0; st.sessionDay=st.sessionDay||'';

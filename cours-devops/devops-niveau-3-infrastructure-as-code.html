@@ -206,7 +206,8 @@ nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{bac
 @media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-x:hidden}
-a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
 pre{overflow-wrap:normal}
 /* Repli pour les navigateurs sans color-mix */
 tr:nth-child(even) td{background:var(--bg)}
@@ -369,11 +370,11 @@ body{padding-bottom:6.5rem}
 <header class="hero">
   <div class="in">
     <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
-    <div class="level">Parcours DevOps — Niveau 3 sur 9</div>
+    <div class="level">Parcours DevOps — Niveau 3 · étape 4 sur 10</div>
     <h1>Infrastructure as Code</h1>
     <p class="lead">Quatre chapitres pour ne plus jamais cliquer dans une console : Terraform pour créer l'infrastructure, Ansible pour la configurer, Packer pour fabriquer des images, puis les principes d'immutabilité et de GitOps qui font de Git la seule source de vérité. Les outils tournent dans Docker, l'infrastructure cible est locale (LocalStack, conteneurs) pour ne rien payer avant le niveau Cloud.</p>
     <div class="meta">
-      <span>4 chapitres</span><span>≈ 30 h de travail</span><span>Prérequis : Niveaux 0 à 2</span>
+      <span>4 chapitres</span><span>≈ 21 h de travail</span><span>Prérequis : Niveaux 0 à 2</span>
     </div>
     <button class="theme" id="theme">Basculer clair / sombre</button>
   </div>
@@ -399,10 +400,9 @@ body{padding-bottom:6.5rem}
 <article id="c16">
 <div class="chaphead"><span class="chapnum">Chapitre 16</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Terraform / OpenTofu</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Terraform compare code, state et réalité ; plan avant apply, toujours.</li><li>State distant, chiffré, verrouillé, un par environnement et domaine ; for_each plutôt que count.</li><li>import, moved, state mv, force-unlock : les outils de réparation ; apply uniquement depuis la CI.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Expliquer le modèle déclaratif, le state et le cycle plan/apply</li><li>Structurer un projet en modules et environnements</li><li>Gérer un state distant, verrouillé, et sortir d'un state corrompu</li><li>Tester, valider et sécuriser du code Terraform dans la CI</li></ul></div>
-<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Terraform compare code, state et réalité ; plan avant apply, toujours.</li><li>State distant, chiffré, verrouillé, un par environnement et domaine ; for_each plutôt que count.</li><li>import, moved, state mv, force-unlock : les outils de réparation ; apply uniquement depuis la CI.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Terraform compare trois choses : le code, le state, la réalité. Le state contient les identifiants réels et des secrets : distant, chiffré, verrouillé, jamais commité."><defs><marker id="ah8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="170" y="20" width="140" height="50" rx="7" class="soft"/><text x="240.0" y="41.0" text-anchor="middle" font-size="13" font-weight="700">Code (.tf)</text><text x="240.0" y="58.0" text-anchor="middle" font-size="13" font-weight="700">ce que je veux</text><rect x="20" y="140" width="160" height="50" rx="7" class="amber"/><text x="100.0" y="161.1" text-anchor="middle" font-size="13" font-weight="700">State</text><text x="100.0" y="178.1" text-anchor="middle" font-size="13" font-weight="700">ce que Terraform croit</text><rect x="300" y="140" width="160" height="50" rx="7" class="green"/><text x="380.0" y="161.1" text-anchor="middle" font-size="13" font-weight="700">Réalité (API cloud)</text><text x="380.0" y="178.1" text-anchor="middle" font-size="13" font-weight="700">ce qui existe</text><path d="M200,70 L110,140" class="arrow" marker-end="url(#ah8)"/><text x="125.0" y="101.0" text-anchor="middle" class="lbl">plan = diff</text><path d="M280,70 L370,140" class="arrow" marker-end="url(#ah8)"/><text x="355.0" y="101.0" text-anchor="middle" class="lbl">apply</text><path d="M180,165 L300,165" class="arrow" marker-end="url(#ah8)"/><text x="240.0" y="157.0" text-anchor="middle" class="lbl">refresh</text></svg><figcaption>Terraform compare trois choses : le code, le state, la réalité. Le state contient les identifiants réels et des secrets : distant, chiffré, verrouillé, jamais commité.</figcaption></figure>
 
 
@@ -578,9 +578,9 @@ apply:
 <article id="c17">
 <div class="chaphead"><span class="chapnum">Chapitre 17</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Ansible</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Ansible configure par SSH, sans agent, de façon idempotente : relancer ne change rien.</li><li>Rôles, handlers, templates, inventaire dynamique par tags ; Molecule et ansible-lint en CI.</li><li>Dans un monde conteneurisé, il prépare les hôtes et orchestre les opérations ; il ne déploie plus l&#x27;application.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Décrire des machines dans un inventaire et les configurer avec des playbooks idempotents</li><li>Structurer en rôles réutilisables et testés</li><li>Protéger les secrets avec Vault</li><li>Positionner Ansible par rapport à Terraform et aux conteneurs</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Ansible configure par SSH, sans agent, de façon idempotente : relancer ne change rien.</li><li>Rôles, handlers, templates, inventaire dynamique par tags ; Molecule et ansible-lint en CI.</li><li>Dans un monde conteneurisé, il prépare les hôtes et orchestre les opérations ; il ne déploie plus l&#x27;application.</li></ol></div>
 
 
 <h3>17.1 Principes<span class="badge tag-contexte">Bon à savoir</span></h3>
@@ -707,9 +707,9 @@ ansible-playbook ... --vault-password-file ~/.vault_pass   # ou --ask-vault-pass
 <article id="c18">
 <div class="chaphead"><span class="chapnum">Chapitre 18</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Packer et Vagrant</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Packer fabrique des images de machines comme un Dockerfile fabrique des images de conteneurs.</li><li>Golden image : construite, scannée, taguée, consommée par Terraform, remplacée plutôt que patchée.</li><li>Vagrant a été remplacé par Compose et les Dev Containers pour les applications.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Construire une image de machine (AMI, image Docker, image de VM) de façon reproductible avec Packer</li><li>Comprendre la place de Vagrant et ce qui l'a remplacé</li><li>Enchaîner Packer, Terraform et Ansible dans une chaîne complète</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Packer fabrique des images de machines comme un Dockerfile fabrique des images de conteneurs.</li><li>Golden image : construite, scannée, taguée, consommée par Terraform, remplacée plutôt que patchée.</li><li>Vagrant a été remplacé par Compose et les Dev Containers pour les applications.</li></ol></div>
 
 
 <h3>18.1 Packer : des images de machines comme des images Docker<span class="badge tag-contexte">Bon à savoir</span></h3>
@@ -795,9 +795,9 @@ end</code></pre>
 <article id="c19">
 <div class="chaphead"><span class="chapnum">Chapitre 19</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Immutabilité, dérive et GitOps</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Immuable : on ne modifie pas une machine, on la remplace ; plus de SSH en prod.</li><li>La dérive rend le code menteur : la détecter (plan nocturne), la prévenir (pas d&#x27;écriture console), la traiter.</li><li>GitOps : déclaratif, versionné, tiré par un agent, réconcilié en continu ; dépôt code séparé du dépôt config.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Expliquer l'infrastructure immuable et ses conséquences opérationnelles</li><li>Détecter et traiter la dérive de configuration</li><li>Définir GitOps et ses quatre principes ; distinguer push et pull</li><li>Concevoir la structure de dépôts d'un projet géré en GitOps</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Immuable : on ne modifie pas une machine, on la remplace ; plus de SSH en prod.</li><li>La dérive rend le code menteur : la détecter (plan nocturne), la prévenir (pas d&#x27;écriture console), la traiter.</li><li>GitOps : déclaratif, versionné, tiré par un agent, réconcilié en continu ; dépôt code séparé du dépôt config.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 174" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Push : le pipeline déploie avec des identifiants. Pull : un agent dans le cluster lit Git. En pull, la CI n&#x27;a qu&#x27;un accès Git ; le cluster ne s&#x27;expose pas ; la dérive est corrigée en continu ; rollback = revert."><defs><marker id="ah9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><text x="20" y="22" class="glab">Push (CI classique)</text><text x="260" y="22" class="glab">Pull (GitOps)</text><rect x="20" y="32" width="80" height="44" rx="7" class="soft"/><text x="60.0" y="58.5" text-anchor="middle" font-size="13" font-weight="700">Git</text><rect x="120" y="32" width="80" height="44" rx="7" class="box"/><text x="160.0" y="58.5" text-anchor="middle" font-size="13" font-weight="700">CI</text><rect x="20" y="110" width="180" height="60" rx="7" class="green"/><text x="110.0" y="144.6" text-anchor="middle" font-size="13" font-weight="700">Cluster / cloud</text><path d="M100,54 L120,54" class="arrow" marker-end="url(#ah9)"/><path d="M160,76 L110,110" class="arrow" marker-end="url(#ah9)"/><text x="175.0" y="103.0" text-anchor="middle" class="lbl">identifiants prod</text><rect x="260" y="32" width="80" height="44" rx="7" class="soft"/><text x="300.0" y="58.5" text-anchor="middle" font-size="13" font-weight="700">Git</text><rect x="260" y="110" width="200" height="60" rx="7" class="green"/><text x="360.0" y="144.6" text-anchor="middle" font-size="13" font-weight="700">Cluster</text><rect x="360" y="122" width="90" height="36" rx="7" class="purple"/><text x="405.0" y="144.2" text-anchor="middle" font-size="12" font-weight="700">agent</text><path d="M405,122 L320,76" class="arrow" marker-end="url(#ah9)"/><text x="407.5" y="103.0" text-anchor="middle" class="lbl">lit, réconcilie</text></svg><figcaption>Push : le pipeline déploie avec des identifiants. Pull : un agent dans le cluster lit Git. En pull, la CI n'a qu'un accès Git ; le cluster ne s'expose pas ; la dérive est corrigée en continu ; rollback = revert.</figcaption></figure>
 
 
@@ -872,6 +872,7 @@ crisisshield-config/     (dépôt de configuration : l'état désiré)
 <!-- ===================== REVISION ===================== -->
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 3</h2>
+<p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
 <ol class="quiz">
 <li>Déclaratif contre impératif ; provisioning contre configuration.</li>
 <li>Le triangle code / state / réalité, et ce que font <code>plan</code>, <code>apply</code>, <code>refresh</code>.</li>
@@ -983,7 +984,7 @@ crisisshield-config/     (dépôt de configuration : l'état désiré)
 
 <script>
 (function(){
-  var KEY='devops-n3-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"16": 385, "17": 400, "18": 435, "19": 410}; var EXO=5; var REV=20;
+  var KEY='devops-n3-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"16": 360, "17": 300, "18": 180, "19": 240}; var EXO=5; var REV=20;
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
   var st=load(); st.done=st.done||{}; st.spent=st.spent||{}; st.streak=st.streak||0; st.session=st.session||0; st.sessionDay=st.sessionDay||'';

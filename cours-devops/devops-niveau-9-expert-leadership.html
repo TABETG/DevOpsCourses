@@ -206,7 +206,8 @@ nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{bac
 @media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-x:hidden}
-a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
 pre{overflow-wrap:normal}
 /* Repli pour les navigateurs sans color-mix */
 tr:nth-child(even) td{background:var(--bg)}
@@ -369,11 +370,11 @@ body{padding-bottom:6.5rem}
 <header class="hero">
   <div class="in">
     <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
-    <div class="level">Parcours DevOps — Niveau 9 sur 9</div>
+    <div class="level">Parcours DevOps — Niveau 9 · étape 10 sur 10</div>
     <h1>Expert et leadership : concevoir, transformer, mesurer, entraîner</h1>
     <p class="lead">Six chapitres pour ce qu'on attend d'un profil à quinze ans d'expérience : concevoir des plateformes multi-tenant à l'échelle, conduire une migration legacy vers le cloud, poser une gouvernance en code, mesurer avec DORA et un modèle de maturité, mener le changement, puis intégrer l'intelligence artificielle dans le DevOps sans en perdre le contrôle. Les TP sont des livrables de mission : audits, plans, dossiers d'architecture, et un dernier projet qui assemble tout.</p>
     <div class="meta">
-      <span>6 chapitres</span><span>≈ 45 h de travail</span><span>Prérequis : Niveaux 0 à 8</span>
+      <span>6 chapitres</span><span>≈ 43 h de travail</span><span>Prérequis : Niveaux 0 à 8</span>
     </div>
     <button class="theme" id="theme">Basculer clair / sombre</button>
   </div>
@@ -401,10 +402,9 @@ body{padding-bottom:6.5rem}
 <article id="c49">
 <div class="chaphead"><span class="chapnum">Chapitre 49</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Design de plateformes à l'échelle, multi-tenant</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Tenancy : namespaces, vCluster, nœuds dédiés, cluster ou compte par tenant selon confiance et réglementation.</li><li>Landing zone : comptes par domaine et environnement, hub-and-spoke, IPAM, IdP, garde-fous, vending.</li><li>Flotte de clusters en code, bootstrap GitOps identique, cadence de mise à jour trimestrielle.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Choisir un modèle de tenancy et une topologie de clusters et de comptes, avec leurs compromis</li><li>Concevoir les fondations : landing zone, réseau hub-and-spoke, identités, plan de contrôle central</li><li>Gérer une flotte de clusters : cycle de vie, mises à jour, add-ons, dérive</li><li>Écrire un dossier d'architecture et des décisions (ADR) qui tiennent devant un comité</li></ul></div>
-<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Tenancy : namespaces, vCluster, nœuds dédiés, cluster ou compte par tenant selon confiance et réglementation.</li><li>Landing zone : comptes par domaine et environnement, hub-and-spoke, IPAM, IdP, garde-fous, vending.</li><li>Flotte de clusters en code, bootstrap GitOps identique, cadence de mise à jour trimestrielle.</li></ol></div>
 
 
 <h3>49.1 Modèles de tenancy<span class="badge tag-coeur">Par cœur</span></h3>
@@ -477,9 +477,9 @@ body{padding-bottom:6.5rem}
 <article id="c50">
 <div class="chaphead"><span class="chapnum">Chapitre 50</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Migration legacy vers le cloud</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les 7 R avec une répartition réaliste : beaucoup de replatform, peu de refactor, du retire.</li><li>Fondations avant vagues ; données en réplication continue avec bascule courte ; décommissionner pour de bon.</li><li>Monolithe Java : conteneuriser, tests de caractérisation, strangler fig, données en dernier, OpenRewrite.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Évaluer un portefeuille applicatif et choisir une stratégie par application (les 7 R)</li><li>Conduire une migration par vagues avec des critères de succès et un retour arrière</li><li>Migrer les données et les identités, qui sont toujours le chemin critique</li><li>Moderniser un monolithe Java sans big bang : strangler fig, modularisation, conteneurisation</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les 7 R avec une répartition réaliste : beaucoup de replatform, peu de refactor, du retire.</li><li>Fondations avant vagues ; données en réplication continue avec bascule courte ; décommissionner pour de bon.</li><li>Monolithe Java : conteneuriser, tests de caractérisation, strangler fig, données en dernier, OpenRewrite.</li></ol></div>
 
 
 <h3>50.1 Les 7 R<span class="badge tag-coeur">Par cœur</span></h3>
@@ -550,9 +550,9 @@ body{padding-bottom:6.5rem}
 <article id="c51">
 <div class="chaphead"><span class="chapnum">Chapitre 51</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Gouvernance, standards, politique as code</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Garde-fous préventifs, détectifs, directifs ; chaque règle a une justification, un propriétaire, une exception.</li><li>Standards vivants en dépôt, appliqués en code à chaque couche (OPA, Kyverno, Spectral, compliance pipelines).</li><li>Exceptions à durée limitée, revue d&#x27;architecture asynchrone, dette budgétée, rapport mensuel à la direction.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Concevoir une gouvernance qui accélère au lieu de freiner : garde-fous plutôt que barrières</li><li>Formaliser des standards vivants et les appliquer en code à chaque couche</li><li>Organiser les exceptions, la revue d'architecture et la dette technique</li><li>Rendre compte à la direction : risques, conformité, coûts, indicateurs</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Garde-fous préventifs, détectifs, directifs ; chaque règle a une justification, un propriétaire, une exception.</li><li>Standards vivants en dépôt, appliqués en code à chaque couche (OPA, Kyverno, Spectral, compliance pipelines).</li><li>Exceptions à durée limitée, revue d&#x27;architecture asynchrone, dette budgétée, rapport mensuel à la direction.</li></ol></div>
 
 
 <h3>51.1 Garde-fous, pas barrières<span class="badge tag-coeur">Par cœur</span></h3>
@@ -647,9 +647,9 @@ warn[msg] {
 <article id="c52">
 <div class="chaphead"><span class="chapnum">Chapitre 52</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Mesure : métriques DORA, maturité DevOps, valeur</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Cinq métriques DORA, définitions opérationnelles, sources automatiques, tendances par service, jamais d&#x27;objectif individuel.</li><li>SPACE et DevEx complètent ; la valeur métier est la vraie cible.</li><li>Audit : entretiens, observation, données, modèle de maturité, feuille de route en trois horizons.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Mesurer les quatre (cinq) métriques DORA automatiquement et les interpréter sans les pervertir</li><li>Évaluer la maturité d'une organisation avec un modèle et en tirer une feuille de route</li><li>Relier les métriques techniques à la valeur métier et au bien-être des équipes</li><li>Concevoir un audit DevOps de mission</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Cinq métriques DORA, définitions opérationnelles, sources automatiques, tendances par service, jamais d&#x27;objectif individuel.</li><li>SPACE et DevEx complètent ; la valeur métier est la vraie cible.</li><li>Audit : entretiens, observation, données, modèle de maturité, feuille de route en trois horizons.</li></ol></div>
 
 
 <h3>52.1 DORA, mesurées pour de vrai<span class="badge tag-coeur">Par cœur</span></h3>
@@ -717,9 +717,9 @@ Mesure              Aucune                        DORA suivies                  
 <article id="c53">
 <div class="chaphead"><span class="chapnum">Chapitre 53</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Conduite du changement, coaching, posture de consultant</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les transformations échouent pour des raisons humaines : sens, sponsor, pilote, attraction, ancrage, mesure.</li><li>Coacher vers l&#x27;autonomie : pairing, dojos, security champions ; reconnaître l&#x27;expertise des ops.</li><li>Consultant : cadrer, diagnostiquer avant de prescrire, rendre les arbitrages explicites, transférer.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Conduire une transformation technique dans une organisation qui résiste, sans autorité hiérarchique</li><li>Coacher des équipes et faire monter des ops et des devs vers le DevOps et la sécurité</li><li>Tenir une posture de consultant : cadrage, influence, arbitrages, restitution</li><li>Communiquer avec la direction, la sécurité, les métiers et les équipes dans leur langue</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les transformations échouent pour des raisons humaines : sens, sponsor, pilote, attraction, ancrage, mesure.</li><li>Coacher vers l&#x27;autonomie : pairing, dojos, security champions ; reconnaître l&#x27;expertise des ops.</li><li>Consultant : cadrer, diagnostiquer avant de prescrire, rendre les arbitrages explicites, transférer.</li></ol></div>
 
 
 <h3>53.1 Pourquoi les transformations échouent<span class="badge tag-contexte">Bon à savoir</span></h3>
@@ -796,9 +796,9 @@ Mesure              Aucune                        DORA suivies                  
 <article id="c54">
 <div class="chaphead"><span class="chapnum">Chapitre 54</span><span class="badge lvl-expert">Expert</span></div>
 <h2>IA appliquée au DevOps : AIOps, LLM dans les pipelines, sécurité des agents</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>L&#x27;IA accélère l&#x27;expert ; agents en lecture seule par défaut, écriture via merge request, tout journalisé.</li><li>AIOps utile : anomalies en contexte, assistant d&#x27;incident, remédiation déterministe et bornée.</li><li>Passerelle LLM, evals en CI, observabilité GenAI, OWASP LLM Top 10 avec l&#x27;injection indirecte en fil rouge.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Utiliser les LLM et les agents pour le travail DevOps avec des garde-fous</li><li>Mettre en place l'AIOps utile : détection d'anomalies, corrélation, assistance à l'incident</li><li>Exploiter des systèmes d'IA en production : LLMOps, coût, évaluation, observabilité</li><li>Sécuriser les applications et agents LLM : OWASP LLM Top 10, isolation, gouvernance</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>L&#x27;IA accélère l&#x27;expert ; agents en lecture seule par défaut, écriture via merge request, tout journalisé.</li><li>AIOps utile : anomalies en contexte, assistant d&#x27;incident, remédiation déterministe et bornée.</li><li>Passerelle LLM, evals en CI, observabilité GenAI, OWASP LLM Top 10 avec l&#x27;injection indirecte en fil rouge.</li></ol></div>
 
 
 <h3>54.1 L'IA comme outil du DevOps<span class="badge tag-contexte">Bon à savoir</span></h3>
@@ -886,6 +886,7 @@ Mesure              Aucune                        DORA suivies                  
 </ol>
 
 <h3>Révision du niveau 9</h3>
+<p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
 <ol class="quiz">
 <li>Les cinq modèles de tenancy et leurs critères de choix.</li>
 <li>La landing zone : structure, réseau hub-and-spoke, garde-fous, vending de comptes ; pourquoi l'IPAM.</li>
@@ -997,7 +998,7 @@ Mesure              Aucune                        DORA suivies                  
 
 <script>
 (function(){
-  var KEY='devops-n9-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"49": 410, "50": 405, "51": 400, "52": 410, "53": 405, "54": 410}; var EXO=5; var REV=20;
+  var KEY='devops-n9-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"49": 420, "50": 420, "51": 300, "52": 360, "53": 300, "54": 480}; var EXO=5; var REV=20;
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
   var st=load(); st.done=st.done||{}; st.spent=st.spent||{}; st.streak=st.streak||0; st.session=st.session||0; st.sessionDay=st.sessionDay||'';

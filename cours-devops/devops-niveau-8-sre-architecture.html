@@ -206,7 +206,8 @@ nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{bac
 @media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-x:hidden}
-a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
 pre{overflow-wrap:normal}
 /* Repli pour les navigateurs sans color-mix */
 tr:nth-child(even) td{background:var(--bg)}
@@ -369,11 +370,11 @@ body{padding-bottom:6.5rem}
 <header class="hero">
   <div class="in">
     <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
-    <div class="level">Parcours DevOps — Niveau 8 sur 9</div>
+    <div class="level">Parcours DevOps — Niveau 8 · étape 9 sur 10</div>
     <h1>SRE et architecture : concevoir pour la panne, l'échelle et les équipes</h1>
     <p class="lead">Six chapitres pour passer de « je sais exploiter » à « je conçois ce qui sera exploitable » : résilience et chaos engineering, haute disponibilité et reprise d'activité, performance et capacité, architectures microservices et événementielles, bases de données en production, puis le platform engineering qui industrialise tout ce qui précède pour d'autres équipes.</p>
     <div class="meta">
-      <span>6 chapitres</span><span>≈ 45 h de travail</span><span>Prérequis : Niveaux 0 à 7</span>
+      <span>6 chapitres</span><span>≈ 46 h de travail</span><span>Prérequis : Niveaux 0 à 7</span>
     </div>
     <button class="theme" id="theme">Basculer clair / sombre</button>
   </div>
@@ -401,10 +402,9 @@ body{padding-bottom:6.5rem}
 <article id="c43">
 <div class="chaphead"><span class="chapnum">Chapitre 43</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Fiabilité, résilience, chaos engineering</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Timeouts, retries idempotents, circuit breaker, bulkheads, dégradation, load shedding, idempotence, backpressure.</li><li>Une seule couche de retries, sinon tempête ; le pool de connexions est le goulot classique.</li><li>Chaos engineering : hypothèse, injection contrôlée, mesure, correction ; staging puis prod.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Appliquer les principes SRE au-delà des SLO : toil, automatisation, revue de lancement</li><li>Concevoir des services résilients : timeouts, retries, circuit breakers, bulkheads, dégradation</li><li>Conduire un programme de chaos engineering avec hypothèses et mesures</li></ul></div>
-<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Timeouts, retries idempotents, circuit breaker, bulkheads, dégradation, load shedding, idempotence, backpressure.</li><li>Une seule couche de retries, sinon tempête ; le pool de connexions est le goulot classique.</li><li>Chaos engineering : hypothèse, injection contrôlée, mesure, correction ; staging puis prod.</li></ol></div>
 
 
 <h3>43.1 SRE : le reste du modèle<span class="badge tag-contexte">Bon à savoir</span></h3>
@@ -499,9 +499,9 @@ spec:
 <article id="c44">
 <div class="chaphead"><span class="chapnum">Chapitre 44</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Haute disponibilité et reprise d'activité</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>RTO et RPO se décident avec le métier, en euros ; quatre stratégies de coût croissant.</li><li>3-2-1, immutabilité, compte de sauvegarde isolé, restauration testée automatiquement.</li><li>Le PRA est du code, testé au moins une fois par an ; l&#x27;IdP et le monitoring en font partie.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Définir RTO et RPO avec le métier et en déduire l'architecture et le coût</li><li>Éliminer les points uniques de défaillance couche par couche</li><li>Concevoir et tester un plan de reprise d'activité (PRA), y compris multi-région</li><li>Protéger contre le ransomware et la suppression accidentelle</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>RTO et RPO se décident avec le métier, en euros ; quatre stratégies de coût croissant.</li><li>3-2-1, immutabilité, compte de sauvegarde isolé, restauration testée automatiquement.</li><li>Le PRA est du code, testé au moins une fois par an ; l&#x27;IdP et le monitoring en font partie.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Quatre stratégies de reprise : plus le RTO/RPO baisse, plus le coût monte. Le RTO/RPO se décide avec le métier, en euros. Les données sont le vrai sujet du multi-région."><defs><marker id="ah19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><path d="M30,150 L450,150" class="axis"/><text x="450" y="168" text-anchor="end" class="lbl">coût ↑</text><text x="30" y="168" text-anchor="start" class="lbl">RTO / RPO ↓</text><rect x="30" y="96" width="100" height="56" rx="7" class="box"/><text x="80.0" y="120.2" text-anchor="middle" font-size="12" font-weight="700">Sauvegarde</text><text x="80.0" y="136.2" text-anchor="middle" class="lbl">heures, ×1</text><rect x="138" y="74" width="100" height="56" rx="7" class="soft"/><text x="188.0" y="98.2" text-anchor="middle" font-size="12" font-weight="700">Pilot light</text><text x="188.0" y="114.2" text-anchor="middle" class="lbl">minutes, ×2</text><rect x="246" y="52" width="100" height="56" rx="7" class="green"/><text x="296.0" y="76.2" text-anchor="middle" font-size="12" font-weight="700">Warm standby</text><text x="296.0" y="92.2" text-anchor="middle" class="lbl">secondes, ×4</text><rect x="354" y="30" width="100" height="56" rx="7" class="amber"/><text x="404.0" y="54.2" text-anchor="middle" font-size="12" font-weight="700">Actif-actif</text><text x="404.0" y="70.2" text-anchor="middle" class="lbl">≈ 0, ×8+</text></svg><figcaption>Quatre stratégies de reprise : plus le RTO/RPO baisse, plus le coût monte. Le RTO/RPO se décide avec le métier, en euros. Les données sont le vrai sujet du multi-région.</figcaption></figure>
 
 
@@ -581,9 +581,9 @@ Humains        : astreinte multi-personnes, documentation accessible hors des sy
 <article id="c45">
 <div class="chaphead"><span class="chapnum">Chapitre 45</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Performance, tests de charge, capacité</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Six types de tests de charge ; boucle ouverte (arrival rate) pour voir la vraie dégradation.</li><li>Traces d&#x27;abord, puis USE sur la ressource suspecte, puis profilage (JFR, Pyroscope).</li><li>Mesurer, cibler le goulot dominant, éliminer avant d&#x27;accélérer, re-mesurer, garder le test en CI.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Concevoir et exécuter des tests de charge représentatifs, et lire leurs résultats</li><li>Diagnostiquer un goulot d'étranglement de la requête au noyau, JVM comprise</li><li>Planifier la capacité à partir des tendances et des événements métier</li><li>Optimiser dans le bon ordre : mesurer, cibler, vérifier</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Six types de tests de charge ; boucle ouverte (arrival rate) pour voir la vraie dégradation.</li><li>Traces d&#x27;abord, puis USE sur la ressource suspecte, puis profilage (JFR, Pyroscope).</li><li>Mesurer, cibler le goulot dominant, éliminer avant d&#x27;accélérer, re-mesurer, garder le test en CI.</li></ol></div>
 
 
 <h3>45.1 Tests de charge<span class="badge tag-important">Important</span></h3>
@@ -691,9 +691,9 @@ Externe          : latence des dépendances (traces), DNS</code></pre>
 <article id="c46">
 <div class="chaphead"><span class="chapnum">Chapitre 46</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Architectures : microservices, événementiel, serverless</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Monolithe modulaire d&#x27;abord ; extraire par domaine quand une équipe ou une contrainte le justifie.</li><li>Kafka : clé de partition = ordre, acks=all, consommateurs idempotents, outbox transactionnel, schémas compatibles.</li><li>Sagas, CQRS, event sourcing : cohérence à terme assumée, à expliquer au produit.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Décider entre monolithe modulaire et microservices avec des critères, et découper correctement</li><li>Concevoir une architecture événementielle fiable avec Kafka : outbox, idempotence, schémas, ordre</li><li>Gérer la cohérence des données distribuées : sagas, CQRS, event sourcing</li><li>Exploiter des API : versionnage, contrats, passerelle, découverte</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Monolithe modulaire d&#x27;abord ; extraire par domaine quand une équipe ou une contrainte le justifie.</li><li>Kafka : clé de partition = ordre, acks=all, consommateurs idempotents, outbox transactionnel, schémas compatibles.</li><li>Sagas, CQRS, event sourcing : cohérence à terme assumée, à expliquer au produit.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 138" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="L&#x27;outbox transactionnel : l&#x27;événement et la donnée sont écrits atomiquement. Base OK et Kafka KO ? Rien n&#x27;est perdu : l&#x27;outbox sera relue. Kafka OK et base rollback ? Impossible. Le consommateur est idempotent : recevoir deux fois n&#x27;est pas un problème."><defs><marker id="ah20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="40" width="90" height="56" rx="7" class="green"/><text x="55.0" y="72.5" text-anchor="middle" font-size="13" font-weight="700">API</text><path d="M100,68 L120,68" class="arrow" marker-end="url(#ah20)"/><rect x="120" y="24" width="170" height="88" rx="8" class="frame"/><text x="128" y="18" class="glab">Une seule transaction</text><rect x="130" y="34" width="150" height="32" rx="7" class="amber"/><text x="205.0" y="54.2" text-anchor="middle" font-size="12" font-weight="700">INSERT incident</text><rect x="130" y="72" width="150" height="32" rx="7" class="amber"/><text x="205.0" y="92.2" text-anchor="middle" font-size="12" font-weight="700">INSERT outbox</text><path d="M290,88 L320,88" class="arrow" marker-end="url(#ah20)"/><rect x="320" y="60" width="70" height="56" rx="7" class="purple"/><text x="355.0" y="92.2" text-anchor="middle" font-size="12" font-weight="700">Debezium</text><path d="M390,88 L410,88" class="arrow" marker-end="url(#ah20)"/><rect x="410" y="60" width="60" height="56" rx="7" class="box"/><text x="440.0" y="92.2" text-anchor="middle" font-size="12" font-weight="700">Kafka</text></svg><figcaption>L'outbox transactionnel : l'événement et la donnée sont écrits atomiquement. Base OK et Kafka KO ? Rien n'est perdu : l'outbox sera relue. Kafka OK et base rollback ? Impossible. Le consommateur est idempotent : recevoir deux fois n'est pas un problème.</figcaption></figure>
 
 
@@ -780,9 +780,9 @@ public Incident create(CreateIncident cmd) {
 <article id="c47">
 <div class="chaphead"><span class="chapnum">Chapitre 47</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Bases de données en production</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>PgBouncer devant PostgreSQL ; pools applicatifs petits ; lecture répartie avec read-your-writes.</li><li>Changements de schéma : lock_timeout, index concurrents, NOT VALID puis VALIDATE, lots, expand/contract.</li><li>Partitionner avant de sharder ; autovacuum et wraparound sous surveillance ; restauration testée.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Exploiter PostgreSQL à l'échelle : connexions, réplication, partitionnement, maintenance</li><li>Concevoir les migrations et les changements de schéma à risque</li><li>Choisir entre lecture répartie, cache, sharding et bases spécialisées</li><li>Surveiller et diagnostiquer une base comme un DBA le ferait</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>PgBouncer devant PostgreSQL ; pools applicatifs petits ; lecture répartie avec read-your-writes.</li><li>Changements de schéma : lock_timeout, index concurrents, NOT VALID puis VALIDATE, lots, expand/contract.</li><li>Partitionner avant de sharder ; autovacuum et wraparound sous surveillance ; restauration testée.</li></ol></div>
 
 
 <h3>47.1 Connexions et pooling<span class="badge tag-important">Important</span></h3>
@@ -857,9 +857,9 @@ public Incident create(CreateIncident cmd) {
 <article id="c48">
 <div class="chaphead"><span class="chapnum">Chapitre 48</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Platform engineering et Internal Developer Platform</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>La plateforme interne réduit la charge cognitive : golden paths, libre-service, conformité par construction.</li><li>Backstage pour l&#x27;interface, Crossplane et templates pour le libre-service, ArgoCD pour livrer.</li><li>C&#x27;est un produit : adoption, délai de création d&#x27;un service, DORA et satisfaction mesurés.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Expliquer pourquoi le platform engineering est la suite logique du DevOps à l'échelle</li><li>Concevoir une plateforme interne comme un produit : golden paths, libre-service, abstractions</li><li>Construire un portail avec Backstage et des composants en libre-service (Crossplane, templates)</li><li>Mesurer l'adoption et la valeur d'une plateforme</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>La plateforme interne réduit la charge cognitive : golden paths, libre-service, conformité par construction.</li><li>Backstage pour l&#x27;interface, Crossplane et templates pour le libre-service, ArgoCD pour livrer.</li><li>C&#x27;est un produit : adoption, délai de création d&#x27;un service, DORA et satisfaction mesurés.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 224" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="L&#x27;Internal Developer Platform : ce que le développeur demande, ce que la plateforme fait. La plateforme est un produit : des utilisateurs, une adoption mesurée, des chemins recommandés, pas une cage."><defs><marker id="ah21" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="20" y="20" width="440" height="40" rx="7" class="green"/><text x="240.0" y="44.5" text-anchor="middle" font-size="13" font-weight="700">Développeur : « un service Java avec une base et un topic »</text><path d="M240,60 L240,74" class="arrow" marker-end="url(#ah21)"/><rect x="20" y="74" width="440" height="40" rx="7" class="purple"/><text x="240.0" y="98.5" text-anchor="middle" font-size="13" font-weight="700">Portail (Backstage) : templates, catalogue, scorecards, docs</text><path d="M240,114 L240,128" class="arrow" marker-end="url(#ah21)"/><rect x="20" y="128" width="440" height="40" rx="7" class="soft"/><text x="240.0" y="152.6" text-anchor="middle" font-size="13" font-weight="700">Golden paths : pipeline, GitOps, observabilité, sécurité par défaut</text><path d="M240,168 L240,182" class="arrow" marker-end="url(#ah21)"/><rect x="20" y="182" width="440" height="40" rx="7" class="amber"/><text x="240.0" y="206.6" text-anchor="middle" font-size="13" font-weight="700">Plateforme : Kubernetes, Crossplane, politiques, secrets, landing zone</text></svg><figcaption>L'Internal Developer Platform : ce que le développeur demande, ce que la plateforme fait. La plateforme est un produit : des utilisateurs, une adoption mesurée, des chemins recommandés, pas une cage.</figcaption></figure>
 
 
@@ -952,6 +952,7 @@ spec:
 <!-- ===================== REVISION ===================== -->
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 8</h2>
+<p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
 <ol class="quiz">
 <li>Toil, revue de lancement, politique de budget d'erreur : définitions et usage.</li>
 <li>Les huit patrons de résilience et la règle de chacun ; la tempête de retries.</li>
@@ -1063,7 +1064,7 @@ spec:
 
 <script>
 (function(){
-  var KEY='devops-n8-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"43": 415, "44": 395, "45": 410, "46": 390, "47": 395, "48": 405}; var EXO=5; var REV=20;
+  var KEY='devops-n8-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"43": 360, "44": 420, "45": 360, "46": 480, "47": 360, "48": 480}; var EXO=5; var REV=20;
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
   var st=load(); st.done=st.done||{}; st.spent=st.spent||{}; st.streak=st.streak||0; st.session=st.session||0; st.sessionDay=st.sessionDay||'';

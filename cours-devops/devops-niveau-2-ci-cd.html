@@ -206,7 +206,8 @@ nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{bac
 @media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-x:hidden}
-a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
 pre{overflow-wrap:normal}
 /* Repli pour les navigateurs sans color-mix */
 tr:nth-child(even) td{background:var(--bg)}
@@ -369,11 +370,11 @@ body{padding-bottom:6.5rem}
 <header class="hero">
   <div class="in">
     <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
-    <div class="level">Parcours DevOps — Niveau 2 sur 9</div>
+    <div class="level">Parcours DevOps — Niveau 2 · étape 3 sur 10</div>
     <h1>Intégration et livraison continues</h1>
     <p class="lead">Cinq chapitres pour transformer un dépôt Git en usine de livraison : principes, pipelines GitLab CI et GitHub Actions, tests et quality gates, gestion des versions, puis les stratégies de déploiement qui rendent la mise en production banale. Les runners tournent dans Docker.</p>
     <div class="meta">
-      <span>5 chapitres</span><span>≈ 30 h de travail</span><span>Prérequis : Niveaux 0 et 1</span>
+      <span>5 chapitres</span><span>≈ 25 h de travail</span><span>Prérequis : Niveaux 0 et 1</span>
     </div>
     <button class="theme" id="theme">Basculer clair / sombre</button>
   </div>
@@ -400,10 +401,9 @@ body{padding-bottom:6.5rem}
 <article id="c11">
 <div class="chaphead"><span class="chapnum">Chapitre 11</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Principes CI/CD, pipelines, artefacts</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>CI : chaque commit est construit et testé. CD : chaque commit est déployable. Déploiement continu : il part seul.</li><li>Construire une fois, déployer partout : la même image, identifiée par digest, en staging et en prod.</li><li>Un pipeline lent tue la CI : paralléliser, cacher, découper les tests, échouer vite.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Distinguer intégration continue, livraison continue et déploiement continu</li><li>Décomposer un pipeline en étapes, jobs, artefacts et caches</li><li>Appliquer la règle « construire une fois, déployer partout »</li><li>Mesurer et accélérer un pipeline</li></ul></div>
-<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>CI : chaque commit est construit et testé. CD : chaque commit est déployable. Déploiement continu : il part seul.</li><li>Construire une fois, déployer partout : la même image, identifiée par digest, en staging et en prod.</li><li>Un pipeline lent tue la CI : paralléliser, cacher, découper les tests, échouer vite.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 174" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Un pipeline type : feedback rapide d&#x27;abord, puis l&#x27;image unique promue d&#x27;environnement en environnement. Une seule image, construite une fois, identifiée par digest, promue de staging à prod."><defs><marker id="ah6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="105" height="56" rx="7" class="soft"/><text x="62.5" y="53.9" text-anchor="middle" font-size="14" font-weight="700">build</text><text x="62.5" y="71.9" text-anchor="middle" class="lbl">compile</text><path d="M115,58 L128,58" class="arrow" marker-end="url(#ah6)"/><rect x="128" y="30" width="105" height="56" rx="7" class="soft"/><text x="180.5" y="53.9" text-anchor="middle" font-size="14" font-weight="700">test</text><text x="180.5" y="71.9" text-anchor="middle" class="lbl">unit, lint</text><path d="M233,58 L246,58" class="arrow" marker-end="url(#ah6)"/><rect x="246" y="30" width="105" height="56" rx="7" class="soft"/><text x="298.5" y="53.9" text-anchor="middle" font-size="14" font-weight="700">package</text><text x="298.5" y="71.9" text-anchor="middle" class="lbl">image</text><path d="M351,58 L364,58" class="arrow" marker-end="url(#ah6)"/><rect x="364" y="30" width="105" height="56" rx="7" class="soft"/><text x="416.5" y="53.9" text-anchor="middle" font-size="14" font-weight="700">scan</text><text x="416.5" y="71.9" text-anchor="middle" class="lbl">Trivy, SAST</text><path d="M420,86 L420,105 L62,105 L62,118" class="arrow" marker-end="url(#ah6)"/><rect x="10" y="120" width="145" height="56" rx="7" class="green"/><text x="82.5" y="143.9" text-anchor="middle" font-size="14" font-weight="700">deploy staging</text><text x="82.5" y="161.9" text-anchor="middle" class="lbl">auto</text><path d="M155,148 L170,148" class="arrow" marker-end="url(#ah6)"/><rect x="170" y="120" width="145" height="56" rx="7" class="green"/><text x="242.5" y="143.9" text-anchor="middle" font-size="14" font-weight="700">tests e2e</text><text x="242.5" y="161.9" text-anchor="middle" class="lbl">smoke, contrat</text><path d="M315,148 L330,148" class="arrow" marker-end="url(#ah6)"/><rect x="330" y="120" width="145" height="56" rx="7" class="amber"/><text x="402.5" y="143.9" text-anchor="middle" font-size="14" font-weight="700">deploy prod</text><text x="402.5" y="161.9" text-anchor="middle" class="lbl">manuel ou auto</text></svg><figcaption>Un pipeline type : feedback rapide d'abord, puis l'image unique promue d'environnement en environnement. Une seule image, construite une fois, identifiée par digest, promue de staging à prod.</figcaption></figure>
 
 
@@ -472,9 +472,9 @@ body{padding-bottom:6.5rem}
 <article id="c12">
 <div class="chaphead"><span class="chapnum">Chapitre 12</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>GitLab CI, GitHub Actions, Jenkins</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>GitLab CI et GitHub Actions font le même travail ; rules/needs d&#x27;un côté, on/if/needs de l&#x27;autre.</li><li>Épingler actions et images de job par SHA ou digest ; permissions minimales ; OIDC pour le cloud.</li><li>Jenkins : savoir reprendre un Jenkinsfile et expliquer pourquoi on migre.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Écrire un pipeline GitLab CI complet avec étapes, règles, cache, artefacts et environnements</li><li>Transposer le même pipeline en GitHub Actions</li><li>Comprendre Jenkins assez pour en reprendre un en mission</li><li>Factoriser avec des templates et des pipelines réutilisables</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>GitLab CI et GitHub Actions font le même travail ; rules/needs d&#x27;un côté, on/if/needs de l&#x27;autre.</li><li>Épingler actions et images de job par SHA ou digest ; permissions minimales ; OIDC pour le cloud.</li><li>Jenkins : savoir reprendre un Jenkinsfile et expliquer pourquoi on migre.</li></ol></div>
 
 
 <h3>12.1 GitLab CI<span class="badge tag-coeur">Par cœur</span></h3>
@@ -700,9 +700,9 @@ jobs:
 <article id="c13">
 <div class="chaphead"><span class="chapnum">Chapitre 13</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Tests automatisés et quality gates</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Chaque type de test a sa place dans le pipeline, du plus rapide au plus lent.</li><li>Testcontainers remplace H2 et les mocks fragiles par de vraies dépendances.</li><li>Quality gate sur le nouveau code ; analyses de sécurité d&#x27;abord en observation, puis bloquantes.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Placer chaque type de test au bon endroit du pipeline</li><li>Lancer des tests d'intégration avec de vraies dépendances (Testcontainers)</li><li>Mettre en place SonarQube et un quality gate bloquant</li><li>Ajouter les analyses de sécurité : SAST, SCA, DAST, secrets</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Chaque type de test a sa place dans le pipeline, du plus rapide au plus lent.</li><li>Testcontainers remplace H2 et les mocks fragiles par de vraies dépendances.</li><li>Quality gate sur le nouveau code ; analyses de sécurité d&#x27;abord en observation, puis bloquantes.</li></ol></div>
 
 
 <h3>13.1 La pyramide, version pipeline<span class="badge tag-coeur">Par cœur</span></h3>
@@ -820,9 +820,9 @@ zap:
 <article id="c14">
 <div class="chaphead"><span class="chapnum">Chapitre 14</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Dépendances et versioning</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Reproductibilité = lockfiles partout (Maven, npm, pip, Docker par digest, Terraform).</li><li>Renovate ouvre les MR de mise à jour ; auto-merge des correctifs, majeures à la main.</li><li>semantic-release calcule version et changelog à partir des commits ; Nexus proxifie et gouverne.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Verrouiller les dépendances pour des builds reproductibles</li><li>Automatiser les mises à jour sans casser</li><li>Générer version, changelog et release à partir des commits</li><li>Héberger ses propres artefacts et images</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Reproductibilité = lockfiles partout (Maven, npm, pip, Docker par digest, Terraform).</li><li>Renovate ouvre les MR de mise à jour ; auto-merge des correctifs, majeures à la main.</li><li>semantic-release calcule version et changelog à partir des commits ; Nexus proxifie et gouverne.</li></ol></div>
 
 
 <h3>14.1 Reproductibilité<span class="badge tag-important">Important</span></h3>
@@ -894,9 +894,9 @@ zap:
 <article id="c15">
 <div class="chaphead"><span class="chapnum">Chapitre 15</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Stratégies de déploiement</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Recreate, rolling, blue/green, canary : interruption, coût, rollback, quand.</li><li>Rolling et canary font coexister deux versions : le schéma et les API doivent être compatibles N-1.</li><li>Feature flags : déployer n&#x27;est pas activer ; rollback par digest en une commande, sans build.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Choisir entre recreate, rolling, blue/green, canary selon le risque et le coût</li><li>Séparer déploiement et activation avec les feature flags</li><li>Concevoir un retour arrière en moins de deux minutes</li><li>Gérer la base de données dans un déploiement sans interruption</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Recreate, rolling, blue/green, canary : interruption, coût, rollback, quand.</li><li>Rolling et canary font coexister deux versions : le schéma et les API doivent être compatibles N-1.</li><li>Feature flags : déployer n&#x27;est pas activer ; rollback par digest en une commande, sans build.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 242" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blue/green pour un rollback instantané ; canary pour valider sur du trafic réel."><defs><marker id="ah7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><text x="20" y="22" class="glab">Blue/green : on bascule 100 % du trafic</text><rect x="20" y="32" width="90" height="44" rx="7" class="box"/><text x="65.0" y="58.5" text-anchor="middle" font-size="13" font-weight="700">Proxy</text><rect x="150" y="32" width="100" height="44" rx="7" class="soft"/><text x="200.0" y="58.5" text-anchor="middle" font-size="13" font-weight="700">Blue v1</text><rect x="150" y="86" width="100" height="44" rx="7" class="green"/><text x="200.0" y="112.5" text-anchor="middle" font-size="13" font-weight="700">Green v2</text><path d="M110,54 L150,54" class="arrow" marker-end="url(#ah7)"/><text x="130.0" y="46.0" text-anchor="middle" class="lbl">100 %</text><path d="M110,58 L150,104" class="arrow dashed" marker-end="url(#ah7)"/><text x="120" y="118" text-anchor="start" class="lbl">bascule</text><text x="270" y="60" text-anchor="start" class="lbl">Rollback : rebasculer</text><text x="270" y="76" text-anchor="start" class="lbl">sur blue, en secondes.</text><text x="20" y="156" class="glab">Canary : on augmente progressivement</text><rect x="20" y="166" width="90" height="44" rx="7" class="box"/><text x="65.0" y="192.6" text-anchor="middle" font-size="13" font-weight="700">Proxy</text><rect x="150" y="166" width="100" height="44" rx="7" class="soft"/><text x="200.0" y="192.6" text-anchor="middle" font-size="13" font-weight="700">v1</text><rect x="150" y="220" width="100" height="44" rx="7" class="green"/><text x="200.0" y="246.6" text-anchor="middle" font-size="13" font-weight="700">v2</text><path d="M110,184 L150,184" class="arrow" marker-end="url(#ah7)"/><text x="130.0" y="176.0" text-anchor="middle" class="lbl">90 %</text><path d="M110,192 L150,238" class="arrow" marker-end="url(#ah7)"/><text x="160.0" y="221.0" text-anchor="middle" class="lbl">10 %</text><text x="270" y="190" text-anchor="start" class="lbl">10 → 50 → 100 % si les</text><text x="270" y="206" text-anchor="start" class="lbl">métriques restent bonnes.</text><text x="270" y="222" text-anchor="start" class="lbl">Sinon : couper le canari.</text></svg><figcaption>Blue/green pour un rollback instantané ; canary pour valider sur du trafic réel.</figcaption></figure>
 
 
@@ -978,6 +978,7 @@ return legacyMapService.render(zone);</code></pre>
 <!-- ===================== REVISION ===================== -->
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 2</h2>
+<p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
 <ol class="quiz">
 <li>CI, livraison continue, déploiement continu : définitions et ce qui manque pour passer de l'un à l'autre.</li>
 <li>Étape, job, artefact, cache, runner : rôle de chacun.</li>
@@ -1089,7 +1090,7 @@ return legacyMapService.render(zone);</code></pre>
 
 <script>
 (function(){
-  var KEY='devops-n2-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"11": 320, "12": 320, "13": 320, "14": 320, "15": 305}; var EXO=5; var REV=20;
+  var KEY='devops-n2-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"11": 180, "12": 300, "13": 300, "14": 210, "15": 300}; var EXO=5; var REV=20;
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
   var st=load(); st.done=st.done||{}; st.spent=st.spent||{}; st.streak=st.streak||0; st.session=st.session||0; st.sessionDay=st.sessionDay||'';

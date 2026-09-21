@@ -206,7 +206,8 @@ nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{bac
 @media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-x:hidden}
-a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
 pre{overflow-wrap:normal}
 /* Repli pour les navigateurs sans color-mix */
 tr:nth-child(even) td{background:var(--bg)}
@@ -369,11 +370,11 @@ body{padding-bottom:6.5rem}
 <header class="hero">
   <div class="in">
     <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
-    <div class="level">Parcours DevOps — Niveau 5 sur 9</div>
+    <div class="level">Parcours DevOps — Niveau 5 · étape 6 sur 10</div>
     <h1>Kubernetes</h1>
     <p class="lead">Sept chapitres pour maîtriser l'orchestrateur devenu standard : architecture, objets de base, stockage et applications à état, Helm et Kustomize, GitOps avec ArgoCD, service mesh, puis autoscaling et scheduling. Le cluster tourne dans Docker (kind), gratuitement, et CrisisShield y est déployé en GitOps à la fin du niveau.</p>
     <div class="meta">
-      <span>7 chapitres</span><span>≈ 50 h de travail</span><span>Prérequis : Niveaux 0 à 4</span>
+      <span>7 chapitres</span><span>≈ 39 h de travail</span><span>Prérequis : Niveaux 0 à 4</span>
     </div>
     <button class="theme" id="theme">Basculer clair / sombre</button>
   </div>
@@ -402,14 +403,13 @@ body{padding-bottom:6.5rem}
 <article id="c25">
 <div class="chaphead"><span class="chapnum">Chapitre 25</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Architecture</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>API server, etcd, scheduler, contrôleurs ; kubelet, containerd, CNI sur les nœuds.</li><li>Tout est déclaré ; les contrôleurs réconcilient en boucle l&#x27;état réel vers l&#x27;état désiré.</li><li>describe (événements) puis logs --previous : les deux premiers réflexes devant un Pod malade.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Nommer chaque composant du control plane et des nœuds, et son rôle</li><li>Expliquer le modèle déclaratif et la boucle de réconciliation</li><li>Lancer un cluster local dans Docker et le piloter avec kubectl en conteneur</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>API server, etcd, scheduler, contrôleurs ; kubelet, containerd, CNI sur les nœuds.</li><li>Tout est déclaré ; les contrôleurs réconcilient en boucle l&#x27;état réel vers l&#x27;état désiré.</li><li>describe (événements) puis logs --previous : les deux premiers réflexes devant un Pod malade.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Les composants de Kubernetes et qui parle à qui. kubectl parle à l&#x27;API ; les contrôleurs rapprochent en boucle l&#x27;état réel de l&#x27;état désiré."><defs><marker id="ah11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="230" height="190" rx="10" class="frame"/><text x="20" y="22" class="glab">Control plane</text><rect x="20" y="40" width="210" height="36" rx="7" class="soft"/><text x="125.0" y="61.9" text-anchor="middle" font-size="11" font-weight="700">kube-apiserver (le point d&#x27;entrée)</text><rect x="20" y="84" width="210" height="36" rx="7" class="soft"/><text x="125.0" y="105.8" text-anchor="middle" font-size="11" font-weight="700">etcd (l&#x27;état)</text><rect x="20" y="128" width="210" height="36" rx="7" class="soft"/><text x="125.0" y="149.8" text-anchor="middle" font-size="11" font-weight="700">scheduler (choisit un nœud)</text><rect x="20" y="172" width="210" height="36" rx="7" class="soft"/><text x="125.0" y="193.8" text-anchor="middle" font-size="11" font-weight="700">controller-manager (les boucles)</text><rect x="260" y="30" width="210" height="190" rx="10" class="frame"/><text x="270" y="22" class="glab">Nœud (× N)</text><rect x="270" y="40" width="190" height="36" rx="7" class="box"/><text x="365.0" y="61.9" text-anchor="middle" font-size="11" font-weight="700">kubelet (exécute les Pods)</text><rect x="270" y="84" width="190" height="36" rx="7" class="box"/><text x="365.0" y="105.8" text-anchor="middle" font-size="11" font-weight="700">containerd (le runtime)</text><rect x="270" y="128" width="190" height="36" rx="7" class="box"/><text x="365.0" y="149.8" text-anchor="middle" font-size="11" font-weight="700">kube-proxy / CNI (réseau)</text><rect x="270" y="172" width="190" height="36" rx="7" class="green"/><text x="365.0" y="193.8" text-anchor="middle" font-size="11" font-weight="700">Pods</text><path d="M230,58 L270,58" class="arrow" marker-end="url(#ah11)"/></svg><figcaption>Les composants de Kubernetes et qui parle à qui. kubectl parle à l'API ; les contrôleurs rapprochent en boucle l'état réel de l'état désiré.</figcaption></figure>
 
 
 <div class="note">Outillage du niveau, tout en conteneur : <code>kind</code> crée un cluster dont les nœuds sont des conteneurs Docker ; <code>kubectl</code> et <code>helm</code> tournent depuis une image. Un alias dans ton <code>.bashrc</code> : <code>alias k='docker run --rm -it --network host -v "$HOME/.kube:/root/.kube" -v "$PWD:/w" -w /w bitnami/kubectl:1.31'</code>. Le <code>--network host</code> ne fonctionne pas sous Docker Desktop Windows : remplace-le par le réseau <code>kind</code> et un kubeconfig dont l'adresse du serveur est <code>https://crisisshield-control-plane:6443</code> (voir TP 25).</div>
-<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
 
 <h3>25.1 Pourquoi un orchestrateur<span class="badge tag-contexte">Bon à savoir</span></h3>
 <p>Docker Compose pilote un hôte. Dès qu'il faut plusieurs machines, le redémarrage automatique sur un autre nœud, la mise à l'échelle, les déploiements progressifs, la découverte de services et la gestion de la capacité, il faut un orchestrateur. Kubernetes (Google, 2014, CNCF) a gagné : toutes les offres cloud et sur site en proposent, et l'écosystème (Helm, ArgoCD, Prometheus, Istio, cert-manager) est devenu la plateforme standard.</p>
@@ -485,9 +485,9 @@ kubectl config get-contexts ; kubectl config use-context kind-crisisshield</code
 <article id="c26">
 <div class="chaphead"><span class="chapnum">Chapitre 26</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Objets fondamentaux</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le Deployment de référence : probes, requests sans limite CPU, arrêt propre, non root, PDB, topologie.</li><li>Service pour une adresse stable, Ingress ou Gateway API pour entrer, NetworkPolicy default-deny.</li><li>Un Secret n&#x27;est pas secret : chiffrement etcd, RBAC, et External Secrets plutôt que Git.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Écrire un Deployment de production complet : probes, ressources, sécurité, stratégie</li><li>Exposer une application : Service, Ingress, Gateway API, avec TLS automatique</li><li>Gérer configuration et secrets ; isoler par namespace, RBAC et NetworkPolicy</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le Deployment de référence : probes, requests sans limite CPU, arrêt propre, non root, PDB, topologie.</li><li>Service pour une adresse stable, Ingress ou Gateway API pour entrer, NetworkPolicy default-deny.</li><li>Un Secret n&#x27;est pas secret : chiffrement etcd, RBAC, et External Secrets plutôt que Git.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comment une requête arrive à un Pod, et qui maintient les Pods en vie. Le Service route vers les Pods prêts (readiness) ; le Deployment crée un ReplicaSet par version."><defs><marker id="ah12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="20" y="20" width="130" height="44" rx="7" class="purple"/><text x="85.0" y="38.0" text-anchor="middle" font-size="13" font-weight="700">Ingress</text><text x="85.0" y="55.0" text-anchor="middle" class="lbl">hôte, chemin, TLS</text><path d="M85,64 L85,96" class="arrow" marker-end="url(#ah12)"/><rect x="20" y="96" width="130" height="44" rx="7" class="soft"/><text x="85.0" y="114.0" text-anchor="middle" font-size="13" font-weight="700">Service</text><text x="85.0" y="131.1" text-anchor="middle" class="lbl">IP stable, DNS</text><rect x="20" y="176" width="40" height="40" rx="7" class="green"/><text x="40.0" y="200.2" text-anchor="middle" font-size="12" font-weight="700">Pod</text><path d="M85,140 L40,176" class="arrow" marker-end="url(#ah12)"/><rect x="65" y="176" width="40" height="40" rx="7" class="green"/><text x="85.0" y="200.2" text-anchor="middle" font-size="12" font-weight="700">Pod</text><path d="M85,140 L85,176" class="arrow" marker-end="url(#ah12)"/><rect x="110" y="176" width="40" height="40" rx="7" class="green"/><text x="130.0" y="200.2" text-anchor="middle" font-size="12" font-weight="700">Pod</text><path d="M85,140 L130,176" class="arrow" marker-end="url(#ah12)"/><rect x="300" y="20" width="160" height="44" rx="7" class="amber"/><text x="380.0" y="38.0" text-anchor="middle" font-size="13" font-weight="700">Deployment</text><text x="380.0" y="55.0" text-anchor="middle" class="lbl">réplicas, stratégie</text><path d="M380,64 L380,96" class="arrow" marker-end="url(#ah12)"/><rect x="300" y="96" width="160" height="44" rx="7" class="amber"/><text x="380.0" y="114.0" text-anchor="middle" font-size="13" font-weight="700">ReplicaSet</text><text x="380.0" y="131.1" text-anchor="middle" class="lbl">maintient N Pods</text><path d="M380,140 L150,196" class="arrow" marker-end="url(#ah12)"/></svg><figcaption>Comment une requête arrive à un Pod, et qui maintient les Pods en vie. Le Service route vers les Pods prêts (readiness) ; le Deployment crée un ReplicaSet par version.</figcaption></figure>
 
 
@@ -710,9 +710,9 @@ spec:
 <article id="c27">
 <div class="chaphead"><span class="chapnum">Chapitre 27</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Stockage, StatefulSets, Operators et CRD</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>PV, PVC, StorageClass, CSI ; un volume RWO suit un nœud, d&#x27;où la lenteur des bascules.</li><li>StatefulSet donne identité et volume stables ; il ne fait pas la réplication : c&#x27;est le rôle de l&#x27;opérateur.</li><li>Base managée par défaut, opérateur (CloudNativePG) si beaucoup de bases, portabilité ou sur site ; restauration testée.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Expliquer PersistentVolume, PersistentVolumeClaim, StorageClass et CSI</li><li>Déployer une application à état avec un StatefulSet</li><li>Comprendre le pattern Operator et exploiter une base de données via un opérateur</li><li>Décider quand une base doit ou non tourner dans Kubernetes</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>PV, PVC, StorageClass, CSI ; un volume RWO suit un nœud, d&#x27;où la lenteur des bascules.</li><li>StatefulSet donne identité et volume stables ; il ne fait pas la réplication : c&#x27;est le rôle de l&#x27;opérateur.</li><li>Base managée par défaut, opérateur (CloudNativePG) si beaucoup de bases, portabilité ou sur site ; restauration testée.</li></ol></div>
 
 
 <h3>27.1 Le stockage<span class="badge tag-coeur">Par cœur</span></h3>
@@ -819,9 +819,9 @@ spec: {schedule: "0 0 2 * * *", cluster: {name: db}}</code></pre>
 <article id="c28">
 <div class="chaphead"><span class="chapnum">Chapitre 28</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Helm et Kustomize</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Helm pour installer et distribuer des paquets ; Kustomize pour les variantes de tes applications.</li><li>helm diff, --atomic, versions épinglées, checksum de ConfigMap, hooks de migration.</li><li>Toujours rendre et scanner les manifests avant de les appliquer.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Installer et exploiter des charts tiers en toute sécurité</li><li>Écrire un chart pour ton application, avec tests et hooks</li><li>Gérer des variantes par environnement avec Kustomize</li><li>Choisir entre les deux, ou les combiner</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Helm pour installer et distribuer des paquets ; Kustomize pour les variantes de tes applications.</li><li>helm diff, --atomic, versions épinglées, checksum de ConfigMap, hooks de migration.</li><li>Toujours rendre et scanner les manifests avant de les appliquer.</li></ol></div>
 
 
 <h3>28.1 Helm : le gestionnaire de paquets<span class="badge tag-important">Important</span></h3>
@@ -961,9 +961,9 @@ commonLabels: {environment: prod}</code></pre>
 <article id="c29">
 <div class="chaphead"><span class="chapnum">Chapitre 29</span><span class="badge lvl-senior">Senior</span></div>
 <h2>GitOps : ArgoCD et Flux</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>ArgoCD réconcilie Git et cluster ; AppProject restrictif, ApplicationSet par environnement, sync waves.</li><li>Secrets : External Secrets vers un gestionnaire, Sealed Secrets ou SOPS sinon ; jamais en clair.</li><li>Promotion staging → prod par merge request ; rollback par revert ; Flux fait pareil sans interface.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Installer et sécuriser ArgoCD, définir des Applications et un ApplicationSet</li><li>Gérer les secrets en GitOps (Sealed Secrets, SOPS, External Secrets)</li><li>Organiser les dépôts et la promotion entre environnements</li><li>Positionner Flux et connaître ses différences</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>ArgoCD réconcilie Git et cluster ; AppProject restrictif, ApplicationSet par environnement, sync waves.</li><li>Secrets : External Secrets vers un gestionnaire, Sealed Secrets ou SOPS sinon ; jamais en clair.</li><li>Promotion staging → prod par merge request ; rollback par revert ; Flux fait pareil sans interface.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 234" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Du commit à la production en GitOps : promotion par merge request. La CI ne touche jamais le cluster : elle écrit un digest dans Git. La prod attend une merge request revue."><defs><marker id="ah13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="100" height="50" rx="7" class="soft"/><text x="60.0" y="59.5" text-anchor="middle" font-size="13" font-weight="700">Dépôt code</text><path d="M110,55 L130,55" class="arrow" marker-end="url(#ah13)"/><rect x="130" y="30" width="80" height="50" rx="7" class="box"/><text x="170.0" y="59.5" text-anchor="middle" font-size="13" font-weight="700">CI</text><path d="M210,55 L230,55" class="arrow" marker-end="url(#ah13)"/><rect x="230" y="30" width="110" height="50" rx="7" class="box"/><text x="285.0" y="51.0" text-anchor="middle" font-size="13" font-weight="700">Registre</text><text x="285.0" y="68.0" text-anchor="middle" class="lbl">image@digest</text><path d="M285,80 L285,110" class="arrow" marker-end="url(#ah13)"/><rect x="200" y="110" width="170" height="50" rx="7" class="amber"/><text x="285.0" y="139.2" text-anchor="middle" font-size="12" font-weight="700">Dépôt config : staging</text><path d="M370,135 L400,135" class="arrow" marker-end="url(#ah13)"/><text x="385.0" y="127.0" text-anchor="middle" class="lbl">MR</text><rect x="400" y="110" width="70" height="50" rx="7" class="amber"/><text x="435.0" y="139.2" text-anchor="middle" font-size="12" font-weight="700">prod</text><rect x="200" y="190" width="170" height="44" rx="7" class="purple"/><text x="285.0" y="216.6" text-anchor="middle" font-size="13" font-weight="700">ArgoCD réconcilie</text><path d="M285,160 L285,190" class="arrow" marker-end="url(#ah13)"/><path d="M435,160 L340,190" class="arrow" marker-end="url(#ah13)"/></svg><figcaption>Du commit à la production en GitOps : promotion par merge request. La CI ne touche jamais le cluster : elle écrit un digest dans Git. La prod attend une merge request revue.</figcaption></figure>
 
 
@@ -1076,9 +1076,9 @@ spec:
 <article id="c30">
 <div class="chaphead"><span class="chapnum">Chapitre 30</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Service mesh</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le mesh sort mTLS, autorisation, résilience et métriques de trafic du code de chaque service.</li><li>Sidecar hier, ambient et eBPF demain ; Istio, Linkerd, Cilium.</li><li>Pas de mesh pour trois services ; oui quand mTLS partout, dizaines de services polyglottes, canary fin.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Expliquer ce qu'un mesh apporte (mTLS, observabilité, trafic) et ce qu'il coûte</li><li>Comparer Istio, Linkerd et Cilium mesh</li><li>Décider si un projet en a besoin</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le mesh sort mTLS, autorisation, résilience et métriques de trafic du code de chaque service.</li><li>Sidecar hier, ambient et eBPF demain ; Istio, Linkerd, Cilium.</li><li>Pas de mesh pour trois services ; oui quand mTLS partout, dizaines de services polyglottes, canary fin.</li></ol></div>
 
 
 <h3>30.1 Le problème que le mesh résout<span class="badge tag-contexte">Bon à savoir</span></h3>
@@ -1175,9 +1175,9 @@ spec:
 <article id="c31">
 <div class="chaphead"><span class="chapnum">Chapitre 31</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Autoscaling, scheduling, affinités, quotas</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>HPA sur métriques métier, VPA pour calibrer, KEDA pour scaler à zéro sur une file.</li><li>Karpenter provisionne le bon nœud en secondes et consolide ; Spot et ARM pour le coût.</li><li>Affinités, taints, priorités, topologie, quotas : gouverner le placement et la capacité entre équipes.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Mettre à l'échelle les Pods (HPA, VPA, KEDA) et les nœuds (Cluster Autoscaler, Karpenter)</li><li>Influencer le scheduler : affinités, taints, priorités, topologie</li><li>Dimensionner un cluster et gérer la capacité entre équipes</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>HPA sur métriques métier, VPA pour calibrer, KEDA pour scaler à zéro sur une file.</li><li>Karpenter provisionne le bon nœud en secondes et consolide ; Spot et ARM pour le coût.</li><li>Affinités, taints, priorités, topologie, quotas : gouverner le placement et la capacité entre équipes.</li></ol></div>
 
 
 <h3>31.1 Mise à l'échelle des Pods<span class="badge tag-coeur">Par cœur</span></h3>
@@ -1278,6 +1278,7 @@ priorityClassName: critical</code></pre>
 <!-- ===================== REVISION ===================== -->
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 5</h2>
+<p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
 <ol class="quiz">
 <li>Chaque composant du control plane et des nœuds, et son rôle.</li>
 <li>Le parcours complet d'un <code>kubectl apply</code> jusqu'au conteneur qui tourne.</li>
@@ -1389,7 +1390,7 @@ priorityClassName: critical</code></pre>
 
 <script>
 (function(){
-  var KEY='devops-n5-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"25": 380, "26": 360, "27": 380, "28": 385, "29": 385, "30": 405, "31": 385}; var EXO=5; var REV=20;
+  var KEY='devops-n5-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"25": 120, "26": 360, "27": 300, "28": 240, "29": 360, "30": 300, "31": 300}; var EXO=5; var REV=20;
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
   var st=load(); st.done=st.done||{}; st.spent=st.spent||{}; st.streak=st.streak||0; st.session=st.session||0; st.sessionDay=st.sessionDay||'';

@@ -206,7 +206,8 @@ nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{bac
 @media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-x:hidden}
-a,code,.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
 pre{overflow-wrap:normal}
 /* Repli pour les navigateurs sans color-mix */
 tr:nth-child(even) td{background:var(--bg)}
@@ -369,11 +370,11 @@ body{padding-bottom:6.5rem}
 <header class="hero">
   <div class="in">
     <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
-    <div class="level">Parcours DevOps — Niveau 4 sur 9</div>
+    <div class="level">Parcours DevOps — Niveau 4 · étape 5 sur 10</div>
     <h1>Cloud : AWS en profondeur, Azure, GCP, FinOps</h1>
     <p class="lead">Cinq chapitres pour passer de « je sais que le cloud existe » à « je conçois, sécurise et facture une plateforme ». AWS sert de fil conducteur parce que c'est le plus demandé en mission ; Azure et GCP sont traités par équivalence. Les TP tournent sur LocalStack, et sur un vrai compte AWS Free Tier quand c'est indispensable, avec le coût annoncé à chaque fois.</p>
     <div class="meta">
-      <span>5 chapitres</span><span>≈ 40 h de travail</span><span>Prérequis : Niveaux 0 à 3</span>
+      <span>5 chapitres</span><span>≈ 24 h de travail</span><span>Prérequis : Niveaux 0 à 3</span>
     </div>
     <button class="theme" id="theme">Basculer clair / sombre</button>
   </div>
@@ -400,10 +401,9 @@ body{padding-bottom:6.5rem}
 <article id="c20">
 <div class="chaphead"><span class="chapnum">Chapitre 20</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Concepts du cloud</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Choisir le niveau de service le plus haut qui satisfait les contraintes ; multi-AZ est le minimum.</li><li>Responsabilité partagée : la quasi-totalité des fuites vient du côté client (bucket, clé, security group).</li><li>Compte root avec MFA puis jamais utilisé ; budgets et alertes avant la première ressource.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Distinguer IaaS, PaaS, SaaS, FaaS et choisir le bon niveau d'abstraction</li><li>Expliquer régions, zones de disponibilité, edge, et concevoir pour la panne</li><li>Appliquer le modèle de responsabilité partagée</li><li>Lire une facture cloud et les cinq piliers d'une architecture bien conçue</li></ul></div>
-<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Choisir le niveau de service le plus haut qui satisfait les contraintes ; multi-AZ est le minimum.</li><li>Responsabilité partagée : la quasi-totalité des fuites vient du côté client (bucket, clé, security group).</li><li>Compte root avec MFA puis jamais utilisé ; budgets et alertes avant la première ressource.</li></ol></div>
 
 
 <h3>20.1 Les niveaux de service<span class="badge tag-coeur">Par cœur</span></h3>
@@ -467,9 +467,9 @@ body{padding-bottom:6.5rem}
 <article id="c21">
 <div class="chaphead"><span class="chapnum">Chapitre 21</span><span class="badge lvl-senior">Senior</span></div>
 <h2>AWS en profondeur</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>IAM : rôles plutôt que clés, OIDC pour la CI, moindre privilège vérifié par Access Analyzer.</li><li>VPC en trois niveaux sur trois AZ ; security groups par référence ; endpoints plutôt que NAT.</li><li>Fargate par défaut, EKS pour la plateforme, Lambda pour l&#x27;événementiel ; RDS Multi-AZ, S3 verrouillé.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Écrire des politiques IAM au moindre privilège et utiliser des rôles plutôt que des clés</li><li>Concevoir un VPC de production : sous-réseaux, routage, NAT, endpoints, security groups</li><li>Choisir entre EC2, ECS Fargate, EKS et Lambda pour une charge donnée</li><li>Exploiter S3, RDS, et les briques d'observabilité et de sécurité natives</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>IAM : rôles plutôt que clés, OIDC pour la CI, moindre privilège vérifié par Access Analyzer.</li><li>VPC en trois niveaux sur trois AZ ; security groups par référence ; endpoints plutôt que NAT.</li><li>Fargate par défaut, EKS pour la plateforme, Lambda pour l&#x27;événementiel ; RDS Multi-AZ, S3 verrouillé.</li></ol></div>
 <figure class="fig"><svg viewBox="0 0 480 202" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Le VPC de production : trois zones, trois niveaux de sous-réseaux. Seul le public a une route vers Internet ; le privé sort par la NAT ou des endpoints ; les données ne sortent jamais."><defs><marker id="ah10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="20" y="10" width="440" height="30" rx="7" class="box"/><text x="240.0" y="29.6" text-anchor="middle" font-size="13" font-weight="700">Internet Gateway</text><text x="20" y="60" class="glab">AZ a</text><rect x="20" y="66" width="140" height="40" rx="7" class="soft"/><text x="90.0" y="90.2" text-anchor="middle" font-size="12" font-weight="700">public : ALB, NAT</text><rect x="20" y="114" width="140" height="40" rx="7" class="green"/><text x="90.0" y="138.2" text-anchor="middle" font-size="12" font-weight="700">privé : ECS, EKS</text><rect x="20" y="162" width="140" height="40" rx="7" class="amber"/><text x="90.0" y="186.2" text-anchor="middle" font-size="12" font-weight="700">données : RDS</text><text x="170" y="60" class="glab">AZ b</text><rect x="170" y="66" width="140" height="40" rx="7" class="soft"/><text x="240.0" y="90.2" text-anchor="middle" font-size="12" font-weight="700">public : ALB, NAT</text><rect x="170" y="114" width="140" height="40" rx="7" class="green"/><text x="240.0" y="138.2" text-anchor="middle" font-size="12" font-weight="700">privé : ECS, EKS</text><rect x="170" y="162" width="140" height="40" rx="7" class="amber"/><text x="240.0" y="186.2" text-anchor="middle" font-size="12" font-weight="700">données : RDS</text><text x="320" y="60" class="glab">AZ c</text><rect x="320" y="66" width="140" height="40" rx="7" class="soft"/><text x="390.0" y="90.2" text-anchor="middle" font-size="12" font-weight="700">public : ALB, NAT</text><rect x="320" y="114" width="140" height="40" rx="7" class="green"/><text x="390.0" y="138.2" text-anchor="middle" font-size="12" font-weight="700">privé : ECS, EKS</text><rect x="320" y="162" width="140" height="40" rx="7" class="amber"/><text x="390.0" y="186.2" text-anchor="middle" font-size="12" font-weight="700">données : RDS</text><path d="M240,40 L240,66" class="arrow" marker-end="url(#ah10)"/></svg><figcaption>Le VPC de production : trois zones, trois niveaux de sous-réseaux. Seul le public a une route vers Internet ; le privé sort par la NAT ou des endpoints ; les données ne sortent jamais.</figcaption></figure>
 
 
@@ -630,9 +630,9 @@ resource "aws_lambda_event_source_mapping" "queue" {
 <article id="c22">
 <div class="chaphead"><span class="chapnum">Chapitre 22</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Azure et GCP : équivalences</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les trois clouds font la même chose sous des noms différents ; l&#x27;identité et le réseau diffèrent vraiment.</li><li>Azure = Entra ID et groupes de ressources ; GCP = VPC global, projets, Cloud Run et GKE.</li><li>Cloud de confiance : résidence des données ≠ souveraineté juridique ; SecNumCloud, Bleu, S3NS.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Transposer une architecture AWS en Azure et en GCP</li><li>Comprendre les modèles d'identité et d'organisation propres à chaque fournisseur</li><li>Savoir ce qui est réellement différent, au-delà des noms</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les trois clouds font la même chose sous des noms différents ; l&#x27;identité et le réseau diffèrent vraiment.</li><li>Azure = Entra ID et groupes de ressources ; GCP = VPC global, projets, Cloud Run et GKE.</li><li>Cloud de confiance : résidence des données ≠ souveraineté juridique ; SecNumCloud, Bleu, S3NS.</li></ol></div>
 
 
 <h3>22.1 Tableau d'équivalences<span class="badge tag-contexte">Bon à savoir</span></h3>
@@ -705,9 +705,9 @@ resource "google_cloud_run_v2_service" "api" {
 <article id="c23">
 <div class="chaphead"><span class="chapnum">Chapitre 23</span><span class="badge lvl-senior">Senior</span></div>
 <h2>FinOps</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>FinOps : informer (tags, attribution), optimiser (leviers dans l&#x27;ordre), opérer (revue mensuelle).</li><li>Éteindre, redimensionner, changer d&#x27;architecture, puis seulement s&#x27;engager (Savings Plans).</li><li>NAT, transfert de données, logs sans rétention, IPv4 publiques : les postes surprises.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Rendre les coûts visibles, attribuables et prévisibles</li><li>Appliquer les leviers d'optimisation dans le bon ordre</li><li>Mettre en place un processus FinOps léger dans une équipe</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>FinOps : informer (tags, attribution), optimiser (leviers dans l&#x27;ordre), opérer (revue mensuelle).</li><li>Éteindre, redimensionner, changer d&#x27;architecture, puis seulement s&#x27;engager (Savings Plans).</li><li>NAT, transfert de données, logs sans rétention, IPv4 publiques : les postes surprises.</li></ol></div>
 
 
 <h3>23.1 Le problème<span class="badge tag-contexte">Bon à savoir</span></h3>
@@ -764,9 +764,9 @@ resource "google_cloud_run_v2_service" "api" {
 <article id="c24">
 <div class="chaphead"><span class="chapnum">Chapitre 24</span><span class="badge lvl-expert">Expert</span></div>
 <h2>Multi-cloud et hybride</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Multi-cloud subi, choisi par service, ou portable : le troisième est rarement justifié.</li><li>La vraie dépendance est dans les données et les compétences ; formats ouverts et plan de sortie testé.</li><li>Hybride : plan d&#x27;adressage sans chevauchement, DNS et identités fédérés, liaison dédiée si latence.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Distinguer multi-cloud subi, choisi et portable, et évaluer le coût réel de chacun</li><li>Concevoir une connectivité hybride entre un site et le cloud</li><li>Reconnaître la couche d'abstraction utile (Kubernetes, Terraform) et ses limites</li></ul></div>
-<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Multi-cloud subi, choisi par service, ou portable : le troisième est rarement justifié.</li><li>La vraie dépendance est dans les données et les compétences ; formats ouverts et plan de sortie testé.</li><li>Hybride : plan d&#x27;adressage sans chevauchement, DNS et identités fédérés, liaison dédiée si latence.</li></ol></div>
 
 
 <h3>24.1 Les trois multi-clouds<span class="badge tag-contexte">Bon à savoir</span></h3>
@@ -812,6 +812,7 @@ resource "google_cloud_run_v2_service" "api" {
 <!-- ===================== REVISION ===================== -->
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 4</h2>
+<p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
 <ol class="quiz">
 <li>IaaS, CaaS, PaaS, FaaS, SaaS : ce que tu gères dans chacun, et comment tu choisis.</li>
 <li>Région, AZ, edge : pourquoi multi-AZ est le minimum et multi-région rarement justifié.</li>
@@ -923,7 +924,7 @@ resource "google_cloud_run_v2_service" "api" {
 
 <script>
 (function(){
-  var KEY='devops-n4-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"20": 430, "21": 395, "22": 460, "23": 440, "24": 465}; var EXO=5; var REV=20;
+  var KEY='devops-n4-sprint'; var BUDGET={"tag-coeur": 12, "tag-important": 8, "tag-contexte": 4}; var TP={"20": 120, "21": 480, "22": 180, "23": 180, "24": 240}; var EXO=5; var REV=20;
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
   var st=load(); st.done=st.done||{}; st.spent=st.spent||{}; st.streak=st.streak||0; st.session=st.session||0; st.sessionDay=st.sessionDay||'';
