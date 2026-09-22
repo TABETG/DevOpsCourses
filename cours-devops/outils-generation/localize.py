@@ -25,7 +25,7 @@ extra_css = """
 idx = (d/'index.html').read_text()
 for aid, fn, _ in levels:
     idx = idx.replace(f'https://claude.ai/artifact/{aid}', fn)
-idx = idx.replace('https://claude.ai/artifact/3hJC54hLqcEAzTFtB1G8Qi', 'devops-fiches-entretien.html').replace('https://claude.ai/artifact/R1VURi7M5FUSwshfHjaKPB', 'devops-aide-memoire.html')
+idx = idx.replace('https://claude.ai/artifact/3hJC54hLqcEAzTFtB1G8Qi', 'devops-fiches-entretien.html').replace('https://claude.ai/artifact/R1VURi7M5FUSwshfHjaKPB', 'devops-aide-memoire.html').replace('https://claude.ai/artifact/2Jr4M3v18aTLjxwmdL8377', 'cours-react.html').replace('https://claude.ai/artifact/FrwLKYymfrm4HRG9e3bxXB', 'cours-angular.html')
 idx = idx.replace('</style>', extra_css, 1)
 (d/'index.html').write_text(idx)
 # pages de niveau : lien accueil dans le hero, précédent/suivant en bas

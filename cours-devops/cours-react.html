@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>React — de zéro à expert</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+/* ============ Mode sprint : temps maximum, minuteurs, pression ============ */
+.tbox{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.35rem 0 .8rem;font-size:.82rem}
+.tbox .tb{font-weight:700;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem}
+.tbox button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.2rem .7rem;cursor:pointer;min-height:32px}
+.tbox button.go{background:var(--accent);color:#fff}
+.tbox button.ok{border-color:var(--ok);color:var(--ok)}
+.tbox .spent{color:var(--muted)}
+.tbox.done .tb{background:var(--tp-soft);border-color:var(--tp-line);color:var(--tp)}
+.tbox.done .spent{color:var(--ok);font-weight:700}
+.tbox.late .spent{color:#A11B1B;font-weight:700}
+.chaptime{font-size:.86rem;color:var(--muted);margin:-.2rem 0 .9rem;padding:.5rem .8rem;border:1px dashed var(--line-strong);border-radius:8px;background:var(--bg)}
+.chaptime b{color:var(--ink)}
+.sec-active{outline:3px solid var(--accent);outline-offset:6px;border-radius:6px}
+.sec-active.exo,.sec-active.tp{outline-offset:2px}
+h3.sec-active{padding-left:.75rem}
+#sprint{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--hero);color:#fff;padding:.5rem .9rem calc(.5rem + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 16px rgba(0,0,0,.25);font-size:.85rem}
+#sprint .row{display:flex;align-items:center;gap:.6rem .9rem;flex-wrap:wrap;max-width:1120px;margin:0 auto}
+#sprint .clock{font-family:"JetBrains Mono",monospace;font-size:1.5rem;font-weight:700;min-width:5.2rem;letter-spacing:.02em}
+#sprint .clock.late{color:#FF6B6B;animation:blink 1s steps(2,start) infinite}
+#sprint .cur{flex:1 1 200px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sprint .cur b{color:#fff}
+#sprint .stat{opacity:.85;white-space:nowrap}
+#sprint .pbar{flex:1 1 100%;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+#sprint .pbar i{display:block;height:100%;width:0;background:#6CD19B;transition:width .3s}
+#sprint button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:.3rem .65rem;cursor:pointer;min-height:34px}
+#sprint button.primary{background:#6FA3F5;border-color:#6FA3F5;color:#0B1220}
+#sprint button:disabled{opacity:.4;cursor:default}
+#sprint .late-msg{color:#FF6B6B;font-weight:700}
+body{padding-bottom:6.5rem}
+@keyframes blink{50%{opacity:.35}}
+@media (max-width:480px){#sprint{font-size:.74rem;padding:.35rem .6rem calc(.35rem + env(safe-area-inset-bottom,0px))} #sprint .row{gap:.3rem .6rem} #sprint .clock{font-size:1.2rem;min-width:4.2rem} #sprint button{padding:.25rem .5rem;min-height:30px;font-size:.74rem} #sprint .stat{font-size:.7rem} #sprint .pbar{height:4px} body{padding-bottom:7rem}}
+@media print{#sprint,.tbox,.chaptime{display:none !important} body{padding-bottom:0}}
+
+/* ============ Explication des commandes ============ */
+pre .explain{position:absolute;top:.5rem;right:4.9rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55}
+pre:hover .explain,pre .explain:focus-visible,pre .explain.on{opacity:1}
+pre .explain.on{background:#1B7A4E;border-color:#1B7A4E;color:#fff}
+pre .xpl{display:block;color:#8FD3A7;font-size:.82em;line-height:1.45;padding:.05rem 0 .35rem 1.4em;white-space:pre-wrap;word-break:break-word;font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+pre .xpl::before{content:"↳ ";opacity:.7}
+@media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
+@media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
+
+/* ============ Animations pédagogiques ============ */
+.anim{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.anim .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.anim .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.anim .ctl button.primary{background:var(--accent);color:#fff}
+.anim .ctl button:disabled{opacity:.4;cursor:default}
+.anim .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.anim svg{width:100%;height:auto;display:block;overflow:visible;font-family:inherit}
+.anim svg text{fill:var(--ink)}
+.anim .lbl{fill:var(--muted);font-size:11px}
+.anim .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.anim .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.anim .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.anim .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.anim .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.anim .redfill{fill:#C0392B}
+.anim .greenfill{fill:#1B7A4E}
+.anim .amberfill{fill:#B7791F}
+.anim .dim{opacity:.35}
+.anim .on{filter:drop-shadow(0 0 4px rgba(37,99,235,.5))}
+.anim .mono{font-family:"JetBrains Mono",monospace;font-size:11px}
+.anim .log{font-family:"JetBrains Mono",monospace;font-size:.78rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.6rem .8rem;min-height:3.6em;white-space:pre-wrap;margin-top:.6rem;line-height:1.45}
+.anim .log .ok{color:#8FD3A7}.anim .log .ko{color:#F29A9A}.anim .log .cmd{color:#9CC4FF}
+.anim figcaption{font-size:.85rem;color:var(--muted);margin-top:.6rem;text-align:center}
+:root[data-theme="dark"] .anim .red{fill:#3A1616;stroke:#F29A9A}
+@media (prefers-reduced-motion: reduce){.anim .auto{display:none}}
+@media print{.anim .ctl{display:none}}
+
+/* ============ Planches manga ============ */
+.fig.manga svg{min-width:640px;border-radius:6px}
+.fig.manga svg text{font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.fig.manga figcaption::before{content:"Manga — ";font-weight:700;color:var(--ink)}
+:root[data-theme="dark"] .fig.manga svg{opacity:.94}
+
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.toc{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.2rem;margin:0 0 1.5rem}
+.toc ol{margin:.4rem 0 0;padding-left:1.3rem;columns:2;column-gap:2rem}
+.toc li{break-inside:avoid;margin:.2rem 0}
+@media(max-width:700px){.toc ol{columns:1}}
+body{padding-bottom:2rem}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="in">
+<div class="pagenav"><a href="index.html">← Accueil du parcours</a><a href="cours-angular.html">Cours Angular</a></div>
+<div class="level">Cours frontend — de zéro à expert</div>
+<h1>React — de zéro à expert</h1>
+<p class="lead">Dix chapitres pour maîtriser React 19 avec TypeScript : composants, état, effets, données serveur, état global (stores, atomes, signals), formulaires, tests, production. Projet fil conducteur : le front de CrisisShield. Tout tourne en Docker, chaque chapitre a ses exercices corrigés et un travail pratique avec correction type.</p>
+<p>≈ 40 h de travail · prérequis : Docker Desktop, notions de HTML/CSS · voir aussi le <a href="cours-angular.html" style="color:#fff">cours Angular</a> pour comparer les deux modèles (rendu contre signals).</p>
+</div></header>
+<div class="single">
+<div class="toc"><strong>Sommaire</strong><ol><li><a href="#c1">JavaScript moderne et TypeScript : le socle</a></li><li><a href="#c2">Démarrer : Vite, JSX, composants et props</a></li><li><a href="#c3">État et événements : useState et les formulaires</a></li><li><a href="#c4">Effets, cycle de vie et données distantes</a></li><li><a href="#c5">Composition avancée : context, reducer, hooks personnalisés, mémoïsation</a></li><li><a href="#c6">Routage, données serveur et chargement asynchrone</a></li><li><a href="#c7">État global, signals et React 19</a></li><li><a href="#c8">Formulaires, validation et accessibilité</a></li><li><a href="#c9">Tests, qualité et outillage</a></li><li><a href="#c10">Production : performance, sécurité, déploiement, SSR</a></li></ol></div>
+<article id="c1"><div class="chaphead"><span class="chapnum">Chapitre 1</span><span class="badge lvl-junior">Débutant</span></div><h2>JavaScript moderne et TypeScript : le socle</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>React est du JavaScript : modules, fonctions fléchées, destructuring, promesses et <code>async/await</code> se lisent avant tout composant.</li><li>TypeScript ajoute des types vérifiés à la compilation : un composant typé documente ses props et ses états.</li><li>Le toolchain (Node 22, npm, Vite) tourne dans un conteneur ; le navigateur ne voit que du JS transpilé.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Lire et écrire du JS ES2022 sans surprise (immutabilité, spread, optional chaining)</li><li>Typer une fonction, un objet, une union discriminée en TypeScript</li><li>Lancer un projet Node en Docker sans rien installer</li></ul></div>
+<h3>Ce qu&#x27;il faut savoir du langage</h3><p>Cinq idées reviennent partout dans React : les fonctions sont des valeurs (on passe des callbacks), les objets et tableaux se copient au lieu de se modifier (spread), le destructuring lit props et états, les promesses gèrent l'asynchrone, les modules découpent le code.</p><pre><code>const user = { id: 1, name: &#x27;Alice&#x27;, roles: [&#x27;ops&#x27;] };
+const updated = { ...user, name: &#x27;Alice B.&#x27; };            // nouvel objet, user intact
+const [first, ...rest] = user.roles;                       // destructuring
+const label = user.profile?.city ?? &#x27;inconnue&#x27;;           // optional chaining, nullish
+const ids = [3, 1, 2].filter(n =&gt; n &gt; 1).map(n =&gt; n * 2);  // pas de boucle for
+async function load() { try { const r = await fetch(&#x27;/api/incidents&#x27;); if (!r.ok) throw new Error(r.statusText); return await r.json(); } catch (e) { console.error(e); return []; } }</code></pre>
+<h3>TypeScript : types, unions, génériques</h3><p>Le type d'une prop ou d'un état est le contrat du composant. Les unions discriminées modélisent un état de chargement sans booléens contradictoires ; les génériques typent un hook ou une liste réutilisable.</p><pre><code>type Priority = &#x27;P1&#x27; | &#x27;P2&#x27; | &#x27;P3&#x27;;
+interface Incident { id: number; title: string; priority: Priority; zone: string; createdAt: string }
+type Loading&lt;T&gt; = { status: &#x27;idle&#x27; } | { status: &#x27;loading&#x27; } | { status: &#x27;error&#x27;; error: string } | { status: &#x27;ok&#x27;; data: T };
+function describe(s: Loading&lt;Incident[]&gt;): string {
+  switch (s.status) { case &#x27;ok&#x27;: return `${s.data.length} incidents`; case &#x27;error&#x27;: return s.error; default: return &#x27;…&#x27;; }   // exhaustif : TS refuse un cas oublié
+}
+const byPriority = &lt;T extends { priority: Priority }&gt;(xs: T[], p: Priority) =&gt; xs.filter(x =&gt; x.priority === p);</code></pre>
+<h3>Le poste : Node en Docker</h3><p>Tout tourne en conteneur : <code>docker run --rm -it -v "$PWD:/app" -w /app -p 5173:5173 node:22 bash</code>, puis les commandes npm dedans (ou un <code>compose.yaml</code> avec un service <code>node</code>). Rien n'est installé sur le poste.</p><pre><code># compose.yaml
+services:
+  web:
+    image: node:22
+    working_dir: /app
+    volumes: [&quot;.:/app&quot;, &quot;node_modules:/app/node_modules&quot;]   # volume nommé : rapide sous Windows
+    ports: [&quot;5173:5173&quot;]
+    command: sh -c &quot;npm ci &amp;&amp; npm run dev -- --host&quot;
+volumes: { node_modules: {} }</code></pre>
+<div class="exo"><span class="tag">Exercice 1.1</span><p>Réécris sans muter : une fonction <code>close(incidents, id)</code> qui renvoie la liste avec l'incident <code>id</code> passé en <code>status: 'closed'</code>.</p><details><summary>Corrigé</summary><div class="sol"><code>const close = (xs: Incident[], id: number) => xs.map(x => x.id === id ? { ...x, status: 'closed' } : x);</code> — <code>map</code> renvoie un nouveau tableau, le spread un nouvel objet ; les autres éléments sont réutilisés tels quels (c'est ce que React compare).</div></details></div>
+<div class="exo"><span class="tag">Exercice 1.2</span><p>Pourquoi une union discriminée plutôt que <code>{ loading: boolean; error?: string; data?: T }</code> ?</p><details><summary>Corrigé</summary><div class="sol">Avec trois champs, l'état <code>loading: true, data: [...]</code> est représentable mais absurde ; l'union rend les états impossibles non représentables, et le <code>switch</code> exhaustif force à traiter chaque cas.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 1 — Un projet TypeScript en conteneur</span><ol><li>Crée un projet <code>npm create vite@latest crisisshield-web -- --template react-ts</code> dans le conteneur node:22.</li><li>Ajoute <code>strict: true</code> et <code>noUncheckedIndexedAccess</code> dans <code>tsconfig.json</code>.</li><li>Écris <code>src/domain/incident.ts</code> avec les types ci-dessus et trois fonctions pures testées (Vitest).</li></ol><details><summary>Correction type</summary><div class="sol"><code>docker compose run --rm web npm create vite@latest . -- --template react-ts</code> ; <code>npm i -D vitest</code> ; test : <code>expect(close([a], a.id)[0].status).toBe('closed')</code> et <code>expect(close([a], a.id)[0]).not.toBe(a)</code> (nouvel objet). Le <code>strict</code> fait apparaître les <code>undefined</code> possibles dès la première lecture d'index.</div></details></div>
+</article>
+<article id="c2"><div class="chaphead"><span class="chapnum">Chapitre 2</span><span class="badge lvl-junior">Débutant</span></div><h2>Démarrer : Vite, JSX, composants et props</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Un composant est une fonction qui reçoit des props et renvoie du JSX ; il se rend à nouveau quand ses props ou son état changent.</li><li>JSX est du JavaScript : accolades pour les expressions, <code>className</code>, listes avec <code>key</code> stable.</li><li>Le rendu est déclaratif : on décrit l'interface pour un état donné, jamais « ajoute un élément au DOM ».</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Créer et composer des composants fonctionnels typés</li><li>Rendre conditionnellement et itérer avec des clés correctes</li><li>Structurer un projet Vite (dossiers, alias, lint)</li></ul></div>
+<h3>Composants et props</h3><p>Une prop est en lecture seule ; <code>children</code> compose. Les props typées remplacent la documentation.</p><pre><code>type BadgeProps = { priority: Priority; children?: React.ReactNode };
+export function Badge({ priority, children }: BadgeProps) {
+  const color = { P1: &#x27;red&#x27;, P2: &#x27;orange&#x27;, P3: &#x27;gray&#x27; }[priority];
+  return &lt;span className={`badge badge-${color}`}&gt;{children ?? priority}&lt;/span&gt;;
+}
+export function IncidentCard({ incident }: { incident: Incident }) {
+  return (
+    &lt;article className=&quot;card&quot;&gt;
+      &lt;h3&gt;{incident.title}&lt;/h3&gt;
+      &lt;Badge priority={incident.priority} /&gt;
+      {incident.zone &amp;&amp; &lt;p&gt;Zone {incident.zone}&lt;/p&gt;}          {/* rendu conditionnel */}
+    &lt;/article&gt;
+  );
+}</code></pre>
+<h3>Listes et clés</h3><p>La clé identifie un élément entre deux rendus : jamais l'index quand la liste change d'ordre ou se filtre, sinon React réutilise le mauvais DOM (champ de formulaire qui garde la valeur du voisin).</p><pre><code>export function IncidentList({ items }: { items: Incident[] }) {
+  if (items.length === 0) return &lt;p&gt;Aucun incident.&lt;/p&gt;;
+  return &lt;ul&gt;{items.map(i =&gt; &lt;li key={i.id}&gt;&lt;IncidentCard incident={i} /&gt;&lt;/li&gt;)}&lt;/ul&gt;;
+}</code></pre>
+<h3>Structure du projet</h3><p>Un dossier par domaine (<code>incidents/</code>, <code>auth/</code>) contenant composants, hooks et api, plutôt qu'un dossier <code>components/</code> global. Alias <code>@/</code> dans Vite et tsconfig. ESLint avec <code>eslint-plugin-react-hooks</code> dès le premier jour.</p><div class="exo"><span class="tag">Exercice 2.1</span><p>Ce composant a un bug : <code>items.map((i, idx) => &lt;Row key={idx} item={i} /&gt;)</code> avec une liste triable. Lequel ?</p><details><summary>Corrigé</summary><div class="sol">En triant, l'élément à l'index 0 change mais sa clé reste 0 : React garde le DOM (et l'état interne, par exemple un input) de l'ancien élément 0 et ne fait que changer ses props. Clé = identifiant stable de la donnée.</div></details></div>
+<div class="exo"><span class="tag">Exercice 2.2</span><p>Pourquoi <code>&lt;button onClick={handle()}&gt;</code> déclenche-t-il l'action au rendu ?</p><details><summary>Corrigé</summary><div class="sol">Les accolades évaluent l'expression : <code>handle()</code> appelle la fonction pendant le rendu et passe son résultat. Il faut passer la fonction : <code>onClick={handle}</code> ou <code>onClick={() => handle(id)}</code>.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 2 — La liste des incidents</span><ol><li>Composants <code>IncidentList</code>, <code>IncidentCard</code>, <code>Badge</code> avec des données en dur.</li><li>Un tri par priorité et un filtre par zone en props.</li><li>Snapshot du rendu avec Testing Library.</li></ol><details><summary>Correction type</summary><div class="sol"><code>render(&lt;IncidentList items={fixtures} /&gt;)</code> puis <code>screen.getAllByRole('listitem')</code> ; le tri est une fonction pure <code>sortByPriority</code> testée à part. Vérifier dans les DevTools React que la clé est l'identifiant.</div></details></div>
+</article>
+<article id="c3"><div class="chaphead"><span class="chapnum">Chapitre 3</span><span class="badge lvl-junior">Débutant</span></div><h2>État et événements : useState et les formulaires</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li><code>useState</code> déclare un état local ; le modifier déclenche un nouveau rendu ; l'état est immuable (on remplace, on ne mute pas).</li><li>Les mises à jour sont regroupées (batching) et asynchrones : utiliser la forme fonctionnelle <code>set(prev => …)</code> quand la nouvelle valeur dépend de l'ancienne.</li><li>Faire remonter l'état (lifting state up) au plus proche ancêtre commun, pas plus haut.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Gérer des états locaux simples et composés sans mutation</li><li>Écrire un formulaire contrôlé et un non contrôlé, et choisir</li><li>Faire communiquer deux composants frères</li></ul></div>
+<h3>useState et immutabilité</h3><p>Muter un tableau (<code>push</code>) ne change pas sa référence : React ne voit rien. On crée un nouveau tableau.</p><pre><code>const [incidents, setIncidents] = useState&lt;Incident[]&gt;([]);
+const add = (i: Incident) =&gt; setIncidents(prev =&gt; [...prev, i]);                 // forme fonctionnelle : sûre en cas de plusieurs appels
+const close = (id: number) =&gt; setIncidents(prev =&gt; prev.map(x =&gt; x.id === id ? { ...x, status: &#x27;closed&#x27; } : x));
+const [filter, setFilter] = useState({ zone: &#x27;&#x27;, priority: &#x27;&#x27; as Priority | &#x27;&#x27; });
+const setZone = (zone: string) =&gt; setFilter(f =&gt; ({ ...f, zone }));</code></pre>
+<h3>Formulaire contrôlé</h3><p>La valeur de l'input vient de l'état et chaque frappe met l'état à jour : l'état est la source de vérité, la validation est immédiate.</p><pre><code>export function NewIncident({ onCreate }: { onCreate: (i: Omit&lt;Incident, &#x27;id&#x27;&gt;) =&gt; void }) {
+  const [title, setTitle] = useState(&#x27;&#x27;);
+  const [priority, setPriority] = useState&lt;Priority&gt;(&#x27;P2&#x27;);
+  const valid = title.trim().length &gt;= 3;
+  return (
+    &lt;form onSubmit={e =&gt; { e.preventDefault(); if (valid) { onCreate({ title: title.trim(), priority, zone: &#x27;N1&#x27;, createdAt: new Date().toISOString() }); setTitle(&#x27;&#x27;); } }}&gt;
+      &lt;input value={title} onChange={e =&gt; setTitle(e.target.value)} aria-label=&quot;Titre&quot; /&gt;
+      &lt;select value={priority} onChange={e =&gt; setPriority(e.target.value as Priority)}&gt;{([&#x27;P1&#x27;,&#x27;P2&#x27;,&#x27;P3&#x27;] as const).map(p =&gt; &lt;option key={p}&gt;{p}&lt;/option&gt;)}&lt;/select&gt;
+      &lt;button disabled={!valid}&gt;Créer&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+<h3>Remonter l&#x27;état</h3><p>Le filtre et la liste sont frères : l'état du filtre vit dans le parent, qui passe la valeur au filtre et la liste filtrée à la liste. Règle : l'état vit dans le composant le plus bas qui en a besoin et qui englobe tous ses lecteurs.</p><div class="exo"><span class="tag">Exercice 3.1</span><p><code>setCount(count + 1); setCount(count + 1);</code> dans le même gestionnaire : le compteur augmente de combien ?</p><details><summary>Corrigé</summary><div class="sol">De 1 : les deux appels lisent le même <code>count</code> capturé par la closure et sont regroupés. Avec <code>setCount(c => c + 1)</code> deux fois, +2.</div></details></div>
+<div class="exo"><span class="tag">Exercice 3.2</span><p>Quand préférer un input non contrôlé (<code>ref</code>, <code>defaultValue</code>) ?</p><details><summary>Corrigé</summary><div class="sol">Gros formulaires où chaque frappe ne doit pas re-rendre, intégration de bibliothèques DOM, fichiers (<code>input type=file</code> est toujours non contrôlé). React Hook Form (chapitre 8) utilise ce mode par défaut.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 3 — Créer et clôturer un incident</span><ol><li>Formulaire de création contrôlé avec validation et bouton désactivé.</li><li>Bouton « Clôturer » sur chaque carte ; l'état vit dans <code>App</code>.</li><li>Test : créer un incident, vérifier qu'il apparaît, le clôturer.</li></ol><details><summary>Correction type</summary><div class="sol"><code>App</code> tient <code>incidents</code> et passe <code>onCreate</code> et <code>onClose</code>. Test Testing Library : <code>await user.type(screen.getByLabelText('Titre'), 'Fuite')</code>, <code>user.click(screen.getByRole('button', { name: 'Créer' }))</code>, <code>expect(screen.getByText('Fuite')).toBeInTheDocument()</code>. Aucune mutation : ESLint <code>no-param-reassign</code> ne signale rien.</div></details></div>
+</article>
+<article id="c4"><div class="chaphead"><span class="chapnum">Chapitre 4</span><span class="badge lvl-confirme">Confirmé</span></div><h2>Effets, cycle de vie et données distantes</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li><code>useEffect</code> synchronise le composant avec l'extérieur (réseau, DOM, abonnement) après le rendu ; ce n'est pas « componentDidMount ».</li><li>Le tableau de dépendances doit être complet (règle ESLint) ; le nettoyage annule ce que l'effet a commencé ; StrictMode exécute l'effet deux fois en dev pour le prouver.</li><li><code>useRef</code> garde une valeur entre rendus sans re-rendre : élément DOM, minuteur, dernière valeur.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Écrire un effet correct avec nettoyage et gestion de la course</li><li>Charger des données avec états loading/error/ok et annulation</li><li>Savoir quand ne pas utiliser d'effet (valeur dérivée, événement)</li></ul></div>
+<h3>Un effet de chargement correct</h3><p>Sans annulation, une réponse lente d'un ancien filtre écrase la réponse du nouveau. <code>AbortController</code> et un drapeau <code>cancelled</code> règlent la course.</p><pre><code>function useIncidents(zone: string) {
+  const [state, setState] = useState&lt;Loading&lt;Incident[]&gt;&gt;({ status: &#x27;idle&#x27; });
+  useEffect(() =&gt; {
+    const ctrl = new AbortController();
+    setState({ status: &#x27;loading&#x27; });
+    fetch(`/api/incidents?zone=${encodeURIComponent(zone)}`, { signal: ctrl.signal })
+      .then(r =&gt; { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() as Promise&lt;Incident[]&gt;; })
+      .then(data =&gt; setState({ status: &#x27;ok&#x27;, data }))
+      .catch(e =&gt; { if (e.name !== &#x27;AbortError&#x27;) setState({ status: &#x27;error&#x27;, error: e.message }); });
+    return () =&gt; ctrl.abort();          // nettoyage : la requête précédente est annulée
+  }, [zone]);                            // dépendance complète
+  return state;
+}</code></pre>
+<h3>Ce qui n&#x27;est pas un effet</h3><p>Une valeur dérivée se calcule pendant le rendu (<code>const open = incidents.filter(...)</code>), pas dans un effet qui la copie dans un état. Une réaction à un clic se fait dans le gestionnaire. Un effet qui « resynchronise » un état à partir d'un autre est presque toujours un bug de conception.</p><h3>useRef et le DOM</h3><p>Focus au montage, minuteur à nettoyer, valeur précédente : <code>ref.current</code> se lit et s'écrit sans rendu.</p><pre><code>const input = useRef&lt;HTMLInputElement&gt;(null);
+useEffect(() =&gt; { input.current?.focus(); }, []);
+const timer = useRef&lt;number&gt;();
+useEffect(() =&gt; { timer.current = window.setInterval(refresh, 30_000); return () =&gt; clearInterval(timer.current); }, [refresh]);</code></pre>
+<div class="exo"><span class="tag">Exercice 4.1</span><p>Pourquoi StrictMode monte-t-il chaque composant deux fois en développement ?</p><details><summary>Corrigé</summary><div class="sol">Pour révéler les effets sans nettoyage (double abonnement, double requête visible) : un effet correct survit à monter → nettoyer → remonter. En production, un seul montage.</div></details></div>
+<div class="exo"><span class="tag">Exercice 4.2</span><p><code>useEffect(() => { setTotal(items.length) }, [items])</code> : que corriger ?</p><details><summary>Corrigé</summary><div class="sol">Supprimer l'état <code>total</code> et calculer <code>const total = items.length</code> au rendu. L'effet ajoute un rendu inutile et une fenêtre où <code>total</code> est faux.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 4 — Charger les incidents de l&#x27;API CrisisShield</span><ol><li>Hook <code>useIncidents(zone)</code> avec annulation ; proxy Vite vers <code>http://api:8080</code>.</li><li>Affichage des trois états ; rafraîchissement toutes les 30 s.</li><li>Test avec MSW : réponse lente sur la zone A puis rapide sur la zone B, la B gagne.</li></ol><details><summary>Correction type</summary><div class="sol"><code>vite.config.ts</code> : <code>server.proxy['/api'] = { target: 'http://api:8080' }</code> (nom du service Compose). MSW : <code>http.get('/api/incidents', async ({ request }) => { const zone = new URL(request.url).searchParams.get('zone'); await delay(zone === 'A' ? 300 : 10); return HttpResponse.json(fixtures[zone]); })</code>. Test : changer de A à B puis <code>await screen.findByText(fixtures.B[0].title)</code> et <code>expect(screen.queryByText(fixtures.A[0].title)).toBeNull()</code>.</div></details></div>
+</article>
+<article id="c5"><div class="chaphead"><span class="chapnum">Chapitre 5</span><span class="badge lvl-confirme">Confirmé</span></div><h2>Composition avancée : context, reducer, hooks personnalisés, mémoïsation</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Un hook personnalisé extrait de la logique réutilisable (état + effets) sans rien changer au modèle de rendu.</li><li><code>useReducer</code> centralise des transitions d'état complexes ; le contexte partage une valeur dans un sous-arbre sans props intermédiaires (pas un store global).</li><li><code>useMemo</code>, <code>useCallback</code>, <code>React.memo</code> évitent des calculs ou rendus coûteux : on mesure avant, et le React Compiler les rend souvent inutiles.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Écrire un hook personnalisé testable</li><li>Modéliser un état avec un reducer typé et un contexte</li><li>Décider quand mémoïser, et prouver le gain avec le Profiler</li></ul></div>
+<h3>Hook personnalisé</h3><p>Toute fonction qui appelle des hooks et commence par <code>use</code>. Il encapsule une préoccupation (débounce, localStorage, requête) et se teste avec <code>renderHook</code>.</p><pre><code>export function useDebounced&lt;T&gt;(value: T, ms = 300): T {
+  const [v, setV] = useState(value);
+  useEffect(() =&gt; { const t = setTimeout(() =&gt; setV(value), ms); return () =&gt; clearTimeout(t); }, [value, ms]);
+  return v;
+}
+// usage : const q = useDebounced(search); useIncidents(q);</code></pre>
+<h3>useReducer et contexte</h3><p>Les actions nomment ce qui se passe ; le reducer est pur et testable sans React ; le contexte fournit état et dispatch au sous-arbre.</p><pre><code>type Action = { type: &#x27;created&#x27;; incident: Incident } | { type: &#x27;closed&#x27;; id: number } | { type: &#x27;loaded&#x27;; incidents: Incident[] };
+function reducer(state: Incident[], a: Action): Incident[] {
+  switch (a.type) { case &#x27;loaded&#x27;: return a.incidents; case &#x27;created&#x27;: return [a.incident, ...state]; case &#x27;closed&#x27;: return state.map(x =&gt; x.id === a.id ? { ...x, status: &#x27;closed&#x27; } : x); }
+}
+const IncidentsCtx = createContext&lt;{ incidents: Incident[]; dispatch: React.Dispatch&lt;Action&gt; } | null&gt;(null);
+export function IncidentsProvider({ children }: { children: React.ReactNode }) {
+  const [incidents, dispatch] = useReducer(reducer, []);
+  const value = useMemo(() =&gt; ({ incidents, dispatch }), [incidents]);   // référence stable : les consommateurs ne re-rendent que si incidents change
+  return &lt;IncidentsCtx.Provider value={value}&gt;{children}&lt;/IncidentsCtx.Provider&gt;;
+}
+export const useIncidentsStore = () =&gt; { const c = useContext(IncidentsCtx); if (!c) throw new Error(&#x27;IncidentsProvider manquant&#x27;); return c; };</code></pre>
+<h3>Mémoïsation : quand</h3><p>Un rendu React coûte peu ; une liste de 5 000 lignes triée à chaque frappe coûte. Règle : Profiler d'abord, <code>useMemo</code> sur le calcul coûteux, <code>React.memo</code> sur le composant feuille qui re-rend pour rien, <code>useCallback</code> uniquement pour stabiliser une prop passée à un composant mémoïsé. Le React Compiler (React 19) automatise l'essentiel : activé, on retire ces hooks.</p><pre><code>const sorted = useMemo(() =&gt; [...incidents].sort(byPriority), [incidents]);
+const onClose = useCallback((id: number) =&gt; dispatch({ type: &#x27;closed&#x27;, id }), [dispatch]);
+const Row = React.memo(function Row({ item, onClose }: RowProps) { … });</code></pre>
+<div class="exo"><span class="tag">Exercice 5.1</span><p>Pourquoi <code>useMemo(() => ({ incidents, dispatch }), [incidents])</code> dans le Provider ?</p><details><summary>Corrigé</summary><div class="sol">Sans lui, un nouvel objet est créé à chaque rendu du Provider : tous les consommateurs du contexte re-rendent même si rien n'a changé. Le contexte compare la valeur par référence.</div></details></div>
+<div class="exo"><span class="tag">Exercice 5.2</span><p>Le contexte est-il un store global ? Que se passe-t-il avec un contexte qui contient tout l'état de l'application ?</p><details><summary>Corrigé</summary><div class="sol">Tout consommateur re-rend à chaque changement de n'importe quel champ. Le contexte sert à l'injection (thème, utilisateur, dispatch) ; l'état global fréquent va dans un store à sélecteurs (chapitre 7).</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 5 — Store d&#x27;incidents par reducer + contexte</span><ol><li>Reducer typé avec tests unitaires purs (sans React).</li><li>Provider et hook <code>useIncidentsStore</code> ; la liste et le formulaire ne reçoivent plus de props.</li><li>Profiler : mesurer le rendu de 2 000 lignes avant/après <code>React.memo</code> sur la ligne.</li></ol><details><summary>Correction type</summary><div class="sol">Tests : <code>expect(reducer([], { type: 'created', incident: a })).toEqual([a])</code>. Profiler (onglet React DevTools) : enregistrer une frappe dans le filtre ; avant : 2 000 <code>Row</code> re-rendus (≈ 40 ms) ; après <code>memo</code> + <code>useCallback</code> : 0 ligne re-rendue. Noter que le React Compiler donne le même résultat sans code.</div></details></div>
+</article>
+<article id="c6"><div class="chaphead"><span class="chapnum">Chapitre 6</span><span class="badge lvl-confirme">Confirmé</span></div><h2>Routage, données serveur et chargement asynchrone</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>React Router déclare les pages, les paramètres et les routes imbriquées ; le code de chaque page se charge à la demande (<code>lazy</code>).</li><li>TanStack Query gère l'état serveur (cache, revalidation, invalidation, retries) : plus de <code>useEffect</code> de chargement.</li><li><code>Suspense</code> et les error boundaries déclarent les états d'attente et d'erreur à l'endroit du layout, pas dans chaque composant.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Structurer une application multi-pages avec layouts imbriqués</li><li>Charger, mettre en cache et invalider des données serveur avec TanStack Query</li><li>Découper le bundle par route et gérer les erreurs de rendu</li></ul></div>
+<h3>Routes et chargement paresseux</h3><p></p><pre><code>import { createBrowserRouter, RouterProvider, Outlet, useParams } from &#x27;react-router-dom&#x27;;
+const IncidentsPage = lazy(() =&gt; import(&#x27;./incidents/IncidentsPage&#x27;));
+const router = createBrowserRouter([
+  { path: &#x27;/&#x27;, element: &lt;Layout /&gt;, errorElement: &lt;ErrorPage /&gt;, children: [
+    { index: true, element: &lt;Home /&gt; },
+    { path: &#x27;incidents&#x27;, element: &lt;Suspense fallback={&lt;Spinner /&gt;}&gt;&lt;IncidentsPage /&gt;&lt;/Suspense&gt; },
+    { path: &#x27;incidents/:id&#x27;, element: &lt;IncidentDetail /&gt; },
+  ] },
+]);
+function Layout() { return &lt;&gt;&lt;Nav /&gt;&lt;main&gt;&lt;Outlet /&gt;&lt;/main&gt;&lt;/&gt;; }
+export default function App() { return &lt;RouterProvider router={router} /&gt;; }</code></pre>
+<h3>TanStack Query : état serveur</h3><p>Une clé décrit la donnée ; la requête est partagée, mise en cache, rafraîchie en arrière-plan ; une mutation invalide les clés concernées.</p><pre><code>const qc = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: 2 } } });
+export const incidentsQuery = (zone: string) =&gt; queryOptions({ queryKey: [&#x27;incidents&#x27;, zone], queryFn: ({ signal }) =&gt; api.get&lt;Incident[]&gt;(`/incidents?zone=${zone}`, { signal }) });
+function IncidentsPage() {
+  const { zone } = useFilters();
+  const { data, isPending, error } = useQuery(incidentsQuery(zone));
+  const create = useMutation({ mutationFn: api.createIncident, onSuccess: () =&gt; qc.invalidateQueries({ queryKey: [&#x27;incidents&#x27;] }) });
+  if (isPending) return &lt;Spinner /&gt;; if (error) return &lt;ErrorBox error={error} /&gt;;
+  return &lt;&gt;&lt;NewIncident onCreate={i =&gt; create.mutate(i)} /&gt;&lt;IncidentList items={data} /&gt;&lt;/&gt;;
+}</code></pre>
+<h3>Error boundary</h3><p>Une erreur pendant le rendu démonte tout l'arbre sans boundary. Un composant de classe (ou <code>react-error-boundary</code>) l'attrape et affiche un repli, par zone du layout.</p><pre><code>import { ErrorBoundary } from &#x27;react-error-boundary&#x27;;
+&lt;ErrorBoundary fallbackRender={({ error, resetErrorBoundary }) =&gt; &lt;ErrorBox error={error} onRetry={resetErrorBoundary} /&gt;}&gt;
+  &lt;Suspense fallback={&lt;Spinner /&gt;}&gt;&lt;IncidentDetail /&gt;&lt;/Suspense&gt;
+&lt;/ErrorBoundary&gt;</code></pre>
+<div class="exo"><span class="tag">Exercice 6.1</span><p>Quelle différence entre <code>staleTime</code> et <code>gcTime</code> ?</p><details><summary>Corrigé</summary><div class="sol"><code>staleTime</code> : durée pendant laquelle une donnée est considérée fraîche (pas de refetch au montage) ; <code>gcTime</code> : durée de conservation en cache d'une requête sans observateur avant suppression.</div></details></div>
+<div class="exo"><span class="tag">Exercice 6.2</span><p>Pourquoi une mutation invalide-t-elle plutôt que de modifier le cache à la main ?</p><details><summary>Corrigé</summary><div class="sol">L'invalidation redemande la vérité au serveur ; la mise à jour manuelle (<code>setQueryData</code>) est plus rapide mais peut diverger. On combine : mise à jour optimiste puis invalidation (chapitre 7).</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 6 — Pages liste et détail</span><ol><li>Routes <code>/incidents</code> et <code>/incidents/:id</code>, layout avec navigation, page en <code>lazy</code>.</li><li>Requêtes TanStack Query avec <code>queryOptions</code> partagées et préchargement au survol (<code>prefetchQuery</code>).</li><li>Error boundary par page ; test d'une erreur 500 avec MSW.</li></ol><details><summary>Correction type</summary><div class="sol"><code>onMouseEnter={() => qc.prefetchQuery(incidentQuery(id))}</code> sur le lien. MSW renvoie <code>HttpResponse.error()</code> ou un 500 : la page affiche <code>ErrorBox</code> et le bouton « Réessayer » relance (<code>resetErrorBoundary</code> + <code>refetch</code>). Vérifier dans l'onglet Réseau que le bundle de la page n'est chargé qu'à la navigation.</div></details></div>
+</article>
+<article id="c7"><div class="chaphead"><span class="chapnum">Chapitre 7</span><span class="badge lvl-senior">Senior</span></div><h2>État global, signals et React 19</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Trois familles d'état : local (useState), serveur (TanStack Query), global client (store). Le global client est souvent plus petit qu'on ne croit.</li><li>Zustand (store simple à sélecteurs), Redux Toolkit (structure et outillage pour les grosses équipes), atomes et signals (Jotai, Preact Signals) : granularité fine, rendu sans traverser l'arbre.</li><li>React 19 : <code>use()</code>, actions et <code>useActionState</code>, <code>useOptimistic</code>, le React Compiler ; les Server Components déplacent une partie du rendu côté serveur.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Choisir et implémenter un store adapté (Zustand, Redux Toolkit, atomes)</li><li>Comprendre les signals dans l'écosystème React et leur différence avec le modèle de rendu</li><li>Utiliser les nouveautés React 19 : actions, optimiste, compiler</li></ul></div>
+<h3>Zustand : le store à sélecteurs</h3><p>Un store hors de l'arbre, des sélecteurs qui ne re-rendent que ce qui lit la tranche concernée, et du middleware (persist, devtools, immer).</p><pre><code>import { create } from &#x27;zustand&#x27;;
+import { persist } from &#x27;zustand/middleware&#x27;;
+type Filters = { zone: string; priority: Priority | &#x27;&#x27;; setZone: (z: string) =&gt; void; reset: () =&gt; void };
+export const useFilters = create&lt;Filters&gt;()(persist(set =&gt; ({
+  zone: &#x27;&#x27;, priority: &#x27;&#x27;,
+  setZone: zone =&gt; set({ zone }),
+  reset: () =&gt; set({ zone: &#x27;&#x27;, priority: &#x27;&#x27; }),
+}), { name: &#x27;crisis-filters&#x27; }));
+// composant : const zone = useFilters(s =&gt; s.zone);   → ne re-rend que si zone change</code></pre>
+<h3>Redux Toolkit, en deux mots</h3><p>Slices (<code>createSlice</code> : reducer + actions générées), <code>createAsyncThunk</code> ou RTK Query pour le serveur, DevTools avec voyage dans le temps, conventions strictes utiles à 30 développeurs. Pour une application de taille moyenne, Zustand + TanStack Query couvrent le besoin avec dix fois moins de code.</p><h3>Signals et atomes dans React</h3><p>Un signal est une valeur réactive : ses lecteurs sont recalculés quand elle change, sans que le composant parent re-rende. React n'a pas de signals natifs (son modèle est « re-rendre le composant »), mais Jotai (atomes) et @preact/signals-react en donnent la granularité. Différence clé : avec un signal, seul le nœud qui lit <code>count.value</code> se met à jour ; avec useState, tout le composant. C'est le modèle qu'Angular a adopté nativement (cours Angular, chapitre 4).</p><pre><code>// Jotai
+const zoneAtom = atom(&#x27;&#x27;);
+const openIncidentsAtom = atom(get =&gt; get(incidentsAtom).filter(i =&gt; i.status === &#x27;open&#x27; &amp;&amp; (!get(zoneAtom) || i.zone === get(zoneAtom))));   // dérivé, mis en cache
+function ZoneFilter() { const [zone, setZone] = useAtom(zoneAtom); return &lt;input value={zone} onChange={e =&gt; setZone(e.target.value)} /&gt;; }
+function Count() { const open = useAtomValue(openIncidentsAtom); return &lt;span&gt;{open.length}&lt;/span&gt;; }   // seul Count re-rend
+// Preact Signals
+const count = signal(0);
+function Counter() { return &lt;button onClick={() =&gt; count.value++}&gt;{count}&lt;/button&gt;; }   // le texte se met à jour sans re-rendre Counter</code></pre>
+<h3>React 19 : actions, optimiste, use, compiler</h3><p></p><pre><code>// action de formulaire avec état de soumission
+const [state, formAction, pending] = useActionState(async (_prev: string | null, fd: FormData) =&gt; {
+  try { await api.createIncident({ title: String(fd.get(&#x27;title&#x27;)), priority: &#x27;P2&#x27;, zone: &#x27;N1&#x27; }); return null; } catch (e) { return (e as Error).message; }
+}, null);
+&lt;form action={formAction}&gt;&lt;input name=&quot;title&quot; /&gt;&lt;button disabled={pending}&gt;Créer&lt;/button&gt;{state &amp;&amp; &lt;p role=&quot;alert&quot;&gt;{state}&lt;/p&gt;}&lt;/form&gt;
+// mise à jour optimiste
+const [optimistic, addOptimistic] = useOptimistic(incidents, (cur, i: Incident) =&gt; [i, ...cur]);
+// use() : lire une promesse ou un contexte, avec Suspense
+const incident = use(incidentPromise);
+// React Compiler (babel-plugin-react-compiler) : mémoïse automatiquement ; on retire useMemo/useCallback manuels après vérification</code></pre>
+<div class="exo"><span class="tag">Exercice 7.1</span><p>Une application a : le thème, l'utilisateur connecté, les incidents chargés de l'API, un brouillon de formulaire. Où va chaque état ?</p><details><summary>Corrigé</summary><div class="sol">Thème et utilisateur : contexte ou petit store persistant. Incidents : TanStack Query (état serveur). Brouillon : état local du formulaire, éventuellement persisté par un store si on doit y revenir.</div></details></div>
+<div class="exo"><span class="tag">Exercice 7.2</span><p>Pourquoi les signals n'ont-ils pas été ajoutés à React alors que Vue, Angular, Solid les ont ?</p><details><summary>Corrigé</summary><div class="sol">Le modèle React est « l'interface est une fonction de l'état, on re-rend et on réconcilie » ; les signals contournent le rendu. L'équipe React préfère rendre le rendu moins coûteux (Compiler) que changer le modèle. Les bibliothèques externes offrent le choix.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 7 — Filtres globaux et création optimiste</span><ol><li>Store Zustand persistant pour les filtres, avec sélecteurs ; DevTools branchés.</li><li>Création d'incident avec <code>useOptimistic</code> et invalidation TanStack Query ; rollback visible si l'API renvoie 500.</li><li>Variante : les mêmes filtres en atomes Jotai ; comparer le nombre de rendus au Profiler.</li></ol><details><summary>Correction type</summary><div class="sol">Optimiste : <code>addOptimistic(temp)</code> dans une action, puis <code>await create.mutateAsync(i)</code> ; si erreur, React revient à <code>incidents</code> et on affiche l'erreur. Profiler : avec Zustand, seuls les composants qui lisent <code>zone</code> re-rendent ; avec Jotai, idem, et les dérivés (<code>openIncidentsAtom</code>) ne se recalculent que si une dépendance change.</div></details></div>
+</article>
+<article id="c8"><div class="chaphead"><span class="chapnum">Chapitre 8</span><span class="badge lvl-senior">Senior</span></div><h2>Formulaires, validation et accessibilité</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>React Hook Form gère les formulaires par refs (non contrôlés) : performant, peu de rendus, validation intégrée.</li><li>Zod définit le schéma une fois : validation côté client, typage TypeScript inféré, et le même schéma peut valider côté serveur.</li><li>Accessibilité : labels associés, messages d'erreur annoncés (<code>aria-describedby</code>, <code>role=alert</code>), navigation clavier ; testée par Testing Library et axe.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Construire un formulaire complexe (tableaux de champs, dépendances) avec React Hook Form</li><li>Valider avec un schéma Zod partagé avec l'API</li><li>Rendre un formulaire accessible et le tester</li></ul></div>
+<h3>Schéma Zod et formulaire</h3><p></p><pre><code>const incidentSchema = z.object({
+  title: z.string().trim().min(3, &#x27;Au moins 3 caractères&#x27;).max(200),
+  priority: z.enum([&#x27;P1&#x27;, &#x27;P2&#x27;, &#x27;P3&#x27;]),
+  zone: z.string().regex(/^[A-Z][0-9]$/, &#x27;Format A1&#x27;),
+  contacts: z.array(z.object({ email: z.string().email() })).max(5),
+});
+type IncidentForm = z.infer&lt;typeof incidentSchema&gt;;
+export function IncidentForm({ onSubmit }: { onSubmit: (v: IncidentForm) =&gt; Promise&lt;void&gt; }) {
+  const { register, handleSubmit, control, formState: { errors, isSubmitting } } = useForm&lt;IncidentForm&gt;({ resolver: zodResolver(incidentSchema), defaultValues: { priority: &#x27;P2&#x27;, contacts: [] } });
+  const { fields, append, remove } = useFieldArray({ control, name: &#x27;contacts&#x27; });
+  return (
+    &lt;form onSubmit={handleSubmit(onSubmit)} noValidate&gt;
+      &lt;label htmlFor=&quot;title&quot;&gt;Titre&lt;/label&gt;
+      &lt;input id=&quot;title&quot; {...register(&#x27;title&#x27;)} aria-invalid={!!errors.title} aria-describedby=&quot;title-err&quot; /&gt;
+      {errors.title &amp;&amp; &lt;p id=&quot;title-err&quot; role=&quot;alert&quot;&gt;{errors.title.message}&lt;/p&gt;}
+      {fields.map((f, i) =&gt; &lt;div key={f.id}&gt;&lt;input {...register(`contacts.${i}.email`)} aria-label={`Contact ${i + 1}`} /&gt;&lt;button type=&quot;button&quot; onClick={() =&gt; remove(i)}&gt;Retirer&lt;/button&gt;&lt;/div&gt;)}
+      &lt;button type=&quot;button&quot; onClick={() =&gt; append({ email: &#x27;&#x27; })}&gt;Ajouter un contact&lt;/button&gt;
+      &lt;button disabled={isSubmitting}&gt;Enregistrer&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+<h3>Le même schéma côté API</h3><p>Le schéma Zod vit dans un paquet partagé (<code>@crisisshield/contracts</code>) ou est généré depuis l'OpenAPI de l'API Spring (<code>openapi-zod-client</code>) : une seule source de vérité, les erreurs de l'API (RFC 9457) mappées sur les champs avec <code>setError</code>.</p><h3>Accessibilité testée</h3><p></p><pre><code>// vitest + jest-axe
+const { container } = render(&lt;IncidentForm onSubmit={vi.fn()} /&gt;);
+expect(await axe(container)).toHaveNoViolations();
+await user.click(screen.getByRole(&#x27;button&#x27;, { name: &#x27;Enregistrer&#x27; }));
+expect(await screen.findByRole(&#x27;alert&#x27;)).toHaveTextContent(&#x27;Au moins 3 caractères&#x27;);</code></pre>
+<div class="exo"><span class="tag">Exercice 8.1</span><p>Pourquoi <code>noValidate</code> sur le formulaire ?</p><details><summary>Corrigé</summary><div class="sol">Pour désactiver la validation HTML native (bulles du navigateur, non stylables, non annoncées de façon cohérente) et laisser Zod produire des messages contrôlés et accessibles.</div></details></div>
+<div class="exo"><span class="tag">Exercice 8.2</span><p>Un champ « zone » dépend de la priorité (P1 exige une zone). Comment l'exprimer ?</p><details><summary>Corrigé</summary><div class="sol"><code>incidentSchema.superRefine((v, ctx) => { if (v.priority === 'P1' && !v.zone) ctx.addIssue({ path: ['zone'], message: 'Zone obligatoire en P1', code: 'custom' }); })</code> ; RHF affiche l'erreur sur <code>zone</code>.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 8 — Formulaire d&#x27;incident complet</span><ol><li>Schéma Zod partagé, formulaire RHF avec contacts dynamiques et règle croisée P1/zone.</li><li>Erreurs de l'API (422 RFC 9457) mappées sur les champs.</li><li>Zéro violation axe ; test clavier (Tab, Entrée) avec user-event.</li></ol><details><summary>Correction type</summary><div class="sol">Mapping : <code>catch (e) { if (isProblem(e)) e.errors.forEach(err => setError(err.field as keyof IncidentForm, { message: err.message })) }</code>. Test clavier : <code>await user.tab(); expect(screen.getByLabelText('Titre')).toHaveFocus();</code> puis <code>user.keyboard('{Enter}')</code> soumet.</div></details></div>
+</article>
+<article id="c9"><div class="chaphead"><span class="chapnum">Chapitre 9</span><span class="badge lvl-senior">Senior</span></div><h2>Tests, qualité et outillage</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Vitest + Testing Library testent le comportement vu par l'utilisateur (rôles, textes), pas l'implémentation ; MSW simule l'API au niveau réseau.</li><li>Playwright teste le parcours réel dans un navigateur, en CI, contre le build de production.</li><li>TypeScript strict, ESLint (react-hooks, jsx-a11y), Prettier, et la couverture sur le nouveau code forment la quality gate.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Écrire des tests de composants robustes (rôles, async, MSW)</li><li>Mettre en place les tests de bout en bout Playwright en conteneur</li><li>Configurer lint, types stricts, couverture et un pipeline GitLab CI</li></ul></div>
+<h3>Test de composant avec MSW</h3><p></p><pre><code>// src/test/setup.ts
+export const server = setupServer(...handlers);
+beforeAll(() =&gt; server.listen({ onUnhandledRequest: &#x27;error&#x27; })); afterEach(() =&gt; server.resetHandlers()); afterAll(() =&gt; server.close());
+// IncidentsPage.test.tsx
+it(&#x27;affiche les incidents puis en crée un&#x27;, async () =&gt; {
+  renderWithProviders(&lt;IncidentsPage /&gt;);            // QueryClient + Router + store dans un wrapper de test
+  expect(await screen.findByRole(&#x27;heading&#x27;, { name: &#x27;Fuite gaz&#x27; })).toBeInTheDocument();
+  await user.type(screen.getByLabelText(&#x27;Titre&#x27;), &#x27;Inondation&#x27;);
+  await user.click(screen.getByRole(&#x27;button&#x27;, { name: &#x27;Créer&#x27; }));
+  expect(await screen.findByRole(&#x27;heading&#x27;, { name: &#x27;Inondation&#x27; })).toBeInTheDocument();   // MSW a reçu le POST et la liste est invalidée
+});</code></pre>
+<h3>Playwright en conteneur</h3><p></p><pre><code># compose.test.yaml : services web (build prod servi par nginx), api (MSW en mode serveur ou l&#x27;API réelle en Testcontainers), e2e (mcr.microsoft.com/playwright:v1.48.0-noble)
+docker compose -f compose.test.yaml run --rm e2e npx playwright test --reporter=line
+// e2e/incidents.spec.ts
+test(&#x27;crée et clôture un incident&#x27;, async ({ page }) =&gt; {
+  await page.goto(&#x27;/incidents&#x27;);
+  await page.getByLabel(&#x27;Titre&#x27;).fill(&#x27;Fuite&#x27;);
+  await page.getByRole(&#x27;button&#x27;, { name: &#x27;Créer&#x27; }).click();
+  await expect(page.getByRole(&#x27;heading&#x27;, { name: &#x27;Fuite&#x27; })).toBeVisible();
+  await page.getByRole(&#x27;button&#x27;, { name: &#x27;Clôturer&#x27; }).first().click();
+  await expect(page.getByText(&#x27;closed&#x27;)).toBeVisible();
+});</code></pre>
+<h3>Pipeline</h3><p></p><pre><code># .gitlab-ci.yml (extrait)
+stages: [check, test, build, e2e]
+lint: { stage: check, image: node:22, script: [npm ci, npm run lint, npx tsc --noEmit] }
+unit: { stage: test, image: node:22, script: [npm ci, npx vitest run --coverage], coverage: &#x27;/All files[^|]*\|[^|]*\s+([\d.]+)/&#x27;, artifacts: { reports: { junit: junit.xml } } }
+build: { stage: build, image: node:22, script: [npm ci, npm run build], artifacts: { paths: [dist/] } }
+e2e: { stage: e2e, image: mcr.microsoft.com/playwright:v1.48.0-noble, services: [{ name: crisisshield/api:latest, alias: api }], script: [npm ci, npx vite preview --port 4173 &amp; npx playwright test] }</code></pre>
+<div class="exo"><span class="tag">Exercice 9.1</span><p>Pourquoi <code>getByRole</code> plutôt que <code>getByTestId</code> ?</p><details><summary>Corrigé</summary><div class="sol">Le rôle est ce que voit l'utilisateur et le lecteur d'écran : le test échoue si le bouton devient un div cliquable (régression d'accessibilité) ; un test-id survit à tout, y compris aux régressions.</div></details></div>
+<div class="exo"><span class="tag">Exercice 9.2</span><p>Que teste-t-on en unitaire, en composant, en bout en bout ?</p><details><summary>Corrigé</summary><div class="sol">Unitaire : fonctions pures (reducer, tri, schéma). Composant : un écran avec MSW (majorité des tests). Bout en bout : 5 à 10 parcours critiques contre le build réel, pas plus.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 9 — Quality gate du front CrisisShield</span><ol><li>Vitest avec MSW, couverture publiée ; ESLint react-hooks + jsx-a11y ; <code>tsc --noEmit</code> bloquant.</li><li>Playwright en conteneur sur trois parcours ; traces conservées en cas d'échec.</li><li>Pipeline GitLab avec les quatre étapes et rapport JUnit dans la MR.</li></ol><details><summary>Correction type</summary><div class="sol">Vérifier que la MR affiche l'onglet Tests, que <code>tsc</code> échoue sur un <code>any</code> implicite, et que Playwright produit <code>trace.zip</code> (<code>trace: 'retain-on-failure'</code>) ouvrable avec <code>npx playwright show-trace</code>.</div></details></div>
+</article>
+<article id="c10"><div class="chaphead"><span class="chapnum">Chapitre 10</span><span class="badge lvl-expert">Expert</span></div><h2>Production : performance, sécurité, déploiement, SSR</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Un build Vite produit des fichiers statiques hashés servis par nginx ; le code est découpé par route et les dépendances lourdes chargées à la demande.</li><li>Web Vitals (LCP, INP, CLS) se mesurent en vrai (RUM) et en CI (Lighthouse) ; la performance perçue vient du découpage, du cache et du rendu progressif.</li><li>Sécurité front : XSS (jamais <code>dangerouslySetInnerHTML</code> sans sanitisation), CSP stricte, jeton hors du navigateur (BFF), dépendances scannées, sous-ressources intègres.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Optimiser le bundle et mesurer les Web Vitals</li><li>Sécuriser une SPA (XSS, CSP, authentification par BFF)</li><li>Déployer en conteneur nginx durci et comprendre quand passer au SSR (Next.js, Remix)</li></ul></div>
+<h3>Build et image de production</h3><p></p><pre><code># Dockerfile
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --ignore-scripts
+COPY . .
+RUN npm run build
+FROM nginxinc/nginx-unprivileged:1.27-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf     # try_files $uri /index.html ; cache immutable sur /assets ; en-têtes CSP, HSTS, nosniff ; proxy /api → api:8080
+EXPOSE 8080
+# runtime : read-only, cap-drop ALL, USER 101 (déjà non root)</code></pre>
+<h3>Performance</h3><p><code>npx vite-bundle-visualizer</code> montre ce qui pèse ; <code>lazy</code> par route et pour les composants lourds (cartes, éditeurs) ; <code>@tanstack/react-virtual</code> pour les longues listes ; images en WebP avec dimensions ; <code>web-vitals</code> envoie LCP/INP/CLS à l'API de métriques ; Lighthouse CI avec budget (<code>lighthouserc.json</code> : performance ≥ 90).</p><h3>Sécurité</h3><p></p><pre><code>// XSS : React échappe le texte ; le danger est dangerouslySetInnerHTML → DOMPurify.sanitize(html) si vraiment nécessaire
+// CSP (nginx) : default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27;; connect-src &#x27;self&#x27; https://api.crisisshield.example; frame-ancestors &#x27;none&#x27;
+// Authentification : BFF (Spring Cloud Gateway, cours DevOps TP 41) avec cookie HttpOnly SameSite=Lax ; le front n&#x27;a jamais de jeton ; CSRF par en-tête X-CSRF-Token
+// Dépendances : npm audit en CI, Renovate, lockfile, --ignore-scripts ; SRI si un script tiers est chargé
+// Ne jamais mettre de secret dans VITE_* : tout ce qui est compilé est public</code></pre>
+<h3>SSR et Server Components</h3><p>Quand le SEO ou le premier affichage compte (site public, e-commerce), le rendu côté serveur (Next.js, Remix/React Router v7, TanStack Start) envoie du HTML prêt, puis hydrate. Les React Server Components rendent une partie de l'arbre uniquement côté serveur (accès direct aux données, zéro JS envoyé pour ces composants). Pour une application métier authentifiée comme CrisisShield, la SPA derrière un BFF reste le bon choix ; savoir expliquer ce qu'apporterait le SSR est la réponse d'entretien.</p><div class="exo"><span class="tag">Exercice 10.1</span><p>Pourquoi <code>try_files $uri /index.html</code> dans nginx ?</p><details><summary>Corrigé</summary><div class="sol">Le routage est côté client : une URL profonde (<code>/incidents/42</code>) rechargée doit servir <code>index.html</code> pour que React Router prenne le relais ; sans cela, 404.</div></details></div>
+<div class="exo"><span class="tag">Exercice 10.2</span><p>Une variable <code>VITE_API_KEY</code> est-elle secrète ?</p><details><summary>Corrigé</summary><div class="sol">Non : tout ce qui commence par <code>VITE_</code> est inliné dans le bundle et lisible par quiconque ouvre les sources. Les secrets restent côté serveur (BFF).</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 10 — Mise en production du front CrisisShield</span><ol><li>Image nginx non root avec CSP, cache immutable, proxy vers l'API ; scan Trivy et signature (niveau 7 du parcours DevOps).</li><li>Bundle analysé et découpé ; Lighthouse CI avec budget ; web-vitals envoyés à Prometheus via l'API.</li><li>Déploiement Kubernetes derrière le BFF avec le Deployment de référence (TP 26) ; test Playwright contre le déploiement staging.</li></ol><details><summary>Correction type</summary><div class="sol">Attendu : image < 30 Mo, Lighthouse performance ≥ 90 sur /incidents, CSP sans <code>unsafe-inline</code> pour les scripts (Vite n'en a pas besoin), en-tête <code>Cache-Control: public, max-age=31536000, immutable</code> sur <code>/assets/*</code> et <code>no-cache</code> sur <code>index.html</code>, aucun jeton dans localStorage (vérifié par le test Playwright <code>expect(await page.evaluate(() => Object.keys(localStorage))).not.toContain('token')</code>).</div></details></div>
+</article>
+<div class="footnav"><a href="index.html">← Accueil du parcours</a><a href="cours-angular.html">Cours Angular →</a></div>
+</div>
+<script>
+(function(){ var root=document.documentElement; try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.querySelectorAll('pre').forEach(function(pre){ var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier';
+    b.addEventListener('click',function(){ var t=pre.querySelector('code').textContent; navigator.clipboard.writeText(t).then(function(){ b.textContent='Copié !'; setTimeout(function(){ b.textContent='Copier'; },1500); }); }); pre.appendChild(b); });
+})();
+</script>
+</body></html>
