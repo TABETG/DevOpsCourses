@@ -974,27 +974,46 @@ Le rollback de code ne suffit pas quand le schéma a changé ; la compatibilité
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 6</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
-<ol class="quiz">
-<li>Monitoring contre observabilité ; les trois signaux et ce qui les relie.</li>
-<li>Les six règles d'un bon log applicatif.</li>
-<li>Loki contre Elasticsearch : modèle d'indexation, coût, cas d'usage ; le piège des labels.</li>
-<li>Rétention et conformité des logs : ce que tu configures par défaut.</li>
-<li>Les quatre types de métriques Prometheus et la requête associée à chacun.</li>
-<li>Cardinalité : définition, exemple d'explosion, remède.</li>
-<li>RED, USE, quatre signaux d'or : écris les requêtes PromQL de RED.</li>
-<li>Pourquoi jamais de moyenne de latence.</li>
-<li>Thanos/Mimir : le problème qu'ils résolvent.</li>
-<li>Trace, span, propagation ; ce que les traces montrent que rien d'autre ne montre.</li>
-<li>OpenTelemetry : composants, Collector (receivers, processors, exporters), agent contre gateway.</li>
-<li>Instrumenter du Java sans changer l'image.</li>
-<li>Head contre tail sampling ; la politique que tu recommandes.</li>
-<li>Corrélation logs ↔ traces ↔ métriques : les mécanismes (trace_id, exemplars).</li>
-<li>SLI, SLO, SLA, budget d'erreur : définitions, calcul à 99,9 % sur 30 jours.</li>
-<li>Burn rate multi-fenêtres : pourquoi et comment.</li>
-<li>Alertmanager : regroupement, inhibition, silences, escalade ; runbook obligatoire.</li>
-<li>Une astreinte soutenable : rotation, charge cible, conditions.</li>
-<li>Rôles pendant un incident ; pourquoi mitiger avant de comprendre.</li>
-<li>Le post-mortem sans blâme : structure, règles, ce qui distingue une vraie cause d'une « erreur humaine ».</li>
+<ol class="quiz"><li>Monitoring contre observabilité ; les trois signaux et ce qui les relie.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Monitoring : savoir si le système va bien selon des questions prévues (seuils). Observabilité : pouvoir répondre à des questions qu'on n'avait pas prévues à partir de ce que le système émet. Trois signaux : logs (événements), métriques (agrégats dans le temps), traces (parcours d'une requête) ; reliés par trace_id, exemplars et labels communs (service, namespace).</div></details></li>
+<li>Les six règles d'un bon log applicatif.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Structuré (JSON, un événement par ligne), un niveau juste, contexte (trace_id, user_id, identifiants métier), sur stdout, jamais de données personnelles ni de secrets, un message lisible qui dit ce qui s'est passé (pas « erreur »).</div></details></li>
+<li>Loki contre Elasticsearch : modèle d'indexation, coût, cas d'usage ; le piège des labels.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Loki indexe seulement les labels et stocke les lignes compressées : peu coûteux, requête par grep à la volée ; Elasticsearch indexe tout le texte : recherche riche, coût de stockage et de mémoire élevé. Loki pour les logs d'exploitation avec peu de labels ; Elasticsearch pour la recherche plein texte ou l'analytique. Piège : un label à haute cardinalité (user_id) crée un flux par valeur et tue Loki.</div></details></li>
+<li>Rétention et conformité des logs : ce que tu configures par défaut.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Rétention par environnement (7 j dev, 30 j prod, plus pour l'audit), compactor activé, cycle de vie sur le stockage objet, masquage des données personnelles à la source, accès par RBAC, et la rétention écrite dans une décision (RGPD : minimisation, durée justifiée).</div></details></li>
+<li>Les quatre types de métriques Prometheus et la requête associée à chacun.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Counter (ne fait que croître) : rate(http_requests_total[5m]). Gauge (valeur instantanée) : avg_over_time(jvm_memory_used_bytes[5m]). Histogram (buckets cumulés) : histogram_quantile(0.95, sum by (le) (rate(…_bucket[5m]))). Summary (quantiles côté client) : à éviter, non agrégeable.</div></details></li>
+<li>Cardinalité : définition, exemple d'explosion, remède.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Nombre de séries distinctes (combinaisons de labels). Explosion : un label user_id ou une URI avec identifiant → des millions de séries, mémoire saturée. Remède : normaliser les URI ({id}), pas d'identifiant en label, relabeling pour supprimer, limites sur les séries.</div></details></li>
+<li>RED, USE, quatre signaux d'or : écris les requêtes PromQL de RED.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">RED (services) : Rate, Errors, Duration. USE (ressources) : Utilization, Saturation, Errors. Quatre signaux d'or : latence, trafic, erreurs, saturation. RED : sum(rate(http_server_requests_seconds_count[5m])) ; sum(rate(…{status=~"5.."}[5m])) / sum(rate(…[5m])) ; histogram_quantile(0.95, sum by (le) (rate(…_bucket[5m]))).</div></details></li>
+<li>Pourquoi jamais de moyenne de latence.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">La moyenne cache la distribution : 99 requêtes à 10 ms et une à 10 s donnent 110 ms de moyenne, alors qu'un utilisateur sur cent attend 10 s. On regarde les percentiles (p95, p99) calculés sur des histogrammes agrégés, jamais des moyennes de percentiles.</div></details></li>
+<li>Thanos/Mimir : le problème qu'ils résolvent.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Prometheus est local et limité (rétention, un serveur par cluster). Thanos et Mimir apportent la longue durée (stockage objet), la haute disponibilité et la vue globale multi-clusters, avec la même API PromQL.</div></details></li>
+<li>Trace, span, propagation ; ce que les traces montrent que rien d'autre ne montre.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Trace : le parcours complet d'une requête ; span : une opération avec durée, attributs, parent ; propagation : le contexte (traceparent) transporté dans les en-têtes HTTP et Kafka. Les traces montrent où le temps passe entre services et quel appel dépend de quel autre : ni les logs ni les métriques ne le font.</div></details></li>
+<li>OpenTelemetry : composants, Collector (receivers, processors, exporters), agent contre gateway.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">API et SDK par langage, instrumentation automatique (agent Java), le Collector (receivers OTLP → processors : batch, memory_limiter, k8sattributes, tail_sampling → exporters : Tempo, Prometheus, Loki). Agent : un Collector par nœud/Pod, léger ; gateway : un Collector central pour l'échantillonnage et l'enrichissement ; souvent les deux.</div></details></li>
+<li>Instrumenter du Java sans changer l'image.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Avec l'opérateur OpenTelemetry : un objet Instrumentation et une annotation sur le Deployment ; un init container injecte l'agent Java (-javaagent) ; Spring MVC, JDBC, Kafka, HTTP client sont instrumentés sans toucher au code ni à l'image.</div></details></li>
+<li>Head contre tail sampling ; la politique que tu recommandes.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Head : décision au début de la trace (taux fixe), simple mais aveugle. Tail : décision à la fin, au Collector, en gardant les erreurs et les lentes. Recommandation : 100 % en dev, tail sampling en prod (100 % des erreurs et &gt; 500 ms, 5–10 % du reste).</div></details></li>
+<li>Corrélation logs ↔ traces ↔ métriques : les mécanismes (trace_id, exemplars).
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le trace_id est dans les logs (MDC) et dans les spans ; Grafana relie Loki → Tempo par derived field. Les exemplars attachent un trace_id à un bucket d'histogramme : depuis un point du graphe p95, on ouvre la trace. Les labels service/namespace alignent les trois sources.</div></details></li>
+<li>SLI, SLO, SLA, budget d'erreur : définitions, calcul à 99,9 % sur 30 jours.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">SLI : mesure (ratio bon/total). SLO : objectif sur une fenêtre (99,9 % sur 30 j). SLA : contrat avec pénalités, toujours plus lâche que le SLO. Budget d'erreur : 100 % − SLO = 0,1 % de 30 jours = 43 min d'indisponibilité (ou 0,1 % des requêtes) par mois.</div></details></li>
+<li>Burn rate multi-fenêtres : pourquoi et comment.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le burn rate mesure à quelle vitesse on consomme le budget ; une fenêtre longue (1 h, 6 h) donne la gravité, une fenêtre courte (5 min, 30 min) confirme que c'est en cours. Page si 14,4× sur 1 h et 5 min (budget épuisé en 2 jours), ticket si 6× sur 6 h et 30 min. Pas de réveil pour un pic de 30 s, silence dès que ça s'arrête.</div></details></li>
+<li>Alertmanager : regroupement, inhibition, silences, escalade ; runbook obligatoire.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Regroupement par service et alertname (une notification par incident), inhibition (la page inhibe le ticket du même service), silences avec auteur, motif et fin, escalade (page → secondaire → manager). Une alerte de page sans runbook_url n'est pas acceptée.</div></details></li>
+<li>Une astreinte soutenable : rotation, charge cible, conditions.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Rotation d'une semaine, primaire et secondaire, pas plus de 2 pages par nuit et 25 % du temps en astreinte, compensation, passation écrite, revue des alertes bruyantes, chaque page a un runbook et donne lieu à une action ; sinon on retire l'alerte ou on corrige la cause.</div></details></li>
+<li>Rôles pendant un incident ; pourquoi mitiger avant de comprendre.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Commandant (décide, coordonne), opérations (agit), communication (informe toutes les 15 min), scribe (chronologie). On mitige (rollback, bascule, désactivation) avant de comprendre parce que chaque minute compte pour les utilisateurs ; la compréhension vient au post-mortem avec la chronologie.</div></details></li>
+<li>Le post-mortem sans blâme : structure, règles, ce qui distingue une vraie cause d'une « erreur humaine ».
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Résumé, impact chiffré, chronologie, causes (5 pourquoi), ce qui a bien marché, actions avec propriétaire et date, leçons. Règles : pas de nom, pas de blâme, on cherche ce qui a rendu l'erreur possible. « Erreur humaine » n'est jamais une cause : la cause est l'absence de garde-fou (revue, test, alerte) qui l'aurait rattrapée.</div></details></li>
 </ol>
 <p><strong>Prochain niveau</strong> : Sécurité (DevSecOps) — shift-left, SAST/DAST/SCA, SBOM, secrets avec Vault, sécurité des conteneurs et de Kubernetes, supply chain, zero trust et PKI, conformité.</p>
 </section>

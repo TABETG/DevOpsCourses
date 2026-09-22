@@ -796,6 +796,7 @@ lsof -p 1234           # fichiers ouverts par un processus</code></pre>
 <div class="bref"><span class="tag">En 30 secondes</span><ol><li>Une requête traverse DNS, TCP, TLS, HTTP : on diagnostique dans cet ordre.</li><li>Le CIDR, les ports et les codes HTTP se savent par cœur ; le 502 vient du reverse proxy.</li><li>TLS chiffre et authentifie : un certificat auto-signé chiffre mais ne prouve rien.</li></ol></div>
 <div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong>
 <ul><li>Suivre une requête HTTP du navigateur au serveur, couche par couche</li><li>Lire une adresse IP, un masque, une table de routage</li><li>Expliquer DNS, TLS et le fonctionnement d'un certificat</li><li>Diagnostiquer « ça ne répond pas » avec les bons outils</li></ul></div>
+<figure class="fig" id="flux-complet-requete-http"><a href="images/flux-complet-requete-http.webp" target="_blank" rel="noopener" title="Ouvrir le schéma en grand"><img src="images/flux-complet-requete-http.webp" alt="Flux complet d'une requête HTTPS : utilisateur, DNS, Internet, load balancer, VPC et Kubernetes, base de données" style="width:100%;height:auto;display:block;border-radius:6px" loading="lazy"></a><figcaption>Flux complet d'une requête HTTPS, de l'utilisateur à la base de données : DNS, TCP, TLS, load balancer, Ingress, Service, Pod, puis la réponse par le même chemin. Les douze étapes numérotées sont celles du diagnostic (question 8 de la révision).</figcaption></figure>
 <figure class="fig"><svg viewBox="0 0 480 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ce qui se passe quand tu tapes une URL HTTPS, et où chercher quand ça casse. Chaque étape peut échouer séparément : « Could not resolve » (DNS), « Connection refused » (TCP), « certificate » (TLS), 4xx/5xx (HTTP). On diagnostique de gauche à droite."><defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="30" width="84" height="60" rx="7" class="soft"/><text x="52.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">DNS</text><text x="52.0" y="73.9" text-anchor="middle" class="lbl">nom → IP</text><path d="M94,60 L104,60" class="arrow" marker-end="url(#ah2)"/><rect x="104" y="30" width="84" height="60" rx="7" class="soft"/><text x="146.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">TCP</text><text x="146.0" y="73.9" text-anchor="middle" class="lbl">poignée de main</text><path d="M188,60 L198,60" class="arrow" marker-end="url(#ah2)"/><rect x="198" y="30" width="84" height="60" rx="7" class="soft"/><text x="240.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">TLS</text><text x="240.0" y="73.9" text-anchor="middle" class="lbl">certificat, clé</text><path d="M282,60 L292,60" class="arrow" marker-end="url(#ah2)"/><rect x="292" y="30" width="84" height="60" rx="7" class="green"/><text x="334.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">HTTP</text><text x="334.0" y="73.9" text-anchor="middle" class="lbl">GET /users</text><path d="M376,60 L386,60" class="arrow" marker-end="url(#ah2)"/><rect x="386" y="30" width="84" height="60" rx="7" class="green"/><text x="428.0" y="55.9" text-anchor="middle" font-size="14" font-weight="700">Réponse</text><text x="428.0" y="73.9" text-anchor="middle" class="lbl">200, JSON</text></svg><figcaption>Ce qui se passe quand tu tapes une URL HTTPS, et où chercher quand ça casse. Chaque étape peut échouer séparément : « Could not resolve » (DNS), « Connection refused » (TCP), « certificate » (TLS), 4xx/5xx (HTTP). On diagnostique de gauche à droite.</figcaption></figure>
 
 
@@ -1439,27 +1440,46 @@ docker exec -it pg psql -U postgres</code></pre>
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 0</h2>
 <p>Réponds à voix haute, comme en entretien, sans support. Un point par réponse solide ; en dessous de 15 sur 20, reprends les chapitres concernés.</p>
-<ol class="quiz">
-<li>Explique le DevOps sans citer un seul outil.</li>
-<li>Les quatre métriques DORA historiques, la cinquième ajoutée en 2024, et pourquoi vitesse et stabilité ne s'opposent pas.</li>
-<li>Que signifie <code>chmod 750</code> ? Que fait le bit setuid ?</li>
-<li>Un serveur est lent : ta méthode en cinq commandes.</li>
-<li>Pourquoi PID 1 doit gérer SIGTERM dans un conteneur.</li>
-<li>Écris un pipeline qui compte les codes HTTP dans un access.log.</li>
-<li>Combien d'adresses dans un /22 ? Trois plages privées.</li>
-<li>Ce qui se passe entre la saisie d'une URL HTTPS et l'affichage.</li>
-<li>Différence entre 401, 403, 502, 504.</li>
-<li>Comment TLS authentifie un serveur ; ce qu'apporte mTLS.</li>
-<li>Security group versus NACL.</li>
-<li>Que fait <code>set -euo pipefail</code> ? Pourquoi citer les variables ?</li>
-<li>Quand passer de Bash à Python.</li>
-<li>Qu'est-ce qu'une branche Git, physiquement ?</li>
-<li>Merge, rebase, revert, reset : quand et pourquoi.</li>
-<li>Trunk-based versus GitFlow ; ce que Conventional Commits permet d'automatiser.</li>
-<li>Un secret a été commité puis supprimé du dépôt : que fais-tu ?</li>
-<li>ACID ; à quoi sert un index ; comment lire un EXPLAIN.</li>
-<li>Migration de schéma sans interruption : le principe expand/contract.</li>
-<li>Les six facteurs des 12 qui conditionnent l'exploitabilité, avec un exemple Spring Boot.</li>
+<ol class="quiz"><li>Explique le DevOps sans citer un seul outil.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Une façon d'organiser le travail pour que ceux qui construisent et ceux qui exploitent partagent le même objectif : livrer souvent, en petits lots, avec une boucle de retour rapide, et mesurer (vitesse et stabilité) plutôt que discuter. Culture, pratiques, mesure ; les outils ne viennent qu'après.</div></details></li>
+<li>Les quatre métriques DORA historiques, la cinquième ajoutée en 2024, et pourquoi vitesse et stabilité ne s'opposent pas.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Fréquence de déploiement, lead time des changements, taux d'échec des changements, temps de rétablissement ; la cinquième (2024) : taux de rework (déploiements non planifiés pour corriger). Les équipes qui livrent le plus souvent sont aussi les plus stables : petits lots = petits risques = corrections rapides.</div></details></li>
+<li>Que signifie <code>chmod 750</code> ? Que fait le bit setuid ?
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">750 = rwx r-x --- : propriétaire tout, groupe lecture et exécution, autres rien. setuid (4000) : le programme s'exécute avec l'identité du propriétaire du fichier (ex. passwd tourne en root) ; à surveiller, c'est un vecteur d'élévation.</div></details></li>
+<li>Un serveur est lent : ta méthode en cinq commandes.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">uptime (charge), top ou htop (CPU, mémoire, quel processus), free -m (swap ?), df -h et iostat (disque), ss -s ou sar -n (réseau). Ensuite journalctl ou les logs du processus suspect.</div></details></li>
+<li>Pourquoi PID 1 doit gérer SIGTERM dans un conteneur.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le processus 1 du conteneur reçoit SIGTERM au docker stop / à la suppression du Pod ; s'il ne le gère pas (script shell qui lance java sans exec), rien ne se ferme proprement et le noyau envoie SIGKILL après le délai (10 s Docker, 30 s Kubernetes) : connexions coupées, écritures perdues.</div></details></li>
+<li>Écris un pipeline qui compte les codes HTTP dans un access.log.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">awk '{print $9}' access.log | sort | uniq -c | sort -rn (le champ du code dépend du format ; avec le format combiné c'est $9).</div></details></li>
+<li>Combien d'adresses dans un /22 ? Trois plages privées.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">/22 = 1 024 adresses (1 022 hôtes utilisables). Plages privées RFC 1918 : 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16.</div></details></li>
+<li>Ce qui se passe entre la saisie d'une URL HTTPS et l'affichage.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Résolution DNS (cache, résolveur, A/AAAA), connexion TCP (SYN, SYN-ACK, ACK) sur 443, handshake TLS (certificat vérifié, clé de session), requête HTTP, passage par le load balancer et le reverse proxy, application, base, réponse par le même chemin, rendu. Voir le schéma du chapitre 3.</div></details></li>
+<li>Différence entre 401, 403, 502, 504.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">401 : pas authentifié (ou jeton invalide). 403 : authentifié mais pas autorisé. 502 : le proxy n'a pas obtenu de réponse valide du backend (backend down ou mauvais port). 504 : le backend n'a pas répondu dans le délai (lenteur, timeout du proxy).</div></details></li>
+<li>Comment TLS authentifie un serveur ; ce qu'apporte mTLS.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le serveur présente un certificat signé par une CA de confiance, contenant son nom (SAN) ; le client vérifie la chaîne, la validité, le nom, puis prouve par le handshake que le serveur détient la clé privée. mTLS ajoute la vérification du client par certificat : identité des deux côtés, sans mot de passe.</div></details></li>
+<li>Security group versus NACL.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Security group : pare-feu stateful attaché à l'instance/l'ENI, règles allow uniquement, par référence possible. NACL : stateless, attaché au sous-réseau, allow et deny, évaluées dans l'ordre. En pratique : SG pour tout, NACL pour quelques refus grossiers.</div></details></li>
+<li>Que fait <code>set -euo pipefail</code> ? Pourquoi citer les variables ?
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">-e : sortie à la première commande en échec ; -u : variable non définie = erreur ; -o pipefail : un pipeline échoue si un maillon échoue. Citer les variables ("$f") évite le découpage sur les espaces et l'expansion des jokers.</div></details></li>
+<li>Quand passer de Bash à Python.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Dès qu'il y a une vraie structure de données, un appel HTTP/API, du JSON à manipuler, des tests à écrire, ou plus d'une centaine de lignes. Bash pour orchestrer des commandes, Python pour de la logique.</div></details></li>
+<li>Qu'est-ce qu'une branche Git, physiquement ?
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Un fichier de 41 octets dans .git/refs/heads/ qui contient le hash d'un commit. Créer une branche ne copie rien ; c'est un pointeur mobile sur le graphe des commits.</div></details></li>
+<li>Merge, rebase, revert, reset : quand et pourquoi.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Merge : intègre une branche en gardant l'historique (--no-ff garde la trace). Rebase : réécrit ses commits sur une nouvelle base, historique linéaire, jamais sur une branche partagée. Revert : commit inverse, sûr sur main. Reset : déplace la branche, uniquement en local et non poussé.</div></details></li>
+<li>Trunk-based versus GitFlow ; ce que Conventional Commits permet d'automatiser.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Trunk-based : branches courtes (&lt; 1 j), intégration continue réelle, feature flags. GitFlow : branches longues (develop, release, hotfix), adapté aux versions livrées. Conventional Commits permet de calculer la version (semantic-release), générer le changelog, et lier les commits aux tickets.</div></details></li>
+<li>Un secret a été commité puis supprimé du dépôt : que fais-tu ?
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le considérer comme compromis : révoquer/faire tourner le secret immédiatement (c'est la seule vraie réponse), puis nettoyer l'historique (git filter-repo), forcer le push, prévenir l'équipe, ajouter gitleaks en pre-commit et en CI.</div></details></li>
+<li>ACID ; à quoi sert un index ; comment lire un EXPLAIN.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Atomicité, cohérence, isolation, durabilité. Un index est une structure triée qui évite le parcours complet ; il coûte en écriture et en espace. EXPLAIN ANALYZE : lire de l'intérieur vers l'extérieur, chercher Seq Scan sur grosses tables, comparer rows estimées et réelles, regarder le nœud le plus coûteux.</div></details></li>
+<li>Migration de schéma sans interruption : le principe expand/contract.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Ajouter sans casser (nouvelle colonne nullable, nouvelle table), déployer un code compatible avec les deux schémas, migrer les données par lots, basculer les lectures, puis seulement retirer l'ancien. Chaque étape est compatible avec la version N-1 : le rollback reste possible.</div></details></li>
+<li>Les six facteurs des 12 qui conditionnent l'exploitabilité, avec un exemple Spring Boot.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Configuration par l'environnement (pas de config-prod.yml dans le jar), services externes attachés (URL de base injectée), processus sans état (pas d'uploads locaux → S3), logs sur stdout (pas de fichier), jetabilité (arrêt propre SIGTERM), parité dev/prod (Testcontainers, même image). Chacun se vérifie sur une Spring Boot avec deux instances.</div></details></li>
 </ol>
 <p><strong>Prochain niveau</strong> : Virtualisation et conteneurs — Docker en profondeur, images, réseaux, volumes, sécurité des images, Compose, registries.</p>
 </section>

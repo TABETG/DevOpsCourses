@@ -1138,27 +1138,54 @@ crisisshield-config/     (dépôt de configuration : l'état désiré)
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 3</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
-<ol class="quiz">
-<li>Déclaratif contre impératif ; provisioning contre configuration.</li>
-<li>Le triangle code / state / réalité, et ce que font <code>plan</code>, <code>apply</code>, <code>refresh</code>.</li>
-<li>Pourquoi le state est sensible et comment on le protège.</li>
-<li><code>count</code> contre <code>for_each</code>.</li>
-<li>Les trois options du bloc <code>lifecycle</code> et un cas d'usage chacune.</li>
-<li>Comment tu découpes les states d'un projet, et pourquoi pas les workspaces.</li>
-<li><code>import</code>, <code>state mv</code>, <code>moved</code>, <code>force-unlock</code> : quand.</li><li><code>dynamic</code>, <code>for_each</code> avec filtre, alias de providers, <code>check</code>, <code>removed</code>, <code>ephemeral</code> : un exemple chacun.</li><li>Cinq erreurs Terraform fréquentes et leur remède ; la méthode devant un plan inattendu.</li>
-<li>Un pipeline Terraform : étapes et garde-fous.</li>
-<li>LocalStack et le provider Docker : à quoi ils servent.</li>
-<li>Idempotence : définition et comment la prouver avec Ansible.</li>
-<li>Handlers : comportement exact.</li>
-<li>Inventaire dynamique : le lien entre Terraform et Ansible.</li>
-<li>Molecule et ansible-lint : ce qu'ils vérifient.</li>
-<li>Ansible Vault contre HashiCorp Vault.</li><li>Précédence des variables Ansible ; <code>block/rescue/always</code>, <code>serial</code>, <code>delegate_to</code>, <code>run_once</code>, <code>async</code>, <code>until</code>.</li><li>Les réglages d'<code>ansible.cfg</code> qui changent la vitesse ; cinq erreurs fréquentes et leur remède.</li>
-<li>Le rôle d'Ansible dans un monde conteneurisé.</li>
-<li>Packer : source, provisioner, post-processor ; cycle de vie d'une golden image.</li>
-<li>Vagrant : à quoi il servait, ce qui l'a remplacé.</li>
-<li>Infrastructure immuable : définition et cinq conséquences opérationnelles.</li>
-<li>Dérive : détection, prévention, traitement.</li>
-<li>Les quatre principes GitOps ; push contre pull ; structure des dépôts.</li>
+<ol class="quiz"><li>Déclaratif contre impératif ; provisioning contre configuration.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Déclaratif : je décris l'état voulu, l'outil calcule les actions (Terraform, Kubernetes). Impératif : je liste les actions (script). Provisioning : créer l'infrastructure (VM, réseau, base) — Terraform. Configuration : installer et régler ce qu'il y a dedans — Ansible.</div></details></li>
+<li>Le triangle code / state / réalité, et ce que font <code>plan</code>, <code>apply</code>, <code>refresh</code>.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le code décrit l'état voulu, le state mémorise ce que Terraform a créé, la réalité est ce qui existe. refresh met le state à jour depuis la réalité ; plan compare code et state (rafraîchi) et propose des actions ; apply exécute et écrit le state.</div></details></li>
+<li>Pourquoi le state est sensible et comment on le protège.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Il contient les attributs des ressources, y compris des secrets en clair (mots de passe générés, clés). On le stocke dans un backend distant chiffré, versionné, verrouillé (S3 + DynamoDB), avec accès restreint et jamais dans Git.</div></details></li>
+<li><code>count</code> contre <code>for_each</code>.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">count : liste indexée ; supprimer un élément décale les suivants et provoque des recréations. for_each : map ou set, chaque instance a une clé stable ; ajouter ou retirer ne touche que l'élément concerné. for_each par défaut.</div></details></li>
+<li>Les trois options du bloc <code>lifecycle</code> et un cas d'usage chacune.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">create_before_destroy (remplacer une instance derrière un LB sans coupure), prevent_destroy (base de production), ignore_changes (desired_count piloté par l'autoscaling, tags posés par un autre outil).</div></details></li>
+<li>Comment tu découpes les states d'un projet, et pourquoi pas les workspaces.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Un state par environnement et par domaine (réseau, base, application) : rayon d'impact limité, droits distincts, plan rapide. Les workspaces partagent le même backend et les mêmes droits : une erreur de sélection touche la prod.</div></details></li>
+<li><code>import</code>, <code>state mv</code>, <code>moved</code>, <code>force-unlock</code> : quand.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">import : adopter une ressource créée à la main. state mv : renommer dans le state sans recréer. moved : la même chose, mais dans le code, revu et reproductible. force-unlock : libérer un verrou orphelin, seulement après avoir vérifié qu'aucun apply ne tourne.</div></details></li>
+<li><code>dynamic</code>, <code>for_each</code> avec filtre, alias de providers, <code>check</code>, <code>removed</code>, <code>ephemeral</code> : un exemple chacun.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">dynamic : générer des blocs ingress depuis une liste. for_each avec filtre : { for k, v in var.subnets : k =&gt; v if v.public }. Alias : deux régions avec provider aws.eu et aws.us. check : vérifier après apply qu'un endpoint répond. removed : retirer du state sans détruire. ephemeral : un secret lu sans être écrit dans le state.</div></details></li>
+<li>Cinq erreurs Terraform fréquentes et leur remède ; la méthode devant un plan inattendu.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Versions non épinglées (épingler provider et module) ; state local (backend distant) ; secret dans le code (variable sensitive + Vault) ; ressource modifiée à la main (moved/ignore_changes/corriger le code) ; apply depuis un poste (pipeline). Devant un plan inattendu : lire chaque ligne, chercher la dérive ou le changement de provider, ne jamais appliquer un destroy non compris.</div></details></li>
+<li>Un pipeline Terraform : étapes et garde-fous.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">fmt et validate, tflint, scan (trivy config, checkov), coût (infracost), plan en artefact commenté dans la MR, apply manuel sur main avec resource_group et approbation, state verrouillé, identité OIDC sans clé statique.</div></details></li>
+<li>LocalStack et le provider Docker : à quoi ils servent.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">LocalStack simule les API AWS pour tester Terraform sans compte ni coût ; le provider Docker permet de décrire des conteneurs et réseaux en Terraform et de comprendre le cycle plan/apply/destroy sur du concret.</div></details></li>
+<li>Idempotence : définition et comment la prouver avec Ansible.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Un playbook idempotent produit le même état quel que soit le nombre d'exécutions : le second passage affiche changed=0 dans le PLAY RECAP. On le prouve en exécutant deux fois, et Molecule le vérifie automatiquement.</div></details></li>
+<li>Handlers : comportement exact.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Un handler ne s'exécute qu'une fois, à la fin du play, si au moins une tâche notifiée a changé ; l'ordre est celui de la déclaration des handlers, pas des notifications ; flush_handlers pour forcer plus tôt ; en cas d'échec avant la fin, il n'est pas exécuté (sauf --force-handlers).</div></details></li>
+<li>Inventaire dynamique : le lien entre Terraform et Ansible.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Terraform crée les machines avec des tags ; le plugin d'inventaire dynamique (aws_ec2, proxmox) interroge l'API et construit les groupes à partir des tags : Ansible ne connaît jamais de liste d'IP écrite à la main.</div></details></li>
+<li>Molecule et ansible-lint : ce qu'ils vérifient.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Molecule crée une instance (conteneur), applique le rôle, vérifie l'idempotence (second passage sans changement) et exécute des tests (Testinfra, Goss). ansible-lint vérifie les bonnes pratiques : noms complets des modules, tâches nommées, pas de shell quand un module existe, secrets.</div></details></li>
+<li>Ansible Vault contre HashiCorp Vault.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Ansible Vault chiffre des fichiers ou valeurs dans Git avec un mot de passe partagé : simple, mais rotation difficile et pas d'audit. HashiCorp Vault sert des secrets dynamiques à l'exécution, avec identité, bail et audit ; Ansible le lit par lookup.</div></details></li>
+<li>Précédence des variables Ansible ; <code>block/rescue/always</code>, <code>serial</code>, <code>delegate_to</code>, <code>run_once</code>, <code>async</code>, <code>until</code>.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Précédence (croissante) : defaults du rôle &lt; inventaire &lt; group_vars &lt; host_vars &lt; vars du play &lt; vars du rôle &lt; set_fact &lt; -e. block/rescue/always : essai, rattrapage, nettoyage. serial : lots d'hôtes. delegate_to : exécuter ailleurs (LB). run_once : une seule fois. async : sans attendre. until : répéter jusqu'à condition.</div></details></li>
+<li>Les réglages d'<code>ansible.cfg</code> qui changent la vitesse ; cinq erreurs fréquentes et leur remède.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">forks élevé, pipelining, gathering smart avec fact_caching, stratégie free si l'ordre n'importe pas, mitogen en option. Erreurs : oubli de become, python absent sur la cible (raw), host_key_checking en labo, variables non définies (assert), shell au lieu d'un module (non idempotent).</div></details></li>
+<li>Le rôle d'Ansible dans un monde conteneurisé.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Il n'installe plus rien dans les conteneurs ; il reste pour les hôtes (bootstrap des nœuds, VM, bastion), les appliances réseau, les opérations ponctuelles (rotation, migration), et l'image dorée avec Packer. Talos le supprime même des nœuds.</div></details></li>
+<li>Packer : source, provisioner, post-processor ; cycle de vie d'une golden image.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">source : d'où l'on part (AMI, ISO, image Docker) ; provisioner : ce qu'on installe (shell, Ansible) ; post-processor : ce qu'on fait du résultat (tag, manifest, publication). Cycle : build planifié (mensuel et à chaque CVE critique), tests Goss, scan, publication datée, remplacement des instances, dépublication des anciennes.</div></details></li>
+<li>Vagrant : à quoi il servait, ce qui l'a remplacé.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Vagrant décrivait une VM de développement reproductible (Vagrantfile) sur VirtualBox ; remplacé par Docker/Compose, les Dev Containers et kind pour le local, et par Packer + Terraform pour les VM.</div></details></li>
+<li>Infrastructure immuable : définition et cinq conséquences opérationnelles.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">On ne modifie jamais une machine en place : on la remplace par une nouvelle image. Conséquences : pas de SSH ni de patch en place, rotation régulière, état hors de la machine (stockage externe), déploiement = remplacement, retour arrière = ancienne image, dérive impossible par construction.</div></details></li>
+<li>Dérive : détection, prévention, traitement.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Détection : terraform plan -detailed-exitcode planifié, ArgoCD OutOfSync, outils comme driftctl. Prévention : plus d'accès en écriture hors pipeline (SCP, RBAC), GitOps avec selfHeal. Traitement : corriger par le code (adopter ou revenir), jamais en modifiant le state à la main.</div></details></li>
+<li>Les quatre principes GitOps ; push contre pull ; structure des dépôts.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Déclaratif, versionné et immuable, tiré automatiquement, réconcilié en continu. Push : la CI pousse vers l'environnement (accès entrant, identifiants dans la CI). Pull : un agent dans l'environnement lit Git (pas d'accès entrant, dérive corrigée). Dépôts : code séparé de la configuration ; apps/ partagé, envs/ par environnement, promotion par changement de digest.</div></details></li>
 </ol>
 <p><strong>Prochain niveau</strong> : Cloud — concepts, AWS en profondeur (IAM, VPC, EC2, S3, RDS, Lambda, ECS/EKS), Azure et GCP, FinOps, multi-cloud.</p>
 </section>

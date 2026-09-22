@@ -859,27 +859,46 @@ resource "google_cloud_run_v2_service" "api" {
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 4</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
-<ol class="quiz">
-<li>IaaS, CaaS, PaaS, FaaS, SaaS : ce que tu gères dans chacun, et comment tu choisis.</li>
-<li>Région, AZ, edge : pourquoi multi-AZ est le minimum et multi-région rarement justifié.</li>
-<li>Responsabilité partagée : trois exemples de chaque côté.</li>
-<li>Les postes de facture surprises.</li>
-<li>IAM : ordre d'évaluation des politiques ; identité contre ressource contre SCP.</li>
-<li>Pourquoi plus aucune clé d'accès statique, et comment (rôles, OIDC, Identity Center).</li>
-<li>Dessine un VPC de production en trois AZ avec ses tables de routage.</li>
-<li>Security group contre NACL ; règles par référence de SG.</li>
-<li>NAT Gateway contre endpoints VPC : coût et sécurité.</li>
-<li>EC2, ECS Fargate, EKS, Lambda, App Runner : critères de choix.</li>
-<li>Spot, Savings Plans, Graviton : quand et combien.</li>
-<li>S3 : classes, cycle de vie, protection contre l'exposition et le ransomware.</li>
-<li>RDS Multi-AZ contre réplica de lecture contre Aurora.</li>
-<li>Lambda : limites, cold start, comment Java s'y comporte.</li>
-<li>CloudTrail, Config, GuardDuty, Security Hub, Inspector : rôle de chacun.</li>
-<li>Traduire une architecture AWS en Azure et GCP.</li>
-<li>Ce qui est structurellement différent chez Azure et chez GCP.</li>
-<li>Cloud de confiance, SecNumCloud, Bleu, S3NS : de quoi il s'agit.</li>
-<li>FinOps : informer, optimiser, opérer ; les leviers dans l'ordre.</li>
-<li>Multi-cloud subi, choisi, portable ; où est la vraie dépendance.</li>
+<ol class="quiz"><li>IaaS, CaaS, PaaS, FaaS, SaaS : ce que tu gères dans chacun, et comment tu choisis.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">IaaS : tu gères OS et tout ce qu'il y a dessus (EC2). CaaS : tu gères les conteneurs, pas les hôtes (ECS/EKS managé). PaaS : tu livres du code, la plateforme fait le reste (App Runner, Beanstalk). FaaS : des fonctions par événement (Lambda). SaaS : tu utilises (RDS est un SaaS de base). Choix : plus on monte, moins on exploite et moins on contrôle ; on prend le plus haut niveau qui respecte les contraintes (langage, réseau, coût).</div></details></li>
+<li>Région, AZ, edge : pourquoi multi-AZ est le minimum et multi-région rarement justifié.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Une région est un ensemble d'AZ (datacenters distincts, latence &lt; 2 ms) ; edge = points de présence CDN. Multi-AZ protège d'une panne de datacenter à faible coût (réseau local) ; multi-région double les coûts et pose le problème des données (réplication, cohérence) : justifié par une exigence réglementaire ou un RTO global.</div></details></li>
+<li>Responsabilité partagée : trois exemples de chaque côté.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Fournisseur : sécurité physique, hyperviseur, réseau de la région, correctifs des services managés. Client : configuration IAM, chiffrement et exposition des données (bucket public), correctifs de l'OS des EC2, code applicatif, secrets.</div></details></li>
+<li>Les postes de facture surprises.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">NAT Gateway (par Go et par heure), trafic sortant inter-région et vers Internet, snapshots et volumes orphelins, adresses IP publiques, journaux CloudWatch sans rétention, instances de dev allumées la nuit, LoadBalancers oubliés, requêtes API à la seconde (S3, KMS).</div></details></li>
+<li>IAM : ordre d'évaluation des politiques ; identité contre ressource contre SCP.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Deny explicite gagne toujours ; sinon il faut un allow ; SCP (organisation) borne ce qu'un compte peut faire, même à l'admin ; politique de ressource (bucket) et politique d'identité (rôle) s'évaluent ensemble ; permission boundary borne une identité ; session policies en dernier.</div></details></li>
+<li>Pourquoi plus aucune clé d'accès statique, et comment (rôles, OIDC, Identity Center).
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Une clé statique fuit (dépôt, log, poste) et ne expire pas. On la remplace par des rôles assumés (instance profile, rôle de tâche), par OIDC pour la CI (jeton échangé contre des identifiants de 15 min à 1 h), par Identity Center (SSO, sessions courtes) pour les humains.</div></details></li>
+<li>Dessine un VPC de production en trois AZ avec ses tables de routage.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Trois AZ, chacune avec un sous-réseau public (ALB, NAT), privé (applications), base (RDS). Tables de routage : public → IGW ; privé → NAT de sa zone (un par AZ en prod) + endpoints S3/ECR ; base → aucune route sortante. Aucune IP publique sur les instances.</div></details></li>
+<li>Security group contre NACL ; règles par référence de SG.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">SG : stateful, par instance, allow seulement, référence possible (api accepte 8080 depuis le SG de l'ALB) : ajouter une instance ne change aucune règle. NACL : stateless, par sous-réseau, allow/deny ordonnés, pour bloquer une plage. SG pour tout le contrôle applicatif.</div></details></li>
+<li>NAT Gateway contre endpoints VPC : coût et sécurité.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le NAT coûte à l'heure et au Go, et expose le trafic à Internet. Les endpoints (Gateway S3/DynamoDB gratuits, Interface pour ECR, Secrets Manager, CloudWatch) gardent le trafic dans le réseau AWS et réduisent la facture NAT, souvent le premier poste caché.</div></details></li>
+<li>EC2, ECS Fargate, EKS, Lambda, App Runner : critères de choix.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">EC2 : contrôle total, exploitation à charge (OS). ECS Fargate : conteneurs sans nœuds, simple, verrouillé AWS. EKS : Kubernetes standard, portable, plus complexe. Lambda : événementiel, court, facturé à l'appel. App Runner : PaaS pour une API web. Critère : compétence de l'équipe, portabilité, profil de charge, coût à l'échelle.</div></details></li>
+<li>Spot, Savings Plans, Graviton : quand et combien.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Spot : jusqu'à −90 %, interruptible, pour les charges tolérantes (CI, batch, nœuds de calcul avec marge). Savings Plans : engagement 1–3 ans sur le socle stable, après optimisation, −30 à −50 %. Graviton (ARM) : −20 % à performance égale, presque tout est compatible (Java, conteneurs multi-arch).</div></details></li>
+<li>S3 : classes, cycle de vie, protection contre l'exposition et le ransomware.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Classes : Standard, Intelligent-Tiering, IA, Glacier (accès rare) ; cycle de vie pour migrer et expirer. Exposition : Block Public Access au niveau compte, politiques de bucket, chiffrement par défaut. Ransomware : versioning, Object Lock (WORM), réplication vers un compte isolé, MFA delete.</div></details></li>
+<li>RDS Multi-AZ contre réplica de lecture contre Aurora.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Multi-AZ : réplique synchrone en attente, bascule automatique (~1 min), zéro perte, pour la disponibilité. Réplica de lecture : copie asynchrone lisible, pour décharger les lectures. Aurora : stockage réparti sur 3 AZ, bascule en secondes, réplicas partageant le stockage, Global Database pour le multi-région.</div></details></li>
+<li>Lambda : limites, cold start, comment Java s'y comporte.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">15 min max, 10 Go de mémoire, taille de paquet limitée, pas de connexions persistantes faciles (pool). Cold start : initialisation à la première invocation ; Java est le plus lent (secondes) → SnapStart, natif (Quarkus/GraalVM), ou provisioned concurrency.</div></details></li>
+<li>CloudTrail, Config, GuardDuty, Security Hub, Inspector : rôle de chacun.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">CloudTrail : journal de tous les appels API (qui a fait quoi). Config : inventaire et conformité des ressources (règles). GuardDuty : détection de menaces sur les journaux et le réseau. Security Hub : agrégation des findings et référentiels (CIS). Inspector : vulnérabilités des instances et images.</div></details></li>
+<li>Traduire une architecture AWS en Azure et GCP.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">VPC ↔ VNet ↔ VPC ; ALB ↔ Application Gateway ↔ Cloud Load Balancing ; EKS ↔ AKS ↔ GKE ; RDS ↔ Flexible Server ↔ Cloud SQL ; S3 ↔ Blob ↔ Cloud Storage ; IAM rôle ↔ identité managée ↔ compte de service ; Secrets Manager ↔ Key Vault ↔ Secret Manager ; CloudTrail ↔ Activity Log ↔ Cloud Audit Logs.</div></details></li>
+<li>Ce qui est structurellement différent chez Azure et chez GCP.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Azure : identité par Entra ID intégrée à l'entreprise, groupes de ressources, abonnements, réseau plus simple mais moins isolant par défaut. GCP : projets comme unité, VPC global (multi-région natif), IAM par ressource hiérarchique, GKE le plus abouti, facturation à la seconde.</div></details></li>
+<li>Cloud de confiance, SecNumCloud, Bleu, S3NS : de quoi il s'agit.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Cloud de confiance : offre qualifiée pour héberger des données sensibles à l'abri des lois extraterritoriales. SecNumCloud : qualification ANSSI (sécurité et immunité juridique). Bleu (Orange/Capgemini, techno Microsoft) et S3NS (Thales, techno Google) : clouds sous contrôle français avec technologies américaines, en cours de qualification.</div></details></li>
+<li>FinOps : informer, optimiser, opérer ; les leviers dans l'ordre.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Informer (tags, allocation, coût par unité), optimiser (éteindre, redimensionner, architecture, engagements — dans cet ordre), opérer (rapport mensuel, anomalies, décisions). Le premier levier est toujours d'éteindre ce qui ne sert pas.</div></details></li>
+<li>Multi-cloud subi, choisi, portable ; où est la vraie dépendance.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Subi : rachats, équipes qui ont choisi seules. Choisi : exigence client ou réglementaire, rare. Portable : un cloud principal et des briques standard (conteneurs, PostgreSQL, Terraform, OpenTelemetry). La vraie dépendance : identité, réseau, services serverless propriétaires, et surtout les données et les compétences.</div></details></li>
 </ol>
 <p><strong>Prochain niveau</strong> : Kubernetes — architecture, objets, stockage, Helm, GitOps avec ArgoCD, service mesh, autoscaling.</p>
 </section>

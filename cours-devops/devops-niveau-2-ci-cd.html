@@ -1025,27 +1025,46 @@ return legacyMapService.render(zone);</code></pre>
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 2</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
-<ol class="quiz">
-<li>CI, livraison continue, déploiement continu : définitions et ce qui manque pour passer de l'un à l'autre.</li>
-<li>Étape, job, artefact, cache, runner : rôle de chacun.</li>
-<li>« Build once, deploy everywhere » : pourquoi, et comment le garantir.</li>
-<li>Six leviers pour accélérer un pipeline.</li>
-<li>Comment un pipeline s'authentifie sans secret statique.</li>
-<li><code>rules</code> et <code>needs</code> dans GitLab CI : comportement.</li>
-<li>Pourquoi dind est un problème et ce qui le remplace.</li>
-<li>Correspondances GitLab CI ↔ GitHub Actions.</li>
-<li>Pourquoi épingler une action par SHA.</li>
-<li>Ce que tu fais en arrivant sur un Jenkins existant.</li>
-<li>Où placer chaque type de test dans le pipeline.</li>
-<li>Pourquoi Testcontainers plutôt que H2 ou des mocks.</li>
-<li>Quality gate sur le nouveau code : pourquoi cette approche.</li>
-<li>SAST, SCA, DAST, secrets, IaC : un outil et un exemple chacun.</li>
-<li>Comment introduire des analyses de sécurité sans que l'équipe les désactive.</li>
-<li>Reproductibilité : le mécanisme de verrouillage dans quatre écosystèmes.</li>
-<li>Renovate : ta politique d'auto-merge.</li>
-<li>Comment semantic-release calcule une version.</li>
-<li>Recreate, rolling, blue/green, canary : interruption, coût, rollback.</li>
-<li>Déployer sans interruption avec une migration de schéma : le déroulé complet.</li>
+<ol class="quiz"><li>CI, livraison continue, déploiement continu : définitions et ce qui manque pour passer de l'un à l'autre.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">CI : chaque commit est intégré, construit et testé automatiquement. Livraison continue : chaque version validée est déployable en un clic (artefact prêt, environnement de staging). Déploiement continu : le déploiement en prod est automatique. Pour monter : des tests suffisants, une stratégie de déploiement sûre, un rollback testé, des feature flags.</div></details></li>
+<li>Étape, job, artefact, cache, runner : rôle de chacun.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Étape (stage) : phase ordonnée. Job : unité d'exécution dans une étape, sur un runner. Artefact : fichier produit et transmis aux jobs suivants. Cache : accélérateur non garanti (dépendances). Runner : l'agent qui exécute les jobs, idéalement éphémère.</div></details></li>
+<li>« Build once, deploy everywhere » : pourquoi, et comment le garantir.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le même artefact (image par digest) traverse tous les environnements : ce qui est testé est ce qui est déployé. Garanti par : configuration par l'environnement, image immuable, promotion par digest dans le dépôt GitOps, jamais de rebuild en aval.</div></details></li>
+<li>Six leviers pour accélérer un pipeline.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Cache des dépendances, parallélisation (DAG avec needs), tests découpés et ciblés, images de job légères, échec rapide (lint et tests unitaires d'abord), et runners plus proches/plus gros ; mesurer chaque étape avant.</div></details></li>
+<li>Comment un pipeline s'authentifie sans secret statique.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Par identité : le job reçoit un jeton OIDC signé par la plateforme CI (id_tokens), que Vault ou le cloud échange contre des identifiants de courte durée liés au projet et à la branche. Aucune variable secrète.</div></details></li>
+<li><code>rules</code> et <code>needs</code> dans GitLab CI : comportement.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">rules : décide si un job existe dans le pipeline (if, changes, when) selon les variables ; needs : dépendance explicite entre jobs, crée un DAG et permet de démarrer avant la fin de l'étape précédente.</div></details></li>
+<li>Pourquoi dind est un problème et ce qui le remplace.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">dind ou le socket monté donnent au job le contrôle de l'hôte : quiconque écrit un job est root sur le runner. Remplacé par Kaniko ou BuildKit rootless (build sans démon), en Pod éphémère.</div></details></li>
+<li>Correspondances GitLab CI ↔ GitHub Actions.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">stages ↔ jobs séquencés par needs ; job ↔ job ; script ↔ steps/run ; image ↔ container ; artifacts ↔ upload-artifact ; cache ↔ actions/cache ; rules ↔ if et on: ; include ↔ uses (actions réutilisables) ; variables ↔ env ; environment ↔ environment.</div></details></li>
+<li>Pourquoi épingler une action par SHA.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Un tag (v4) est mutable : le propriétaire de l'action (ou un attaquant de son compte) peut y pousser un autre code, exécuté avec les permissions du workflow. Le SHA fige le code exact ; Renovate met à jour le SHA avec un commentaire de version.</div></details></li>
+<li>Ce que tu fais en arrivant sur un Jenkins existant.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Inventaire des jobs et plugins, sauvegarde, mise à jour de sécurité, passage des jobs freestyle en Jenkinsfile versionné, agents éphémères en conteneur, suppression des identifiants en clair vers un gestionnaire de secrets, puis décision : garder et durcir ou migrer.</div></details></li>
+<li>Où placer chaque type de test dans le pipeline.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Unitaires et lint à chaque commit (secondes) ; intégration avec Testcontainers en MR (minutes) ; contrat (Pact) en MR ; sécurité SAST/SCA en MR ; DAST et charge courte sur staging après déploiement ; charge complète et endurance la nuit.</div></details></li>
+<li>Pourquoi Testcontainers plutôt que H2 ou des mocks.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">H2 diffère de PostgreSQL (types, verrous, SQL) : un test vert peut cacher un bug de prod ; les mocks ne testent pas la requête réelle. Testcontainers démarre le vrai moteur en quelques secondes, dans le même pipeline.</div></details></li>
+<li>Quality gate sur le nouveau code : pourquoi cette approche.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Bloquer sur la couverture globale punit tout le monde pour la dette passée ; exiger 80 % sur les lignes nouvelles ou modifiées améliore le code au fil des MR sans arrêter le flux.</div></details></li>
+<li>SAST, SCA, DAST, secrets, IaC : un outil et un exemple chacun.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">SAST : Semgrep, détecte une concaténation SQL. SCA : Trivy fs, trouve une CVE dans jackson. DAST : ZAP, en-tête de sécurité absent sur staging. Secrets : gitleaks, clé AWS commitée. IaC : Checkov, bucket S3 sans chiffrement.</div></details></li>
+<li>Comment introduire des analyses de sécurité sans que l'équipe les désactive.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Commencer en mode audit (non bloquant), trier les faux positifs avec l'équipe, ne bloquer que sur High/Critical avec un SLA, fournir la correction dans le message, mesurer le bruit, puis rendre bloquant avec une exception datée possible.</div></details></li>
+<li>Reproductibilité : le mécanisme de verrouillage dans quatre écosystèmes.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Maven : versions fixes + BOM (pas de plages) ; npm : package-lock.json avec npm ci ; Python : requirements avec hashes ou uv.lock/poetry.lock ; Go : go.sum. Plus le proxy d'artefacts (Nexus) pour survivre à la disparition d'un paquet.</div></details></li>
+<li>Renovate : ta politique d'auto-merge.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Auto-merge des correctifs (patch) et des mises à jour de sécurité si le pipeline est vert ; mineures groupées et revues chaque semaine ; majeures avec label, revue humaine et changelog lu ; lockfile maintenance le lundi.</div></details></li>
+<li>Comment semantic-release calcule une version.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">À partir des commits conventionnels depuis le dernier tag : fix → patch, feat → minor, BREAKING CHANGE (ou !) → major ; puis génère le changelog, crée le tag et la release. Sans commit conforme, rien n'est publié.</div></details></li>
+<li>Recreate, rolling, blue/green, canary : interruption, coût, rollback.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Recreate : interruption, coût nul, rollback lent. Rolling : pas d'interruption, deux versions coexistent, rollback par nouveau rolling. Blue/green : pas d'interruption, double ressources, rollback instantané. Canary : pas d'interruption, risque borné à x %, exige des métriques comparées.</div></details></li>
+<li>Déployer sans interruption avec une migration de schéma : le déroulé complet.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Migration expand compatible N-1 déployée d'abord (Flyway), puis rolling ou canary du code qui lit l'ancien et écrit les deux, copie par lots, bascule des lectures, puis migration contract après la suppression de l'ancien code ; à chaque étape le rollback est possible.</div></details></li>
 </ol>
 <p><strong>Prochain niveau</strong> : Infrastructure as Code — Terraform, Ansible, Packer, immutabilité et GitOps.</p>
 </section>

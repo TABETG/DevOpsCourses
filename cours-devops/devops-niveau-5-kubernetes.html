@@ -1560,27 +1560,56 @@ priorityClassName: critical</code></pre>
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 5</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
-<ol class="quiz">
-<li>Chaque composant du control plane et des nœuds, et son rôle.</li>
-<li>Le parcours complet d'un <code>kubectl apply</code> jusqu'au conteneur qui tourne.</li>
-<li>Deployment, ReplicaSet, Pod : relations et responsabilités.</li><li>Pour chacun des treize symptômes du tableau 25.5 : où regarder et deux causes.</li><li>Sauvegarder et restaurer etcd ; renouveler les certificats ; mettre à jour un cluster kubeadm ; drainer un nœud.</li><li>OpenShift : les treize différences du tableau 25.7, les commandes oc, le Dockerfile compatible UID arbitraire, les trois terminaisons de Route.</li>
-<li>Startup, liveness, readiness : rôle, pièges, et ce qu'on n'y met jamais.</li>
-<li>Requests et limits : classes QoS, pourquoi pas de limite CPU, OOMKill.</li>
-<li>Arrêt propre d'un Pod et pourquoi <code>preStop sleep</code>.</li>
-<li>ClusterIP, NodePort, LoadBalancer, headless ; Ingress contre Gateway API.</li>
-<li>Pourquoi un Secret n'est pas secret, et les quatre approches GitOps pour les secrets.</li>
-<li>RBAC : Role, ClusterRole, ServiceAccount ; <code>auth can-i</code>.</li>
-<li>NetworkPolicy default-deny : ce qu'il faut rouvrir (DNS !) et quel CNI l'applique.</li><li>Init container contre sidecar natif ; Downward API ; jeton de ServiceAccount projeté ; classes QoS.</li><li>Les vingt questions de la section 26.8, en 45 secondes chacune.</li>
-<li>PV, PVC, StorageClass, CSI, modes d'accès, reclaimPolicy.</li>
-<li>StatefulSet contre Deployment ; ce qu'un StatefulSet ne fait pas pour une base.</li>
-<li>CRD et Operator : définition, exemple CloudNativePG, critère managé contre opérateur.</li>
-<li>Helm : release, values, hooks, checksum, <code>diff</code>, <code>--atomic</code>.</li>
-<li>Kustomize : base, overlays, générateurs ; quand Helm, quand Kustomize.</li>
-<li>ArgoCD : Application, AppProject, ApplicationSet, sync waves, selfHeal, prune.</li>
-<li>Organisation des dépôts et promotion staging → prod ; rollback par revert.</li>
-<li>Service mesh : ce qu'il apporte, ce qu'il coûte, sidecar contre ambient, critère de décision.</li>
-<li>HPA, VPA, KEDA, Cluster Autoscaler, Karpenter : rôle et pièges (JVM, oscillation).</li>
-<li>Affinités, taints, priorités, topologie, quotas : un exemple d'usage chacun.</li>
+<ol class="quiz"><li>Chaque composant du control plane et des nœuds, et son rôle.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Control plane : kube-apiserver (porte d'entrée, validation, écrit dans etcd), etcd (base clé-valeur, source de vérité), kube-scheduler (choisit le nœud), kube-controller-manager (boucles de réconciliation : Deployment, nœuds…). Nœuds : kubelet (fait tourner les Pods, sondes), kube-proxy (règles réseau des Services), runtime (containerd), CNI (réseau des Pods).</div></details></li>
+<li>Le parcours complet d'un <code>kubectl apply</code> jusqu'au conteneur qui tourne.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">kubectl envoie le manifest à l'API ; authentification, RBAC, admission (mutation, validation, Kyverno) ; écriture dans etcd ; le contrôleur Deployment crée un ReplicaSet, qui crée les Pods ; le scheduler assigne un nœud ; le kubelet du nœud tire l'image, crée le conteneur via containerd, configure le réseau via CNI, lance les sondes ; le Pod devient Ready et entre dans l'EndpointSlice du Service.</div></details></li>
+<li>Deployment, ReplicaSet, Pod : relations et responsabilités.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le Deployment décrit la version voulue et la stratégie de mise à jour ; il gère des ReplicaSets (un par version) ; chaque ReplicaSet maintient N Pods identiques. Rolling update = montée d'un nouveau ReplicaSet et descente de l'ancien ; rollback = retour à l'ancien ReplicaSet.</div></details></li>
+<li>Pour chacun des treize symptômes du tableau 25.5 : où regarder et deux causes.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Pending : describe (ressources, quota, affinité, PVC). ImagePullBackOff : nom/tag, registre, secret. CrashLoopBackOff : logs --previous, liveness trop stricte, config. OOMKilled : limite mémoire, JVM. Service sans réponse : EndpointSlices vides (sélecteur), targetPort. Ingress 404/502 : classe, host, backend. DNS : NetworkPolicy, CoreDNS. Nœud NotReady : kubelet, disque. Pod Terminating : finalizer, PDB. Evicted : pression nœud. Probe échoue : chemin, port, délai. RBAC forbidden : auth can-i. PVC Pending : StorageClass, mode.</div></details></li>
+<li>Sauvegarder et restaurer etcd ; renouveler les certificats ; mettre à jour un cluster kubeadm ; drainer un nœud.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">etcdctl snapshot save avec les certificats, restauration dans un nouveau data-dir puis redémarrage du pod statique ; kubeadm certs check-expiration et renew all, puis redémarrer le control plane ; mise à jour : kubeadm upgrade plan/apply sur le control plane, puis kubelet nœud par nœud avec drain/uncordon ; drain respecte les PDB et ignore les DaemonSets.</div></details></li>
+<li>OpenShift : les treize différences du tableau 25.7, les commandes oc, le Dockerfile compatible UID arbitraire, les trois terminaisons de Route.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">OpenShift ajoute : Routes, SCC au lieu de PSA, registre intégré, BuildConfig/S2I, opérateurs gérés, console, OAuth intégré, Projects, réseau OVN, mises à jour orchestrées, support, monitoring intégré, UID arbitraires. oc : login, project, new-app, expose, get routes, adm policy. Dockerfile : pas d'UID fixe, fichiers en groupe root avec g+rwX. Routes : edge (TLS au routeur), passthrough (TLS jusqu'au Pod), re-encrypt (les deux).</div></details></li>
+<li>Startup, liveness, readiness : rôle, pièges, et ce qu'on n'y met jamais.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Startup : laisse le temps de démarrer (JVM) avant que liveness ne tue. Liveness : redémarre si bloqué ; jamais de dépendance externe dedans (la base tombe, tous les Pods redémarrent). Readiness : retire du Service sans redémarrer ; peut inclure les dépendances. Piège : liveness = readiness.</div></details></li>
+<li>Requests et limits : classes QoS, pourquoi pas de limite CPU, OOMKill.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Requests : garanti et utilisé par le scheduler ; limits : plafond. QoS : Guaranteed (requests = limits), Burstable, BestEffort (évincé en premier). Pas de limite CPU : le throttling CFS ajoute de la latence même avec du CPU libre ; limite mémoire = request pour éviter l'OOM du nœud ; OOMKill quand la limite est dépassée (137).</div></details></li>
+<li>Arrêt propre d'un Pod et pourquoi <code>preStop sleep</code>.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Suppression → Pod Terminating, retiré des EndpointSlices, SIGTERM envoyé, terminationGracePeriodSeconds puis SIGKILL. Le retrait des endpoints est asynchrone : un preStop sleep 5 laisse aux proxys le temps de ne plus envoyer de trafic avant l'arrêt.</div></details></li>
+<li>ClusterIP, NodePort, LoadBalancer, headless ; Ingress contre Gateway API.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">ClusterIP : IP virtuelle interne. NodePort : port sur chaque nœud (rarement seul). LoadBalancer : LB externe du cloud. Headless : pas d'IP, DNS renvoie les Pods (StatefulSet). Ingress : routage HTTP L7 par un contrôleur, annotations propriétaires ; Gateway API : le successeur, rôles séparés (GatewayClass, Gateway, HTTPRoute), portable, pondération native.</div></details></li>
+<li>Pourquoi un Secret n'est pas secret, et les quatre approches GitOps pour les secrets.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Un Secret est en base64 dans etcd, lisible par quiconque a le RBAC ; chiffrement au repos à activer. GitOps : SealedSecrets (chiffré dans Git, clé dans le cluster), SOPS (chiffré avec KMS/age), External Secrets (référence vers Vault/Secrets Manager), Vault agent/CSI (injection directe sans Secret).</div></details></li>
+<li>RBAC : Role, ClusterRole, ServiceAccount ; <code>auth can-i</code>.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Role : permissions dans un namespace ; ClusterRole : cluster entier ou réutilisable par RoleBinding ; ServiceAccount : identité d'un Pod ; RoleBinding lie sujets et rôle. kubectl auth can-i &lt;verbe&gt; &lt;ressource&gt; --as=… vérifie ; --list pour tout voir.</div></details></li>
+<li>NetworkPolicy default-deny : ce qu'il faut rouvrir (DNS !) et quel CNI l'applique.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Un default-deny sur ingress et egress bloque aussi le DNS : rouvrir l'egress UDP/TCP 53 vers kube-system, puis les flux voulus. Appliqué seulement par un CNI qui le supporte (Calico, Cilium) ; kindnet et Flannel ne font rien : la politique existe mais n'agit pas.</div></details></li>
+<li>Init container contre sidecar natif ; Downward API ; jeton de ServiceAccount projeté ; classes QoS.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Init container : s'exécute avant, jusqu'à la fin (migration Flyway). Sidecar natif : initContainer avec restartPolicy Always, démarre avant et s'arrête après l'application (agent). Downward API : nom du Pod, labels, requests en variables. Jeton projeté : jeton de ServiceAccount avec audience et durée limitées (Vault). QoS : voir question 8.</div></details></li>
+<li>Les vingt questions de la section 26.8, en 45 secondes chacune.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Réponses courtes, structurées, un exemple chaque : s'entraîner chronomètre en main, enregistré, et noter les hésitations dans tp26.md.</div></details></li>
+<li>PV, PVC, StorageClass, CSI, modes d'accès, reclaimPolicy.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">PV : le volume réel ; PVC : la demande d'un Pod ; StorageClass : comment provisionner (CSI, paramètres, WaitForFirstConsumer) ; CSI : le pilote du stockage. Modes : RWO (un nœud), RWX (plusieurs, NFS/CephFS), ROX. reclaimPolicy : Retain (garde le disque) ou Delete.</div></details></li>
+<li>StatefulSet contre Deployment ; ce qu'un StatefulSet ne fait pas pour une base.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">StatefulSet : identité stable (nom, DNS, volume par réplica), ordre de démarrage ; Deployment : réplicas interchangeables. Un StatefulSet ne fait ni réplication, ni bascule, ni sauvegarde, ni promotion : c'est le travail d'un opérateur.</div></details></li>
+<li>CRD et Operator : définition, exemple CloudNativePG, critère managé contre opérateur.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">CRD : un nouveau type d'objet dans l'API. Operator : un contrôleur qui réconcilie ces objets avec du savoir-faire métier. CloudNativePG : Cluster à 3 instances, bascule automatique, sauvegardes, PITR, Services rw/ro. Managé (RDS) si l'équipe ne veut pas exploiter PostgreSQL ; opérateur si pas de cloud, coût, ou besoin de contrôle.</div></details></li>
+<li>Helm : release, values, hooks, checksum, <code>diff</code>, <code>--atomic</code>.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Release : une installation nommée avec historique de révisions. Values : paramètres, avec schema JSON. Hooks : jobs pre/post (migration). Checksum de ConfigMap en annotation : redéploie sur changement de config. helm diff : revue avant upgrade. --atomic : rollback automatique si les Pods ne sont pas prêts.</div></details></li>
+<li>Kustomize : base, overlays, générateurs ; quand Helm, quand Kustomize.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Base : manifests bruts ; overlays : superposition par environnement (namespace, replicas, images, patches) ; générateurs : ConfigMap/Secret avec hash. Helm pour les paquets tiers et la distribution ; Kustomize pour ses propres applications (pas de logique, pas d'erreur de template).</div></details></li>
+<li>ArgoCD : Application, AppProject, ApplicationSet, sync waves, selfHeal, prune.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Application : source Git → destination cluster/namespace, avec syncPolicy. AppProject : limites (dépôts, destinations, types). ApplicationSet : génère des Applications (par cluster, par MR, par dossier). Sync waves : ordre (annotation). selfHeal : corrige la dérive manuelle ; prune : supprime ce qui a disparu de Git.</div></details></li>
+<li>Organisation des dépôts et promotion staging → prod ; rollback par revert.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Dépôt code (application, CI) séparé du dépôt config (apps/ + envs/dev, staging, prod). Promotion : MR qui copie le digest validé en staging vers prod, pipeline de validation (kubeconform, kyverno, trivy config), fusion, sync manuel ou en fenêtre. Rollback : git revert du commit de promotion.</div></details></li>
+<li>Service mesh : ce qu'il apporte, ce qu'il coûte, sidecar contre ambient, critère de décision.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Apporte : mTLS et identité par service, autorisation L7, routage pondéré, retries/timeouts en configuration, métriques et graphe sans code. Coûte : un composant de plus, latence, mémoire (sidecar : 50–100 Mi par Pod ; ambient : par nœud). Décision : dizaines de services, mTLS obligatoire, canary pondéré → oui ; cinq services → non.</div></details></li>
+<li>HPA, VPA, KEDA, Cluster Autoscaler, Karpenter : rôle et pièges (JVM, oscillation).
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">HPA : réplicas selon CPU/mémoire/métriques (requests obligatoires, JVM lente à monter). VPA : recommande ou ajuste les requests (ne pas combiner avec HPA sur la même métrique). KEDA : scale sur des événements (lag Kafka, file), jusqu'à zéro. Cluster Autoscaler / Karpenter : ajoute des nœuds pour les Pods Pending. Piège : oscillation (fenêtres de stabilisation).</div></details></li>
+<li>Affinités, taints, priorités, topologie, quotas : un exemple d'usage chacun.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">nodeAffinity : Pods GPU sur nœuds GPU. podAntiAffinity : deux réplicas jamais sur le même nœud. Taints/tolerations : nœuds réservés (spot, ingress). PriorityClass : l'ingress passe avant un batch. topologySpreadConstraints : répartition par zone. ResourceQuota/LimitRange : borner un namespace tenant.</div></details></li>
 </ol>
 <p><strong>Prochain niveau</strong> : Observabilité — logs, métriques, traces, alerting, SLO, astreinte et post-mortems.</p>
 </section>

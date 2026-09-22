@@ -1032,27 +1032,50 @@ docker run --rm -v "$PWD:/w" -w /w gcr.io/projectsigstore/cosign \
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 1</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
-<ol class="quiz">
-<li>Hyperviseur de type 1 contre type 2, un exemple de chaque.</li>
-<li>Les trois mécanismes noyau qui font un conteneur.</li>
-<li>Pourquoi le noyau partagé est un enjeu de sécurité ; ce qu'apportent Firecracker et gVisor.</li>
-<li>Ce que Docker Desktop fait sous Windows ; deux pièges de Git Bash.</li><li>VMware, Proxmox, Nutanix : hyperviseur, plan de contrôle, stockage, HA, sauvegarde, IaC, quand ; les commandes qm/pct/vzdump et acli/ncc ; le quorum.</li><li>Homelab : les trois couches, les quatre phases et leurs portes de sortie, pourquoi la couche de confiance vit hors du cluster.</li>
-<li>Comment fonctionne le cache de build ; l'ordre des instructions qui en découle.</li>
-<li>Pourquoi un secret effacé dans une couche ultérieure est toujours dans l'image.</li>
-<li>ENTRYPOINT forme exec contre forme shell : conséquence sur SIGTERM.</li>
-<li>Multi-étapes : ce qu'on gagne, avec des chiffres.</li>
-<li>Volume nommé, bind mount, tmpfs : quand utiliser chacun.</li>
-<li>Pourquoi deux conteneurs sur le bridge par défaut ne se résolvent pas par nom.</li>
-<li>Six mesures de durcissement d'un conteneur, dans l'ordre où tu les appliques.</li>
-<li>Signification des codes 137 et 143.</li>
-<li>Ta méthode de débogage d'un conteneur qui ne démarre pas.</li>
-<li>Pourquoi <code>depends_on</code> seul ne suffit pas.</li>
-<li>Secret Compose contre variable d'environnement.</li>
-<li>Override, profils, <code>.env</code> : à quoi sert chacun.</li>
-<li>Ce que Compose ne sait pas faire.</li>
-<li>Pourquoi <code>latest</code> est interdit en production ; tag contre digest.</li>
-<li>Ce qu'est un SBOM et ce qu'il permet lors d'une nouvelle CVE.</li>
-<li>Scan contre signature : ce que chacun garantit.</li>
+<ol class="quiz"><li>Hyperviseur de type 1 contre type 2, un exemple de chaque.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Type 1 (bare metal) : tourne directement sur le matériel — ESXi, KVM/Proxmox, Hyper-V. Type 2 (hébergé) : sur un OS — VirtualBox, VMware Workstation. Le cloud et les datacenters sont en type 1.</div></details></li>
+<li>Les trois mécanismes noyau qui font un conteneur.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Namespaces (isolation de ce que le processus voit : PID, réseau, montages, utilisateurs), cgroups (limites de CPU, mémoire, IO), et le système de fichiers en couches (overlayfs) ; plus les capabilities et seccomp pour restreindre.</div></details></li>
+<li>Pourquoi le noyau partagé est un enjeu de sécurité ; ce qu'apportent Firecracker et gVisor.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Tous les conteneurs partagent le noyau : une faille noyau ou une évasion touche l'hôte et les voisins. Firecracker : micro-VM légère (noyau dédié, démarrage en ~100 ms). gVisor : noyau en espace utilisateur qui filtre les appels système. Les deux isolent des charges non fiables.</div></details></li>
+<li>Ce que Docker Desktop fait sous Windows ; deux pièges de Git Bash.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Docker Desktop lance une VM Linux (WSL 2) où tourne le démon ; les conteneurs sont des processus Linux dans cette VM. Pièges Git Bash : conversion automatique des chemins (/app devient C:\…, d'où MSYS_NO_PATHCONV ou //app) et fins de ligne CRLF dans les scripts.</div></details></li>
+<li>VMware, Proxmox, Nutanix : hyperviseur, plan de contrôle, stockage, HA, sauvegarde, IaC, quand ; les commandes qm/pct/vzdump et acli/ncc ; le quorum.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">VMware : hyperviseur ESXi, vCenter, vSAN, HA/DRS, Veeam, provider Terraform. Proxmox : KVM/LXC, cluster corosync, Ceph ou ZFS, HA manager, PBS, provider bpg ; qm (VM), pct (LXC), vzdump (sauvegarde). Nutanix : AHV, Prism, stockage réparti, snapshots, provider nutanix ; acli, ncli, ncc. Quorum : majorité de votes pour éviter le split-brain, comme etcd. Quand : Proxmox pour le labo et les PME, VMware/Nutanix pour l'entreprise avec support.</div></details></li>
+<li>Homelab : les trois couches, les quatre phases et leurs portes de sortie, pourquoi la couche de confiance vit hors du cluster.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Couches : matériel/hyperviseur, plateforme (Kubernetes), applications. Phases : réseau et hyperviseur (porte : VM créée par Terraform), identité et secrets (IdP et Vault hors cluster), cluster (Talos + GitOps), applications (CrisisShield déployée). La confiance (IdP, CA, Vault) vit hors du cluster pour éviter la dépendance circulaire : on ne peut pas s'authentifier à un cluster qui héberge l'IdP tombé avec lui.</div></details></li>
+<li>Comment fonctionne le cache de build ; l'ordre des instructions qui en découle.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Chaque instruction produit une couche ; une couche est réutilisée si l'instruction et son contexte (fichiers copiés) n'ont pas changé, sinon tout ce qui suit est reconstruit. D'où l'ordre : base, dépendances (pom/lockfile), installation, puis le code source en dernier.</div></details></li>
+<li>Pourquoi un secret effacé dans une couche ultérieure est toujours dans l'image.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Chaque couche est un delta immuable ; supprimer dans une couche suivante ajoute un « whiteout », mais les octets restent dans la couche précédente et sont extractibles. Solution : ne jamais copier de secret, ou multi-étapes / secrets de build (--mount=type=secret).</div></details></li>
+<li>ENTRYPOINT forme exec contre forme shell : conséquence sur SIGTERM.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Forme exec ["java","-jar",…] : le processus est PID 1 et reçoit SIGTERM. Forme shell java -jar … : /bin/sh est PID 1, java est son enfant, le signal n'est pas transmis : arrêt en SIGKILL après le délai.</div></details></li>
+<li>Multi-étapes : ce qu'on gagne, avec des chiffres.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">L'image finale ne contient que le runtime : ~200 Mo au lieu de ~450 Mo avec JDK + Maven, aucun outil de build (surface d'attaque réduite), cache de dépendances dans l'étape de build, secrets de build absents de l'image publiée.</div></details></li>
+<li>Volume nommé, bind mount, tmpfs : quand utiliser chacun.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Volume nommé : données persistantes gérées par Docker, performant sous Windows (bases, node_modules). Bind mount : un répertoire du poste, pour le code en développement. tmpfs : mémoire, jamais sur disque, pour les secrets ou les fichiers temporaires.</div></details></li>
+<li>Pourquoi deux conteneurs sur le bridge par défaut ne se résolvent pas par nom.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le bridge par défaut n'a pas de serveur DNS interne (résolution par nom désactivée pour compatibilité) ; un réseau utilisateur (docker network create) active la résolution par nom de conteneur et de service.</div></details></li>
+<li>Six mesures de durcissement d'un conteneur, dans l'ordre où tu les appliques.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Utilisateur non root ; image minimale épinglée ; --read-only avec tmpfs ; --cap-drop ALL ; no-new-privileges ; limites mémoire et pids. Puis seccomp/AppArmor et le scan d'image.</div></details></li>
+<li>Signification des codes 137 et 143.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">137 = 128 + 9 : SIGKILL (OOM killer ou kill forcé). 143 = 128 + 15 : SIGTERM reçu et traité, arrêt propre.</div></details></li>
+<li>Ta méthode de débogage d'un conteneur qui ne démarre pas.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">docker logs (message d'erreur), docker inspect (exit code, OOMKilled, config), lancer avec un shell à la place de l'entrypoint (docker run -it --entrypoint sh), vérifier montages et variables, docker events, puis netshoot dans le namespace réseau si c'est du réseau.</div></details></li>
+<li>Pourquoi <code>depends_on</code> seul ne suffit pas.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">depends_on n'attend que le démarrage du conteneur, pas la disponibilité du service ; il faut condition: service_healthy avec un healthcheck. Et il n'agit qu'au démarrage : la reconnexion en cours de vie est le travail de l'application.</div></details></li>
+<li>Secret Compose contre variable d'environnement.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Un secret Compose est un fichier monté dans /run/secrets, absent de docker inspect, des logs et de l'environnement hérité par les sous-processus ; une variable d'environnement se lit dans inspect et fuit dans les dumps.</div></details></li>
+<li>Override, profils, <code>.env</code> : à quoi sert chacun.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">compose.override.yaml : surcharges locales lues automatiquement (ports de debug). Profils : services optionnels (outils) activés à la demande. .env : valeurs de variables substituées dans le fichier Compose, à ne pas commiter si sensibles.</div></details></li>
+<li>Ce que Compose ne sait pas faire.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Pas d'orchestration multi-hôtes, pas de réparation automatique en cas de perte du nœud, pas de rolling update avec readiness, pas d'autoscaling, pas de secrets chiffrés, pas de politiques réseau fines. C'est la frontière avec Kubernetes.</div></details></li>
+<li>Pourquoi <code>latest</code> est interdit en production ; tag contre digest.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">latest est mutable : deux déploiements peuvent exécuter deux images différentes et personne ne sait laquelle. Un tag est un alias qu'on peut réattribuer ; un digest identifie le contenu exact : on déploie par digest, on signe le digest.</div></details></li>
+<li>Ce qu'est un SBOM et ce qu'il permet lors d'une nouvelle CVE.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Un inventaire des composants (paquets, bibliothèques, versions) au format CycloneDX ou SPDX. À la sortie d'une CVE, on interroge les SBOM (Dependency-Track) pour savoir quels services sont touchés, sans rescanner ni reconstruire les images.</div></details></li>
+<li>Scan contre signature : ce que chacun garantit.
+<details class="rep"><summary>Réponse attendue</summary><div class="sol">Le scan dit ce que l'image contient de vulnérable à un instant donné (et rien de plus). La signature dit qui a produit ce digest et qu'il n'a pas été modifié. Il faut les deux : une image signée peut être vulnérable, une image saine peut être remplacée.</div></details></li>
 </ol>
 <p><strong>Prochain niveau</strong> : Intégration et livraison continues — pipelines GitLab CI et GitHub Actions, tests et quality gates, versioning, stratégies de déploiement.</p>
 </section>
