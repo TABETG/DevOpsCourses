@@ -365,6 +365,32 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 @media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
 @media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
 
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
 .pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
@@ -532,6 +558,7 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 </ul>
 
 <h3>21.3 Calcul : choisir le bon service<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-aws"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Où passe une requête vers CrisisShield sur AWS ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["https://app.crisisshield.example", "Route 53", "ALB (public)", "target group", "ECS task (privé)", "RDS (privé)"], "sep": " → ", "stages": [{"title": "Route 53", "lines": ["app.crisisshield.example", "  → alias ALB", "  → 52.47.10.3, 52.47.10.9 (2 AZ)", "TTL 60 s, health check"], "why": "Le DNS renvoie les adresses de l'équilibreur, dans deux zones : la première résilience est ici."}, {"title": "ALB", "lines": ["listener 443, certificat ACM", "  règle : /api/* → tg-api", "  règle : /*     → tg-web", "WAF : règles gérées OK", "logs d'accès → S3"], "why": "L'ALB termine le TLS, applique le WAF et route par chemin vers le bon groupe cible ; il est le seul composant sur Internet."}, {"title": "target group", "lines": ["tg-api : 3 cibles", "  10.0.11.4  healthy", "  10.0.12.7  healthy", "  10.0.13.2  draining (déploiement)", "health check /actuator/health"], "why": "Le groupe cible ne reçoit que des cibles saines ; une cible en cours de remplacement est vidée avant d'être retirée."}, {"title": "ECS task", "lines": ["subnet privé 10.0.11.0/24", "SG api : entrée 8080 depuis SG-alb uniquement", "rôle IAM : lecture Secrets Manager", "logs → CloudWatch"], "why": "La tâche n'a pas d'adresse publique ; son security group n'accepte que l'ALB ; son identité est un rôle, pas une clé."}, {"title": "RDS", "lines": ["subnet base 10.0.21.0/24, multi-AZ", "SG db : entrée 5432 depuis SG-api uniquement", "mot de passe via Secrets Manager (rotation 30 j)", "→ réponse 200 en 42 ms"], "why": "La base n'est joignable que depuis les tâches ; trois couches de sécurité (subnet, SG, secret) avant la première ligne de SQL.", "hl": ["→ réponse 200 en 42 ms"]}], "done": "DNS → ALB → tâches privées → base privée, chaque saut filtré par identité"}</script><figcaption>L'architecture trois niveaux se lit comme une chaîne : chaque composant ne parle qu'au suivant, par référence de security group, jamais par IP.</figcaption></figure>
 <div class="tablewrap"><table>
 <tr><th>Service</th><th>Tu gères</th><th>Idéal pour</th><th>À éviter pour</th></tr>
 <tr><td>EC2</td><td>VM, OS, patchs, capacité (ASG)</td><td>Legacy, licences, contrôle total, GPU</td><td>Applications conteneurisées neuves</td></tr>
@@ -726,6 +753,7 @@ resource "google_cloud_run_v2_service" "api" {
 <p>Dans un datacenter, le coût est fixe et décidé une fois. Dans le cloud, chaque développeur avec des droits de création est un acheteur. Sans discipline, la facture croît de 20 à 30 % par an à usage constant : ressources oubliées, surdimensionnement, environnements de test allumés la nuit, logs sans rétention, transfert de données non anticipé. FinOps (FinOps Foundation) : rendre chaque équipe responsable de ses coûts avec les données pour décider. Trois phases : informer, optimiser, opérer.</p>
 
 <h3>23.2 Informer : voir et attribuer<span class="badge tag-important">Important</span></h3>
+<figure class="pipe" id="pipe-cost"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">D&#x27;où vient la facture de ce mois ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["aws ce get-cost-and-usage --group-by Type=DIMENSION,Key=SERVICE", "jq -r '.ResultsByTime[0].Groups[] | .Metrics.UnblendedCost.Amount+\" \"+.Keys[0]'", "sort -rn", "head -5"], "sep": " | ", "stages": [{"title": "Cost Explorer", "lines": ["{ \"Groups\": [", "  {\"Keys\":[\"Amazon EC2\"], \"Metrics\":{\"UnblendedCost\":{\"Amount\":\"2140.2\"}}},", "  {\"Keys\":[\"Amazon RDS\"], …\"812.5\"},", "  {\"Keys\":[\"NAT Gateway\"], …\"640.0\"},", "  … 14 services"], "why": "L'API renvoie le coût par service ; la même donnée que la console, mais scriptable chaque mois."}, {"title": "jq", "lines": ["2140.2 Amazon EC2", "812.5 Amazon RDS", "640.0 NAT Gateway", "310.4 Amazon S3", "95.1 CloudWatch", "…"], "why": "Une ligne par service : montant puis nom."}, {"title": "sort -rn", "lines": ["2140.2 Amazon EC2", "812.5 Amazon RDS", "640.0 NAT Gateway", "310.4 Amazon S3", "95.1 CloudWatch", "…"], "why": "Du plus cher au moins cher."}, {"title": "head -5", "lines": ["2140.2 Amazon EC2   ← 12 instances dev allumées la nuit", "812.5 Amazon RDS    ← surdimensionnée ?", "640.0 NAT Gateway   ← S3 sans endpoint", "310.4 Amazon S3", "95.1 CloudWatch"], "why": "Trois lignes concentrent 90 % : éteindre le dev la nuit (levier 1), redimensionner la base (levier 2), endpoint S3 pour supprimer le NAT (levier 3).", "hl": ["640.0 NAT Gateway   ← S3 sans endpoint"]}], "done": "3 leviers identifiés, ≈ 1 500 $ par mois économisables"}</script><figcaption>Le NAT Gateway est le poste caché classique : chaque Go vers S3 le traverse tant qu'il n'y a pas d'endpoint. Le coût se lit dans l'ordre des leviers.</figcaption></figure>
 <ul>
 <li><strong>Tagging obligatoire</strong> : <code>Project</code>, <code>Environment</code>, <code>Owner</code>, <code>CostCenter</code>. Imposé par IaC (tags par défaut du provider) et par politique (SCP ou AWS Config qui refuse ou signale les ressources non taguées). Les tags activés pour la facturation apparaissent dans Cost Explorer.</li>
 <li><strong>Un compte par environnement et par équipe</strong> : l'attribution devient triviale.</li>
@@ -1100,6 +1128,33 @@ resource "google_cloud_run_v2_service" "api" {
     b.addEventListener('click',function(){ var on=!b.classList.contains('on'); b.classList.toggle('on',on); b.textContent=on?'Masquer':'Expliquer'; explain(pre,on); try{ localStorage.setItem(KEY,on?'1':'0'); }catch(e){} });
     pre.appendChild(b);
     if(pref){ b.classList.add('on'); b.textContent='Masquer'; explain(pre,true); }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  document.querySelectorAll('figure.pipe').forEach(function(fig){
+    var data=JSON.parse(fig.querySelector('script[type="application/json"]').textContent);
+    var cols=fig.querySelector('.cols'), st=fig.querySelector('.st'), cmd=fig.querySelector('.cmd'), expl=fig.querySelector('.expl');
+    var shown=1, timer=null, N=data.stages.length;
+    function draw(){
+      cols.innerHTML=data.stages.map(function(s,k){
+        var vis=k<shown, cur=k===shown-1;
+        var body='';
+        if(vis){ body = s.lines.length ? '<ol>'+s.lines.slice(0,10).map(function(l){ var hl=(s.hl||[]).indexOf(l)>=0; return '<li'+(hl?' class="hl"':'')+' title="'+esc(l)+'">'+esc(l)+'</li>'; }).join('')+(s.lines.length>10?'<li>… ('+(s.lines.length-10)+' de plus)</li>':'')+'</ol><div class="cnt">'+s.lines.length+' ligne'+(s.lines.length>1?'s':'')+'</div>' : '<div class="empty">(vide)</div>'; }
+        else body='<div class="empty">…</div>';
+        return '<div class="col'+(vis?' on':'')+(cur?' cur':'')+'"><span class="n">'+k+'</span><h5 title="'+esc(s.title)+'">'+esc(s.title)+'</h5>'+body+'</div>';
+      }).join('');
+      var parts=data.cmd; cmd.innerHTML=parts.map(function(pt,k){ return (k===shown-1&&k>0)?'<b>'+esc(pt)+'</b>':esc(pt); }).join(data.sep||' | ');
+      st.textContent = shown>=N ? ('terminé : '+data.done) : (shown===1?'entrée':'étape '+(shown-1)+' / '+(N-1));
+      expl.textContent = data.stages[shown-1].why||'';
+    }
+    fig.querySelector('[data-play]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); timer=setInterval(function(){ shown++; draw(); if(shown>=N) clearInterval(timer); }, 1100); });
+    fig.querySelector('[data-next]').addEventListener('click',function(){ clearInterval(timer); if(shown<N){ shown++; draw(); } });
+    fig.querySelector('[data-reset]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); });
+    draw();
   });
 })();
 </script>

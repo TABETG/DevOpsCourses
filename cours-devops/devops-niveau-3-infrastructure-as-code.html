@@ -365,6 +365,32 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 @media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
 @media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
 
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
 .pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
@@ -420,6 +446,7 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 <p>Deux familles d'outils : <strong>provisioning</strong> (créer les ressources : Terraform, OpenTofu, Pulumi, CloudFormation, CDK) et <strong>configuration</strong> (installer et régler ce qui tourne dessus : Ansible, Chef, Puppet). Terraform est <em>déclaratif</em> : tu décris l'état voulu, l'outil calcule les actions. OpenTofu est le fork communautaire (Linux Foundation) créé en 2023 après le changement de licence de Terraform ; syntaxe et providers identiques, commande <code>tofu</code> au lieu de <code>terraform</code>.</p>
 
 <h3>16.2 Le modèle<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-plan"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Que va faire terraform apply ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["terraform plan", "lire le code", "lire le state", "rafraîchir depuis le cloud", "calculer le diff", "ordonner"], "sep": " → ", "stages": [{"title": "code HCL", "lines": ["aws_vpc.main", "aws_subnet.private[0..2]", "aws_security_group.api", "aws_db_instance.main  (classe db.t4g.small)", "aws_instance.web      (ami-2026)"], "why": "Le code décrit l'état voulu : cinq ressources, avec leurs attributs."}, {"title": "state", "lines": ["aws_vpc.main             vpc-0a1b", "aws_subnet.private[0..2] subnet-…", "aws_security_group.api   sg-9f3e", "aws_db_instance.main     db.t4g.micro", "(aws_instance.web : absent)"], "why": "Le state est ce que Terraform croit exister : quatre ressources connues, l'instance web n'y est pas encore."}, {"title": "refresh", "lines": ["vpc-0a1b        OK", "subnets         OK", "sg-9f3e         tags modifiés à la console !", "db              db.t4g.micro (comme le state)"], "why": "Terraform interroge le cloud : il découvre qu'un tag a été changé à la main sur le security group (dérive)."}, {"title": "diff", "lines": ["+ aws_instance.web        (à créer)", "~ aws_db_instance.main    micro → small (modif. en place)", "~ aws_security_group.api  tags (revient au code)", "  aws_vpc.main            inchangé", "Plan: 1 to add, 2 to change, 0 to destroy"], "why": "Le plan est la différence entre voulu et réel : + crée, ~ modifie, -/+ recrée, - détruit. Lire la ligne « forces replacement » avant tout apply."}, {"title": "ordre", "lines": ["1. aws_security_group.api  (tags)", "2. aws_db_instance.main    (resize, ~4 min)", "3. aws_instance.web        (dépend du SG)"], "why": "Les dépendances (références entre ressources) donnent l'ordre ; apply exécute en parallèle ce qui est indépendant.", "hl": ["Plan: 1 to add, 2 to change, 0 to destroy"]}], "done": "1 création, 2 modifications, 0 destruction : apply sans risque"}</script><figcaption>Code, state, réalité : trois sources, un plan. Une dérive vue au plan est corrigée par le code, jamais à la console.</figcaption></figure>
 <pre><code>   code HCL (.tf)         state (terraform.tfstate)          réalité (API cloud)
    ce que je veux    ◄──►  ce que Terraform croit exister ◄──►  ce qui existe
                  plan = diff(code, state)  ; refresh = diff(state, réalité)</code></pre>
@@ -708,6 +735,7 @@ ansible all -i inventory.ini -m ping
 ansible web -i inventory.ini -m shell -a "uptime" --become</code></pre>
 
 <h3>17.2 Inventaire<span class="badge tag-contexte">Bon à savoir</span></h3>
+<figure class="pipe" id="pipe-ansible"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Que fait ansible-playbook sur trois hôtes ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["ansible-playbook -i inventory/prod.ini site.yml", "inventaire", "facts", "tâche : paquet nginx", "tâche : template", "handler", "recap"], "sep": " → ", "stages": [{"title": "inventaire", "lines": ["[web]", "web1  ansible_host=10.0.1.11", "web2  ansible_host=10.0.1.12", "[db]", "db1   ansible_host=10.0.2.5", "→ play « web » : 2 hôtes"], "why": "Le play cible le groupe web : deux hôtes, par SSH, en parallèle (forks)."}, {"title": "gather facts", "lines": ["web1 : Ubuntu 24.04, 2 CPU, python3.12", "web2 : Ubuntu 24.04, 2 CPU, python3.12"], "why": "Ansible collecte des faits sur chaque hôte : OS, réseau, mémoire ; utilisables dans les tâches (ansible_os_family)."}, {"title": "apt: nginx", "lines": ["web1 : ok      (déjà installé)", "web2 : changed (installé 1.26)"], "why": "Le module vérifie l'état avant d'agir : web1 avait déjà nginx, rien n'a changé. C'est l'idempotence."}, {"title": "template", "lines": ["web1 : changed (nginx.conf : upstream modifié)", "web2 : changed (nginx.conf créé)", "→ notify : reload nginx"], "why": "Le template est rendu avec les variables ; s'il diffère du fichier en place, il est remplacé et le handler est notifié."}, {"title": "handler", "lines": ["web1 : reload nginx  changed", "web2 : reload nginx  changed"], "why": "Le handler ne tourne qu'une fois par hôte, à la fin, seulement si une tâche l'a notifié : pas de rechargement inutile."}, {"title": "PLAY RECAP", "lines": ["web1 : ok=4 changed=2 failed=0", "web2 : ok=4 changed=3 failed=0", "db1  : (hors du play)"], "why": "Le récapitulatif dit ce qui a changé ; relancer le playbook donnerait changed=0 partout.", "hl": ["web1 : ok=4 changed=2 failed=0"]}], "done": "2 hôtes configurés, 0 échec, relance à changed=0"}</script><figcaption>Inventaire, facts, tâches idempotentes, handlers : c'est le cycle de tout playbook ; --check --diff le simule sans rien toucher.</figcaption></figure>
 <pre><code># inventory/prod.ini
 [web]
 web1 ansible_host=10.20.1.10
@@ -1380,6 +1408,33 @@ crisisshield-config/     (dépôt de configuration : l'état désiré)
     b.addEventListener('click',function(){ var on=!b.classList.contains('on'); b.classList.toggle('on',on); b.textContent=on?'Masquer':'Expliquer'; explain(pre,on); try{ localStorage.setItem(KEY,on?'1':'0'); }catch(e){} });
     pre.appendChild(b);
     if(pref){ b.classList.add('on'); b.textContent='Masquer'; explain(pre,true); }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  document.querySelectorAll('figure.pipe').forEach(function(fig){
+    var data=JSON.parse(fig.querySelector('script[type="application/json"]').textContent);
+    var cols=fig.querySelector('.cols'), st=fig.querySelector('.st'), cmd=fig.querySelector('.cmd'), expl=fig.querySelector('.expl');
+    var shown=1, timer=null, N=data.stages.length;
+    function draw(){
+      cols.innerHTML=data.stages.map(function(s,k){
+        var vis=k<shown, cur=k===shown-1;
+        var body='';
+        if(vis){ body = s.lines.length ? '<ol>'+s.lines.slice(0,10).map(function(l){ var hl=(s.hl||[]).indexOf(l)>=0; return '<li'+(hl?' class="hl"':'')+' title="'+esc(l)+'">'+esc(l)+'</li>'; }).join('')+(s.lines.length>10?'<li>… ('+(s.lines.length-10)+' de plus)</li>':'')+'</ol><div class="cnt">'+s.lines.length+' ligne'+(s.lines.length>1?'s':'')+'</div>' : '<div class="empty">(vide)</div>'; }
+        else body='<div class="empty">…</div>';
+        return '<div class="col'+(vis?' on':'')+(cur?' cur':'')+'"><span class="n">'+k+'</span><h5 title="'+esc(s.title)+'">'+esc(s.title)+'</h5>'+body+'</div>';
+      }).join('');
+      var parts=data.cmd; cmd.innerHTML=parts.map(function(pt,k){ return (k===shown-1&&k>0)?'<b>'+esc(pt)+'</b>':esc(pt); }).join(data.sep||' | ');
+      st.textContent = shown>=N ? ('terminé : '+data.done) : (shown===1?'entrée':'étape '+(shown-1)+' / '+(N-1));
+      expl.textContent = data.stages[shown-1].why||'';
+    }
+    fig.querySelector('[data-play]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); timer=setInterval(function(){ shown++; draw(); if(shown>=N) clearInterval(timer); }, 1100); });
+    fig.querySelector('[data-next]').addEventListener('click',function(){ clearInterval(timer); if(shown<N){ shown++; draw(); } });
+    fig.querySelector('[data-reset]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); });
+    draw();
   });
 })();
 </script>

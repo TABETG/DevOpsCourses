@@ -365,6 +365,32 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 @media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
 @media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
 
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
 .pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
@@ -587,6 +613,7 @@ docker system df ; docker system prune -af --volumes   # nettoyer (attention aux
 <p>Options de <code>run</code> à connaître : <code>-e VAR=val</code> et <code>--env-file</code>, <code>-v</code> ou <code>--mount</code>, <code>--network</code>, <code>--memory</code>, <code>--cpus</code>, <code>--user</code>, <code>--read-only</code>, <code>--cap-drop</code>, <code>--health-cmd</code>, <code>--init</code> (un vrai PID 1 qui relaie les signaux).</p>
 
 <h3>8.2 Images et couches<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-layers"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Comment une image se construit, couche par couche ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["FROM eclipse-temurin:21-jre", "RUN apt-get install -y curl", "COPY target/app.jar /app/", "USER 1001", "ENTRYPOINT [\"java\",\"-jar\",\"/app/app.jar\"]"], "sep": " → ", "stages": [{"title": "FROM", "lines": ["couche 0  eclipse-temurin:21-jre   85 Mo", "  (CACHED : déjà sur le poste)"], "why": "L'image de base apporte ses couches, en lecture seule ; elles sont partagées entre toutes les images qui en dérivent."}, {"title": "RUN apt-get", "lines": ["couche 0  base                     85 Mo", "couche 1  + curl, apt lists        12 Mo", "  (CACHED tant que la ligne RUN ne change pas)"], "why": "Chaque RUN crée une couche avec ce qu'il a ajouté ; un rm dans un RUN suivant ne réduit rien, la couche précédente reste."}, {"title": "COPY app.jar", "lines": ["couche 0  base                     85 Mo", "couche 1  + curl                   12 Mo", "couche 2  + app.jar                 38 Mo", "  (RECONSTRUITE : le jar a changé)"], "why": "La couche qui change le plus souvent vient en dernier : tout ce qui précède reste en cache."}, {"title": "USER", "lines": ["couche 0..2                       135 Mo", "métadonnée : User=1001", "  (pas de couche : 0 octet)"], "why": "USER, EXPOSE, ENV, ENTRYPOINT n'ajoutent pas de fichiers : ce sont des métadonnées de l'image."}, {"title": "ENTRYPOINT", "lines": ["image api:1.7.0                 135 Mo", "digest sha256:3f9c…", "3 couches + config"], "why": "L'image finale est la pile des couches plus une configuration ; le digest est l'empreinte de l'ensemble.", "hl": ["digest sha256:3f9c…"]}], "done": "135 Mo, 3 couches, tout sauf le jar vient du cache"}</script><figcaption>L'ordre des instructions décide du cache : ce qui change rarement d'abord, ce qui change à chaque commit à la fin. docker history montre ces couches.</figcaption></figure>
 <p>Une image = un manifeste + des couches, chacune identifiée par un digest. Chaque instruction <code>RUN</code>, <code>COPY</code>, <code>ADD</code> du Dockerfile crée une couche. Docker met en cache : si une instruction et son contexte n'ont pas changé, la couche est réutilisée ; dès qu'une couche change, toutes les suivantes sont reconstruites. D'où la règle : <strong>ce qui change le moins en premier</strong>.</p>
 <pre><code># Mauvais : chaque changement de code réinstalle les dépendances
 COPY . .
@@ -661,6 +688,7 @@ docker network inspect backend | jq '.[0].Containers'</code></pre>
 <p>Règle : un réseau par pile, la base <em>non exposée</em> avec <code>-p</code>. Seul le point d'entrée (API, proxy) publie un port. <code>-p 127.0.0.1:5432:5432</code> pour n'exposer que sur l'hôte local.</p>
 
 <h3>8.6 Sécurité des conteneurs<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-exit"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Pourquoi mon conteneur s&#x27;est-il arrêté ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["docker ps -a --filter status=exited --format '{{.Names}} {{.Status}}'", "docker inspect api --format '{{.State.ExitCode}} {{.State.OOMKilled}}'", "docker logs --tail 5 api"], "sep": " → ", "stages": [{"title": "docker ps -a", "lines": ["api     Exited (137) 2 minutes ago", "worker  Exited (0) 3 hours ago", "db      Up 2 days (healthy)"], "why": "docker ps sans -a cache les conteneurs arrêtés ; le code entre parenthèses est le premier indice : 137 = 128 + 9, tué par SIGKILL."}, {"title": "docker inspect", "lines": ["ExitCode   137", "OOMKilled  true", "StartedAt  10:41:02", "FinishedAt 10:52:18"], "why": "inspect confirme : OOMKilled = le noyau a tué le processus qui dépassait sa limite mémoire. Ce n'est pas un bug du code, c'est une limite."}, {"title": "docker logs --tail", "lines": ["10:52:10 INFO  cache warm-up 1.2 Go", "10:52:14 WARN  GC pressure", "10:52:17 INFO  loading zone index", "(fin des logs : tué sans message)"], "why": "Les derniers logs montrent ce que faisait l'application juste avant : un chargement en mémoire. Solution : -Xmx cohérent avec --memory, ou plus de mémoire, ou moins de cache.", "hl": ["(fin des logs : tué sans message)"]}], "done": "OOMKilled : limite mémoire dépassée pendant le chargement du cache"}</script><figcaption>ps -a, inspect, logs : trois commandes, dans cet ordre, avant toute hypothèse. 137 = OOM ou kill -9 ; 143 = arrêt propre ; 1 = erreur applicative, les logs le diront.</figcaption></figure>
 <p>Par défaut, un conteneur tourne en root et le démon Docker est root sur l'hôte : accès au socket <code>/var/run/docker.sock</code> = root sur la machine. Mesures, de la plus simple à la plus avancée :</p>
 <ol>
 <li><strong>Utilisateur non root</strong> dans l'image (<code>USER app</code>) et/ou <code>--user 1000:1000</code>.</li>
@@ -835,6 +863,7 @@ services:
     read_only: false</code></pre>
 
 <h3>9.4 Ce que Compose ne fait pas<span class="badge tag-contexte">Bon à savoir</span></h3>
+<figure class="pipe" id="pipe-compose"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Dans quel ordre la pile démarre-t-elle avec docker compose up ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["docker compose up -d", "db : healthcheck", "api : depends_on db healthy", "proxy : depends_on api healthy"], "sep": " → ", "stages": [{"title": "compose up", "lines": ["réseau backend    créé", "réseau frontend   créé", "volume pgdata     créé", "db     démarrage…", "api    en attente (db)", "proxy  en attente (api)"], "why": "Compose crée réseaux et volumes, puis démarre les services en respectant depends_on : api n'a pas démarré."}, {"title": "db healthy", "lines": ["db     healthy (pg_isready OK, 3e essai)", "api    démarrage…", "proxy  en attente (api)"], "why": "condition: service_healthy fait attendre que le healthcheck passe, pas seulement que le processus existe. Sans condition, api démarrerait avant que PostgreSQL n'accepte des connexions."}, {"title": "api healthy", "lines": ["db     healthy", "api    healthy (/actuator/health 200)", "proxy  démarrage…"], "why": "api expose un healthcheck qui vérifie la base : Compose ne lance proxy que quand l'API répond réellement."}, {"title": "proxy up", "lines": ["db     healthy", "api    healthy", "proxy  running, :443 publié", "→ https://localhost"], "why": "La pile est prête dans le bon ordre. Et si db redémarre plus tard, c'est à l'application de retenter : depends_on n'agit qu'au démarrage.", "hl": ["proxy  running, :443 publié"]}], "done": "trois services, un seul port publié, démarrés dans l'ordre des dépendances"}</script><figcaption>depends_on + healthcheck ordonne le démarrage ; les reconnexions applicatives (retries) gèrent le reste de la vie de la pile.</figcaption></figure>
 <p>Compose pilote un seul hôte. Pas de haute disponibilité, pas de redémarrage sur un autre nœud, pas de rolling update natif, pas de secrets chiffrés au repos. C'est parfait pour le développement, la CI, et de petites productions à un serveur. Au-delà : Kubernetes (niveau 5). Le fichier Compose reste un excellent document de l'architecture.</p>
 
 <div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Podman et Quadlet</span><p>Podman exécute des conteneurs sans démon et sans root par défaut ; Quadlet décrit des conteneurs et des pods dans des fichiers <code>.container</code>/<code>.pod</code> que systemd transforme en services. C'est la façon Red Hat de servir des conteneurs sur des VM, sans Kubernetes ni Compose.</p><p><strong>Pourquoi ça différencie :</strong> Très présent dans le secteur public et bancaire français (RHEL) ; rootless par défaut, c'est un argument sécurité immédiat.</p><p><strong>À essayer en une heure :</strong> <code>docker run --rm -it --privileged quay.io/podman/stable podman run --rm alpine echo ok</code>, puis écrire le fichier <code>crisisshield-api.container</code> équivalent à ton service Compose.</p></div>
@@ -894,6 +923,7 @@ docker login ghcr.io -u USER --password-stdin &lt; token.txt   # jamais le mot d
 <p>Pratique recommandée : la CI construit une fois, tague avec le SHA du commit, puis ajoute la version sémantique au moment de la release (retag sans reconstruction). Le déploiement référence le digest. Politique de rétention dans le registre pour ne pas exploser le stockage.</p>
 
 <h3>10.3 Scanner une image<span class="badge tag-important">Important</span></h3>
+<figure class="pipe" id="pipe-scan"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Quelles vulnérabilités bloquent la publication de l&#x27;image ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["syft api:1.7.0 -o cyclonedx-json > sbom.json", "grype sbom:sbom.json -o json", "jq -r '.matches[] | .vulnerability.severity+\" \"+.artifact.name+\" \"+.vulnerability.id'", "grep -E '^(High|Critical)'", "sort | uniq -c | sort -rn"], "sep": " | ", "stages": [{"title": "syft (SBOM)", "lines": ["libssl3        3.0.13", "curl           8.5.0", "jackson-databind 2.15.2", "log4j-api      2.20.0", "spring-web     6.1.4", "… 212 composants"], "why": "Le SBOM liste tout ce que contient l'image : paquets de l'OS et dépendances Java. Généré une fois, réutilisable pour chaque nouvelle CVE."}, {"title": "grype", "lines": ["Critical curl CVE-2026-1234", "High libssl3 CVE-2026-2211", "High jackson-databind CVE-2026-3301", "Medium curl CVE-2025-9987", "Low libssl3 CVE-2025-4410", "… 31 correspondances"], "why": "grype croise le SBOM avec les bases de vulnérabilités : chaque composant vulnérable donne une ligne avec sa gravité."}, {"title": "jq", "lines": ["Critical curl CVE-2026-1234", "High libssl3 CVE-2026-2211", "High jackson-databind CVE-2026-3301", "Medium curl CVE-2025-9987", "Low libssl3 CVE-2025-4410"], "why": "jq aplatit le JSON en lignes « gravité composant CVE » : on revient aux outils texte."}, {"title": "grep High|Critical", "lines": ["Critical curl CVE-2026-1234", "High libssl3 CVE-2026-2211", "High jackson-databind CVE-2026-3301"], "why": "Seules les gravités élevées bloquent ; le reste part en ticket avec un délai de correction."}, {"title": "sort | uniq -c", "lines": ["      1 Critical curl", "      1 High jackson-databind", "      1 High libssl3"], "why": "Trois composants à corriger : mettre à jour l'image de base (curl, libssl3) et la dépendance Java (jackson). Puis rebuild, et le pipeline repasse au vert.", "hl": ["      1 Critical curl"]}], "done": "3 composants bloquants : 2 dans l'image de base, 1 dépendance Java"}</script><figcaption>SBOM d'abord, scan ensuite : quand une CVE sort, on interroge le SBOM en secondes au lieu de rescanner toutes les images.</figcaption></figure>
 <p>Une image embarque un OS et des bibliothèques qui ont des CVE. Trivy (Aqua) est l'outil de référence, gratuit, utilisable dans la CI :</p>
 <pre><code># Scan complet, vulnérabilités OS + dépendances applicatives (jar, npm...)
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/root/.cache \
@@ -1222,6 +1252,33 @@ docker run --rm -v "$PWD:/w" -w /w gcr.io/projectsigstore/cosign \
     b.addEventListener('click',function(){ var on=!b.classList.contains('on'); b.classList.toggle('on',on); b.textContent=on?'Masquer':'Expliquer'; explain(pre,on); try{ localStorage.setItem(KEY,on?'1':'0'); }catch(e){} });
     pre.appendChild(b);
     if(pref){ b.classList.add('on'); b.textContent='Masquer'; explain(pre,true); }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  document.querySelectorAll('figure.pipe').forEach(function(fig){
+    var data=JSON.parse(fig.querySelector('script[type="application/json"]').textContent);
+    var cols=fig.querySelector('.cols'), st=fig.querySelector('.st'), cmd=fig.querySelector('.cmd'), expl=fig.querySelector('.expl');
+    var shown=1, timer=null, N=data.stages.length;
+    function draw(){
+      cols.innerHTML=data.stages.map(function(s,k){
+        var vis=k<shown, cur=k===shown-1;
+        var body='';
+        if(vis){ body = s.lines.length ? '<ol>'+s.lines.slice(0,10).map(function(l){ var hl=(s.hl||[]).indexOf(l)>=0; return '<li'+(hl?' class="hl"':'')+' title="'+esc(l)+'">'+esc(l)+'</li>'; }).join('')+(s.lines.length>10?'<li>… ('+(s.lines.length-10)+' de plus)</li>':'')+'</ol><div class="cnt">'+s.lines.length+' ligne'+(s.lines.length>1?'s':'')+'</div>' : '<div class="empty">(vide)</div>'; }
+        else body='<div class="empty">…</div>';
+        return '<div class="col'+(vis?' on':'')+(cur?' cur':'')+'"><span class="n">'+k+'</span><h5 title="'+esc(s.title)+'">'+esc(s.title)+'</h5>'+body+'</div>';
+      }).join('');
+      var parts=data.cmd; cmd.innerHTML=parts.map(function(pt,k){ return (k===shown-1&&k>0)?'<b>'+esc(pt)+'</b>':esc(pt); }).join(data.sep||' | ');
+      st.textContent = shown>=N ? ('terminé : '+data.done) : (shown===1?'entrée':'étape '+(shown-1)+' / '+(N-1));
+      expl.textContent = data.stages[shown-1].why||'';
+    }
+    fig.querySelector('[data-play]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); timer=setInterval(function(){ shown++; draw(); if(shown>=N) clearInterval(timer); }, 1100); });
+    fig.querySelector('[data-next]').addEventListener('click',function(){ clearInterval(timer); if(shown<N){ shown++; draw(); } });
+    fig.querySelector('[data-reset]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); });
+    draw();
   });
 })();
 </script>

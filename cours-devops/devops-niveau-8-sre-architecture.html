@@ -365,6 +365,32 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 @media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
 @media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
 
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
 .pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
@@ -437,6 +463,7 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 </ul>
 
 <h3>43.2 Le quotidien d'un Tech Lead SRE<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-errbudget"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Le produit veut livrer vendredi : que dit la politique de budget d&#x27;erreur ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["SLO du mois", "budget", "incidents du mois", "reste", "politique", "décision"], "sep": " → ", "stages": [{"title": "SLO", "lines": ["api : 99.9 % de requêtes réussies", "checkout : 99.95 %", "période : 30 jours glissants"], "why": "Chaque service a son objectif, négocié avec le produit."}, {"title": "budget", "lines": ["api : 0.1 % de 160 M = 160 000 erreurs", "checkout : 0.05 % de 12 M = 6 000 erreurs"], "why": "Le budget est la quantité d'échec tolérée avant que le SLO ne soit rompu."}, {"title": "incidents", "lines": ["12/09 déploiement raté api : 95 000 erreurs", "18/09 panne base : api 60 000, checkout 5 200", "20/09 pic de charge : api 12 000"], "why": "Les incidents du mois consomment le budget ; chacun est mesuré, pas estimé."}, {"title": "reste", "lines": ["api : 160 000 − 167 000 = −7 000  (épuisé, −4 %)", "checkout : 6 000 − 5 200 = 800  (13 % restant)"], "why": "L'API a dépassé son budget ; checkout est presque à sec."}, {"title": "politique", "lines": ["budget épuisé → gel des changements non liés à la fiabilité", "budget < 20 % → déploiements canary obligatoires, pas de vendredi", "signée par produit et ingénierie le 3 mars"], "why": "La politique a été écrite à froid, avant l'incident : c'est ce qui la rend applicable."}, {"title": "décision", "lines": ["api : livraison vendredi refusée", "  sauf correctif de fiabilité", "checkout : autorisé lundi, en canary 5 % → 50 % → 100 %", "→ compte rendu au sponsor, pas de négociation à chaud"], "why": "Le Tech Lead SRE n'arbitre pas à l'émotion : il applique une règle que le produit a signée, et propose la voie de sortie.", "hl": ["api : livraison vendredi refusée"]}], "done": "api gelé jusqu'à retour du budget ; checkout en canary lundi"}</script><figcaption>Le budget d'erreur transforme « on livre ou pas ? » en calcul : c'est l'outil qui rend le SRE crédible face au produit.</figcaption></figure>
 <p>Le Tech Lead SRE est responsable de la fiabilité d'un périmètre (une plateforme, un domaine de services) et de l'équipe qui l'assure. Il ne fait pas tout lui-même : il décide, arbitre, mesure, et rend les autres capables. C'est le rôle que visent tes missions, et celui qu'on te demandera de décrire en entretien.</p>
 <div class="tablewrap"><table>
 <tr><th>Responsabilité</th><th>Concrètement</th><th>Livrable</th></tr>
@@ -786,6 +813,7 @@ export default function () {
 <p>Règles : données réalistes (volumes de base proches de la prod, distribution des requêtes issue des logs réels), environnement isolé et dimensionné comme la prod (sinon on mesure l'environnement, pas l'application), <code>arrival-rate</code> plutôt que VU fixes (le système ouvert reflète le trafic réel), résultats dans Prometheus pour corréler avec les métriques du système, tests dans la CI (fumée à chaque MR, charge avant release, endurance nocturne). Gatling (Scala/Java, très présent en France) et JMeter sont les alternatives ; Locust en Python.</p>
 
 <h3>45.2 Diagnostiquer<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-trace"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Une requête en 780 ms : où part le temps ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["GET /incidents/42", "trace", "spans triés", "le plus long", "hypothèse", "correction"], "sep": " → ", "stages": [{"title": "trace", "lines": ["trace 4f2c… durée 780 ms", "12 spans, 3 services", "api → geo-service → PostgreSQL"], "why": "La trace distribuée montre la requête de bout en bout, service par service."}, {"title": "spans", "lines": ["api        HTTP GET /incidents/42         780 ms", "api        SELECT incident               18 ms", "api        → geo-service /zones/nord     640 ms", "geo        SELECT zones WHERE code=…      610 ms", "api        sérialisation JSON            12 ms"], "why": "Chaque span est une étape avec sa durée ; les spans enfants expliquent le parent."}, {"title": "tri", "lines": ["geo  SELECT zones           610 ms  (78 %)", "api  → geo-service          640 ms  (dont 610 attente)", "api  SELECT incident         18 ms", "api  JSON                    12 ms"], "why": "Trié par durée : un seul span explique presque tout."}, {"title": "le plus long", "lines": ["geo-service : SELECT * FROM zones WHERE code = $1", "EXPLAIN : Seq Scan on zones (rows=2 100 000)", "aucun index sur zones.code"], "why": "On regarde la requête : un Seq Scan sur deux millions de lignes."}, {"title": "hypothèse", "lines": ["un index sur zones(code) ramènerait à ~2 ms", "vérification en staging avec les données de prod (copie)", "p95 mesuré avant : 780 ms"], "why": "On ne suppose pas, on teste sur une copie réaliste."}, {"title": "correction", "lines": ["CREATE INDEX CONCURRENTLY ON zones (code);", "p95 après : 96 ms", "cache 60 s côté api : p95 41 ms", "→ trace 4f2c… relancée : 44 ms"], "why": "Le plus gros segment d'abord ; ensuite seulement le second levier (cache). On remesure à chaque étape.", "hl": ["→ trace 4f2c… relancée : 44 ms"]}], "done": "780 ms → 44 ms : un index, puis un cache, mesurés"}</script><figcaption>Trace, tri par durée, plus gros segment, hypothèse, test, mesure : la méthode évite d'optimiser ce qu'on connaît le mieux au lieu de ce qui coûte.</figcaption></figure>
 <pre><code>Méthode USE sur chaque ressource, du haut vers le bas :
 Ingress / LB     : connexions actives, 5xx, latence upstream (le proxy attend l'app ?)
 Application      : threads Tomcat occupés (server.tomcat.threads), file d'attente, temps par route (traces !)
@@ -947,6 +975,7 @@ public Incident create(CreateIncident cmd) {
 
 <h3>47.2 Réplication et lecture répartie<span class="badge tag-important">Important</span></h3>
 <figure class="fig"><svg viewBox="0 0 480 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Migration de schéma sans interruption : expand, migrate, contract"><defs><marker id="ah_expand" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="14" width="104" height="30" rx="7" class="soft"/><text x="62.0" y="34.5" text-anchor="middle" font-size="11" font-weight="700">1. expand</text><text x="124" y="33" text-anchor="start" class="lbl" font-size="10">ajoute la colonne, nullable ; le code v1 l&#x27;ignore</text><rect x="10" y="52" width="104" height="30" rx="7" class="green"/><text x="62.0" y="72.5" text-anchor="middle" font-size="11" font-weight="700">2. migrate</text><text x="124" y="71" text-anchor="start" class="lbl" font-size="10">le code v2 écrit les deux ; un lot remplit l&#x27;ancien stock</text><rect x="10" y="90" width="104" height="30" rx="7" class="green"/><text x="62.0" y="110.5" text-anchor="middle" font-size="11" font-weight="700">3. switch</text><text x="124" y="109" text-anchor="start" class="lbl" font-size="10">le code v3 lit la nouvelle colonne ; rollback encore possible</text><rect x="10" y="128" width="104" height="30" rx="7" class="amber"/><text x="62.0" y="148.5" text-anchor="middle" font-size="11" font-weight="700">4. contract</text><text x="124" y="147" text-anchor="start" class="lbl" font-size="10">supprime l&#x27;ancienne colonne, bien plus tard</text><text x="240" y="172" text-anchor="middle" class="lbl" font-size="10">chaque étape reste compatible avec la précédente</text></svg><figcaption>Jamais de changement de schéma en une seule fois : on ajoute, on migre, on bascule, on retire, chaque étape étant compatible avec le code précédent. Le rollback du code suffit alors à tout moment.</figcaption></figure>
+<figure class="pipe" id="pipe-expand"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Renommer une colonne sans interrompre le service</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["état initial", "1. expand", "2. double écriture", "3. migration des données", "4. bascule lecture", "5. contract"], "sep": " → ", "stages": [{"title": "initial", "lines": ["table incidents : zone_name varchar", "code v1 : lit et écrit zone_name", "3 réplicas de l'API en production"], "why": "Objectif : passer de zone_name à zone_code sans que les utilisateurs ne voient rien."}, {"title": "expand", "lines": ["ALTER TABLE incidents ADD COLUMN zone_code varchar NULL;", "(instantané : pas de réécriture de table)", "code v1 : inchangé, ignore la colonne"], "why": "On ajoute sans rien retirer : le schéma est compatible avec le code en place."}, {"title": "double écriture", "lines": ["déploiement v2 (rolling, 1 Pod à la fois)", "v2 écrit zone_name ET zone_code", "v2 lit encore zone_name", "v1 et v2 coexistent pendant le rolling : OK"], "why": "Pendant le rolling, les deux versions écrivent quelque chose de valide."}, {"title": "migration", "lines": ["UPDATE incidents SET zone_code = map(zone_name)", "  WHERE zone_code IS NULL  — par lots de 5 000", "lock_timeout = 3 s, entre 22 h et 6 h", "2.1 M lignes en 40 min, sans blocage"], "why": "L'ancien stock est rempli par lots : jamais un UPDATE massif qui verrouille la table."}, {"title": "bascule lecture", "lines": ["déploiement v3 : lit zone_code, écrit les deux", "vérification : 0 ligne avec zone_code NULL", "rollback possible : v2 lit encore zone_name"], "why": "La lecture bascule quand toutes les lignes sont prêtes ; le rollback du code reste possible."}, {"title": "contract", "lines": ["une semaine plus tard, aucun incident :", "déploiement v4 : n'écrit plus zone_name", "ALTER TABLE incidents DROP COLUMN zone_name;", "→ terminé, zéro interruption"], "why": "On retire l'ancien seulement quand plus personne ne le lit ni ne l'écrit, avec du recul.", "hl": ["→ terminé, zéro interruption"]}], "done": "5 étapes, 4 déploiements, 0 seconde d'interruption"}</script><figcaption>Expand, migrate, contract : chaque déploiement est compatible avec le précédent et le suivant, ce qui rend le rollback toujours possible.</figcaption></figure>
 <ul>
 <li><strong>Physique (streaming)</strong> : le réplica rejoue le WAL ; synchrone (RPO zéro, latence d'écriture) ou asynchrone (lag). Sert à la haute disponibilité et aux lectures. Un réplica est en lecture seule et identique.</li>
 <li><strong>Logique</strong> : publication/souscription de tables ; pour migrer entre versions majeures sans coupure, alimenter un autre système, ou répliquer une partie. Debezium (CDC) s'appuie dessus.</li>
@@ -1385,6 +1414,33 @@ spec:
     b.addEventListener('click',function(){ var on=!b.classList.contains('on'); b.classList.toggle('on',on); b.textContent=on?'Masquer':'Expliquer'; explain(pre,on); try{ localStorage.setItem(KEY,on?'1':'0'); }catch(e){} });
     pre.appendChild(b);
     if(pref){ b.classList.add('on'); b.textContent='Masquer'; explain(pre,true); }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  document.querySelectorAll('figure.pipe').forEach(function(fig){
+    var data=JSON.parse(fig.querySelector('script[type="application/json"]').textContent);
+    var cols=fig.querySelector('.cols'), st=fig.querySelector('.st'), cmd=fig.querySelector('.cmd'), expl=fig.querySelector('.expl');
+    var shown=1, timer=null, N=data.stages.length;
+    function draw(){
+      cols.innerHTML=data.stages.map(function(s,k){
+        var vis=k<shown, cur=k===shown-1;
+        var body='';
+        if(vis){ body = s.lines.length ? '<ol>'+s.lines.slice(0,10).map(function(l){ var hl=(s.hl||[]).indexOf(l)>=0; return '<li'+(hl?' class="hl"':'')+' title="'+esc(l)+'">'+esc(l)+'</li>'; }).join('')+(s.lines.length>10?'<li>… ('+(s.lines.length-10)+' de plus)</li>':'')+'</ol><div class="cnt">'+s.lines.length+' ligne'+(s.lines.length>1?'s':'')+'</div>' : '<div class="empty">(vide)</div>'; }
+        else body='<div class="empty">…</div>';
+        return '<div class="col'+(vis?' on':'')+(cur?' cur':'')+'"><span class="n">'+k+'</span><h5 title="'+esc(s.title)+'">'+esc(s.title)+'</h5>'+body+'</div>';
+      }).join('');
+      var parts=data.cmd; cmd.innerHTML=parts.map(function(pt,k){ return (k===shown-1&&k>0)?'<b>'+esc(pt)+'</b>':esc(pt); }).join(data.sep||' | ');
+      st.textContent = shown>=N ? ('terminé : '+data.done) : (shown===1?'entrée':'étape '+(shown-1)+' / '+(N-1));
+      expl.textContent = data.stages[shown-1].why||'';
+    }
+    fig.querySelector('[data-play]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); timer=setInterval(function(){ shown++; draw(); if(shown>=N) clearInterval(timer); }, 1100); });
+    fig.querySelector('[data-next]').addEventListener('click',function(){ clearInterval(timer); if(shown<N){ shown++; draw(); } });
+    fig.querySelector('[data-reset]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); });
+    draw();
   });
 })();
 </script>

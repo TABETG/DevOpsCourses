@@ -365,6 +365,32 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 @media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
 @media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
 
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
 .pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
@@ -456,6 +482,7 @@ log.atInfo()
 <p>Pour le front : envoyer les erreurs JavaScript à un collecteur (Sentry, Grafana Faro) avec le même identifiant de session ; ne pas laisser les logs dans la console du navigateur.</p>
 
 <h3>32.3 Collecter et stocker<span class="badge tag-important">Important</span></h3>
+<figure class="pipe" id="pipe-logql"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Retrouver les erreurs d&#x27;un utilisateur dans Loki</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["{namespace=\"crisisshield\", app=\"api\"}", "| json", "| level=\"ERROR\"", "| user_id=\"u-4821\"", "| line_format \"{{.ts}} {{.msg}} trace={{.trace_id}}\""], "sep": " → ", "stages": [{"title": "sélecteur de labels", "lines": ["2 flux : api-7d9f-x1k2, api-7d9f-m4n8", "184 000 lignes sur 1 h", "(index : namespace, app, pod)"], "why": "Le sélecteur choisit les flux par labels indexés : c'est la seule partie rapide, tout le reste lit les lignes."}, {"title": "| json", "lines": ["ts=… level=INFO msg=\"incident created\" user_id=u-1201", "ts=… level=ERROR msg=\"payment refused\" user_id=u-4821 trace_id=4f2c", "ts=… level=WARN msg=\"slow query\"", "…"], "why": "Chaque ligne JSON est parsée : ses champs deviennent des labels temporaires, sans avoir été indexés."}, {"title": "level=ERROR", "lines": ["ts=… level=ERROR msg=\"payment refused\" user_id=u-4821 trace_id=4f2c", "ts=… level=ERROR msg=\"db timeout\" user_id=u-0093 trace_id=88a1", "ts=… level=ERROR msg=\"payment refused\" user_id=u-4821 trace_id=51de", "… 212 lignes"], "why": "Filtre sur un champ extrait : rapide même sur des millions de lignes, parce que Loki lit séquentiellement des blocs compressés."}, {"title": "user_id", "lines": ["ts=10:41:02 msg=\"payment refused\" trace_id=4f2c", "ts=10:52:17 msg=\"payment refused\" trace_id=51de"], "why": "Deux erreurs pour cet utilisateur, chacune avec son trace_id."}, {"title": "line_format", "lines": ["10:41:02 payment refused trace=4f2c", "10:52:17 payment refused trace=51de", "→ cliquer trace=4f2c ouvre Tempo"], "why": "La sortie est reformatée ; le trace_id relie le log à la trace complète de la requête.", "hl": ["→ cliquer trace=4f2c ouvre Tempo"]}], "done": "2 erreurs, 2 traces à ouvrir dans Tempo"}</script><figcaption>Labels pour choisir les flux, filtres pour tout le reste : indexer user_id serait une erreur de cardinalité ; le parser JSON à la volée fait le travail.</figcaption></figure>
 <pre><code>Pods (stdout) ─► fichiers /var/log/pods sur le nœud ─► agent DaemonSet ─► backend ─► interface
                                                        (Promtail/Alloy, Fluent Bit,     (Loki,       (Grafana,
                                                         Vector, OTel Collector)          Elastic/     Kibana)
@@ -566,6 +593,7 @@ predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[6h], 4*3600) < 0</cod
 <p>Les quatre signaux d'or (Google SRE) pour tout service : <strong>latence</strong>, <strong>trafic</strong>, <strong>erreurs</strong>, <strong>saturation</strong>. La méthode RED (Rate, Errors, Duration) pour les services, USE (Utilization, Saturation, Errors) pour les ressources.</p>
 
 <h3>33.3 Instrumenter<span class="badge tag-important">Important</span></h3>
+<figure class="pipe" id="pipe-promql"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Comment se calcule le taux d&#x27;erreur du service api ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["http_server_requests_seconds_count", "rate(…[5m])", "sum by (service) (… {status=~\"5..\"})", "/ sum by (service) (…)", "* 100"], "sep": " → ", "stages": [{"title": "séries brutes", "lines": ["{service=\"api\",status=\"200\"}  184 210", "{service=\"api\",status=\"500\"}    1 032", "{service=\"api\",status=\"404\"}    2 118", "{service=\"web\",status=\"200\"}   90 552", "{service=\"web\",status=\"500\"}      110"], "why": "Un compteur par combinaison de labels, qui ne fait que monter depuis le démarrage : inutilisable tel quel."}, {"title": "rate 5m", "lines": ["api 200  61.4 /s", "api 500   0.34 /s", "api 404   0.71 /s", "web 200  30.2 /s", "web 500   0.04 /s"], "why": "rate transforme les compteurs en débit par seconde sur une fenêtre de 5 minutes ; il gère les redémarrages (compteur remis à zéro)."}, {"title": "sum 5xx by service", "lines": ["api  0.34 /s", "web  0.04 /s"], "why": "On ne garde que les statuts 5xx et on additionne par service : les autres labels disparaissent."}, {"title": "/ total", "lines": ["api  0.34 / 62.45 = 0.0054", "web  0.04 / 30.24 = 0.0013"], "why": "Divisé par le débit total du même service : les deux membres doivent avoir les mêmes labels, d'où le sum by (service) des deux côtés."}, {"title": "* 100", "lines": ["api  0.54 %", "web  0.13 %", "SLO api : 99.9 % dispo → erreur max 0.1 %", "→ api consomme son budget 5 fois plus vite que prévu"], "why": "Un pourcentage lisible. Comparé au SLO, l'API brûle son budget d'erreur : c'est cette valeur que l'alerte de burn rate surveille.", "hl": ["api  0.54 %"]}], "done": "api : 0,54 % d'erreurs, 5 fois le budget du SLO"}</script><figcaption>Compteur → rate → filtre → agrégation → ratio : toute requête PromQL utile suit ce chemin. Jamais de moyenne de latence, toujours histogram_quantile pour les percentiles.</figcaption></figure>
 <p>Java : Micrometer est intégré à Spring Boot et Quarkus ; <code>/actuator/prometheus</code> expose HTTP, JVM, HikariCP, Kafka, cache sans code. Métriques métier :</p>
 <pre><code>// Compteur et timer métier
 private final Counter incidentsCreated;
@@ -736,6 +764,7 @@ public void escalate(@SpanAttribute("incident.id") String id, Priority to) {
 
 
 <h3>35.1 SLI, SLO, SLA<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-burn"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Faut-il réveiller l&#x27;astreinte ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["SLO : 99.9 % sur 30 jours", "budget d'erreur", "erreurs mesurées (1 h et 5 min)", "burn rate", "décision"], "sep": " → ", "stages": [{"title": "SLO", "lines": ["disponibilité 99.9 % sur 30 jours", "→ erreurs tolérées : 0.1 % des requêtes", "→ 43 min d'indisponibilité totale par mois"], "why": "Le SLO fixe combien d'échecs sont acceptables : c'est le budget d'erreur."}, {"title": "budget", "lines": ["requêtes / mois ≈ 160 M", "budget = 160 000 erreurs", "consommé depuis le 1er : 58 000 (36 %)", "reste : 102 000"], "why": "Le budget se dépense ; l'objectif est de finir le mois sans l'épuiser, pas de le garder intact."}, {"title": "mesure", "lines": ["taux d'erreur 1 h  : 1.4 %", "taux d'erreur 5 min : 1.6 %", "(taux acceptable : 0.1 %)"], "why": "On mesure sur deux fenêtres : longue pour éviter le bruit, courte pour savoir si c'est encore en cours."}, {"title": "burn rate", "lines": ["1 h   : 1.4 / 0.1 = 14×", "5 min : 1.6 / 0.1 = 16×", "à 14×, le budget du mois part en 2 jours"], "why": "Le burn rate dit à quelle vitesse le budget brûle par rapport au rythme normal (1× = juste épuisé en fin de mois)."}, {"title": "décision", "lines": ["règle page : burn 1 h > 14.4 ET 5 min > 14.4", "→ 14 > 14.4 ? non… 16 > 14.4 oui", "→ condition 1 h non atteinte : ticket, pas page", "→ si ça continue 10 min : page"], "why": "Deux fenêtres, deux seuils : on page seulement quand le problème est à la fois grave et en cours. Ici, à la limite : ticket immédiat, page dans dix minutes si rien ne change.", "hl": ["→ condition 1 h non atteinte : ticket, pas page"]}], "done": "burn rate 14× : ticket maintenant, page si ça persiste"}</script><figcaption>L'alerte sur le burn rate remplace les seuils arbitraires : elle ne réveille que pour ce qui menace réellement le SLO, et elle se tait pour un pic de deux minutes.</figcaption></figure>
 <ul>
 <li><strong>SLI</strong> (indicateur) : une mesure de ce que l'utilisateur vit. Disponibilité = requêtes réussies / requêtes totales ; latence = requêtes sous 300 ms / total ; fraîcheur des données ; taux de succès d'un parcours. Mesuré au plus près de l'utilisateur (ingress, ou sonde externe), pas sur le CPU.</li>
 <li><strong>SLO</strong> (objectif) : la cible sur une fenêtre. « 99,9 % des requêtes de l'API réussissent sur 30 jours glissants » ; « 95 % des requêtes sous 300 ms ».</li>
@@ -1214,6 +1243,33 @@ Le rollback de code ne suffit pas quand le schéma a changé ; la compatibilité
     b.addEventListener('click',function(){ var on=!b.classList.contains('on'); b.classList.toggle('on',on); b.textContent=on?'Masquer':'Expliquer'; explain(pre,on); try{ localStorage.setItem(KEY,on?'1':'0'); }catch(e){} });
     pre.appendChild(b);
     if(pref){ b.classList.add('on'); b.textContent='Masquer'; explain(pre,true); }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  document.querySelectorAll('figure.pipe').forEach(function(fig){
+    var data=JSON.parse(fig.querySelector('script[type="application/json"]').textContent);
+    var cols=fig.querySelector('.cols'), st=fig.querySelector('.st'), cmd=fig.querySelector('.cmd'), expl=fig.querySelector('.expl');
+    var shown=1, timer=null, N=data.stages.length;
+    function draw(){
+      cols.innerHTML=data.stages.map(function(s,k){
+        var vis=k<shown, cur=k===shown-1;
+        var body='';
+        if(vis){ body = s.lines.length ? '<ol>'+s.lines.slice(0,10).map(function(l){ var hl=(s.hl||[]).indexOf(l)>=0; return '<li'+(hl?' class="hl"':'')+' title="'+esc(l)+'">'+esc(l)+'</li>'; }).join('')+(s.lines.length>10?'<li>… ('+(s.lines.length-10)+' de plus)</li>':'')+'</ol><div class="cnt">'+s.lines.length+' ligne'+(s.lines.length>1?'s':'')+'</div>' : '<div class="empty">(vide)</div>'; }
+        else body='<div class="empty">…</div>';
+        return '<div class="col'+(vis?' on':'')+(cur?' cur':'')+'"><span class="n">'+k+'</span><h5 title="'+esc(s.title)+'">'+esc(s.title)+'</h5>'+body+'</div>';
+      }).join('');
+      var parts=data.cmd; cmd.innerHTML=parts.map(function(pt,k){ return (k===shown-1&&k>0)?'<b>'+esc(pt)+'</b>':esc(pt); }).join(data.sep||' | ');
+      st.textContent = shown>=N ? ('terminé : '+data.done) : (shown===1?'entrée':'étape '+(shown-1)+' / '+(N-1));
+      expl.textContent = data.stages[shown-1].why||'';
+    }
+    fig.querySelector('[data-play]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); timer=setInterval(function(){ shown++; draw(); if(shown>=N) clearInterval(timer); }, 1100); });
+    fig.querySelector('[data-next]').addEventListener('click',function(){ clearInterval(timer); if(shown<N){ shown++; draw(); } });
+    fig.querySelector('[data-reset]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); });
+    draw();
   });
 })();
 </script>

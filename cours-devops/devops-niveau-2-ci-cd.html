@@ -365,6 +365,32 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 @media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
 @media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
 
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
 .pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
@@ -488,6 +514,7 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 
 <h3>12.1 GitLab CI<span class="badge tag-coeur">Par cœur</span></h3>
 <figure class="fig"><svg viewBox="0 0 480 195" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Serveur CI, runners et exécuteurs"><defs><marker id="ah_runner" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs><rect x="10" y="66" width="120" height="60" rx="7" class="soft"/><text x="70.0" y="94.5" text-anchor="middle" font-size="11" font-weight="700">GitLab / GitHub</text><text x="70.0" y="108.5" text-anchor="middle" class="lbl" font-size="11">jobs, artefacts</text><rect x="210" y="20" width="120" height="46" rx="7" class="box"/><text x="270.0" y="42.0" text-anchor="middle" font-size="12" font-weight="700">runner A</text><text x="270.0" y="56.0" text-anchor="middle" class="lbl" font-size="11">docker executor</text><rect x="210" y="80" width="120" height="46" rx="7" class="box"/><text x="270.0" y="103.0" text-anchor="middle" font-size="12" font-weight="700">runner B</text><text x="270.0" y="115.0" text-anchor="middle" class="lbl" font-size="9">kubernetes executor</text><rect x="210" y="140" width="120" height="40" rx="7" class="box"/><text x="270.0" y="159.0" text-anchor="middle" font-size="12" font-weight="700">runner C</text><text x="270.0" y="173.0" text-anchor="middle" class="lbl" font-size="11">shell, à éviter</text><path d="M130,86 L210,43" class="arrow" marker-end="url(#ah_runner)"/><path d="M130,96 L210,103" class="arrow" marker-end="url(#ah_runner)"/><path d="M130,106 L210,160" class="arrow" marker-end="url(#ah_runner)"/><text x="150" y="144" text-anchor="middle" class="lbl" font-size="10">demande un job</text><rect x="370" y="20" width="100" height="46" rx="7" class="green"/><text x="420.0" y="41.5" text-anchor="middle" font-size="11" font-weight="700">conteneur</text><text x="420.0" y="55.5" text-anchor="middle" class="lbl" font-size="11">image du job</text><rect x="370" y="80" width="100" height="46" rx="7" class="green"/><text x="420.0" y="101.5" text-anchor="middle" font-size="11" font-weight="700">Pod éphémère</text><text x="420.0" y="115.5" text-anchor="middle" class="lbl" font-size="11">par job</text><path d="M330,43 L370,43" class="arrow" marker-end="url(#ah_runner)"/><path d="M330,103 L370,103" class="arrow" marker-end="url(#ah_runner)"/><text x="420" y="152" text-anchor="middle" class="lbl" font-size="10">artefacts, cache, logs</text><text x="420" y="166" text-anchor="middle" class="lbl" font-size="10">remontent au serveur</text></svg><figcaption>Le serveur ne fait rien tourner : les runners viennent chercher des jobs et les exécutent dans un conteneur ou un Pod jetable. Un runner shell partagé exécute du code inconnu sur une machine durable : c'est la première faille des CI d'entreprise.</figcaption></figure>
+<figure class="pipe" id="pipe-push"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Que se passe-t-il entre git push et le déploiement en staging ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["git push origin feature/x", "pipeline créé", "build", "test", "package", "deploy staging"], "sep": " → ", "stages": [{"title": "git push", "lines": ["feature/x  a1b2c3 → origin", "merge request !42 ouverte", "règles : merge_request_event", "→ pipeline #1842 créé"], "why": "Le push déclenche un pipeline selon les règles du fichier de CI : ici parce qu'une merge request est ouverte."}, {"title": "jobs planifiés", "lines": ["build     (image maven)     en attente", "test      (needs: build)    en attente", "sast      (parallèle)       en attente", "package   (needs: test)     en attente", "deploy    (manual, staging) en attente"], "why": "Les jobs sont créés avec leurs dépendances (needs) : test et sast peuvent tourner en parallèle après build."}, {"title": "build", "lines": ["runner docker-01 prend le job", "./mvnw -q package -DskipTests", "artefact target/app.jar  38 Mo", "durée 1 min 12"], "why": "Un runner exécute le job dans un conteneur jetable et remonte l'artefact au serveur."}, {"title": "test + sast", "lines": ["test : 214 tests, 0 échec, 84 % couverture", "rapport JUnit attaché à la MR", "sast : 0 finding bloquant", "durée 2 min 40 (en parallèle)"], "why": "Les rapports s'affichent dans la merge request ; un échec ici arrête tout le reste."}, {"title": "package", "lines": ["docker build -t api:a1b2c3", "trivy image → 0 High/Critical", "push registry → sha256:3f9c…", "durée 1 min 05"], "why": "Une image par commit, taguée par son SHA, scannée, poussée : c'est ce digest qui sera déployé partout."}, {"title": "deploy staging", "lines": ["kubectl set image deploy/api api=…@sha256:3f9c…", "rollout OK en 40 s", "smoke test /health 200", "URL staging dans la MR"], "why": "Le déploiement référence le digest, pas un tag ; un test de fumée confirme ; la MR contient le lien pour tester.", "hl": ["rollout OK en 40 s"]}], "done": "5 min 40 du push au staging, sans intervention humaine"}</script><figcaption>Construire une fois, tester en parallèle, déployer par digest : chaque étape produit une preuve (artefact, rapport, digest) que la suivante consomme.</figcaption></figure>
 <pre><code># .gitlab-ci.yml
 stages: [build, test, package, deploy]
 
@@ -775,6 +802,7 @@ sonar:
 <p><code>sonar.qualitygate.wait=true</code> fait échouer le job si le gate échoue. Couverture : JaCoCo (Java) génère le rapport que Sonar lit. Pour le front : ESLint + Vitest avec <code>--coverage</code>, rapport LCOV.</p>
 
 <h3>13.4 Les analyses de sécurité dans le pipeline<span class="badge tag-important">Important</span></h3>
+<figure class="pipe" id="pipe-gate"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">La merge request peut-elle être fusionnée ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["tests unitaires", "couverture du nouveau code", "analyse statique", "quality gate"], "sep": " → ", "stages": [{"title": "tests", "lines": ["214 tests, 0 échec, 3 ignorés", "durée 48 s", "mutation score 67 % (PIT)"], "why": "Des tests verts sont nécessaires, pas suffisants : le score de mutation dit s'ils vérifient vraiment quelque chose."}, {"title": "couverture", "lines": ["nouveau code : 84 % (seuil 80 %)", "IncidentService  92 %", "ZoneMapper       61 %  ← sous le seuil", "global : 71 % (non bloquant)"], "why": "La barrière juge le code nouveau, pas l'historique : on ne demande pas de rattraper dix ans de dette pour fusionner une fonctionnalité."}, {"title": "SAST + SCA", "lines": ["Semgrep : 1 finding, sévérité moyenne", "  sql-injection ? non : requête paramétrée (faux positif marqué)", "Trivy fs : 0 High/Critical", "secrets : 0"], "why": "Les findings sont triés : le faux positif est documenté dans le dépôt, pas ignoré en silence."}, {"title": "gate", "lines": ["couverture nouveau code ≥ 80 %   OK", "0 bug bloquant                   OK", "0 vulnérabilité High/Critical    OK", "dette nouvelle ≤ 30 min          OK", "→ PASSED : fusion autorisée"], "why": "Quatre règles, toutes objectives, appliquées automatiquement : la revue humaine se concentre sur le design.", "hl": ["→ PASSED : fusion autorisée"]}], "done": "gate PASSED, fusion autorisée, ZoneMapper à couvrir dans la prochaine MR"}</script><figcaption>La barrière qualité rend la pyramide obligatoire : sans elle, la couverture baisse à chaque sprint et personne ne s'en aperçoit.</figcaption></figure>
 <div class="tablewrap"><table>
 <tr><th>Analyse</th><th>Ce qu'elle cherche</th><th>Outils</th><th>Moment</th></tr>
 <tr><td>Secrets</td><td>Clés, mots de passe dans le code</td><td>gitleaks, GitLab Secret Detection</td><td>Pre-commit et chaque commit</td></tr>
@@ -848,6 +876,7 @@ zap:
 </ul>
 
 <h3>14.2 Mettre à jour sans peur<span class="badge tag-important">Important</span></h3>
+<figure class="pipe" id="pipe-cve"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Une CVE sort ce matin : quels services sont touchés ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["curl -s dependency-track/api/v1/component?name=jackson-databind", "jq -r '.[] | .project.name+\" \"+.version'", "sort -u", "awk '$2 < \"2.17.1\"'"], "sep": " | ", "stages": [{"title": "interroger les SBOM", "lines": ["crisisshield-api      2.15.2", "notification-service  2.17.1", "legacy-reporting      2.12.7", "crisisshield-api      2.15.2", "geo-service           2.17.1"], "why": "Tous les SBOM sont centralisés (Dependency-Track) : une requête suffit pour savoir qui contient le composant, sans rescanner."}, {"title": "jq", "lines": ["crisisshield-api 2.15.2", "notification-service 2.17.1", "legacy-reporting 2.12.7", "crisisshield-api 2.15.2", "geo-service 2.17.1"], "why": "Une ligne par projet et version."}, {"title": "sort -u", "lines": ["crisisshield-api 2.15.2", "geo-service 2.17.1", "legacy-reporting 2.12.7", "notification-service 2.17.1"], "why": "Dédoublonné : quatre projets, deux versions distinctes."}, {"title": "awk version < 2.17.1", "lines": ["crisisshield-api 2.15.2", "legacy-reporting 2.12.7"], "why": "Seules les versions antérieures au correctif sont vulnérables : deux services à mettre à jour, Renovate ouvre les deux merge requests.", "hl": ["crisisshield-api 2.15.2", "legacy-reporting 2.12.7"]}], "done": "2 services vulnérables sur 4, MR Renovate ouvertes en 10 minutes"}</script><figcaption>Sans SBOM centralisé, cette question prend une journée de grep dans les dépôts ; avec, dix minutes, et la preuve pour l'auditeur.</figcaption></figure>
 <p>Renovate (auto-hébergeable, très configurable) ou Dependabot (GitHub) ouvrent automatiquement une merge request par mise à jour, le pipeline la teste, on fusionne. Stratégie : regrouper les mineures, auto-fusionner les correctifs si le pipeline est vert, traiter les majeures à la main. Un SCA (chapitre 13) priorise celles qui corrigent des CVE.</p>
 <pre><code>// renovate.json
 {
@@ -1265,6 +1294,33 @@ return legacyMapService.render(zone);</code></pre>
     b.addEventListener('click',function(){ var on=!b.classList.contains('on'); b.classList.toggle('on',on); b.textContent=on?'Masquer':'Expliquer'; explain(pre,on); try{ localStorage.setItem(KEY,on?'1':'0'); }catch(e){} });
     pre.appendChild(b);
     if(pref){ b.classList.add('on'); b.textContent='Masquer'; explain(pre,true); }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  document.querySelectorAll('figure.pipe').forEach(function(fig){
+    var data=JSON.parse(fig.querySelector('script[type="application/json"]').textContent);
+    var cols=fig.querySelector('.cols'), st=fig.querySelector('.st'), cmd=fig.querySelector('.cmd'), expl=fig.querySelector('.expl');
+    var shown=1, timer=null, N=data.stages.length;
+    function draw(){
+      cols.innerHTML=data.stages.map(function(s,k){
+        var vis=k<shown, cur=k===shown-1;
+        var body='';
+        if(vis){ body = s.lines.length ? '<ol>'+s.lines.slice(0,10).map(function(l){ var hl=(s.hl||[]).indexOf(l)>=0; return '<li'+(hl?' class="hl"':'')+' title="'+esc(l)+'">'+esc(l)+'</li>'; }).join('')+(s.lines.length>10?'<li>… ('+(s.lines.length-10)+' de plus)</li>':'')+'</ol><div class="cnt">'+s.lines.length+' ligne'+(s.lines.length>1?'s':'')+'</div>' : '<div class="empty">(vide)</div>'; }
+        else body='<div class="empty">…</div>';
+        return '<div class="col'+(vis?' on':'')+(cur?' cur':'')+'"><span class="n">'+k+'</span><h5 title="'+esc(s.title)+'">'+esc(s.title)+'</h5>'+body+'</div>';
+      }).join('');
+      var parts=data.cmd; cmd.innerHTML=parts.map(function(pt,k){ return (k===shown-1&&k>0)?'<b>'+esc(pt)+'</b>':esc(pt); }).join(data.sep||' | ');
+      st.textContent = shown>=N ? ('terminé : '+data.done) : (shown===1?'entrée':'étape '+(shown-1)+' / '+(N-1));
+      expl.textContent = data.stages[shown-1].why||'';
+    }
+    fig.querySelector('[data-play]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); timer=setInterval(function(){ shown++; draw(); if(shown>=N) clearInterval(timer); }, 1100); });
+    fig.querySelector('[data-next]').addEventListener('click',function(){ clearInterval(timer); if(shown<N){ shown++; draw(); } });
+    fig.querySelector('[data-reset]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); });
+    draw();
   });
 })();
 </script>

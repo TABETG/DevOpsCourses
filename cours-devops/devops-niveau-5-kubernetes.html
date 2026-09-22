@@ -365,6 +365,32 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 @media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
 @media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
 
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
 .pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
@@ -424,6 +450,7 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 <p>Docker Compose pilote un hôte. Dès qu'il faut plusieurs machines, le redémarrage automatique sur un autre nœud, la mise à l'échelle, les déploiements progressifs, la découverte de services et la gestion de la capacité, il faut un orchestrateur. Kubernetes (Google, 2014, CNCF) a gagné : toutes les offres cloud et sur site en proposent, et l'écosystème (Helm, ArgoCD, Prometheus, Istio, cert-manager) est devenu la plateforme standard.</p>
 
 <h3>25.2 Les composants<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-apply"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Que se passe-t-il après kubectl apply -f deploy.yaml ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["kubectl apply", "API server : authn, RBAC, admission", "etcd", "Deployment controller", "ReplicaSet controller", "scheduler", "kubelet"], "sep": " → ", "stages": [{"title": "kubectl", "lines": ["POST /apis/apps/v1/…/deployments", "Deployment api, replicas: 3", "image api@sha256:3f9c…"], "why": "kubectl envoie l'objet à l'API ; il ne crée aucun Pod lui-même."}, {"title": "API server", "lines": ["authentification : OIDC gael@…  OK", "RBAC : edit sur ns crisisshield  OK", "admission : Kyverno vérifie la signature  OK", "admission : PSA restricted  OK", "→ objet validé"], "why": "Chaque requête passe l'authentification, l'autorisation et les politiques d'admission : c'est là que la sécurité s'applique."}, {"title": "etcd", "lines": ["deployments/crisisshield/api   v1", "(rien d'autre n'existe encore)"], "why": "L'objet est écrit ; l'API répond « created ». Aucun conteneur ne tourne : tout le reste est asynchrone."}, {"title": "Deployment ctrl", "lines": ["voit Deployment api sans ReplicaSet", "crée ReplicaSet api-7d9f  replicas: 3"], "why": "Le contrôleur compare voulu et réel et crée ce qui manque : un ReplicaSet pour cette version du template."}, {"title": "ReplicaSet ctrl", "lines": ["voit 0 Pod sur 3", "crée Pod api-7d9f-x1k2  (Pending)", "crée Pod api-7d9f-m4n8  (Pending)", "crée Pod api-7d9f-q9r3  (Pending)"], "why": "Trois Pods sont créés, sans nœud : ils sont Pending."}, {"title": "scheduler", "lines": ["api-7d9f-x1k2 → worker-1 (ressources, affinité, taints)", "api-7d9f-m4n8 → worker-2", "api-7d9f-q9r3 → worker-3 (topologySpread)"], "why": "Le scheduler choisit un nœud par Pod selon requests, contraintes et répartition."}, {"title": "kubelet", "lines": ["worker-1 : pull image (digest) → conteneur démarré", "startup OK → liveness → readiness OK", "Pod Running, Ready 1/1", "→ EndpointSlice mise à jour : le Service route"], "why": "Le kubelet de chaque nœud lance le conteneur et sonde sa santé ; seuls les Pods Ready reçoivent du trafic.", "hl": ["Pod Running, Ready 1/1"]}], "done": "7 acteurs, une boucle de réconciliation, 3 Pods Ready en 25 s"}</script><figcaption>Rien n'est impératif : chaque contrôleur rapproche l'état réel de l'état voulu. C'est pourquoi un Pod supprimé revient, et pourquoi kubectl répond avant que quoi que ce soit ne tourne.</figcaption></figure>
 <pre><code>                       CONTROL PLANE
   ┌──────────────────────────────────────────────────────────────┐
   │ kube-apiserver  ◄── kubectl, contrôleurs, kubelets : tout passe par lui (REST, authN/authZ, admission)
@@ -466,6 +493,7 @@ kubectl config get-contexts ; kubectl config use-context kind-crisisshield</code
 <p>Les états d'un Pod à savoir lire : <code>Pending</code> (pas planifié : ressources, volume, image), <code>ContainerCreating</code>, <code>Running</code>, <code>CrashLoopBackOff</code> (démarre puis meurt en boucle : lire <code>logs --previous</code>), <code>ImagePullBackOff</code> (image ou registre inaccessible), <code>OOMKilled</code>, <code>Completed</code>, <code>Terminating</code> bloqué (finalizers, arrêt qui n'aboutit pas).</p>
 
 <h3>25.5 kubectl expert et débogage méthodique<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-crash"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Pourquoi le Pod est-il en CrashLoopBackOff ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["kubectl get pods -n crisisshield", "grep CrashLoop", "awk '{print $1}'", "xargs -I{} kubectl logs {} --previous -n crisisshield", "grep -iE 'error|exception' | head -3"], "sep": " | ", "stages": [{"title": "get pods", "lines": ["api-7d9f-x1k2   0/1  CrashLoopBackOff  6  4m", "api-7d9f-m4n8   1/1  Running           0  4m", "db-0            1/1  Running           0  2d", "worker-5c8-p2   0/1  CrashLoopBackOff  6  4m"], "why": "Deux Pods redémarrent en boucle ; les autres vont bien. Le nombre de redémarrages monte : le conteneur sort juste après avoir démarré."}, {"title": "grep CrashLoop", "lines": ["api-7d9f-x1k2   0/1  CrashLoopBackOff  6  4m", "worker-5c8-p2   0/1  CrashLoopBackOff  6  4m"], "why": "On isole les Pods malades."}, {"title": "awk", "lines": ["api-7d9f-x1k2", "worker-5c8-p2"], "why": "Seulement les noms, pour la commande suivante."}, {"title": "logs --previous", "lines": ["[x1k2] Caused by: java.net.ConnectException: db:5432", "[x1k2]   at HikariPool.getConnection", "[p2]   psycopg2.OperationalError: could not connect to db:5432", "…"], "why": "--previous lit le conteneur qui vient de mourir, pas celui qui redémarre : sans lui, les logs sont vides."}, {"title": "grep error", "lines": ["ConnectException: db:5432", "OperationalError: could not connect to db:5432", "→ cause commune : la base est injoignable"], "why": "Deux services, la même erreur : ce n'est pas l'application, c'est le chemin vers db. Suite : kubectl get endpointslices db, describe svc db, NetworkPolicy.", "hl": ["→ cause commune : la base est injoignable"]}], "done": "cause commune : db:5432 injoignable ; enquête sur le Service db, pas sur l'API"}</script><figcaption>get, grep, logs --previous : le diagnostic tient en une ligne. Une erreur partagée par plusieurs Pods pointe vers une dépendance, pas vers le code.</figcaption></figure>
 <pre><code># Lire précisément
 kubectl get pods -o wide --sort-by=.metadata.creationTimestamp
 kubectl get pods -A --field-selector=status.phase!=Running
@@ -720,6 +748,7 @@ spec:
       terminationGracePeriodSeconds: 30</code></pre>
 
 <h3>26.2 Les points qui font la différence<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-route"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Comment une requête atteint-elle le bon Pod ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["https://api.crisisshield.example/incidents", "Ingress", "Service api", "EndpointSlice", "Pod (readiness)", "conteneur :8080"], "sep": " → ", "stages": [{"title": "Ingress", "lines": ["host api.crisisshield.example", "  path /  → service api:80", "tls : secret api-tls (cert-manager)", "ingressClassName nginx"], "why": "Le contrôleur d'ingress termine le TLS et route par nom d'hôte et chemin vers un Service."}, {"title": "Service", "lines": ["api  ClusterIP 10.96.12.5", "  port 80 → targetPort 8080", "  selector app=api"], "why": "Le Service est une adresse stable ; il ne connaît pas les Pods, seulement un sélecteur de labels."}, {"title": "EndpointSlice", "lines": ["api-abc12", "  10.244.1.7:8080  ready", "  10.244.2.9:8080  ready", "  10.244.3.4:8080  NOT ready (démarrage)"], "why": "Le contrôleur d'endpoints liste les Pods qui matchent le sélecteur ET sont Ready : le troisième n'y est pas."}, {"title": "Pod", "lines": ["api-7d9f-m4n8  10.244.2.9  Ready", "readiness /actuator/health/readiness 200", "kube-proxy (ou eBPF) : 10.96.12.5 → 10.244.2.9"], "why": "kube-proxy traduit l'adresse du Service en adresse d'un Pod prêt, au hasard entre les prêts."}, {"title": "conteneur", "lines": ["GET /incidents HTTP/1.1", "200 OK, 31 ms", "log JSON avec trace_id"], "why": "La requête arrive au conteneur sur 8080 ; la réponse remonte par le même chemin.", "hl": ["200 OK, 31 ms"]}], "done": "Ingress → Service → EndpointSlice → Pod prêt → :8080"}</script><figcaption>Quand « le Service ne répond pas », on suit cette chaîne : Ingress (hôte, classe), Service (sélecteur, targetPort), EndpointSlice (vide ?), readiness.</figcaption></figure>
 <ul>
 <li><strong>Probes</strong> : <em>startup</em> protège les applications lentes (Java) ; <em>liveness</em> redémarre le conteneur s'il est bloqué (ne jamais y mettre une dépendance externe : une base en panne redémarrerait toute l'application en boucle) ; <em>readiness</em> retire le Pod du Service quand il ne peut pas servir (base injoignable, préchauffage). Spring Boot expose les deux nativement.</li>
 <li><strong>Ressources</strong> : <code>requests</code> = ce que le scheduler réserve ; <code>limits</code> = le plafond (mémoire : OOMKill ; CPU : throttling). Pratique courante : limite mémoire = requête mémoire (classe QoS Guaranteed pour la mémoire, prévisible), pas de limite CPU ou une limite large (le throttling CPU dégrade la latence des JVM sans bénéfice). Toujours des requests : sans elles, le scheduler ne peut rien garantir.</li>
@@ -1080,6 +1109,7 @@ helm uninstall db -n crisisshield
 <p>Règles : toujours épingler <code>--version</code>, toujours <code>helm diff</code> avant <code>upgrade</code>, <code>--atomic</code> pour rollback automatique en cas d'échec, lire les values par défaut (elles activent parfois des choses que tu ne veux pas), et scanner les manifests rendus (Trivy config, Kyverno CLI).</p>
 
 <h3>28.2 Écrire un chart<span class="badge tag-important">Important</span></h3>
+<figure class="pipe" id="pipe-helm"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Que fait helm upgrade --install ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["helm upgrade --install api ./chart -f values-prod.yaml", "values", "template", "diff", "apply", "release"], "sep": " → ", "stages": [{"title": "values", "lines": ["image.tag: 1.7.0", "replicaCount: 3", "resources.requests.memory: 512Mi", "ingress.host: api.crisisshield.example", "(défauts du chart + values-prod.yaml)"], "why": "Les valeurs de production surchargent les défauts du chart ; helm show values montre tout ce qu'on peut régler."}, {"title": "template", "lines": ["Deployment api  (3 réplicas, image 1.7.0)", "Service api", "Ingress api", "ConfigMap api-config  (checksum a91f)", "ServiceAccount api"], "why": "Les templates Go sont rendus avec les valeurs : des manifests Kubernetes ordinaires, qu'on peut lire avec helm template."}, {"title": "diff", "lines": ["~ Deployment api : image 1.6.2 → 1.7.0", "~ Deployment api : annotation checksum/config", "  Service, Ingress, SA : inchangés"], "why": "helm diff (plugin) montre ce qui va changer avant d'appliquer : ici l'image et le checksum, qui force le rolling."}, {"title": "apply", "lines": ["Deployment mis à jour", "rolling update : 1 nouveau Pod à la fois", "readiness OK ×3", "--atomic : rollback automatique si échec"], "why": "Helm applique les manifests ; Kubernetes fait le rolling update ; --atomic revient à la révision précédente si les Pods ne deviennent pas prêts."}, {"title": "release", "lines": ["api  révision 12  deployed", "révision 11  superseded (1.6.2)", "helm rollback api 11  ← une commande"], "why": "Helm garde l'historique : chaque révision est restaurable.", "hl": ["api  révision 12  deployed"]}], "done": "révision 12 déployée, rollback en une commande"}</script><figcaption>Valeurs → templates → manifests → release : Helm est un moteur de rendu avec un historique. Le diff avant l'upgrade est la bonne pratique numéro un.</figcaption></figure>
 <pre><code>charts/crisisshield-api/
 ├── Chart.yaml            # name, version (du chart), appVersion (de l'application), dependencies
 ├── values.yaml           # valeurs par défaut, documentées
@@ -1797,6 +1827,33 @@ priorityClassName: critical</code></pre>
     b.addEventListener('click',function(){ var on=!b.classList.contains('on'); b.classList.toggle('on',on); b.textContent=on?'Masquer':'Expliquer'; explain(pre,on); try{ localStorage.setItem(KEY,on?'1':'0'); }catch(e){} });
     pre.appendChild(b);
     if(pref){ b.classList.add('on'); b.textContent='Masquer'; explain(pre,true); }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  document.querySelectorAll('figure.pipe').forEach(function(fig){
+    var data=JSON.parse(fig.querySelector('script[type="application/json"]').textContent);
+    var cols=fig.querySelector('.cols'), st=fig.querySelector('.st'), cmd=fig.querySelector('.cmd'), expl=fig.querySelector('.expl');
+    var shown=1, timer=null, N=data.stages.length;
+    function draw(){
+      cols.innerHTML=data.stages.map(function(s,k){
+        var vis=k<shown, cur=k===shown-1;
+        var body='';
+        if(vis){ body = s.lines.length ? '<ol>'+s.lines.slice(0,10).map(function(l){ var hl=(s.hl||[]).indexOf(l)>=0; return '<li'+(hl?' class="hl"':'')+' title="'+esc(l)+'">'+esc(l)+'</li>'; }).join('')+(s.lines.length>10?'<li>… ('+(s.lines.length-10)+' de plus)</li>':'')+'</ol><div class="cnt">'+s.lines.length+' ligne'+(s.lines.length>1?'s':'')+'</div>' : '<div class="empty">(vide)</div>'; }
+        else body='<div class="empty">…</div>';
+        return '<div class="col'+(vis?' on':'')+(cur?' cur':'')+'"><span class="n">'+k+'</span><h5 title="'+esc(s.title)+'">'+esc(s.title)+'</h5>'+body+'</div>';
+      }).join('');
+      var parts=data.cmd; cmd.innerHTML=parts.map(function(pt,k){ return (k===shown-1&&k>0)?'<b>'+esc(pt)+'</b>':esc(pt); }).join(data.sep||' | ');
+      st.textContent = shown>=N ? ('terminé : '+data.done) : (shown===1?'entrée':'étape '+(shown-1)+' / '+(N-1));
+      expl.textContent = data.stages[shown-1].why||'';
+    }
+    fig.querySelector('[data-play]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); timer=setInterval(function(){ shown++; draw(); if(shown>=N) clearInterval(timer); }, 1100); });
+    fig.querySelector('[data-next]').addEventListener('click',function(){ clearInterval(timer); if(shown<N){ shown++; draw(); } });
+    fig.querySelector('[data-reset]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); });
+    draw();
   });
 })();
 </script>
