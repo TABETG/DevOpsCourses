@@ -1,7 +1,7 @@
 """Génère cours-react.html et cours-angular.html (zéro → expert) dans le gabarit du parcours.
 Usage : python3 front_gen.py <dossier cours-devops>"""
 import re, sys, html as H, pathlib
-d = pathlib.Path(sys.argv[1])
+d = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].endswith('cours-devops') else '/home/claude/work/cours-devops')
 HEAD = re.search(r'^.*?</head>', (d/'devops-niveau-0-fondations.html').read_text(), flags=re.S).group(0)
 EXTRA = """
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
@@ -22,7 +22,7 @@ def page(fn, title, lead, meta, chapters, other):
     h = re.sub(r'<title>[^<]*</title>', f'<title>{H.escape(title)}</title>', HEAD)
     b = f'''<body>
 <header class="hero"><div class="in">
-<div class="pagenav"><a href="index.html">← Accueil du parcours</a><a href="{other[0]}">{other[1]}</a></div>
+<div class="pagenav"><a href="index.html">← Accueil du parcours</a>{''.join(f'<a href="{h}">{l}</a>' for h, l in other)}</div>
 <div class="level">Cours frontend — de zéro à expert</div>
 <h1>{H.escape(title)}</h1>
 <p class="lead">{lead}</p>
@@ -44,7 +44,7 @@ def page(fn, title, lead, meta, chapters, other):
         tt, steps, sol = c['tp']
         b += f'<div class="tp"><span class="tag">Travail pratique {i} — {H.escape(tt)}</span><ol>{"".join(f"<li>{x}</li>" for x in steps)}</ol><details><summary>Correction type</summary><div class="sol">{sol}</div></details></div>\n'
         b += '</article>\n'
-    b += f'''<div class="footnav"><a href="index.html">← Accueil du parcours</a><a href="{other[0]}">{other[1]} →</a></div>
+    b += f'''<div class="footnav"><a href="index.html">← Accueil du parcours</a><a href="{other[0][0]}">{other[0][1]} →</a></div>
 </div>
 <script>
 (function(){{ var root=document.documentElement; try{{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }}catch(e){{}}
@@ -659,6 +659,3 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf      # try_files → index.html, 
  ("Mise en production du front Angular CrisisShield", ["Budgets, image nginx non root avec CSP et cache, scan et signature (niveau 7 DevOps).", "Variante SSR avec hydratation incrémentale sur la carte ; mesurer LCP avec et sans.", "Déploiement Kubernetes derrière le BFF ; Playwright sur staging ; <code>ng update</code> planifié par Renovate avec les migrations."],
   "Attendu : bundle initial < 500 kB, LCP < 2,5 s en Lighthouse CI, CSP avec nonce (<code>ngCspNonce</code>) et sans <code>unsafe-inline</code> script, aucun jeton dans le stockage navigateur, et la MR Renovate d'<code>@angular/core</code> avec <code>ng update</code> exécuté en CI (job qui lance les migrations et échoue si le diff n'est pas commité).")),
 ]
-
-page('cours-react.html', 'React — de zéro à expert', "Dix chapitres pour maîtriser React 19 avec TypeScript : composants, état, effets, données serveur, état global (stores, atomes, signals), formulaires, tests, production. Projet fil conducteur : le front de CrisisShield. Tout tourne en Docker, chaque chapitre a ses exercices corrigés et un travail pratique avec correction type.", "≈ 40 h de travail · prérequis : Docker Desktop, notions de HTML/CSS · voir aussi le <a href=\"cours-angular.html\" style=\"color:#fff\">cours Angular</a> pour comparer les deux modèles (rendu contre signals).", REACT, ('cours-angular.html', 'Cours Angular'))
-page('cours-angular.html', 'Angular — de zéro à expert', "Dix chapitres pour maîtriser Angular 19/20 : composants standalone, signals (signal, computed, effect, linkedSignal, resource), injection de dépendances, routage, formulaires typés, NgRx SignalStore, tests, SSR et production. Projet fil conducteur : le front de CrisisShield. Tout tourne en Docker, chaque chapitre a ses exercices corrigés et un travail pratique avec correction type.", "≈ 40 h de travail · prérequis : Docker Desktop, notions de HTML/CSS · voir aussi le <a href=\"cours-react.html\" style=\"color:#fff\">cours React</a> pour comparer les deux modèles.", ANG, ('cours-react.html', 'Cours React'))

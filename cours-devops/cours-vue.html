@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vue.js — de zéro à expert</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+/* ============ Mode sprint : temps maximum, minuteurs, pression ============ */
+.tbox{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.35rem 0 .8rem;font-size:.82rem}
+.tbox .tb{font-weight:700;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem}
+.tbox button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.2rem .7rem;cursor:pointer;min-height:32px}
+.tbox button.go{background:var(--accent);color:#fff}
+.tbox button.ok{border-color:var(--ok);color:var(--ok)}
+.tbox .spent{color:var(--muted)}
+.tbox.done .tb{background:var(--tp-soft);border-color:var(--tp-line);color:var(--tp)}
+.tbox.done .spent{color:var(--ok);font-weight:700}
+.tbox.late .spent{color:#A11B1B;font-weight:700}
+.chaptime{font-size:.86rem;color:var(--muted);margin:-.2rem 0 .9rem;padding:.5rem .8rem;border:1px dashed var(--line-strong);border-radius:8px;background:var(--bg)}
+.chaptime b{color:var(--ink)}
+.sec-active{outline:3px solid var(--accent);outline-offset:6px;border-radius:6px}
+.sec-active.exo,.sec-active.tp{outline-offset:2px}
+h3.sec-active{padding-left:.75rem}
+#sprint{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--hero);color:#fff;padding:.5rem .9rem calc(.5rem + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 16px rgba(0,0,0,.25);font-size:.85rem}
+#sprint .row{display:flex;align-items:center;gap:.6rem .9rem;flex-wrap:wrap;max-width:1120px;margin:0 auto}
+#sprint .clock{font-family:"JetBrains Mono",monospace;font-size:1.5rem;font-weight:700;min-width:5.2rem;letter-spacing:.02em}
+#sprint .clock.late{color:#FF6B6B;animation:blink 1s steps(2,start) infinite}
+#sprint .cur{flex:1 1 200px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sprint .cur b{color:#fff}
+#sprint .stat{opacity:.85;white-space:nowrap}
+#sprint .pbar{flex:1 1 100%;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+#sprint .pbar i{display:block;height:100%;width:0;background:#6CD19B;transition:width .3s}
+#sprint button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:.3rem .65rem;cursor:pointer;min-height:34px}
+#sprint button.primary{background:#6FA3F5;border-color:#6FA3F5;color:#0B1220}
+#sprint button:disabled{opacity:.4;cursor:default}
+#sprint .late-msg{color:#FF6B6B;font-weight:700}
+body{padding-bottom:6.5rem}
+@keyframes blink{50%{opacity:.35}}
+@media (max-width:480px){#sprint{font-size:.74rem;padding:.35rem .6rem calc(.35rem + env(safe-area-inset-bottom,0px))} #sprint .row{gap:.3rem .6rem} #sprint .clock{font-size:1.2rem;min-width:4.2rem} #sprint button{padding:.25rem .5rem;min-height:30px;font-size:.74rem} #sprint .stat{font-size:.7rem} #sprint .pbar{height:4px} body{padding-bottom:7rem}}
+@media print{#sprint,.tbox,.chaptime{display:none !important} body{padding-bottom:0}}
+
+/* ============ Explication des commandes ============ */
+pre .explain{position:absolute;top:.5rem;right:4.9rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55}
+pre:hover .explain,pre .explain:focus-visible,pre .explain.on{opacity:1}
+pre .explain.on{background:#1B7A4E;border-color:#1B7A4E;color:#fff}
+pre .xpl{display:block;color:#8FD3A7;font-size:.82em;line-height:1.45;padding:.05rem 0 .35rem 1.4em;white-space:pre-wrap;word-break:break-word;font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+pre .xpl::before{content:"↳ ";opacity:.7}
+@media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
+@media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
+
+/* ============ Animations pédagogiques ============ */
+.anim{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.anim .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.anim .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.anim .ctl button.primary{background:var(--accent);color:#fff}
+.anim .ctl button:disabled{opacity:.4;cursor:default}
+.anim .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.anim svg{width:100%;height:auto;display:block;overflow:visible;font-family:inherit}
+.anim svg text{fill:var(--ink)}
+.anim .lbl{fill:var(--muted);font-size:11px}
+.anim .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.anim .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.anim .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.anim .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.anim .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.anim .redfill{fill:#C0392B}
+.anim .greenfill{fill:#1B7A4E}
+.anim .amberfill{fill:#B7791F}
+.anim .dim{opacity:.35}
+.anim .on{filter:drop-shadow(0 0 4px rgba(37,99,235,.5))}
+.anim .mono{font-family:"JetBrains Mono",monospace;font-size:11px}
+.anim .log{font-family:"JetBrains Mono",monospace;font-size:.78rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.6rem .8rem;min-height:3.6em;white-space:pre-wrap;margin-top:.6rem;line-height:1.45}
+.anim .log .ok{color:#8FD3A7}.anim .log .ko{color:#F29A9A}.anim .log .cmd{color:#9CC4FF}
+.anim figcaption{font-size:.85rem;color:var(--muted);margin-top:.6rem;text-align:center}
+:root[data-theme="dark"] .anim .red{fill:#3A1616;stroke:#F29A9A}
+@media (prefers-reduced-motion: reduce){.anim .auto{display:none}}
+@media print{.anim .ctl{display:none}}
+
+/* ============ Planches manga ============ */
+.fig.manga svg{min-width:640px;border-radius:6px}
+.fig.manga svg text{font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.fig.manga figcaption::before{content:"Manga — ";font-weight:700;color:var(--ink)}
+:root[data-theme="dark"] .fig.manga svg{opacity:.94}
+
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.toc{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.2rem;margin:0 0 1.5rem}
+.toc ol{margin:.4rem 0 0;padding-left:1.3rem;columns:2;column-gap:2rem}
+.toc li{break-inside:avoid;margin:.2rem 0}
+@media(max-width:700px){.toc ol{columns:1}}
+body{padding-bottom:2rem}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="in">
+<div class="pagenav"><a href="index.html">← Accueil du parcours</a><a href="cours-react.html">React</a><a href="cours-angular.html">Angular</a><a href="cours-cloud.html">Cloud</a></div>
+<div class="level">Cours frontend — de zéro à expert</div>
+<h1>Vue.js — de zéro à expert</h1>
+<p class="lead">Neuf chapitres pour maîtriser Vue 3 avec TypeScript : SFC et réactivité (ref, computed, watch), composants et slots, composables et réactivité avancée, Vue Router, Pinia, formulaires, tests, production avec Nuxt, et un chapitre final qui compare React, Angular et Vue. Projet fil conducteur : le front de CrisisShield. Tout tourne en Docker, chaque chapitre a ses exercices corrigés et un travail pratique avec correction type.</p>
+<p>≈ 35 h de travail · prérequis : Docker Desktop, notions de HTML/CSS.</p>
+</div></header>
+<div class="single">
+<div class="toc"><strong>Sommaire</strong><ol><li><a href="#c1">Démarrer : Vite, SFC, réactivité et templates</a></li><li><a href="#c2">Composants en profondeur : props, événements, v-model, slots, cycle de vie</a></li><li><a href="#c3">Composables et réactivité avancée</a></li><li><a href="#c4">Vue Router : pages, chargement paresseux, guards, données</a></li><li><a href="#c5">État global : Pinia, stores setup, persistance, et Vue Vapor</a></li><li><a href="#c6">Formulaires, validation et accessibilité</a></li><li><a href="#c7">Tests, qualité et outillage</a></li><li><a href="#c8">Production : build, performance, sécurité, SSR avec Nuxt</a></li><li><a href="#c9">Comparer React, Angular et Vue : choisir et argumenter</a></li></ol></div>
+<article id="c1"><div class="chaphead"><span class="chapnum">Chapitre 1</span><span class="badge lvl-junior">Débutant</span></div><h2>Démarrer : Vite, SFC, réactivité et templates</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Vue 3 avec la Composition API : un composant est un fichier <code>.vue</code> (template, script setup, style) ; l'état est réactif par <code>ref</code> et <code>reactive</code>.</li><li>Le template est du HTML augmenté : <code>{{ }}</code>, <code>v-bind</code> (<code>:</code>), <code>v-on</code> (<code>@</code>), <code>v-if</code>, <code>v-for</code> avec <code>:key</code>, <code>v-model</code>.</li><li>La réactivité est fine par défaut : seul ce qui lit une valeur modifiée est recalculé, c'est le modèle des signals.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Créer un projet Vue 3 + TypeScript en Docker</li><li>Écrire des SFC avec <code>&lt;script setup&gt;</code>, ref/reactive/computed</li><li>Maîtriser les directives de template et les clés</li></ul></div>
+<h3>Projet et premier composant</h3><p>Tout tourne en conteneur : <code>docker run --rm -it -v "$PWD:/app" -w /app -p 5173:5173 node:22 bash</code>, puis les commandes npm dedans (ou un <code>compose.yaml</code> avec un service <code>node</code>). Rien n'est installé sur le poste.</p><pre><code>docker run --rm -it -v &quot;$PWD:/app&quot; -w /app -p 5173:5173 node:22 sh -c &quot;npm create vue@latest crisisshield-web -- --ts --router --pinia --vitest --eslint &amp;&amp; cd crisisshield-web &amp;&amp; npm i &amp;&amp; npm run dev -- --host&quot;
+&lt;!-- src/components/IncidentCard.vue --&gt;
+&lt;script setup lang=&quot;ts&quot;&gt;
+import type { Incident } from &#x27;@/domain/incident&#x27;;
+const props = defineProps&lt;{ incident: Incident }&gt;();
+const emit = defineEmits&lt;{ close: [id: number] }&gt;();
+&lt;/script&gt;
+&lt;template&gt;
+  &lt;article class=&quot;card&quot;&gt;
+    &lt;h3&gt;{{ incident.title }}&lt;/h3&gt;
+    &lt;PriorityBadge :priority=&quot;incident.priority&quot; /&gt;
+    &lt;p v-if=&quot;incident.zone&quot;&gt;Zone {{ incident.zone }}&lt;/p&gt;
+    &lt;button :disabled=&quot;incident.status === &#x27;closed&#x27;&quot; @click=&quot;emit(&#x27;close&#x27;, incident.id)&quot;&gt;Clôturer&lt;/button&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+&lt;style scoped&gt;.card { border: 1px solid var(--line); border-radius: 8px; padding: 1rem }&lt;/style&gt;</code></pre>
+<h3>ref, reactive, computed</h3><p><code>ref</code> enveloppe une valeur (<code>.value</code> dans le script, déballé dans le template) ; <code>reactive</code> rend un objet profondément réactif ; <code>computed</code> dérive avec cache. Règle : <code>ref</code> partout, <code>reactive</code> pour les objets de formulaire ; ne jamais détruire la réactivité en destructurant un <code>reactive</code> (<code>toRefs</code>).</p><pre><code>const incidents = ref&lt;Incident[]&gt;([]);
+const zone = ref(&#x27;&#x27;);
+const filtered = computed(() =&gt; incidents.value.filter(i =&gt; !zone.value || i.zone === zone.value));
+const openCount = computed(() =&gt; filtered.value.filter(i =&gt; i.status === &#x27;open&#x27;).length);
+function close(id: number) { incidents.value = incidents.value.map(i =&gt; i.id === id ? { ...i, status: &#x27;closed&#x27; } : i); }   // ou mutation directe : Vue la suit aussi</code></pre>
+<h3>Listes et clés</h3><p></p><pre><code>&lt;ul&gt;&lt;li v-for=&quot;i in filtered&quot; :key=&quot;i.id&quot;&gt;&lt;IncidentCard :incident=&quot;i&quot; @close=&quot;close&quot; /&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;p v-if=&quot;filtered.length === 0&quot;&gt;Aucun incident.&lt;/p&gt;
+&lt;select v-model=&quot;zone&quot;&gt;&lt;option value=&quot;&quot;&gt;Toutes&lt;/option&gt;&lt;option v-for=&quot;z in zones&quot; :key=&quot;z&quot;&gt;{{ z }}&lt;/option&gt;&lt;/select&gt;</code></pre>
+<div class="exo"><span class="tag">Exercice 1.1</span><p>Pourquoi <code>const { zone } = reactive({ zone: '' })</code> ne réagit-il plus ?</p><details><summary>Corrigé</summary><div class="sol">La destructuration copie la valeur primitive hors du proxy réactif. Utiliser <code>toRefs</code> ou des <code>ref</code> séparés.</div></details></div>
+<div class="exo"><span class="tag">Exercice 1.2</span><p><code>v-if</code> contre <code>v-show</code> ?</p><details><summary>Corrigé</summary><div class="sol"><code>v-if</code> crée/détruit l'élément (coût au basculement, rien en mémoire si faux) ; <code>v-show</code> bascule <code>display</code> (coût initial, basculement gratuit). <code>v-show</code> pour ce qui change souvent.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 1 — Liste d&#x27;incidents</span><ol><li>Projet Vue 3 TS en conteneur ; composants <code>IncidentList</code>, <code>IncidentCard</code>, <code>PriorityBadge</code>.</li><li>Filtre par zone avec <code>v-model</code> et computed ; clôture d'incident.</li><li>Test Vitest + Vue Test Utils : rendu, clic, émission.</li></ol><details><summary>Correction type</summary><div class="sol"><code>const w = mount(IncidentCard, { props: { incident } }); await w.find('button').trigger('click'); expect(w.emitted('close')![0]).toEqual([incident.id])</code>. Vérifier dans Vue DevTools que seul <code>filtered</code> se recalcule au changement de zone.</div></details></div>
+</article>
+<article id="c2"><div class="chaphead"><span class="chapnum">Chapitre 2</span><span class="badge lvl-junior">Débutant</span></div><h2>Composants en profondeur : props, événements, v-model, slots, cycle de vie</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li><code>defineProps</code>/<code>defineEmits</code> typés, <code>defineModel</code> pour le two-way, <code>defineExpose</code> pour l'API publique.</li><li>Les slots (par défaut, nommés, scoped) composent ; <code>provide/inject</code> partage dans un sous-arbre ; <code>&lt;Teleport&gt;</code> et <code>&lt;Transition&gt;</code> sont intégrés.</li><li>Cycle de vie : <code>onMounted</code>, <code>onUnmounted</code>, <code>watch</code>/<code>watchEffect</code> ; la plupart des besoins se règlent par <code>computed</code>.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Concevoir des composants réutilisables avec v-model et slots scoped</li><li>Partager par provide/inject de façon typée</li><li>Choisir entre computed, watch et watchEffect</li></ul></div>
+<h3>defineModel et slots</h3><p></p><pre><code>&lt;!-- ZoneFilter.vue --&gt;
+&lt;script setup lang=&quot;ts&quot;&gt;
+const model = defineModel&lt;string&gt;({ default: &#x27;&#x27; });
+defineProps&lt;{ zones: string[] }&gt;();
+&lt;/script&gt;
+&lt;template&gt;&lt;select v-model=&quot;model&quot;&gt;&lt;option value=&quot;&quot;&gt;Toutes&lt;/option&gt;&lt;option v-for=&quot;z in zones&quot; :key=&quot;z&quot;&gt;{{ z }}&lt;/option&gt;&lt;/select&gt;&lt;/template&gt;
+&lt;!-- Panel.vue : slots nommés et scoped --&gt;
+&lt;template&gt;&lt;section&gt;&lt;header&gt;&lt;slot name=&quot;title&quot; /&gt;&lt;/header&gt;&lt;slot :count=&quot;items.length&quot; /&gt;&lt;/section&gt;&lt;/template&gt;
+&lt;!-- usage --&gt; &lt;Panel :items=&quot;incidents&quot;&gt;&lt;template #title&gt;&lt;h2&gt;Incidents&lt;/h2&gt;&lt;/template&gt;&lt;template #default=&quot;{ count }&quot;&gt;{{ count }} incidents&lt;/template&gt;&lt;/Panel&gt;</code></pre>
+<h3>provide / inject typé</h3><p></p><pre><code>export const IncidentsKey: InjectionKey&lt;{ incidents: Ref&lt;Incident[]&gt;; close: (id: number) =&gt; void }&gt; = Symbol(&#x27;incidents&#x27;);
+provide(IncidentsKey, { incidents, close });                       // parent
+const store = inject(IncidentsKey)!;                                // descendant, à n&#x27;importe quelle profondeur</code></pre>
+<h3>watch et watchEffect</h3><p><code>computed</code> pour dériver ; <code>watch(source, cb)</code> pour réagir à un changement précis (requête, persistance) avec l'ancienne valeur ; <code>watchEffect</code> suit automatiquement ce qu'il lit. Nettoyage avec <code>onCleanup</code> (annulation de fetch).</p><pre><code>watch(zone, async (z, _old, onCleanup) =&gt; { const ctrl = new AbortController(); onCleanup(() =&gt; ctrl.abort()); incidents.value = await api.list(z, ctrl.signal); }, { immediate: true });
+watchEffect(() =&gt; localStorage.setItem(&#x27;zone&#x27;, zone.value));
+onMounted(() =&gt; input.value?.focus()); onUnmounted(() =&gt; clearInterval(timer));</code></pre>
+<div class="exo"><span class="tag">Exercice 2.1</span><p>Pourquoi un <code>InjectionKey</code> symbol plutôt qu'une chaîne ?</p><details><summary>Corrigé</summary><div class="sol">Le symbole est unique (pas de collision) et porte le type : <code>inject(IncidentsKey)</code> est typé sans annotation.</div></details></div>
+<div class="exo"><span class="tag">Exercice 2.2</span><p><code>watch(() => props.id, load)</code> ne se déclenche pas au montage. Pourquoi ?</p><details><summary>Corrigé</summary><div class="sol"><code>watch</code> est paresseux par défaut ; ajouter <code>{ immediate: true }</code> ou utiliser <code>watchEffect</code>.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 2 — Filtre, panneau et détail</span><ol><li><code>ZoneFilter</code> avec <code>defineModel</code>, <code>Panel</code> avec slots nommés et scoped.</li><li>Détail qui recharge sur changement d'id avec annulation.</li><li>Test des slots et du v-model avec un composant hôte.</li></ol><details><summary>Correction type</summary><div class="sol">Test v-model : <code>mount(ZoneFilter, { props: { modelValue: 'N1', 'onUpdate:modelValue': e => w.setProps({ modelValue: e }) } })</code>. Vérifier l'annulation : deux changements d'id rapides, un seul résultat appliqué (mock de fetch avec délai).</div></details></div>
+</article>
+<article id="c3"><div class="chaphead"><span class="chapnum">Chapitre 3</span><span class="badge lvl-confirme">Confirmé</span></div><h2>Composables et réactivité avancée</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Un composable est une fonction <code>useX()</code> qui encapsule état réactif et effets ; VueUse en fournit deux cents (débounce, fetch, storage, media).</li><li><code>shallowRef</code>, <code>markRaw</code>, <code>toRef</code>, <code>readonly</code>, <code>customRef</code> règlent la granularité et les performances.</li><li><code>effectScope</code> regroupe des effets pour les détruire ensemble (base de Pinia).</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Écrire et tester des composables</li><li>Contrôler la profondeur de réactivité pour les gros objets</li><li>Utiliser VueUse à bon escient</li></ul></div>
+<h3>Composable</h3><p></p><pre><code>export function useIncidents(zone: Ref&lt;string&gt;) {
+  const data = ref&lt;Incident[]&gt;([]); const status = ref&lt;&#x27;idle&#x27; | &#x27;loading&#x27; | &#x27;error&#x27;&gt;(&#x27;idle&#x27;); const error = ref&lt;string | null&gt;(null);
+  watch(zone, async (z, _o, onCleanup) =&gt; {
+    const ctrl = new AbortController(); onCleanup(() =&gt; ctrl.abort()); status.value = &#x27;loading&#x27;;
+    try { data.value = await api.list(z, ctrl.signal); status.value = &#x27;idle&#x27;; } catch (e) { if ((e as Error).name !== &#x27;AbortError&#x27;) { status.value = &#x27;error&#x27;; error.value = (e as Error).message; } }
+  }, { immediate: true });
+  const open = computed(() =&gt; data.value.filter(i =&gt; i.status === &#x27;open&#x27;));
+  return { data: readonly(data), open, status, error, reload: () =&gt; zone.value = zone.value };
+}
+// VueUse : const q = refDebounced(search, 300); const { data } = useFetch(url, { refetch: true }).json&lt;Incident[]&gt;(); useLocalStorage(&#x27;zone&#x27;, &#x27;&#x27;);</code></pre>
+<h3>Granularité</h3><p></p><pre><code>const big = shallowRef&lt;Incident[]&gt;([]);   // suivi de la référence seulement : remplacer le tableau déclenche, muter un élément non → 10× plus rapide sur 50 000 objets
+const chart = markRaw(new Chart(…));        // jamais proxyfié (instances de bibliothèques)
+const title = toRef(props, &#x27;title&#x27;);        // ref liée à une prop
+const bounced = customRef((track, trigger) =&gt; { let v = &#x27;&#x27;; let t: number; return { get() { track(); return v; }, set(n) { clearTimeout(t); t = setTimeout(() =&gt; { v = n; trigger(); }, 300); } }; });</code></pre>
+<h3>Tester un composable</h3><p></p><pre><code>it(&#x27;charge à la création et recharge sur changement de zone&#x27;, async () =&gt; {
+  vi.spyOn(api, &#x27;list&#x27;).mockResolvedValue(fixtures);
+  const zone = ref(&#x27;N1&#x27;); const { data, status } = useIncidents(zone);
+  await flushPromises(); expect(status.value).toBe(&#x27;idle&#x27;); expect(data.value).toHaveLength(3);
+  zone.value = &#x27;N2&#x27;; await flushPromises(); expect(api.list).toHaveBeenLastCalledWith(&#x27;N2&#x27;, expect.any(AbortSignal));
+});   // ou withSetup() pour les composables qui utilisent onMounted</code></pre>
+<div class="exo"><span class="tag">Exercice 3.1</span><p>Quand <code>shallowRef</code> ?</p><details><summary>Corrigé</summary><div class="sol">Grande structure remplacée d'un bloc (résultat d'API, données de graphique) : on évite le proxy profond ; on remplace la référence pour déclencher.</div></details></div>
+<div class="exo"><span class="tag">Exercice 3.2</span><p>Un composable qui appelle <code>onMounted</code> testé hors composant lève un avertissement. Solution ?</p><details><summary>Corrigé</summary><div class="sol">L'exécuter dans un composant de test (<code>withSetup</code> : <code>createApp({ setup() { r = useX(); return () => {} } }).mount(div)</code>) ou éviter les hooks de cycle de vie dans le composable.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 3 — Composables de CrisisShield</span><ol><li><code>useIncidents</code>, <code>useDebounced</code> (customRef), <code>useTheme</code> (VueUse useDark).</li><li>Carte de 50 000 points en <code>shallowRef</code> + <code>markRaw</code> ; mesure avant/après.</li><li>Tests des composables avec <code>flushPromises</code>.</li></ol><details><summary>Correction type</summary><div class="sol">Mesure (Performance panel) : <code>ref</code> profond sur 50 000 objets : ~400 ms à l'affectation ; <code>shallowRef</code> : ~30 ms. Le <code>readonly(data)</code> renvoyé empêche un composant de muter l'état du composable.</div></details></div>
+</article>
+<article id="c4"><div class="chaphead"><span class="chapnum">Chapitre 4</span><span class="badge lvl-confirme">Confirmé</span></div><h2>Vue Router : pages, chargement paresseux, guards, données</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Routes déclaratives avec composants importés dynamiquement ; routes imbriquées et nommées ; <code>&lt;RouterView&gt;</code> et <code>&lt;RouterLink&gt;</code>.</li><li>Guards globaux et par route (<code>beforeEnter</code>, <code>onBeforeRouteLeave</code>) ; <code>props: true</code> injecte les paramètres en props.</li><li>Les données se chargent dans le composant (composable) ou par un guard ; TanStack Query Vue apporte cache et invalidation.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Structurer une application multi-pages avec chargement paresseux</li><li>Protéger des routes et confirmer la sortie d'un formulaire</li><li>Charger et mettre en cache avec TanStack Query Vue</li></ul></div>
+<h3>Routes</h3><p></p><pre><code>const router = createRouter({ history: createWebHistory(), routes: [
+  { path: &#x27;/&#x27;, component: Home },
+  { path: &#x27;/incidents&#x27;, component: () =&gt; import(&#x27;@/pages/IncidentsPage.vue&#x27;), meta: { auth: true }, children: [
+    { path: &#x27;:id&#x27;, name: &#x27;incident&#x27;, component: () =&gt; import(&#x27;@/pages/IncidentDetail.vue&#x27;), props: r =&gt; ({ id: Number(r.params.id), tab: r.query.tab ?? &#x27;details&#x27; }) } ] },
+  { path: &#x27;/:pathMatch(.*)*&#x27;, component: NotFound },
+] });
+router.beforeEach(to =&gt; { const auth = useAuthStore(); if (to.meta.auth &amp;&amp; !auth.isLoggedIn) return { path: &#x27;/login&#x27;, query: { redirect: to.fullPath } }; });
+// composant : onBeforeRouteLeave(() =&gt; form.dirty ? confirm(&#x27;Quitter sans enregistrer ?&#x27;) : true);</code></pre>
+<h3>TanStack Query Vue</h3><p></p><pre><code>const zone = ref(&#x27;&#x27;);
+const { data, isPending, error } = useQuery({ queryKey: [&#x27;incidents&#x27;, zone], queryFn: ({ signal }) =&gt; api.list(zone.value, signal), staleTime: 30_000 });   // la clé réactive relance la requête
+const qc = useQueryClient();
+const create = useMutation({ mutationFn: api.create, onSuccess: () =&gt; qc.invalidateQueries({ queryKey: [&#x27;incidents&#x27;] }) });</code></pre>
+<div class="exo"><span class="tag">Exercice 4.1</span><p>Pourquoi <code>props: true</code> (ou une fonction) plutôt que <code>useRoute()</code> dans le composant ?</p><details><summary>Corrigé</summary><div class="sol">Le composant reste indépendant du routeur : testable avec de simples props, réutilisable hors route.</div></details></div>
+<div class="exo"><span class="tag">Exercice 4.2</span><p>Un guard asynchrone qui charge des données avant d'afficher : bon ou mauvais ?</p><details><summary>Corrigé</summary><div class="sol">Acceptable pour une donnée indispensable et rapide (permissions) ; sinon naviguer tout de suite et afficher un état de chargement dans la page.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 4 — Pages liste et détail</span><ol><li>Routes lazy avec <code>meta.auth</code> et redirection ; détail en props.</li><li>TanStack Query Vue avec clé réactive et invalidation à la création ; préchargement au survol.</li><li>Test de guard et test de navigation avec un routeur mémoire (<code>createMemoryHistory</code>).</li></ol><details><summary>Correction type</summary><div class="sol">Test : <code>router.push('/incidents'); await router.isReady(); expect(router.currentRoute.value.path).toBe('/login')</code> sans authentification. Vérifier le chunk séparé de la page dans l'onglet Réseau.</div></details></div>
+</article>
+<article id="c5"><div class="chaphead"><span class="chapnum">Chapitre 5</span><span class="badge lvl-senior">Senior</span></div><h2>État global : Pinia, stores setup, persistance, et Vue Vapor</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Pinia est le store officiel : un store est un composable global (<code>defineStore</code> en syntaxe setup : refs, computed, fonctions), typé, avec DevTools et plugins.</li><li>Trois familles d'état : local (ref), serveur (TanStack Query ou un store de données), global client (Pinia) ; l'état serveur n'a pas vocation à vivre dans Pinia.</li><li>Vue Vapor (compilation sans DOM virtuel) et les signals alpha de Vue 3.5+ (<code>shallowRef</code>, <code>useTemplateRef</code>, <code>onWatcherCleanup</code>, hydratation paresseuse) sont la direction du framework.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Écrire des stores Pinia en syntaxe setup avec getters, actions et persistance</li><li>Tester un store et l'utiliser dans les composants sans perdre la réactivité</li><li>Situer Vue par rapport aux signals et à Vapor</li></ul></div>
+<h3>Store Pinia (setup)</h3><p></p><pre><code>export const useIncidentsStore = defineStore(&#x27;incidents&#x27;, () =&gt; {
+  const items = ref&lt;Incident[]&gt;([]); const zone = ref(&#x27;&#x27;); const status = ref&lt;&#x27;idle&#x27; | &#x27;loading&#x27; | &#x27;error&#x27;&gt;(&#x27;idle&#x27;);
+  const open = computed(() =&gt; items.value.filter(i =&gt; i.status === &#x27;open&#x27; &amp;&amp; (!zone.value || i.zone === zone.value)));
+  async function load() { status.value = &#x27;loading&#x27;; try { items.value = await api.list(zone.value); status.value = &#x27;idle&#x27;; } catch { status.value = &#x27;error&#x27;; } }
+  function close(id: number) { const before = items.value; items.value = items.value.map(i =&gt; i.id === id ? { ...i, status: &#x27;closed&#x27; } : i); api.close(id).catch(() =&gt; { items.value = before; }); }   // optimiste + rollback
+  return { items, zone, status, open, load, close };
+}, { persist: { pick: [&#x27;zone&#x27;] } });   // pinia-plugin-persistedstate
+// composant : const store = useIncidentsStore(); const { open, zone } = storeToRefs(store);   // storeToRefs garde la réactivité ; les actions se destructurent directement</code></pre>
+<h3>Tests</h3><p></p><pre><code>beforeEach(() =&gt; setActivePinia(createPinia()));
+it(&#x27;clôture de façon optimiste puis revient en arrière&#x27;, async () =&gt; {
+  const s = useIncidentsStore(); s.items = fixtures; vi.spyOn(api, &#x27;close&#x27;).mockRejectedValue(new Error(&#x27;500&#x27;));
+  s.close(1); expect(s.open.find(i =&gt; i.id === 1)).toBeUndefined();
+  await flushPromises(); expect(s.open.find(i =&gt; i.id === 1)).toBeDefined();
+});
+// composant : mount(Page, { global: { plugins: [createTestingPinia({ initialState: { incidents: { items: fixtures } } })] } })</code></pre>
+<h3>Signals et Vapor</h3><p>La réactivité de Vue (<code>ref</code>/<code>computed</code>/<code>watch</code>) est déjà un système de signals : dépendances suivies, recalcul minimal. Vue 3.5 expose le cœur (<code>@vue/reactivity</code>) avec la même sémantique que les propositions TC39. Vue Vapor compile les templates en opérations DOM directes sans DOM virtuel (comme Solid) : moins de mémoire, démarrage plus rapide, opt-in par composant. En entretien : Vue = signals depuis 2014 (Vue 2 avec getters/setters, Vue 3 avec proxies) ; Angular les a adoptés en 2023, React reste sur le rendu par composant.</p><div class="exo"><span class="tag">Exercice 5.1</span><p>Pourquoi <code>storeToRefs</code> ?</p><details><summary>Corrigé</summary><div class="sol">Destructurer un store perd la réactivité des refs et computed (ce sont des propriétés du proxy) ; <code>storeToRefs</code> les extrait en refs liées. Les fonctions, elles, se destructurent sans problème.</div></details></div>
+<div class="exo"><span class="tag">Exercice 5.2</span><p>Les incidents chargés de l'API doivent-ils être dans Pinia ?</p><details><summary>Corrigé</summary><div class="sol">Si on utilise TanStack Query, non : le cache serveur est déjà un store avec invalidation. Pinia garde l'état client (filtres, sélection, utilisateur, brouillons). Sans TanStack Query, un store de données Pinia est acceptable.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 5 — Store d&#x27;incidents et filtres persistants</span><ol><li>Store Pinia setup avec optimiste/rollback, filtres persistés, DevTools.</li><li>Composants qui consomment via <code>storeToRefs</code> ; tests avec <code>createTestingPinia</code>.</li><li>Comparatif écrit Pinia / Zustand / SignalStore (ADR).</li></ol><details><summary>Correction type</summary><div class="sol">Attendu : le test de rollback vert, la zone restaurée après rechargement (<code>localStorage.incidents</code> ne contient que <code>zone</code>), et l'ADR qui note que les trois modèles sont des stores à signals avec des API différentes.</div></details></div>
+</article>
+<article id="c6"><div class="chaphead"><span class="chapnum">Chapitre 6</span><span class="badge lvl-senior">Senior</span></div><h2>Formulaires, validation et accessibilité</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li><code>v-model</code> avec modificateurs (<code>.trim</code>, <code>.number</code>, <code>.lazy</code>) suffit aux formulaires simples ; VeeValidate + Zod (ou Valibot) pour les formulaires complexes.</li><li>Le schéma partagé avec l'API garantit les mêmes règles des deux côtés ; les erreurs de l'API se mappent sur les champs.</li><li>Accessibilité : labels, <code>aria-invalid</code>, messages en <code>role=alert</code>, testés avec axe.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Construire un formulaire complexe avec VeeValidate et Zod</li><li>Mapper les erreurs de l'API et tester l'accessibilité</li><li>Utiliser les modificateurs de v-model à bon escient</li></ul></div>
+<h3>VeeValidate + Zod</h3><p></p><pre><code>&lt;script setup lang=&quot;ts&quot;&gt;
+const schema = toTypedSchema(z.object({ title: z.string().trim().min(3, &#x27;Au moins 3 caractères&#x27;), priority: z.enum([&#x27;P1&#x27;,&#x27;P2&#x27;,&#x27;P3&#x27;]), zone: z.string().regex(/^[A-Z][0-9]$/, &#x27;Format A1&#x27;), contacts: z.array(z.object({ email: z.string().email() })).max(5) }).superRefine((v, ctx) =&gt; { if (v.priority === &#x27;P1&#x27; &amp;&amp; !v.zone) ctx.addIssue({ path: [&#x27;zone&#x27;], code: &#x27;custom&#x27;, message: &#x27;Zone obligatoire en P1&#x27; }); }));
+const { handleSubmit, errors, isSubmitting, setErrors, defineField } = useForm({ validationSchema: schema, initialValues: { priority: &#x27;P2&#x27;, contacts: [] } });
+const [title, titleAttrs] = defineField(&#x27;title&#x27;);
+const { fields, push, remove } = useFieldArray&lt;{ email: string }&gt;(&#x27;contacts&#x27;);
+const onSubmit = handleSubmit(async v =&gt; { try { await api.create(v); } catch (e) { if (isProblem(e)) setErrors(Object.fromEntries(e.errors.map(x =&gt; [x.field, x.message]))); } });
+&lt;/script&gt;
+&lt;template&gt;
+  &lt;form @submit=&quot;onSubmit&quot; novalidate&gt;
+    &lt;label for=&quot;title&quot;&gt;Titre&lt;/label&gt;&lt;input id=&quot;title&quot; v-model=&quot;title&quot; v-bind=&quot;titleAttrs&quot; :aria-invalid=&quot;!!errors.title&quot; aria-describedby=&quot;title-err&quot; /&gt;
+    &lt;p v-if=&quot;errors.title&quot; id=&quot;title-err&quot; role=&quot;alert&quot;&gt;{{ errors.title }}&lt;/p&gt;
+    &lt;div v-for=&quot;(f, i) in fields&quot; :key=&quot;f.key&quot;&gt;&lt;Field :name=&quot;`contacts[${i}].email`&quot; :aria-label=&quot;`Contact ${i + 1}`&quot; /&gt;&lt;button type=&quot;button&quot; @click=&quot;remove(i)&quot;&gt;Retirer&lt;/button&gt;&lt;/div&gt;
+    &lt;button type=&quot;button&quot; @click=&quot;push({ email: &#x27;&#x27; })&quot;&gt;Ajouter un contact&lt;/button&gt;
+    &lt;button :disabled=&quot;isSubmitting&quot;&gt;Enregistrer&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/template&gt;</code></pre>
+<h3>Accessibilité testée</h3><p></p><pre><code>const { container } = render(IncidentForm);   // @testing-library/vue
+expect(await axe(container)).toHaveNoViolations();
+await fireEvent.click(screen.getByRole(&#x27;button&#x27;, { name: &#x27;Enregistrer&#x27; }));
+expect(await screen.findByRole(&#x27;alert&#x27;)).toHaveTextContent(&#x27;Au moins 3 caractères&#x27;);</code></pre>
+<div class="exo"><span class="tag">Exercice 6.1</span><p><code>v-model.lazy</code> : quand ?</p><details><summary>Corrigé</summary><div class="sol">Pour valider ou recalculer seulement à la perte de focus (<code>change</code>) plutôt qu'à chaque frappe (<code>input</code>) : champs coûteux ou validation distante.</div></details></div>
+<div class="exo"><span class="tag">Exercice 6.2</span><p>Pourquoi <code>toTypedSchema</code> ?</p><details><summary>Corrigé</summary><div class="sol">Il adapte le schéma Zod à VeeValidate et infère les types des valeurs : <code>handleSubmit</code> reçoit un objet typé, et les noms de champs sont vérifiés.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 6 — Formulaire d&#x27;incident</span><ol><li>Schéma Zod partagé, VeeValidate avec tableau de contacts et règle croisée, erreurs 422 mappées.</li><li>Zéro violation axe, test clavier.</li><li>Variante minimale sans bibliothèque (v-model + computed) pour comparer.</li></ol><details><summary>Correction type</summary><div class="sol">La variante minimale montre le seuil : au-delà de trois champs avec règles croisées et tableaux, VeeValidate évite de réécrire touched/dirty/submitCount. Test clavier : <code>await userEvent.tab(); expect(screen.getByLabelText('Titre')).toHaveFocus()</code>.</div></details></div>
+</article>
+<article id="c7"><div class="chaphead"><span class="chapnum">Chapitre 7</span><span class="badge lvl-senior">Senior</span></div><h2>Tests, qualité et outillage</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Vitest + Vue Test Utils (ou Testing Library Vue) pour les composants ; MSW pour l'API ; Playwright pour les parcours.</li><li>vue-tsc vérifie les templates (<code>strictTemplates</code> de Vue) ; ESLint plugin-vue et Prettier ; Volar dans l'éditeur.</li><li>Le pipeline : lint → types → unitaires avec couverture → build → e2e, comme pour React et Angular.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Tester composants, composables et stores</li><li>Vérifier les types des templates avec vue-tsc</li><li>Monter le pipeline complet</li></ul></div>
+<h3>Composant avec MSW et store</h3><p></p><pre><code>it(&#x27;affiche puis crée un incident&#x27;, async () =&gt; {
+  render(IncidentsPage, { global: { plugins: [createTestingPinia({ stubActions: false }), VueQueryPlugin] } });
+  expect(await screen.findByRole(&#x27;heading&#x27;, { name: &#x27;Fuite gaz&#x27; })).toBeInTheDocument();
+  await userEvent.type(screen.getByLabelText(&#x27;Titre&#x27;), &#x27;Inondation&#x27;);
+  await userEvent.click(screen.getByRole(&#x27;button&#x27;, { name: &#x27;Créer&#x27; }));
+  expect(await screen.findByRole(&#x27;heading&#x27;, { name: &#x27;Inondation&#x27; })).toBeInTheDocument();
+});</code></pre>
+<h3>Types et pipeline</h3><p></p><pre><code># package.json : &quot;typecheck&quot;: &quot;vue-tsc --noEmit -p tsconfig.app.json --composite false&quot;
+# .gitlab-ci.yml : lint (eslint + typecheck) → unit (vitest run --coverage, junit) → build (vite build) → e2e (image playwright, vite preview)
+# vitest.config.ts : environment: &#x27;jsdom&#x27;, setupFiles: [&#x27;src/test/setup.ts&#x27;] (MSW), coverage.provider: &#x27;v8&#x27;</code></pre>
+<div class="exo"><span class="tag">Exercice 7.1</span><p>Vue Test Utils ou Testing Library Vue ?</p><details><summary>Corrigé</summary><div class="sol">VTU accède à l'instance (wrapper.vm, émissions) : utile pour tester un composant isolé et ses événements. Testing Library force la perspective utilisateur (rôles) : préférable pour les pages.</div></details></div>
+<div class="exo"><span class="tag">Exercice 7.2</span><p>Pourquoi vue-tsc en plus de tsc ?</p><details><summary>Corrigé</summary><div class="sol">tsc ne comprend pas les fichiers <code>.vue</code> ni les templates ; vue-tsc vérifie les props, les événements et les expressions de template.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 7 — Quality gate du front Vue</span><ol><li>Tests page + composables + store, couverture publiée ; vue-tsc bloquant.</li><li>Playwright en conteneur sur trois parcours.</li><li>Pipeline GitLab identique aux deux autres fronts (fichier partagé par <code>include</code>).</li></ol><details><summary>Correction type</summary><div class="sol">Le fichier CI partagé (<code>ci/frontend.yml</code>) est inclus par les trois projets avec des variables (<code>TYPECHECK_CMD</code>) : une seule chaîne à maintenir. Trace Playwright conservée en échec.</div></details></div>
+</article>
+<article id="c8"><div class="chaphead"><span class="chapnum">Chapitre 8</span><span class="badge lvl-expert">Expert</span></div><h2>Production : build, performance, sécurité, SSR avec Nuxt</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Build Vite, image nginx non root, CSP, cache immutable : identique aux autres fronts ; l'analyse du bundle (<code>rollup-plugin-visualizer</code>) guide le découpage (routes lazy, <code>defineAsyncComponent</code>).</li><li>Sécurité : Vue échappe les interpolations ; <code>v-html</code> est le <code>dangerouslySetInnerHTML</code> (DOMPurify) ; jamais de template compilé à partir d'une entrée utilisateur ; BFF pour l'authentification.</li><li>Nuxt apporte SSR/SSG/hybride, routage par fichiers, <code>useFetch</code> avec transfert d'état, server routes et déploiement partout (Nitro).</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Optimiser et sécuriser une SPA Vue en production</li><li>Choisir entre SPA, SSR et SSG, et mettre en place Nuxt</li><li>Déployer en conteneur derrière le BFF</li></ul></div>
+<h3>Build et sécurité</h3><p></p><pre><code>// vite.config.ts : build.rollupOptions.output.manualChunks pour isoler les dépendances lourdes ; plugin visualizer
+// composants lourds : const IncidentMap = defineAsyncComponent(() =&gt; import(&#x27;./IncidentMap.vue&#x27;));
+// v-html : &lt;div v-html=&quot;DOMPurify.sanitize(html)&quot; /&gt; — seulement pour du contenu de confiance déjà filtré côté serveur
+// CSP nginx : script-src &#x27;self&#x27; (Vite production n&#x27;a pas d&#x27;inline) ; connect-src l&#x27;API ; frame-ancestors &#x27;none&#x27;
+// pas de secret dans import.meta.env.VITE_* ; authentification par cookie HttpOnly via BFF (withCredentials)
+# Dockerfile : identique au cours React (node:22-alpine build → nginx-unprivileged), dist/ → /usr/share/nginx/html</code></pre>
+<h3>Nuxt</h3><p></p><pre><code>npx nuxi@latest init crisisshield-portal        # en conteneur node:22
+// pages/incidents/[id].vue → route automatique ; const { data, status } = await useFetch(`/api/incidents/${route.params.id}`)   // rendu serveur, état transféré, pas de double requête
+// server/api/incidents.get.ts : export default defineEventHandler(async e =&gt; $fetch(`${useRuntimeConfig().apiBase}/incidents`, { headers: { cookie: getHeader(e, &#x27;cookie&#x27;) ?? &#x27;&#x27; } }))   // le serveur Nuxt joue le BFF
+// nuxt.config.ts : routeRules: { &#x27;/&#x27;: { prerender: true }, &#x27;/incidents/**&#x27;: { ssr: true }, &#x27;/admin/**&#x27;: { ssr: false } }   // hybride : statique, SSR, SPA par route
+// build : nuxi build → .output/ (Nitro) ; image node:22-alpine qui lance .output/server/index.mjs ; ou nuxi generate pour du statique</code></pre>
+<div class="exo"><span class="tag">Exercice 8.1</span><p>Quand Nuxt plutôt que Vue seul ?</p><details><summary>Corrigé</summary><div class="sol">Site public (SEO, premier affichage), contenu statique ou hybride, besoin de routes serveur ou d'un BFF intégré. Une application métier authentifiée reste une SPA Vue derrière un BFF existant.</div></details></div>
+<div class="exo"><span class="tag">Exercice 8.2</span><p><code>v-html</code> avec une chaîne venant de l'API est-il sûr ?</p><details><summary>Corrigé</summary><div class="sol">Non par défaut : l'API peut relayer un contenu saisi par un autre utilisateur. Sanitiser côté serveur et côté client (DOMPurify), et limiter aux cas où le HTML est nécessaire.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 8 — Mise en production du front Vue et variante Nuxt</span><ol><li>Image nginx durcie, CSP, cache immutable, scan et signature ; Lighthouse CI ≥ 90.</li><li>Portail public en Nuxt hybride (accueil prérendu, incidents en SSR, admin en SPA) ; mesure LCP contre la SPA.</li><li>Déploiement Kubernetes avec le Deployment de référence ; Playwright sur staging.</li></ol><details><summary>Correction type</summary><div class="sol">Attendu : SPA bundle initial < 200 kB gzip, LCP Nuxt < 1,2 s sur l'accueil prérendu contre ~2,2 s en SPA ; aucun jeton dans le navigateur ; <code>routeRules</code> vérifiées par des requêtes curl (accueil : HTML complet sans JS exécuté ; admin : coquille SPA).</div></details></div>
+</article>
+<article id="c9"><div class="chaphead"><span class="chapnum">Chapitre 9</span><span class="badge lvl-expert">Expert</span></div><h2>Comparer React, Angular et Vue : choisir et argumenter</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les trois résolvent le même problème (interface = fonction de l'état) avec trois modèles : React re-rend le composant et réconcilie ; Angular et Vue suivent des signals fins.</li><li>Le choix dépend de l'équipe, de l'écosystème existant, de la durée de vie du projet et des contraintes (SSR, mobile, design system) plus que des benchmarks.</li><li>Savoir dire la même chose dans les trois vocabulaires est ce qu'un Tech Lead doit maîtriser en entretien et en architecture.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Mettre en correspondance les concepts des trois frameworks</li><li>Argumenter un choix avec des critères non idéologiques</li><li>Migrer ou coexister (micro-frontends, Web Components)</li></ul></div>
+<h3>Table de correspondance</h3><p></p><pre><code>| Concept              | React                         | Angular                          | Vue                              |
+| État local           | useState                      | signal()                         | ref()/reactive()                 |
+| Dérivé               | useMemo / calcul au rendu     | computed()                       | computed()                       |
+| Effet                | useEffect                     | effect() / afterNextRender       | watch / watchEffect              |
+| Props                | props typées                  | input() / input.required()       | defineProps                      |
+| Événement            | callback prop                 | output()                         | defineEmits                      |
+| Two-way              | value + onChange              | model()                          | defineModel / v-model            |
+| Composition          | children / hooks / context    | ng-content / DI / host directives| slots / composables / provide    |
+| Données serveur      | TanStack Query               | httpResource / resource / RxJS   | TanStack Query Vue / composable  |
+| État global          | Zustand, Redux, Jotai         | service + signals, SignalStore   | Pinia                            |
+| Routage              | React Router                  | @angular/router                  | Vue Router                       |
+| Formulaires          | React Hook Form + Zod         | Reactive Forms typés / signal forms | VeeValidate + Zod            |
+| SSR                  | Next.js, Remix, RSC           | @angular/ssr, hydratation incrémentale | Nuxt, Nitro                |
+| Tests                | Vitest + RTL + MSW            | Vitest/TestBed + harnesses       | Vitest + VTU/TL + MSW            |
+| Réactivité           | re-rendu + réconciliation (+ Compiler) | signals + OnPush/zoneless | signals (proxies), Vapor         |</code></pre>
+<h3>Critères de choix</h3><p>Équipe (compétences existantes, recrutement local) ; écosystème imposé (design system, back-office Angular, mobile React Native) ; durée de vie et gouvernance (Angular : versions semestrielles guidées, migrations automatiques ; React : écosystème libre, choix à faire ; Vue : entre les deux, un seul chemin recommandé par brique) ; besoin SSR/SEO (les trois le font) ; taille (les trois tiennent des applications de plusieurs centaines d'écrans). Ce qui ne devrait pas décider : les benchmarks de rendu, les modes, le CV du Tech Lead.</p><h3>Coexister et migrer</h3><p>Web Components (Angular Elements, <code>defineCustomElement</code> Vue, wrappers React) partagent un design system entre fronts ; micro-frontends (Native Federation, single-spa) font cohabiter deux frameworks pendant une migration strangler ; jamais de réécriture globale : page par page, derrière le même BFF, avec les tests de bout en bout comme filet.</p><div class="exo"><span class="tag">Exercice 9.1</span><p>Un client a un back-office Angular de 400 écrans et veut « passer à React ». Ta réponse ?</p><details><summary>Corrigé</summary><div class="sol">Pourquoi ? Si c'est la dette (version ancienne, pas de signals), la mise à niveau Angular coûte 10 % d'une réécriture et apporte les mêmes bénéfices. Si c'est le recrutement ou un nouveau produit, coexistence par micro-frontends et nouveaux écrans en React, jamais de big bang.</div></details></div>
+<div class="exo"><span class="tag">Exercice 9.2</span><p>Les signals rendent-ils Angular et Vue « plus rapides » que React ?</p><details><summary>Corrigé</summary><div class="sol">Sur des mises à jour fines et fréquentes, oui mesurablement ; sur une application typique, la différence est invisible et React 19 avec Compiler réduit l'écart. La performance vient des données (requêtes, cache, virtualisation), pas du framework.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 9 — Le même écran dans les trois frameworks</span><ol><li>Page incidents (liste, filtre, création, clôture optimiste) en React, Angular et Vue, contre la même API et les mêmes tests Playwright.</li><li>Tableau mesuré : lignes de code, taille du bundle, temps de première interaction, temps de dev.</li><li>ADR de choix pour CrisisShield avec trois critères pondérés.</li></ol><details><summary>Correction type</summary><div class="sol">Résultat typique : bundles 45 / 95 / 40 kB gzip, lignes ~300 / ~380 / ~260, Playwright identique pour les trois (même rôles, mêmes textes). L'ADR retient un framework pour des raisons d'équipe et d'écosystème, et note que la décision est réversible page par page grâce au BFF et aux tests e2e partagés.</div></details></div>
+</article>
+<div class="footnav"><a href="index.html">← Accueil du parcours</a><a href="cours-react.html">React →</a></div>
+</div>
+<script>
+(function(){ var root=document.documentElement; try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.querySelectorAll('pre').forEach(function(pre){ var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier';
+    b.addEventListener('click',function(){ var t=pre.querySelector('code').textContent; navigator.clipboard.writeText(t).then(function(){ b.textContent='Copié !'; setTimeout(function(){ b.textContent='Copier'; },1500); }); }); pre.appendChild(b); });
+})();
+</script>
+</body></html>

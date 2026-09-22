@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cloud — de zéro à expert</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+/* ============ Mode sprint : temps maximum, minuteurs, pression ============ */
+.tbox{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.35rem 0 .8rem;font-size:.82rem}
+.tbox .tb{font-weight:700;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem}
+.tbox button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.2rem .7rem;cursor:pointer;min-height:32px}
+.tbox button.go{background:var(--accent);color:#fff}
+.tbox button.ok{border-color:var(--ok);color:var(--ok)}
+.tbox .spent{color:var(--muted)}
+.tbox.done .tb{background:var(--tp-soft);border-color:var(--tp-line);color:var(--tp)}
+.tbox.done .spent{color:var(--ok);font-weight:700}
+.tbox.late .spent{color:#A11B1B;font-weight:700}
+.chaptime{font-size:.86rem;color:var(--muted);margin:-.2rem 0 .9rem;padding:.5rem .8rem;border:1px dashed var(--line-strong);border-radius:8px;background:var(--bg)}
+.chaptime b{color:var(--ink)}
+.sec-active{outline:3px solid var(--accent);outline-offset:6px;border-radius:6px}
+.sec-active.exo,.sec-active.tp{outline-offset:2px}
+h3.sec-active{padding-left:.75rem}
+#sprint{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--hero);color:#fff;padding:.5rem .9rem calc(.5rem + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 16px rgba(0,0,0,.25);font-size:.85rem}
+#sprint .row{display:flex;align-items:center;gap:.6rem .9rem;flex-wrap:wrap;max-width:1120px;margin:0 auto}
+#sprint .clock{font-family:"JetBrains Mono",monospace;font-size:1.5rem;font-weight:700;min-width:5.2rem;letter-spacing:.02em}
+#sprint .clock.late{color:#FF6B6B;animation:blink 1s steps(2,start) infinite}
+#sprint .cur{flex:1 1 200px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sprint .cur b{color:#fff}
+#sprint .stat{opacity:.85;white-space:nowrap}
+#sprint .pbar{flex:1 1 100%;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+#sprint .pbar i{display:block;height:100%;width:0;background:#6CD19B;transition:width .3s}
+#sprint button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:.3rem .65rem;cursor:pointer;min-height:34px}
+#sprint button.primary{background:#6FA3F5;border-color:#6FA3F5;color:#0B1220}
+#sprint button:disabled{opacity:.4;cursor:default}
+#sprint .late-msg{color:#FF6B6B;font-weight:700}
+body{padding-bottom:6.5rem}
+@keyframes blink{50%{opacity:.35}}
+@media (max-width:480px){#sprint{font-size:.74rem;padding:.35rem .6rem calc(.35rem + env(safe-area-inset-bottom,0px))} #sprint .row{gap:.3rem .6rem} #sprint .clock{font-size:1.2rem;min-width:4.2rem} #sprint button{padding:.25rem .5rem;min-height:30px;font-size:.74rem} #sprint .stat{font-size:.7rem} #sprint .pbar{height:4px} body{padding-bottom:7rem}}
+@media print{#sprint,.tbox,.chaptime{display:none !important} body{padding-bottom:0}}
+
+/* ============ Explication des commandes ============ */
+pre .explain{position:absolute;top:.5rem;right:4.9rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55}
+pre:hover .explain,pre .explain:focus-visible,pre .explain.on{opacity:1}
+pre .explain.on{background:#1B7A4E;border-color:#1B7A4E;color:#fff}
+pre .xpl{display:block;color:#8FD3A7;font-size:.82em;line-height:1.45;padding:.05rem 0 .35rem 1.4em;white-space:pre-wrap;word-break:break-word;font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+pre .xpl::before{content:"↳ ";opacity:.7}
+@media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
+@media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
+
+/* ============ Animations pédagogiques ============ */
+.anim{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.anim .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.anim .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.anim .ctl button.primary{background:var(--accent);color:#fff}
+.anim .ctl button:disabled{opacity:.4;cursor:default}
+.anim .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.anim svg{width:100%;height:auto;display:block;overflow:visible;font-family:inherit}
+.anim svg text{fill:var(--ink)}
+.anim .lbl{fill:var(--muted);font-size:11px}
+.anim .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.anim .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.anim .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.anim .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.anim .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.anim .redfill{fill:#C0392B}
+.anim .greenfill{fill:#1B7A4E}
+.anim .amberfill{fill:#B7791F}
+.anim .dim{opacity:.35}
+.anim .on{filter:drop-shadow(0 0 4px rgba(37,99,235,.5))}
+.anim .mono{font-family:"JetBrains Mono",monospace;font-size:11px}
+.anim .log{font-family:"JetBrains Mono",monospace;font-size:.78rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.6rem .8rem;min-height:3.6em;white-space:pre-wrap;margin-top:.6rem;line-height:1.45}
+.anim .log .ok{color:#8FD3A7}.anim .log .ko{color:#F29A9A}.anim .log .cmd{color:#9CC4FF}
+.anim figcaption{font-size:.85rem;color:var(--muted);margin-top:.6rem;text-align:center}
+:root[data-theme="dark"] .anim .red{fill:#3A1616;stroke:#F29A9A}
+@media (prefers-reduced-motion: reduce){.anim .auto{display:none}}
+@media print{.anim .ctl{display:none}}
+
+/* ============ Planches manga ============ */
+.fig.manga svg{min-width:640px;border-radius:6px}
+.fig.manga svg text{font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.fig.manga figcaption::before{content:"Manga — ";font-weight:700;color:var(--ink)}
+:root[data-theme="dark"] .fig.manga svg{opacity:.94}
+
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.toc{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.2rem;margin:0 0 1.5rem}
+.toc ol{margin:.4rem 0 0;padding-left:1.3rem;columns:2;column-gap:2rem}
+.toc li{break-inside:avoid;margin:.2rem 0}
+@media(max-width:700px){.toc ol{columns:1}}
+body{padding-bottom:2rem}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="in">
+<div class="pagenav"><a href="index.html">← Accueil du parcours</a><a href="cours-react.html">React</a><a href="cours-angular.html">Angular</a><a href="cours-vue.html">Vue</a></div>
+<div class="level">Cours frontend — de zéro à expert</div>
+<h1>Cloud — de zéro à expert</h1>
+<p class="lead">Dix chapitres pour maîtriser le cloud (AWS en fil rouge, équivalences Azure et GCP) : modèles et compte, identité, réseau, calcul, stockage et bases, sécurité, infrastructure as code et livraison, observabilité et reprise, FinOps, architecture et certification. Projet fil conducteur : CrisisShield sur AWS. Tout passe par la CLI en conteneur et Terraform, chaque chapitre a ses exercices corrigés et un travail pratique avec correction type.</p>
+<p>≈ 50 h de travail · prérequis : Docker Desktop, un compte AWS sandbox (quelques euros au total, tout est détruit après chaque TP) · complète le niveau 4 du parcours DevOps, qui va plus vite et plus loin sur Terraform.</p>
+</div></header>
+<div class="single">
+<div class="toc"><strong>Sommaire</strong><ol><li><a href="#c1">Qu&#x27;est-ce que le cloud : modèles, régions, responsabilité, coût</a></li><li><a href="#c2">Identité et accès : IAM, rôles, fédération, zéro clé statique</a></li><li><a href="#c3">Réseau : VPC, sous-réseaux, routage, sécurité, connectivité</a></li><li><a href="#c4">Calcul : VM, conteneurs managés, serverless</a></li><li><a href="#c5">Stockage et bases de données managées</a></li><li><a href="#c6">Sécurité cloud : détection, chiffrement, secrets, conformité</a></li><li><a href="#c7">Infrastructure as Code et livraison sur le cloud</a></li><li><a href="#c8">Observabilité, fiabilité et exploitation dans le cloud</a></li><li><a href="#c9">FinOps : comprendre, optimiser, opérer le coût</a></li><li><a href="#c10">Architecture cloud, multi-cloud, souveraineté et certification</a></li></ol></div>
+<article id="c1"><div class="chaphead"><span class="chapnum">Chapitre 1</span><span class="badge lvl-junior">Débutant</span></div><h2>Qu&#x27;est-ce que le cloud : modèles, régions, responsabilité, coût</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le cloud est de l'infrastructure à la demande, facturée à l'usage, exposée par des API : ce qui change tout, c'est l'API, pas la localisation.</li><li>IaaS, CaaS, PaaS, FaaS, SaaS : plus on monte, moins on exploite et moins on contrôle ; on choisit le niveau le plus haut compatible avec les contraintes.</li><li>Responsabilité partagée : le fournisseur sécurise « le cloud », le client sécurise « dans le cloud » (IAM, données, configuration, code).</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Expliquer les modèles de service et de déploiement, régions et zones</li><li>Lire une facture et prévoir les postes surprises</li><li>Créer un compte sandbox gouverné en Docker (CLI en conteneur)</li></ul></div>
+<h3>Vocabulaire</h3><p>Région : ensemble de datacenters (zones de disponibilité) proches ; zone : datacenter isolé ; edge : points de présence CDN. Multi-AZ est le minimum de production ; multi-région est rare et cher. Élasticité : ajouter/retirer à la demande ; le prix de l'élasticité est la facturation à la seconde et la variabilité.</p><h3>Premier compte, gouverné dès le premier jour</h3><p></p><pre><code>alias awsc=&#x27;docker run --rm -it -v &quot;$HOME/.aws:/root/.aws&quot; amazon/aws-cli&#x27;
+# console : MFA sur root puis plus jamais root ; IAM Identity Center avec un utilisateur et un permission set ; budget 20 $/mois avec alertes 50/80/100 %
+awsc configure sso &amp;&amp; awsc sso login --profile sandbox &amp;&amp; awsc sts get-caller-identity --profile sandbox
+awsc ce get-cost-and-usage --time-period Start=2026-09-01,End=2026-09-30 --granularity MONTHLY --metrics UnblendedCost --profile sandbox
+# équivalents : az login (image mcr.microsoft.com/azure-cli), gcloud auth login (image google/cloud-sdk)</code></pre>
+<div class="exo"><span class="tag">Exercice 1.1</span><p>Une VM éteinte coûte-t-elle quelque chose ?</p><details><summary>Corrigé</summary><div class="sol">Le calcul non, mais le disque attaché, l'adresse IP réservée et les snapshots oui : « éteint » n'est pas « supprimé ».</div></details></div>
+<div class="exo"><span class="tag">Exercice 1.2</span><p>Qui est responsable d'un bucket S3 public contenant des données clients ?</p><details><summary>Corrigé</summary><div class="sol">Le client : la configuration d'accès est « dans le cloud ». AWS fournit Block Public Access ; l'activer est de la responsabilité du client.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 1 — Compte sandbox et facture</span><ol><li>Compte AWS avec root sous MFA, Identity Center, budget et alertes, CloudTrail activé ; CLI uniquement en conteneur.</li><li>Créer puis supprimer une ressource de chaque type (VM, disque, bucket) et lire la facture le lendemain.</li><li>Tableau : modèles de service avec un exemple AWS/Azure/GCP chacun et ce que le client gère.</li></ol><details><summary>Correction type</summary><div class="sol">Preuve : sortie de <code>get-caller-identity</code> avec un rôle SSO (pas d'utilisateur IAM), capture du budget, et la ligne de coût du lendemain (quelques centimes : le disque du volume, l'IP). Rien ne reste (<code>resourcegroupstaggingapi get-resources</code> vide).</div></details></div>
+</article>
+<article id="c2"><div class="chaphead"><span class="chapnum">Chapitre 2</span><span class="badge lvl-junior">Débutant</span></div><h2>Identité et accès : IAM, rôles, fédération, zéro clé statique</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Tout est refusé par défaut ; une politique autorise ; un deny explicite gagne. Identité (qui), ressource (quoi), organisation (SCP) s'évaluent ensemble.</li><li>Un rôle est une identité temporaire assumée par une charge, un humain fédéré ou un autre compte : plus aucune clé d'accès statique.</li><li>Moindre privilège se construit par les journaux (CloudTrail, IAM Access Analyzer), pas par devinette.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Écrire et lire une politique IAM, comprendre l'ordre d'évaluation</li><li>Donner une identité à une VM, un conteneur, une fonction, un pipeline (OIDC) et un humain (SSO)</li><li>Auditer et réduire les permissions</li></ul></div>
+<h3>Politique et rôle</h3><p></p><pre><code>{ &quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [
+  { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [&quot;s3:GetObject&quot;, &quot;s3:PutObject&quot;], &quot;Resource&quot;: &quot;arn:aws:s3:::crisis-uploads/*&quot;, &quot;Condition&quot;: { &quot;StringEquals&quot;: { &quot;aws:PrincipalTag/team&quot;: &quot;crisis&quot; } } },
+  { &quot;Effect&quot;: &quot;Deny&quot;, &quot;Action&quot;: &quot;s3:*&quot;, &quot;Resource&quot;: &quot;*&quot;, &quot;Condition&quot;: { &quot;Bool&quot;: { &quot;aws:SecureTransport&quot;: &quot;false&quot; } } } ] }
+# rôle de tâche ECS / instance profile EC2 / rôle Lambda : la charge assume le rôle, les identifiants sont injectés et tournent seuls
+# pipeline GitLab : id_tokens → sts assume-role-with-web-identity (OIDC), bound sur projet et branche
+# humains : Identity Center (AWS), Entra ID (Azure), Cloud Identity (GCP) → SSO, MFA, sessions courtes</code></pre>
+<h3>Auditer</h3><p></p><pre><code>awsc iam generate-service-last-accessed-details --arn arn:aws:iam::123456789012:role/crisis-api --profile sandbox   # services utilisés → retirer le reste
+awsc accessanalyzer list-findings --analyzer-arn … --profile sandbox    # ressources exposées à l&#x27;extérieur
+# CloudTrail : chaque appel API avec identité, IP, résultat ; Athena pour interroger</code></pre>
+<div class="exo"><span class="tag">Exercice 2.1</span><p>Une politique d'identité autorise <code>s3:*</code>, la politique du bucket refuse tout sauf un rôle précis. Résultat pour un autre rôle ?</p><details><summary>Corrigé</summary><div class="sol">Refus : le deny explicite de la politique de ressource gagne. Et si le bucket n'avait pas de deny mais seulement un allow ciblé, l'allow d'identité suffirait (même compte).</div></details></div>
+<div class="exo"><span class="tag">Exercice 2.2</span><p>Pourquoi un jeton OIDC de pipeline vaut-il mieux qu'une clé d'accès dans les variables CI ?</p><details><summary>Corrigé</summary><div class="sol">Il est signé par la plateforme CI, lié au projet et à la branche, échangé contre des identifiants de 15 minutes à 1 heure, non copiable et non réutilisable : une fuite est inutile.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 2 — Identités sans clé</span><ol><li>Rôle pour une VM (instance profile) qui lit un bucket ; rôle assumé par un pipeline GitLab par OIDC ; utilisateur SSO avec MFA.</li><li>Access Analyzer et last-accessed pour réduire un rôle trop large ; Athena sur CloudTrail : « qui a lu ce bucket ? ».</li><li>Aucune clé dans <code>~/.aws/credentials</code> ni dans GitLab.</li></ol><details><summary>Correction type</summary><div class="sol">Preuve : <code>curl 169.254.169.254/latest/meta-data/iam/security-credentials/</code> depuis la VM (IMDSv2) montre des identifiants temporaires ; le job GitLab affiche <code>assumed-role/gitlab-main</code> ; le rôle passe de <code>s3:*</code> à deux actions après last-accessed ; Athena renvoie l'identité et l'IP de chaque <code>GetObject</code>.</div></details></div>
+</article>
+<article id="c3"><div class="chaphead"><span class="chapnum">Chapitre 3</span><span class="badge lvl-confirme">Confirmé</span></div><h2>Réseau : VPC, sous-réseaux, routage, sécurité, connectivité</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Un VPC est un réseau privé isolé ; les sous-réseaux publics ont une route vers Internet, les privés sortent par NAT ou pas du tout ; trois zones, trois niveaux (public, application, données).</li><li>Security groups (stateful, par référence) pour tout ; NACL pour quelques refus ; endpoints pour parler aux services sans Internet.</li><li>Connectivité : peering, Transit Gateway (hub), VPN site-à-site, Direct Connect ; DNS privé et résolution hybride.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Dessiner et coder un VPC de production en trois zones</li><li>Sécuriser les flux par security groups référencés et endpoints</li><li>Relier des réseaux (peering, TGW, VPN) et comprendre le DNS privé</li></ul></div>
+<h3>VPC de production en Terraform</h3><p></p><pre><code>module &quot;network&quot; { source = &quot;terraform-aws-modules/vpc/aws&quot;; version = &quot;~&gt; 5.13&quot;
+  name = &quot;crisis-prod&quot;; cidr = &quot;10.20.0.0/16&quot;; azs = [&quot;eu-west-3a&quot;, &quot;eu-west-3b&quot;, &quot;eu-west-3c&quot;]
+  public_subnets = [&quot;10.20.1.0/24&quot;, &quot;10.20.2.0/24&quot;, &quot;10.20.3.0/24&quot;]; private_subnets = [&quot;10.20.11.0/24&quot;, &quot;10.20.12.0/24&quot;, &quot;10.20.13.0/24&quot;]; database_subnets = [&quot;10.20.21.0/24&quot;, &quot;10.20.22.0/24&quot;, &quot;10.20.23.0/24&quot;]
+  enable_nat_gateway = true; one_nat_gateway_per_az = true; enable_dns_hostnames = true; enable_flow_log = true }
+resource &quot;aws_vpc_endpoint&quot; &quot;s3&quot; { vpc_id = module.network.vpc_id; service_name = &quot;com.amazonaws.eu-west-3.s3&quot;; route_table_ids = module.network.private_route_table_ids }
+# SG : alb (443 depuis 0.0.0.0/0) → api (8080 depuis sg alb) → db (5432 depuis sg api) ; aucun CIDR interne</code></pre>
+<h3>Connectivité et DNS</h3><p>Peering : deux VPC, pas transitif, simple. Transit Gateway : hub pour N VPC et le site, routage centralisé. VPN site-à-site : IPsec sur Internet, minutes à mettre en place, débit limité. Direct Connect : lien dédié, semaines, pour les gros volumes ou la latence. DNS : zone privée Route 53 associée aux VPC ; résolveurs entrants/sortants pour l'hybride ; Azure VNet + Private DNS, GCP VPC global (multi-région natif) + Cloud DNS.</p><div class="exo"><span class="tag">Exercice 3.1</span><p>Pourquoi un NAT par zone en production ?</p><details><summary>Corrigé</summary><div class="sol">Un NAT unique dans la zone A tombe avec la zone A : les instances de B et C perdent Internet. Le coût (3 × 32 $) est le prix de la résilience ; en dev, un seul NAT.</div></details></div>
+<div class="exo"><span class="tag">Exercice 3.2</span><p>Une instance privée doit lire S3 : NAT ou endpoint ?</p><details><summary>Corrigé</summary><div class="sol">Endpoint Gateway S3 : gratuit, trafic interne, pas de facturation NAT. Le NAT ne sert qu'à ce qui n'a pas d'endpoint.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 3 — VPC de CrisisShield</span><ol><li>VPC trois zones en Terraform (LocalStack ou sandbox), security groups par référence, endpoints S3/ECR/Secrets Manager, flow logs.</li><li>Peering vers un second VPC (labo) et test de résolution DNS privée.</li><li>Schéma des tables de routage et estimation infracost.</li></ol><details><summary>Correction type</summary><div class="sol">Preuve : <code>terraform plan</code> propre, flow logs dans CloudWatch montrant un flux refusé, <code>nslookup api.crisis.internal</code> depuis le VPC pair, infracost ≈ 100 $/mois pour trois NAT (et ≈ 35 $ avec un seul : la décision est chiffrée).</div></details></div>
+</article>
+<article id="c4"><div class="chaphead"><span class="chapnum">Chapitre 4</span><span class="badge lvl-confirme">Confirmé</span></div><h2>Calcul : VM, conteneurs managés, serverless</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>EC2/VM : contrôle total, exploitation à charge (patch, SSH, images) ; ECS Fargate / Cloud Run / Container Apps : conteneurs sans nœuds ; EKS/AKS/GKE : Kubernetes standard ; Lambda/Functions : par événement.</li><li>Le choix se fait par profil de charge (continu, intermittent, événementiel), compétence d'équipe, portabilité et coût à l'échelle.</li><li>Images dorées, auto-scaling groups, instances Spot et Graviton sont les leviers de la VM ; digest, rôle de tâche et circuit breaker ceux du conteneur.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Déployer une VM propre (image, user-data, auto-scaling) et un conteneur Fargate</li><li>Écrire et déployer une fonction serverless avec ses limites en tête</li><li>Choisir le bon service de calcul et le justifier</li></ul></div>
+<h3>Fargate : conteneur sans nœud</h3><p></p><pre><code>resource &quot;aws_ecs_task_definition&quot; &quot;api&quot; { family = &quot;api&quot;; requires_compatibilities = [&quot;FARGATE&quot;]; network_mode = &quot;awsvpc&quot;; cpu = 512; memory = 1024; execution_role_arn = aws_iam_role.exec.arn; task_role_arn = aws_iam_role.task.arn
+  container_definitions = jsonencode([{ name = &quot;api&quot;, image = &quot;${aws_ecr_repository.api.repository_url}@${var.digest}&quot;, portMappings = [{ containerPort = 8080 }],
+    secrets = [{ name = &quot;DB_PASSWORD&quot;, valueFrom = &quot;${aws_secretsmanager_secret.db.arn}:password::&quot; }], logConfiguration = { logDriver = &quot;awslogs&quot;, options = { &quot;awslogs-group&quot; = &quot;/crisis/api&quot;, &quot;awslogs-region&quot; = &quot;eu-west-3&quot;, &quot;awslogs-stream-prefix&quot; = &quot;api&quot; } },
+    healthCheck = { command = [&quot;CMD-SHELL&quot;, &quot;wget -qO- http://localhost:8080/actuator/health || exit 1&quot;], interval = 15, startPeriod = 60 } }]) }
+resource &quot;aws_ecs_service&quot; &quot;api&quot; { …; desired_count = 2; launch_type = &quot;FARGATE&quot;; deployment_circuit_breaker { enable = true; rollback = true }; lifecycle { ignore_changes = [desired_count] } }
+resource &quot;aws_appautoscaling_target&quot; &quot;api&quot; { min_capacity = 2; max_capacity = 8; … }   # cible CPU 60 %</code></pre>
+<h3>Lambda, en Java</h3><p></p><pre><code>// Quarkus natif ou Spring Cloud Function ; handler → événement (S3, SQS, EventBridge, API Gateway)
+// limites : 15 min, 10 Go, cold start (Java JVM ≈ 3 s → SnapStart ou natif ≈ 150 ms), pas de connexions persistantes (RDS Proxy)
+awsl lambda invoke --function-name report --payload &#x27;{&quot;org&quot;:&quot;org-1&quot;}&#x27; /tmp/o.json --log-type Tail --query LogResult --output text | base64 -d | grep -E &#x27;Init Duration|Duration&#x27;
+// quand : rare, court, événementiel ; jamais pour une API à trafic continu (coût et latence)</code></pre>
+<div class="exo"><span class="tag">Exercice 4.1</span><p>Trafic continu de 60 req/s, équipe de 4, pas de Kubernetes en place : quel calcul ?</p><details><summary>Corrigé</summary><div class="sol">ECS Fargate (ou Cloud Run/Container Apps) : conteneurs sans nœuds, rôle de tâche, auto-scaling, coût prévisible. EKS seulement si la portabilité ou l'écosystème Kubernetes est requis.</div></details></div>
+<div class="exo"><span class="tag">Exercice 4.2</span><p>Pourquoi <code>ignore_changes = [desired_count]</code> ?</p><details><summary>Corrigé</summary><div class="sol">L'auto-scaling pilote ce nombre ; sans l'ignorer, chaque apply Terraform le remettrait à la valeur du code.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 4 — CrisisShield en trois calculs</span><ol><li>API en Fargate avec auto-scaling et circuit breaker ; VM d'outillage en ASG avec image dorée et user-data ; générateur de rapport en Lambda natif.</li><li>Test de charge k6 : l'auto-scaling monte à 5× ; cold start mesuré JVM contre natif.</li><li>Tableau de décision avec coût mensuel de chaque option (calculatrice AWS).</li></ol><details><summary>Correction type</summary><div class="sol">Preuve : <code>describe-services</code> montre 2 → 6 tâches pendant k6 et un rollback automatique sur une image cassée ; Lambda JVM Init 2 900 ms contre natif 120 ms ; tableau : Fargate ≈ 30 $, EKS ≈ 73 $ (control plane) + nœuds, Lambda ≈ 0,20 $ pour 10 000 rapports.</div></details></div>
+</article>
+<article id="c5"><div class="chaphead"><span class="chapnum">Chapitre 5</span><span class="badge lvl-confirme">Confirmé</span></div><h2>Stockage et bases de données managées</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Objet (S3), bloc (EBS), fichier (EFS) : trois besoins ; l'objet est la base de tout (données, sauvegardes, artefacts, sites statiques).</li><li>Bases managées : RDS/Aurora (relationnel), DynamoDB (clé-valeur à l'échelle), ElastiCache (cache), OpenSearch ; le fournisseur gère patch, sauvegardes, bascule ; le client gère schéma, requêtes, dimensionnement.</li><li>Protection des données : chiffrement par défaut (KMS), versioning, Object Lock, réplication, sauvegardes testées.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Configurer un bucket sûr (privé, chiffré, versionné, cycle de vie, lock)</li><li>Déployer une base RDS multi-AZ et comprendre réplica, Aurora, PITR</li><li>Choisir entre relationnel, clé-valeur et cache selon le besoin</li></ul></div>
+<h3>S3 : la configuration de référence</h3><p></p><pre><code>resource &quot;aws_s3_bucket&quot; &quot;uploads&quot; { bucket = &quot;crisis-uploads-123456789012&quot; }
+resource &quot;aws_s3_bucket_public_access_block&quot; &quot;u&quot; { bucket = aws_s3_bucket.uploads.id; block_public_acls = true; block_public_policy = true; ignore_public_acls = true; restrict_public_buckets = true }
+resource &quot;aws_s3_bucket_server_side_encryption_configuration&quot; &quot;u&quot; { bucket = aws_s3_bucket.uploads.id; rule { apply_server_side_encryption_by_default { sse_algorithm = &quot;aws:kms&quot;; kms_master_key_id = aws_kms_key.data.arn } } }
+resource &quot;aws_s3_bucket_versioning&quot; &quot;u&quot; { bucket = aws_s3_bucket.uploads.id; versioning_configuration { status = &quot;Enabled&quot; } }
+resource &quot;aws_s3_bucket_lifecycle_configuration&quot; &quot;u&quot; { bucket = aws_s3_bucket.uploads.id; rule { id = &quot;tiering&quot;; status = &quot;Enabled&quot;; transition { days = 30; storage_class = &quot;INTELLIGENT_TIERING&quot; }; noncurrent_version_expiration { noncurrent_days = 90 } } }
+# sauvegardes : bucket séparé, compte séparé, Object Lock COMPLIANCE 30 j, réplication inter-région</code></pre>
+<h3>RDS et Aurora</h3><p></p><pre><code>resource &quot;aws_db_instance&quot; &quot;main&quot; { engine = &quot;postgres&quot;; engine_version = &quot;16.4&quot;; instance_class = &quot;db.t4g.medium&quot;; multi_az = true; storage_encrypted = true; backup_retention_period = 7; deletion_protection = true; publicly_accessible = false; performance_insights_enabled = true; … }
+# multi-AZ : réplique synchrone, bascule ~1 min, zéro perte ; réplica de lecture : asynchrone, décharge les lectures ; Aurora : stockage réparti 3 AZ, bascule en secondes, Global Database
+# PITR : restauration à la seconde dans une nouvelle instance ; testée chaque mois (script)
+# DynamoDB : clé de partition + tri, capacité à la demande, TTL, streams ; pour les accès par clé à très haut débit, pas pour les jointures</code></pre>
+<div class="exo"><span class="tag">Exercice 5.1</span><p>Une table de sessions de 50 000 écritures/s : RDS ou DynamoDB ?</p><details><summary>Corrigé</summary><div class="sol">DynamoDB : accès par clé, débit linéaire, TTL intégré. RDS plafonne et coûte en instance ; un cache Redis est l'alternative si la durabilité n'est pas requise.</div></details></div>
+<div class="exo"><span class="tag">Exercice 5.2</span><p>Versioning activé, un objet supprimé par erreur : récupérable ?</p><details><summary>Corrigé</summary><div class="sol">Oui : la suppression pose un marqueur, les versions restent ; on supprime le marqueur. Avec Object Lock, même une suppression de version est impossible avant l'échéance.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 5 — Données de CrisisShield</span><ol><li>Bucket uploads de référence + bucket de sauvegardes verrouillé dans un compte séparé ; test de suppression refusée.</li><li>RDS multi-AZ avec bascule provoquée (<code>reboot --force-failover</code>) chronométrée ; restauration PITR dans une instance de test.</li><li>Table DynamoDB de sessions avec TTL ; ElastiCache Redis pour le cache.</li></ol><details><summary>Correction type</summary><div class="sol">Preuve : bascule RDS en 48 s avec 3 requêtes en erreur (Hikari retente) ; PITR restaurée à T-10 min contient l'enregistrement témoin ; <code>aws s3 rm</code> sur le bucket verrouillé → <code>AccessDenied</code> même en admin.</div></details></div>
+</article>
+<article id="c6"><div class="chaphead"><span class="chapnum">Chapitre 6</span><span class="badge lvl-senior">Senior</span></div><h2>Sécurité cloud : détection, chiffrement, secrets, conformité</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Les quatre services de fondation avant toute charge : CloudTrail (qui a fait quoi), Config (est-ce conforme), GuardDuty (est-ce anormal), Security Hub (agrégation, CIS) ; équivalents Azure Defender/Policy et GCP Security Command Center.</li><li>KMS chiffre tout par défaut (enveloppe) ; Secrets Manager/Key Vault/Secret Manager avec rotation ; jamais de secret dans le code ni les variables.</li><li>Conformité : CIS benchmark automatisé (Prowler), SCP pour interdire l'ininterdisable, preuves collectées par script.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Activer et lire les services de détection</li><li>Chiffrer et gérer les secrets avec rotation</li><li>Produire un rapport CIS et corriger par le code</li></ul></div>
+<h3>Fondations de sécurité</h3><p></p><pre><code>awsc cloudtrail create-trail --name org --s3-bucket-name crisis-trail-… --is-multi-region-trail --enable-log-file-validation &amp;&amp; awsc cloudtrail start-logging --name org
+awsc guardduty create-detector --enable ; awsc securityhub enable-security-hub --enable-default-standards ; awsc configservice put-configuration-recorder …
+# SCP (organisation) : deny cloudtrail:StopLogging, deny hors régions autorisées, deny ec2:RunInstances sans tag Owner, deny création de clés d&#x27;accès utilisateur
+# KMS : une clé par domaine de données (uploads, base, sauvegardes), rotation annuelle, politique de clé restreinte ; chiffrement d&#x27;enveloppe : la clé de données est chiffrée par la clé KMS
+# Secrets Manager : rotation Lambda du mot de passe RDS tous les 30 j ; l&#x27;application lit le secret par rôle, jamais par variable</code></pre>
+<h3>CIS et preuves</h3><p></p><pre><code>docker run --rm -v &quot;$HOME/.aws:/home/prowler/.aws:ro&quot; -v &quot;$PWD/reports:/home/prowler/output&quot; toniblyx/prowler:4 aws --profile sandbox --compliance cis_2.0_aws --output-formats html,json-ocsf
+# corriger en Terraform (pas en console) puis rejouer ; les findings restants deviennent des exceptions datées</code></pre>
+<div class="exo"><span class="tag">Exercice 6.1</span><p>GuardDuty signale un appel API depuis une IP Tor avec le rôle de la CI. Que fais-tu ?</p><details><summary>Corrigé</summary><div class="sol">Révoquer les sessions du rôle (politique deny avec <code>aws:TokenIssueTime</code>), chercher dans CloudTrail ce que la session a fait, faire tourner les secrets touchés, chercher la fuite (jeton dans un log ?), post-mortem. Le jeton OIDC court limite les dégâts.</div></details></div>
+<div class="exo"><span class="tag">Exercice 6.2</span><p>Pourquoi une clé KMS par domaine de données ?</p><details><summary>Corrigé</summary><div class="sol">Rayon d'impact et gouvernance : une politique de clé par usage, une révocation ciblée (crypto-shredding des sauvegardes d'un client), un audit par clé.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 6 — Fondations de sécurité du compte CrisisShield</span><ol><li>CloudTrail, Config, GuardDuty, Security Hub activés en Terraform ; SCP de garde-fous ; Access Analyzer.</li><li>KMS par domaine, Secrets Manager avec rotation, application qui lit par rôle.</li><li>Prowler avant/après avec 10 findings corrigés en code ; script de preuves mensuel.</li></ol><details><summary>Correction type</summary><div class="sol">Preuve : Security Hub score CIS passant de ~40 % à > 85 %, une rotation Secrets Manager observée (nouvelle version, application reconnectée sans redémarrage), et un test SCP : <code>StopLogging</code> refusé même en administrateur.</div></details></div>
+</article>
+<article id="c7"><div class="chaphead"><span class="chapnum">Chapitre 7</span><span class="badge lvl-senior">Senior</span></div><h2>Infrastructure as Code et livraison sur le cloud</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Rien à la main : Terraform (ou OpenTofu, CloudFormation, Bicep, Pulumi) décrit tout, avec state distant verrouillé, modules, environnements séparés.</li><li>Le pipeline : fmt/validate → scan (trivy config, checkov) → coût (infracost) → plan en MR → apply manuel avec identité OIDC ; dérive détectée en continu.</li><li>Images (Packer), configuration (Ansible ou cloud-init), déploiement applicatif (digest, blue/green, canary avec CodeDeploy ou le LB).</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Structurer un dépôt Terraform multi-environnements avec modules et tests</li><li>Monter un pipeline IaC sûr avec plan en MR et apply OIDC</li><li>Déployer une application par digest avec bascule progressive</li></ul></div>
+<h3>Structure et pipeline</h3><p></p><pre><code>infra/
+  modules/{network,compute,database,security}/    # testés : terraform test avec mock_provider
+  envs/{dev,staging,prod}/                         # un state par env : backend s3 (versioning, lock DynamoDB) ; key = env/component.tfstate
+# .gitlab-ci.yml
+plan: { image: hashicorp/terraform:1.9, id_tokens: { AWS_ID: { aud: sts.amazonaws.com } }, script: [terraform init, terraform fmt -check -recursive, terraform validate, trivy config --exit-code 1 --severity HIGH,CRITICAL ., infracost breakdown --path ., terraform plan -out=plan.bin, terraform show -no-color plan.bin &gt; plan.txt], artifacts: { paths: [plan.bin, plan.txt] } }   # tfcmt poste plan.txt dans la MR
+apply: { stage: apply, when: manual, rules: [{ if: $CI_COMMIT_BRANCH == &quot;main&quot; }], resource_group: prod, script: [terraform apply plan.bin] }
+drift: { rules: [{ if: $CI_PIPELINE_SOURCE == &quot;schedule&quot; }], script: [terraform plan -detailed-exitcode || (echo dérive &amp;&amp; exit 1)] }</code></pre>
+<h3>Déploiement progressif</h3><p>Nouvelle image par digest → nouveau target group (green) → tests → bascule pondérée du listener ALB (10 %, 50 %, 100 %) avec alarmes CloudWatch comme critères d'arrêt → suppression du blue. CodeDeploy (ECS blue/green), ou Argo Rollouts sur EKS, automatisent cette séquence.</p><div class="exo"><span class="tag">Exercice 7.1</span><p>Pourquoi <code>apply</code> manuel et sur main seulement ?</p><details><summary>Corrigé</summary><div class="sol">Le plan est revu dans la MR ; l'apply engage la production et doit être une décision explicite, avec <code>resource_group</code> pour éviter deux apply simultanés. Un apply automatique se justifie en dev.</div></details></div>
+<div class="exo"><span class="tag">Exercice 7.2</span><p>Une ressource a été modifiée en console. Que fait le pipeline de dérive ?</p><details><summary>Corrigé</summary><div class="sol">Le <code>plan -detailed-exitcode</code> renvoie 2 : le job échoue et ouvre un ticket ; la correction passe par le code (adopter ou revenir), jamais par le state à la main.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 7 — Plateforme CrisisShield en IaC</span><ol><li>Dépôt Terraform modulaire avec tests, trois environnements, backend verrouillé.</li><li>Pipeline complet avec plan commenté en MR, apply OIDC manuel, dérive planifiée.</li><li>Déploiement blue/green de l'API sur ECS avec bascule pondérée et rollback sur alarme.</li></ol><details><summary>Correction type</summary><div class="sol">Preuve : une MR montre le plan et le coût ; un apply depuis un poste échoue (pas d'identifiants) ; le job de dérive détecte un tag ajouté en console ; le blue/green revient seul en arrière quand on déploie une image dont le healthcheck échoue.</div></details></div>
+</article>
+<article id="c8"><div class="chaphead"><span class="chapnum">Chapitre 8</span><span class="badge lvl-senior">Senior</span></div><h2>Observabilité, fiabilité et exploitation dans le cloud</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Métriques, logs et traces natifs (CloudWatch, X-Ray ; Azure Monitor ; Cloud Operations) ou OpenTelemetry vers sa propre pile ; alarmes sur des SLO, pas sur des seuils bruts.</li><li>Haute disponibilité : multi-AZ partout, auto-scaling, health checks, DNS avec bascule ; reprise : sauvegardes testées, RTO/RPO par service, exercice de bascule.</li><li>Exploitation : patch par remplacement (images), fenêtres, runbooks, astreinte, post-mortems.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Instrumenter et alerter sur SLO avec les services natifs ou OpenTelemetry</li><li>Concevoir la HA et un PRA cloud (multi-AZ, réplication, bascule DNS)</li><li>Exploiter sans SSH : SSM, images, remplacement</li></ul></div>
+<h3>Alarmes sur SLO</h3><p></p><pre><code>resource &quot;aws_cloudwatch_metric_alarm&quot; &quot;api_5xx&quot; { alarm_name = &quot;api-error-budget&quot;; comparison_operator = &quot;GreaterThanThreshold&quot;; evaluation_periods = 3; threshold = 1
+  metric_query { id = &quot;e&quot;; expression = &quot;100 * errors / requests&quot;; label = &quot;5xx %&quot; ; return_data = true }
+  metric_query { id = &quot;errors&quot;; metric { namespace = &quot;AWS/ApplicationELB&quot;; metric_name = &quot;HTTPCode_Target_5XX_Count&quot;; period = 60; stat = &quot;Sum&quot;; dimensions = { LoadBalancer = aws_lb.main.arn_suffix } } }
+  metric_query { id = &quot;requests&quot;; metric { namespace = &quot;AWS/ApplicationELB&quot;; metric_name = &quot;RequestCount&quot;; period = 60; stat = &quot;Sum&quot;; dimensions = { LoadBalancer = aws_lb.main.arn_suffix } } }
+  alarm_actions = [aws_sns_topic.page.arn]; ok_actions = [aws_sns_topic.page.arn] }
+# logs : awslogs → CloudWatch Logs Insights (fields @timestamp, level, msg | filter level = &quot;ERROR&quot; | stats count() by bin(5m)) ; rétention 30 j ; traces : ADOT collector sidecar → X-Ray ou Tempo</code></pre>
+<h3>PRA cloud</h3><p>Sauvegardes : snapshots RDS automatiques + copie inter-région, S3 réplication vers un compte isolé, AWS Backup avec vault verrouillé. Bascule : Aurora Global Database (<code>failover-global-cluster</code>), Route 53 health check + failover record, infrastructure secondaire par le même Terraform (pilot light). Exercice trimestriel chronométré ; SSM Session Manager remplace SSH (journalisé, sans port ouvert).</p><div class="exo"><span class="tag">Exercice 8.1</span><p>Pourquoi une expression métrique (ratio) plutôt qu'un seuil sur le nombre de 5xx ?</p><details><summary>Corrigé</summary><div class="sol">Le nombre dépend du trafic : 50 erreurs à 3 h du matin et 50 erreurs à midi n'ont pas le même sens. Le ratio est le SLI ; le seuil est la consommation du budget.</div></details></div>
+<div class="exo"><span class="tag">Exercice 8.2</span><p>Comment patcher une flotte de VM sans SSH ?</p><details><summary>Corrigé</summary><div class="sol">Nouvelle image dorée (Packer), mise à jour du launch template, instance refresh de l'ASG (remplacement progressif avec health checks). SSM pour les commandes ponctuelles, journalisées.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 8 — Exploitation de CrisisShield</span><ol><li>Alarmes SLO (disponibilité, latence p95) avec SNS → astreinte ; Logs Insights sauvegardées ; traces X-Ray ou OTel.</li><li>PRA : réplication S3 et RDS inter-région, bascule Route 53 testée et chronométrée, coût mesuré puis détruit.</li><li>Instance refresh de l'ASG avec une nouvelle image ; SSM Session Manager ; port 22 fermé partout.</li></ol><details><summary>Correction type</summary><div class="sol">Preuve : alarme déclenchée par k6 injectant 2 % d'erreurs (à T+3 min) et revenue OK ; bascule Route 53 en ~90 s (TTL 60 s) avec boucle curl ; instance refresh sans requête perdue ; <code>describe-security-groups</code> sans règle sur 22.</div></details></div>
+</article>
+<article id="c9"><div class="chaphead"><span class="chapnum">Chapitre 9</span><span class="badge lvl-senior">Senior</span></div><h2>FinOps : comprendre, optimiser, opérer le coût</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Informer (tags, allocation par équipe et par service, coût par unité), optimiser (éteindre, redimensionner, architecture, engagements — dans cet ordre), opérer (rapport mensuel, anomalies, décisions).</li><li>Les postes cachés : NAT, trafic sortant, logs sans rétention, snapshots, instances de dev la nuit, IP publiques, LoadBalancers oubliés.</li><li>Spot pour l'interruptible, Savings Plans après optimisation sur le socle stable, Graviton partout où c'est possible.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Allouer les coûts par tag et calculer un coût par unité</li><li>Appliquer les leviers dans l'ordre et mesurer le gain</li><li>Mettre en place budgets, anomalies et rapport mensuel</li></ul></div>
+<h3>Allocation et leviers</h3><p></p><pre><code>provider &quot;aws&quot; { default_tags { tags = { Owner = &quot;crisis&quot;, Env = var.env, Service = &quot;crisisshield&quot;, CostCenter = &quot;lab&quot; } } }
+awsc ce get-cost-and-usage --time-period Start=2026-09-01,End=2026-10-01 --granularity MONTHLY --metrics UnblendedCost --group-by Type=TAG,Key=Env --output table
+# 1. éteindre : EventBridge Scheduler → ecs update-service --desired-count 0 à 20 h, rds stop-db-instance (dev) ; 2. redimensionner : Compute Optimizer, Performance Insights → t4g.medium → small ; 3. architecture : endpoints, rétention logs 30 j, Intelligent-Tiering, Graviton ; 4. engagements : Savings Plan 1 an sur le socle prod après un mois de mesure
+awsc ce create-anomaly-monitor --anomaly-monitor &#x27;{&quot;MonitorName&quot;:&quot;services&quot;,&quot;MonitorType&quot;:&quot;DIMENSIONAL&quot;,&quot;MonitorDimension&quot;:&quot;SERVICE&quot;}&#x27;</code></pre>
+<h3>Coût par unité et rapport</h3><p>Coût mensuel / requêtes (ou incidents traités) : la seule métrique qui distingue croissance et gaspillage. Rapport d'une page : coût par équipe, top 3 services, leviers appliqués avec gain, prévision, trois décisions. Budgets par environnement avec action automatique en dev (retrait des droits de création à 100 %), alerte seulement en prod.</p><div class="exo"><span class="tag">Exercice 9.1</span><p>La facture monte de 30 % et le trafic de 30 % : problème ?</p><details><summary>Corrigé</summary><div class="sol">Non si le coût par unité est stable ou baisse ; oui s'il monte. Sans coût unitaire, on ne peut pas répondre.</div></details></div>
+<div class="exo"><span class="tag">Exercice 9.2</span><p>Quand acheter un Savings Plan ?</p><details><summary>Corrigé</summary><div class="sol">Après avoir éteint, redimensionné et corrigé l'architecture, sur la part stable mesurée pendant un mois ; s'engager avant fige le gaspillage pour un an.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 9 — FinOps sur le compte CrisisShield</span><ol><li>Tags obligatoires (default_tags + règle Config), allocation par Env et Service, coût par 1 000 requêtes.</li><li>Leviers 1 à 3 appliqués et mesurés ; détecteur d'anomalies ; budgets avec action en dev.</li><li>Rapport mensuel d'une page avec trois décisions.</li></ol><details><summary>Correction type</summary><div class="sol">Résultat attendu : ≈ 160 → ≈ 95 $/mois (−40 %) sans engagement ; coût par 1 000 requêtes 0,42 → 0,25 $ ; une anomalie détectée en < 24 h lors d'un test (instance oubliée).</div></details></div>
+</article>
+<article id="c10"><div class="chaphead"><span class="chapnum">Chapitre 10</span><span class="badge lvl-expert">Expert</span></div><h2>Architecture cloud, multi-cloud, souveraineté et certification</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le Well-Architected Framework (six piliers : excellence opérationnelle, sécurité, fiabilité, performance, coût, durabilité) est la grille de revue ; chaque décision se justifie par un pilier et un coût.</li><li>Multi-cloud subi, choisi ou portable ; la vraie dépendance est l'identité, le réseau, les services serverless et les données ; une architecture portable (conteneurs, PostgreSQL, Terraform, OpenTelemetry) garde le choix.</li><li>Souveraineté : SecNumCloud, cloud de confiance (Bleu, S3NS), hébergement européen ; savoir produire un dossier de réversibilité. Certification : Solutions Architect Associate (puis Professional/DevOps), AZ-104/305, GCP ACE.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Revoir une architecture avec le Well-Architected Framework</li><li>Traduire une architecture AWS en Azure et GCP et décider du multi-cloud</li><li>Préparer une certification avec le parcours et le sandbox</li></ul></div>
+<h3>Architecture de référence CrisisShield</h3><p></p><pre><code>Route 53 → CloudFront (front statique S3 + WAF) → ALB (TLS, WAF) → ECS Fargate api ×N (3 AZ, rôle de tâche) → RDS PostgreSQL multi-AZ + réplica ; ElastiCache Redis ; S3 uploads (KMS) ; MSK ou SQS pour les événements ; Lambda natif pour les rapports ; Secrets Manager ; CloudWatch + OTel ; CloudTrail/GuardDuty/Config/Security Hub ; sauvegardes inter-région dans un compte isolé ; Terraform, pipeline OIDC
+# revue Well-Architected : pour chaque pilier, 3 questions, réponse, preuve (TP), écart ; ex. fiabilité : « comment récupérez-vous d&#x27;une panne de zone ? » → multi-AZ + bascule RDS testée (chapitre 8)</code></pre>
+<h3>Équivalences et portabilité</h3><p></p><pre><code>| AWS            | Azure                    | GCP                    |
+| VPC / SG       | VNet / NSG               | VPC / firewall rules   |
+| ALB            | Application Gateway      | Cloud Load Balancing   |
+| ECS Fargate    | Container Apps           | Cloud Run              |
+| EKS            | AKS                      | GKE                    |
+| RDS / Aurora   | Flexible Server          | Cloud SQL / AlloyDB    |
+| S3             | Blob Storage             | Cloud Storage          |
+| IAM rôle       | identité managée         | compte de service      |
+| Secrets Manager| Key Vault                | Secret Manager         |
+| CloudTrail     | Activity Log             | Cloud Audit Logs       |
+| Lambda         | Functions                | Cloud Functions / Run  |
+# portable : conteneur, PostgreSQL, Terraform, OTel, Keycloak ; spécifique : identité, réseau, serverless, facturation</code></pre>
+<div class="exo"><span class="tag">Exercice 10.1</span><p>Un client exige « pas de dépendance à un fournisseur ». Réponse d'architecte ?</p><details><summary>Corrigé</summary><div class="sol">On distingue portable (briques standard, dossier de réversibilité avec formats et délais) et multi-cloud actif (deux déploiements, deux équipes : coût humain énorme). On promet le premier, on chiffre le second, on ne le fait que sur exigence réglementaire ou client explicite.</div></details></div>
+<div class="exo"><span class="tag">Exercice 10.2</span><p>Comment préparer le Solutions Architect Associate avec ce parcours ?</p><details><summary>Corrigé</summary><div class="sol">Les dix chapitres couvrent les domaines de l'examen ; chaque TP est un scénario d'examen vécu. Ajouter : lecture des FAQ des services clés, deux examens blancs chronométrés, et le sandbox pour vérifier chaque doute au lieu de mémoriser.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 10 — Dossier d&#x27;architecture et revue Well-Architected</span><ol><li>Architecture de référence de CrisisShield dessinée (C4 ou diagramme AWS) avec justification par pilier et coût à trois ans (calculatrice).</li><li>Revue Well-Architected : 18 questions, preuves, écarts, plan.</li><li>Version Azure et GCP du même schéma avec les trois estimations ; dossier de réversibilité d'une page ; plan de préparation certification.</li></ol><details><summary>Correction type</summary><div class="sol">Livrable : dossier de 8 pages relu par un pair, coût à 3 ans ≈ 6 k$/an année 1, écarts Well-Architected priorisés (ex. WAF absent sur l'ALB, sauvegardes non testées → corrigés), dossier de réversibilité avec formats (dump PostgreSQL, objets S3, Terraform) et délai (2 semaines), et un calendrier de 6 semaines vers l'examen.</div></details></div>
+</article>
+<div class="footnav"><a href="index.html">← Accueil du parcours</a><a href="cours-react.html">React →</a></div>
+</div>
+<script>
+(function(){ var root=document.documentElement; try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.querySelectorAll('pre').forEach(function(pre){ var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier';
+    b.addEventListener('click',function(){ var t=pre.querySelector('code').textContent; navigator.clipboard.writeText(t).then(function(){ b.textContent='Copié !'; setTimeout(function(){ b.textContent='Copier'; },1500); }); }); pre.appendChild(b); });
+})();
+</script>
+</body></html>
