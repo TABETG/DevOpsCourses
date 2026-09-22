@@ -399,6 +399,32 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 .fig.manga figcaption::before{content:"Manga — ";font-weight:700;color:var(--ink)}
 :root[data-theme="dark"] .fig.manga svg{opacity:.94}
 
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:124px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-top:1px dashed var(--line);padding:.05rem 0}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
 .pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
@@ -661,6 +687,7 @@ sudo -u alice whoami</code></pre>
   fig.querySelector('[data-stop]').addEventListener('click',stop); fig.querySelector('[data-form]').addEventListener('click',form); fig.querySelector('[data-reset]').addEventListener('click',reset);
 })();
 </script>
+<figure class="pipe" id="pipe-ps"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Quel processus mange la mémoire ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["ps -eo pid,comm,%mem", "sort -k3 -rn", "head -3"], "sep": " | ", "stages": [{"title": "ps -eo …", "lines": ["  PID COMMAND        %MEM", " 1042 java           41.2", " 2310 postgres       12.5", "  871 node            6.1", " 1930 nginx           0.8", " 2400 python3         3.4", "  512 sshd            0.2", " 2555 redis-server    1.9"], "why": "ps liste tous les processus avec les colonnes demandées : PID, commande, part de mémoire."}, {"title": "sort -k3 -rn", "lines": [" 1042 java           41.2", " 2310 postgres       12.5", "  871 node            6.1", " 2400 python3         3.4", " 2555 redis-server    1.9", " 1930 nginx           0.8", "  512 sshd            0.2"], "why": "sort trie sur la 3e colonne (-k3), en numérique (-n) et décroissant (-r). L'en-tête, non numérique, passe en bas."}, {"title": "head -3", "lines": [" 1042 java           41.2", " 2310 postgres       12.5", "  871 node            6.1"], "hl": [" 1042 java           41.2"], "why": "head garde les trois premières lignes : le suspect est en tête. On regarde ensuite ses logs avant de le tuer."}], "done": "java, PID 1042, 41 % de la mémoire"}</script><figcaption>Trois commandes, une question : qui consomme ? ps produit, sort ordonne, head coupe. Ensuite seulement on décide (logs, kill -15, jamais kill -9 d'abord).</figcaption></figure>
 
 <pre><code>ps aux | head              # tous les processus
 ps -ef --forest            # arbre parent/enfant
@@ -672,39 +699,7 @@ jobs ; fg ; bg             # gestion des jobs du shell</code></pre>
 <p>Un processus a un PID, un parent (PPID), un utilisateur, un état. Un processus <em>zombie</em> est terminé mais non « récolté » par son parent ; un <em>orphelin</em> est rattaché à PID 1. En conteneur, PID 1 est ton application : elle doit gérer SIGTERM correctement, sinon Docker attend 10 s puis tue.</p>
 
 <h3>2.4 Redirections, pipes, filtres<span class="badge tag-coeur">Par cœur</span></h3>
-<figure class="anim" id="anim-pipe">
-<div class="ctl"><button type="button" class="primary" data-play>Exécuter le pipeline</button><button type="button" data-reset>Réinitialiser</button><span class="st" data-st>prêt</span></div>
-<div class="log" data-cmd><span class="cmd">$ grep ERROR app.log | cut -d' ' -f3 | sort | uniq -c | sort -rn</span></div>
-<svg viewBox="0 0 480 190" role="img" aria-label="Animation : les lignes d'un log traversent grep, cut, sort et uniq">
-<g data-cols></g>
-</svg>
-<figcaption>Chaque commande lit ce que la précédente écrit et ne fait qu'une chose : filtrer, découper, trier, compter. Le résultat est une réponse à une question (« quel service produit le plus d'erreurs ? »), pas un fichier à lire.</figcaption>
-</figure>
-<script>
-(function(){
-  var fig=document.getElementById('anim-pipe'); if(!fig) return;
-  var lines=["10:01 INFO api demarrage","10:02 ERROR db connexion refusee","10:02 ERROR api timeout amont","10:03 WARN api lenteur","10:03 ERROR db connexion refusee","10:04 ERROR api timeout amont","10:04 INFO web ok","10:05 ERROR db connexion refusee"];
-  var stages=[["app.log",lines],["grep ERROR",lines.filter(function(l){return l.indexOf('ERROR')>=0;})],["cut -f3",null],["sort | uniq -c",null],["sort -rn",null]];
-  stages[2][1]=stages[1][1].map(function(l){return l.split(' ')[2];});
-  var counts={}; stages[2][1].forEach(function(v){counts[v]=(counts[v]||0)+1;});
-  stages[3][1]=Object.keys(counts).sort().map(function(k){return counts[k]+' '+k;});
-  stages[4][1]=stages[3][1].slice().sort(function(a,b){return parseInt(b)-parseInt(a);});
-  var g=fig.querySelector('[data-cols]'), st=fig.querySelector('[data-st]'), shown=1, timer=null;
-  function draw(){
-    var h='';
-    stages.forEach(function(s_,k){ var x=6+k*96, vis=k<shown;
-      h+='<rect x="'+x+'" y="6" width="90" height="176" rx="7" class="'+(vis?(k===shown-1?'soft':'box'):'box dim')+'"/><text x="'+(x+45)+'" y="22" text-anchor="middle" font-size="11" font-weight="700">'+s_[0]+'</text>';
-      if(vis) s_[1].slice(0,8).forEach(function(l,j){ var t=l.length>14?l.slice(0,13)+'…':l; h+='<text x="'+(x+5)+'" y="'+(40+j*17)+'" class="mono" font-size="8.5">'+t.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</text>'; });
-      else h+='<text x="'+(x+45)+'" y="100" text-anchor="middle" class="lbl">…</text>';
-      if(k<4) h+='<text x="'+(x+93)+'" y="100" text-anchor="middle" font-size="14">›</text>';
-    });
-    g.innerHTML=h; st.textContent = shown>=5?'terminé : db produit le plus d\u2019erreurs':('étape '+(shown-1)+' / 4');
-  }
-  fig.querySelector('[data-play]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); timer=setInterval(function(){ shown++; draw(); if(shown>=5) clearInterval(timer); }, 900); });
-  fig.querySelector('[data-reset]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); });
-  draw();
-})();
-</script>
+<figure class="pipe" id="pipe-log"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Quel service produit le plus d&#x27;erreurs ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["grep ERROR app.log", "cut -d' ' -f3", "sort", "uniq -c", "sort -rn"], "sep": " | ", "stages": [{"title": "app.log", "lines": ["10:01 INFO api demarrage", "10:02 ERROR db connexion refusee", "10:02 ERROR api timeout amont", "10:03 WARN api lenteur", "10:03 ERROR db connexion refusee", "10:04 ERROR api timeout amont", "10:04 INFO web ok", "10:05 ERROR db connexion refusee"], "why": "Le fichier brut : tout niveau, tout service."}, {"title": "grep ERROR", "lines": ["10:02 ERROR db connexion refusee", "10:02 ERROR api timeout amont", "10:03 ERROR db connexion refusee", "10:04 ERROR api timeout amont", "10:05 ERROR db connexion refusee"], "why": "grep ne garde que les lignes contenant ERROR."}, {"title": "cut -d' ' -f3", "lines": ["db", "api", "db", "api", "db"], "why": "cut découpe sur l'espace et garde le 3e champ : le nom du service."}, {"title": "sort", "lines": ["api", "api", "db", "db", "db"], "why": "Trié pour uniq."}, {"title": "uniq -c", "lines": ["      2 api", "      3 db"], "why": "Compte par service."}, {"title": "sort -rn", "lines": ["      3 db", "      2 api"], "hl": ["      3 db"], "why": "Classement décroissant : db en tête."}], "done": "db produit le plus d'erreurs"}</script><figcaption>Chaque commande lit ce que la précédente écrit et ne fait qu'une chose : filtrer, découper, trier, compter. Le résultat est une réponse à une question, pas un fichier à lire.</figcaption></figure>
 
 <pre><code>cmd > out.txt      # stdout vers fichier (écrase)
 cmd >> out.txt     # ajoute
@@ -851,6 +846,7 @@ curl -v https://example.com     # tout le dialogue, TLS compris
 curl -I ; curl -o /dev/null -w "%{http_code} %{time_total}\n" URL</code></pre>
 
 <h3>3.4 DNS<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-ss"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Qu&#x27;est-ce qui écoute sur cette machine, et sur quelle adresse ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["ss -tulpn", "grep LISTEN", "awk '{print $4}'", "sort"], "sep": " | ", "stages": [{"title": "ss -tulpn", "lines": ["Netid State  Local Address:Port  Process", "tcp   LISTEN 0.0.0.0:22          sshd", "tcp   LISTEN 127.0.0.1:5432      postgres", "tcp   LISTEN 0.0.0.0:8080        java", "tcp   LISTEN 0.0.0.0:443         nginx", "udp   UNCONN 0.0.0.0:68          dhclient", "tcp   ESTAB  10.0.1.5:22         sshd", "tcp   LISTEN 127.0.0.1:6379      redis"], "why": "ss montre les sockets : TCP et UDP (-tu), en écoute (-l), avec le processus (-p) et sans résolution de noms (-n)."}, {"title": "grep LISTEN", "lines": ["tcp   LISTEN 0.0.0.0:22          sshd", "tcp   LISTEN 127.0.0.1:5432      postgres", "tcp   LISTEN 0.0.0.0:8080        java", "tcp   LISTEN 0.0.0.0:443         nginx", "tcp   LISTEN 127.0.0.1:6379      redis"], "why": "grep ne garde que les lignes qui contiennent LISTEN : les connexions établies et l'UDP disparaissent."}, {"title": "awk '{print $4}'", "lines": ["0.0.0.0:22", "127.0.0.1:5432", "0.0.0.0:8080", "0.0.0.0:443", "127.0.0.1:6379"], "why": "awk découpe chaque ligne en colonnes séparées par des blancs et n'imprime que la 4e : adresse:port."}, {"title": "sort", "lines": ["0.0.0.0:22", "0.0.0.0:443", "0.0.0.0:8080", "127.0.0.1:5432", "127.0.0.1:6379"], "hl": ["0.0.0.0:8080"], "why": "Trié, on lit d'un coup : 0.0.0.0 = ouvert à tout le monde, 127.0.0.1 = local seulement. 8080 exposé sur toutes les interfaces mérite une question."}], "done": "5 ports en écoute, dont 8080 ouvert sur toutes les interfaces"}</script><figcaption>Le port 5432 écoute en 127.0.0.1 : inaccessible de l'extérieur, c'est voulu. Le 8080 en 0.0.0.0 devrait être derrière le reverse proxy. Cette chaîne est le premier réflexe d'un audit.</figcaption></figure>
 <p>Le DNS traduit un nom en adresse. La résolution est hiérarchique : résolveur local (cache) → serveurs racine → TLD (<code>.com</code>) → serveur autoritaire du domaine. Chaque réponse a un TTL (durée de cache).</p>
 <div class="tablewrap"><table>
 <tr><th>Type</th><th>Contenu</th></tr>
@@ -1034,6 +1030,7 @@ done</code></pre>
 <p>Règles : toujours citer les variables (<code>"$var"</code>), <code>[[ ]]</code> plutôt que <code>[ ]</code>, <code>$( )</code> plutôt que les backticks, des fonctions courtes, des codes de retour explicites. Passe tout script dans <code>shellcheck</code> : <code>docker run --rm -v "$PWD:/mnt" koalaman/shellcheck deploy.sh</code>.</p>
 
 <h3>4.2 Structures utiles<span class="badge tag-important">Important</span></h3>
+<figure class="pipe" id="pipe-http"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Quels codes HTTP renvoie l&#x27;API, et combien de fois ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["awk '{print $9}' access.log", "sort", "uniq -c", "sort -rn"], "sep": " | ", "stages": [{"title": "awk '{print $9}'", "lines": ["200", "401", "200", "500", "401", "200", "500", "404", "401"], "why": "Dans un access.log nginx, le code de statut est la 9e colonne : awk l'extrait ligne par ligne."}, {"title": "sort", "lines": ["200", "200", "200", "401", "401", "401", "404", "500", "500"], "why": "uniq ne compte que des lignes consécutives identiques : il faut trier avant, sinon 401 et 401 séparés seraient comptés deux fois."}, {"title": "uniq -c", "lines": ["      3 200", "      3 401", "      1 404", "      2 500"], "why": "uniq -c fusionne les doublons et met le compte devant."}, {"title": "sort -rn", "lines": ["      3 200", "      3 401", "      2 500", "      1 404"], "hl": ["      3 200"], "why": "Tri numérique décroissant sur le compte : le code le plus fréquent en tête. Trois 401 sur /login et deux 500 sur /zones : deux enquêtes à ouvrir."}], "done": "200 ×3, 401 ×3, 500 ×2, 404 ×1"}</script><figcaption>sort | uniq -c | sort -rn est le motif universel « compter et classer ». Il vaut pour les codes HTTP, les adresses IP, les commandes Git, les erreurs de logs.</figcaption></figure>
 <pre><code># Tableaux
 servers=(web1 web2 web3)
 for s in "${servers[@]}"; do ssh "$s" uptime; done
@@ -1062,6 +1059,7 @@ docker inspect app | jq -r '.[0].NetworkSettings.IPAddress'
 kubectl get pods -o json | jq -r '.items[] | select(.status.phase!="Running") | .metadata.name'</code></pre>
 
 <h3>4.4 Python pour l'automatisation<span class="badge tag-important">Important</span></h3>
+<figure class="pipe" id="pipe-jq"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Combien d&#x27;incidents prioritaires par zone, depuis l&#x27;API ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["curl -s http://api:8080/api/incidents", "jq -c '.[]'", "jq -c 'select(.priority==\"P1\")'", "jq -r '.zone'", "sort | uniq -c"], "sep": " | ", "stages": [{"title": "curl -s", "lines": ["[", " {\"id\":1,\"zone\":\"nord\",…},", " {\"id\":2,\"zone\":\"sud\",…},", " …", "]"], "why": "curl récupère le JSON ; -s tait la barre de progression pour ne laisser que les données dans le pipe."}, {"title": "jq '.[]'", "lines": ["{\"id\":1,\"zone\":\"nord\",\"priority\":\"P1\",\"status\":\"open\"}", "{\"id\":2,\"zone\":\"sud\",\"priority\":\"P3\",\"status\":\"closed\"}", "{\"id\":3,\"zone\":\"nord\",\"priority\":\"P1\",\"status\":\"open\"}", "{\"id\":4,\"zone\":\"est\",\"priority\":\"P2\",\"status\":\"open\"}", "{\"id\":5,\"zone\":\"est\",\"priority\":\"P1\",\"status\":\"closed\"}", "{\"id\":6,\"zone\":\"nord\",\"priority\":\"P2\",\"status\":\"open\"}", "{\"id\":7,\"zone\":\"sud\",\"priority\":\"P1\",\"status\":\"open\"}"], "why": "jq déplie le tableau : un objet par ligne (-c compact), la matière première des étapes suivantes."}, {"title": "select(P1)", "lines": ["{\"id\":1,\"zone\":\"nord\",\"priority\":\"P1\",\"status\":\"open\"}", "{\"id\":3,\"zone\":\"nord\",\"priority\":\"P1\",\"status\":\"open\"}", "{\"id\":5,\"zone\":\"est\",\"priority\":\"P1\",\"status\":\"closed\"}", "{\"id\":7,\"zone\":\"sud\",\"priority\":\"P1\",\"status\":\"open\"}"], "why": "select garde les objets dont la priorité est P1 : un filtre, comme grep, mais qui comprend le JSON."}, {"title": "jq -r '.zone'", "lines": ["nord", "nord", "est", "sud"], "why": "On ne garde que le champ zone, en texte brut (-r) : à partir d'ici on est revenu dans le monde des lignes."}, {"title": "sort | uniq -c", "lines": ["      1 est", "      2 nord", "      1 sud"], "hl": ["      2 nord"], "why": "Le motif compter-et-classer, encore lui. La zone nord concentre les incidents prioritaires."}], "done": "nord : 2 incidents P1"}</script><figcaption>jq est le awk du JSON : on filtre, on extrait, puis on revient aux outils texte. Au-delà de trois étapes ou d'une logique métier, on passe à Python (requests + collections.Counter).</figcaption></figure>
 <p>Ce dont un DevOps se sert vraiment : <code>argparse</code>, <code>subprocess</code>, <code>pathlib</code>, <code>json</code>, <code>logging</code>, <code>requests</code> (ou <code>httpx</code>), <code>pyyaml</code>, et des tests avec <code>pytest</code>.</p>
 <pre><code>#!/usr/bin/env python3
 """Vérifie la santé d'une liste de services et sort en erreur si l'un tombe."""
@@ -1232,6 +1230,7 @@ git restore fichier ; git restore --staged fichier
 git stash ; git stash pop</code></pre>
 
 <h3>5.2 Branches, merge, rebase<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="pipe" id="pipe-git"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Qui commite le plus sur ce dépôt depuis un mois ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["git log --since='1 month' --format=%an", "sort", "uniq -c", "sort -rn"], "sep": " | ", "stages": [{"title": "git log --format=%an", "lines": ["Kaï", "Mika", "Kaï", "Kaï", "Sam", "Mika", "Kaï", "Mika"], "why": "--format=%an n'imprime que le nom de l'auteur, un par commit, dans l'ordre chronologique inverse."}, {"title": "sort", "lines": ["Kaï", "Kaï", "Kaï", "Kaï", "Mika", "Mika", "Mika", "Sam"], "why": "Trié pour que uniq puisse fusionner les doublons consécutifs."}, {"title": "uniq -c", "lines": ["      4 Kaï", "      3 Mika", "      1 Sam"], "why": "Un compte par auteur."}, {"title": "sort -rn", "lines": ["      4 Kaï", "      3 Mika", "      1 Sam"], "hl": ["      4 Kaï"], "why": "Classement. git shortlog -sn fait la même chose en une commande : connaître le pipeline permet de comprendre le raccourci."}], "done": "Kaï : 4 commits, Mika : 3, Sam : 1"}</script><figcaption>Un dépôt Git est une base de données : git log avec --format produit des lignes, et les outils texte font le reste. Même motif pour les fichiers les plus modifiés (--name-only) ou les commits par jour (--format=%ad).</figcaption></figure>
 <pre><code>git switch -c feature/pagination
 git switch main && git pull
 git merge feature/pagination        # crée un commit de merge (ou fast-forward)
@@ -1366,6 +1365,7 @@ EXPLAIN ANALYZE SELECT ... ;          -- lire le plan : Seq Scan sur une grosse 
 </ul>
 
 <h3>6.2 NoSQL : quand et lequel<span class="badge tag-contexte">Bon à savoir</span></h3>
+<figure class="pipe" id="pipe-sql"><div class="ctl"><button type="button" class="primary" data-play>Exécuter pas à pas</button><button type="button" data-next>Étape suivante</button><button type="button" data-reset>Réinitialiser</button><span class="st"></span></div><p class="q">Dans quelles zones y a-t-il plus d&#x27;un incident ouvert ?</p><div class="cmd"></div><div class="cols"></div><p class="expl"></p><script type="application/json">{"cmd": ["FROM incidents", "WHERE status = 'open'", "GROUP BY zone → COUNT(*)", "HAVING COUNT(*) > 1", "ORDER BY n DESC", "LIMIT 1"], "sep": "  →  ", "stages": [{"title": "FROM incidents", "lines": ["1  nord  open    P1", "2  sud   closed  P3", "3  nord  open    P1", "4  est   open    P2", "5  est   closed  P1", "6  nord  open    P2", "7  sud   open    P1", "8  est   open    P3"], "why": "Le moteur part de la table entière (ou de l'index, s'il y en a un sur status). C'est l'ordre logique d'évaluation, pas l'ordre d'écriture."}, {"title": "WHERE status='open'", "lines": ["1  nord  open    P1", "3  nord  open    P1", "4  est   open    P2", "6  nord  open    P2", "7  sud   open    P1", "8  est   open    P3"], "why": "WHERE filtre les lignes avant tout regroupement : c'est ici qu'un index sur status évite le Seq Scan."}, {"title": "GROUP BY zone", "lines": ["nord  3", "est   2", "sud   1"], "why": "Les lignes sont regroupées par zone et chaque groupe est compté : COUNT(*) devient une colonne n."}, {"title": "HAVING n > 1", "lines": ["nord  3", "est   2"], "why": "HAVING filtre les groupes, après l'agrégation ; WHERE ne peut pas, il ne connaît pas encore les comptes."}, {"title": "ORDER BY n DESC", "lines": ["nord  3", "est   2"], "why": "Le tri vient après : sur trois lignes, il ne coûte rien ; sur un million, il justifie un index."}, {"title": "LIMIT 1", "lines": ["nord  3"], "hl": ["nord  3"], "why": "LIMIT est appliqué en dernier. Résultat : la zone nord, trois incidents ouverts."}], "done": "nord, 3 incidents ouverts"}</script><figcaption>SELECT s'écrit en premier mais s'exécute presque en dernier : FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT. Comprendre cet ordre explique pourquoi on ne peut pas mettre un alias de SELECT dans WHERE, et où un index agit.</figcaption></figure>
 <div class="tablewrap"><table>
 <tr><th>Famille</th><th>Exemples</th><th>Bon pour</th><th>Piège</th></tr>
 <tr><td>Clé-valeur</td><td>Redis, DynamoDB</td><td>Cache, sessions, compteurs, files simples</td><td>Redis en mémoire : dimensionner, persister si nécessaire</td></tr>
@@ -1708,6 +1708,33 @@ docker exec -it pg psql -U postgres</code></pre>
     b.addEventListener('click',function(){ var on=!b.classList.contains('on'); b.classList.toggle('on',on); b.textContent=on?'Masquer':'Expliquer'; explain(pre,on); try{ localStorage.setItem(KEY,on?'1':'0'); }catch(e){} });
     pre.appendChild(b);
     if(pref){ b.classList.add('on'); b.textContent='Masquer'; explain(pre,true); }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  document.querySelectorAll('figure.pipe').forEach(function(fig){
+    var data=JSON.parse(fig.querySelector('script[type="application/json"]').textContent);
+    var cols=fig.querySelector('.cols'), st=fig.querySelector('.st'), cmd=fig.querySelector('.cmd'), expl=fig.querySelector('.expl');
+    var shown=1, timer=null, N=data.stages.length;
+    function draw(){
+      cols.innerHTML=data.stages.map(function(s,k){
+        var vis=k<shown, cur=k===shown-1;
+        var body='';
+        if(vis){ body = s.lines.length ? '<ol>'+s.lines.slice(0,10).map(function(l){ var hl=(s.hl||[]).indexOf(l)>=0; return '<li'+(hl?' class="hl"':'')+' title="'+esc(l)+'">'+esc(l)+'</li>'; }).join('')+(s.lines.length>10?'<li>… ('+(s.lines.length-10)+' de plus)</li>':'')+'</ol><div class="cnt">'+s.lines.length+' ligne'+(s.lines.length>1?'s':'')+'</div>' : '<div class="empty">(vide)</div>'; }
+        else body='<div class="empty">…</div>';
+        return '<div class="col'+(vis?' on':'')+(cur?' cur':'')+'"><span class="n">'+k+'</span><h5 title="'+esc(s.title)+'">'+esc(s.title)+'</h5>'+body+'</div>';
+      }).join('');
+      var parts=data.cmd; cmd.innerHTML=parts.map(function(pt,k){ return (k===shown-1&&k>0)?'<b>'+esc(pt)+'</b>':esc(pt); }).join(data.sep||' | ');
+      st.textContent = shown>=N ? ('terminé : '+data.done) : (shown===1?'entrée':'étape '+(shown-1)+' / '+(N-1));
+      expl.textContent = data.stages[shown-1].why||'';
+    }
+    fig.querySelector('[data-play]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); timer=setInterval(function(){ shown++; draw(); if(shown>=N) clearInterval(timer); }, 1100); });
+    fig.querySelector('[data-next]').addEventListener('click',function(){ clearInterval(timer); if(shown<N){ shown++; draw(); } });
+    fig.querySelector('[data-reset]').addEventListener('click',function(){ clearInterval(timer); shown=1; draw(); });
+    draw();
   });
 })();
 </script>
