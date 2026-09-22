@@ -784,6 +784,7 @@ lsof -p 1234           # fichiers ouverts par un processus</code></pre>
 <li>Trouve avec <code>ss -tulpn</code> quel processus écoute sur le port 80, puis arrête-le avec SIGTERM et vérifie qu'il est parti.</li>
 </ol>
 <p>Livrable : un fichier <code>tp2.md</code> avec chaque commande et son résultat, plus une phrase expliquant pourquoi systemd ne tourne pas dans un conteneur.</p>
+<p><strong>Correction type :</strong> <a href="corrections/tp02-un-serveur-web-sous-ubuntu-a-la-main.html">chaque commande, son résultat attendu et pourquoi</a>.</p>
 </div>
 <label class="check"><input type="checkbox" data-ch="c2"> Chapitre 2 terminé</label>
 </article>
@@ -977,7 +978,8 @@ services:
 <li>Depuis le conteneur proxy (<code>docker compose exec proxy sh</code>), montre que <code>app1</code> se résout par DNS (<code>getent hosts app1</code>) et que le port répond (<code>nc -zv app1 5678</code> ; installe nc avec <code>apt update && apt install -y netcat-openbsd</code> si absent).</li>
 </ol>
 <p>Livrable : le dossier <code>tp3</code> versionné (voir chapitre 5), sans les clés privées (fichier <code>.gitignore</code>).</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp03-reverse-proxy-tls-devant-deux-applications.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c3"> Chapitre 3 terminé</label>
 </article>
 
@@ -1162,7 +1164,8 @@ retry curl -sf http://localhost:8080/health</code></pre></div></details></div>
 <li>Fais tourner les deux depuis une image <code>python:3.12-slim</code> avec le dossier monté en volume, et lance la sauvegarde toutes les minutes avec cron dans un conteneur (image <code>alpine</code>, <code>crond -f</code>) pour observer la rotation.</li>
 </ol>
 <p>Livrable : dossier <code>tp4</code> avec les deux scripts, les tests et un <code>README.md</code> décrivant les commandes Docker exactes.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp04-outil-de-sauvegarde-et-de-verification.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c4"> Chapitre 4 terminé</label>
 </article>
 
@@ -1299,7 +1302,8 @@ git bisect start ; git bisect bad ; git bisect good v1.2   # trouver le commit f
 <li>Tague <code>v0.1.0</code>.</li>
 </ol>
 <p>Livrable : l'URL du dépôt, historique lisible avec <code>git log --oneline --graph</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp05-un-depot-de-labo-propre-et-protege.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c5"> Chapitre 5 terminé</label>
 </article>
 
@@ -1426,7 +1430,8 @@ docker exec -it pg psql -U postgres</code></pre>
 <li>Vérifie l'arrêt propre : <code>docker stop</code> doit terminer en moins de 10 s avec un log de fermeture (<code>server.shutdown=graceful</code>).</li>
 </ol>
 <p>Livrable : <code>tp6/</code> avec les scripts SQL, le compose de réplication, les temps mesurés, et le tableau d'audit versionné dans le dépôt CrisisShield.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp06-exploiter-postgresql-et-remettre-crisisshield-aux-normes.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c6"> Chapitre 6 terminé</label>
 </article>
 

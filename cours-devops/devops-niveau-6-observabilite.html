@@ -534,7 +534,8 @@ sum by (app) (rate({namespace="crisisshield"} | json | level="ERROR" [5m]))     
 <li>Bonus : la même collecte vers OpenSearch (Helm) avec Fluent Bit, un index par jour et ILM ; compare la mémoire consommée par les deux piles.</li>
 </ol>
 <p>Livrable : configuration Loki/Alloy dans le dépôt de config (GitOps), dashboard exporté en JSON, mesures dans <code>tp32.md</code>, <code>docs/cours-logs.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp32-logs-structures-de-bout-en-bout.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c32"> Chapitre 32 terminé</label>
 </article>
 
@@ -644,7 +645,8 @@ spec:
 <li>Rétention longue : ajoute Thanos sidecar + store sur MinIO (ou Mimir), vérifie une requête sur 30 jours (simule en réduisant la rétention locale à 2 h).</li>
 </ol>
 <p>Livrable : monitors, règles, dashboards JSON dans le dépôt de config, analyse de charge dans <code>tp33.md</code>, <code>docs/cours-metriques.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp33-metriques-red-use-et-metier-sur-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c33"> Chapitre 33 terminé</label>
 </article>
 
@@ -749,7 +751,8 @@ public void escalate(@SpanAttribute("incident.id") String id, Priority to) {
 <li>Remplace l'agent par Micrometer Tracing natif dans l'API (dépendance et configuration OTLP), compare les spans obtenus et la charge JVM. Décide ce que tu gardes.</li>
 </ol>
 <p>Livrable : manifests OTel/Tempo dans le dépôt de config, captures de la corrélation, mesures dans <code>tp34.md</code>, <code>docs/cours-traces.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp34-trois-signaux-correles-sur-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c34"> Chapitre 34 terminé</label>
 </article>
 
@@ -860,7 +863,8 @@ receivers:
 <li>Revue : exporte l'historique des alertes de tes TP (Alertmanager API) et classe-les : action prise, bruit, à supprimer.</li>
 </ol>
 <p>Livrable : définitions de SLO, règles, configuration Alertmanager, runbooks dans le dépôt de config, preuves de test dans <code>tp35.md</code>, <code>docs/cours-slo-alerting.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp35-slo-et-alerting-de-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c35"> Chapitre 35 terminé</label>
 </article>
 
@@ -961,7 +965,8 @@ Le rollback de code ne suffit pas quand le schéma a changé ; la compatibilité
 <li>Bilan : quelles alertes ont manqué, quels runbooks étaient faux, quel accès n'était pas prêt. Corrige dans le dépôt de config.</li>
 </ol>
 <p>Livrable : <code>docs/incidents/politique.md</code>, <code>docs/incidents/postmortem-*.md</code>, page de statut, mesures dans <code>tp36.md</code>, <code>docs/cours-incidents.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp36-game-day-sur-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c36"> Chapitre 36 terminé</label>
 </article>
 

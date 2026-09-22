@@ -714,7 +714,8 @@ output "arns" { value = { for k, b in aws_s3_bucket.b : k => b.arn } }</code></p
 <li><strong>CI</strong> : pipeline fmt, validate, Trivy config (fais-le échouer avec un bucket public, corrige), plan en artefact, apply manuel avec <code>resource_group</code>. Écris deux tests <code>.tftest.hcl</code> sur le module network.</li>
 <li>Langage : réécris le module réseau avec <code>dynamic</code> pour les règles de security group, des variables typées <code>object</code> avec <code>optional</code> et <code>validation</code>, une <code>precondition</code>, un bloc <code>check</code>, et un alias de provider pour une seconde région LocalStack (deux conteneurs LocalStack ou deux régions du même). <code>terraform-docs</code> génère le README du module.</li><li>Débogage : provoque et répare chacun des cas du tableau 16.8 que LocalStack permet (verrou orphelin, cycle de security groups, remplacement forcé, dérive de tags avec <code>ignore_changes</code>, lockfile multi-plateforme entre Git Bash et le conteneur CI). Note pour chacun la ligne du plan qui t'a mis sur la piste.</li><li>Tests : trois <code>.tftest.hcl</code> avec <code>mock_provider</code> (sans rien créer) sur le module réseau, plus un <code>terraform test</code> réel contre LocalStack en CI ; un <code>removed</code> block pour sortir une ressource du state sans la détruire.</li></ol>
 <p>Livrable : <code>infra/</code> dans devops-lab, pipeline vert, <code>tp16.md</code> avec le déroulé de la réparation du verrou.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp16-terraform-contre-localstack-et-docker.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c16"> Chapitre 16 terminé</label>
 </article>
 
@@ -959,7 +960,8 @@ ssh_args           = -o ControlMaster=auto -o ControlPersist=60s</code></pre>
 <li>Opération ad hoc : un playbook <code>rotate-secret.yml</code> qui change le mot de passe de la base dans le vault, le redéploie sur <code>db1</code> puis sur les <code>web</code>, dans cet ordre, avec <code>serial: 1</code>.</li>
 <li>Flux et stratégies : réécris le déploiement de l'API avec <code>serial</code>, <code>block/rescue/always</code>, retrait et remise dans un « load balancer » simulé (le proxy nginx du TP 3, piloté par un endpoint ou un fichier), <code>until</code> sur la readiness, et un rollback. Provoque un échec sur un hôte et vérifie l'arrêt global et le retour arrière. Compare la durée en <code>strategy: linear</code> et <code>free</code> avec <code>forks</code> à 5 puis à 50 et le pipelining.</li><li>Variables : reproduis l'exercice 17.4 en créant volontairement le conflit, tranche avec <code>ansible-inventory --host</code>, puis range les variables selon la règle (defaults du rôle, inventaire, extra-vars ponctuels). Deux identités de vault (<code>dev</code>, <code>prod</code>) et une valeur chiffrée inline.</li><li>Erreurs : reproduis cinq lignes du tableau 17.8 (UNREACHABLE, Python absent, become, changed permanent, secret dans les logs) et corrige chacune ; <code>ansible-lint</code> profil <code>production</code> vert.</li></ol>
 <p>Livrable : <code>ansible/</code> dans devops-lab, sortie Molecule dans <code>tp17.md</code>, et <code>docs/cours-ansible.md</code> dans CrisisShield expliquant comment un hôte est préparé pour recevoir l'application.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp17-des-serveurs-en-conteneurs-configures-par-ansible.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c17"> Chapitre 17 terminé</label>
 </article>
 
@@ -1031,7 +1033,7 @@ build {
   config.vm.provision "ansible" do |a| a.playbook = "playbooks/web.yml" end
 end</code></pre>
 
-<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Talos Linux</span><p>Un système d'exploitation conçu uniquement pour Kubernetes : immuable, sans SSH ni shell, entièrement piloté par API (<code>talosctl</code>) et déclaré en YAML ; nœuds jetables, mises à jour atomiques, surface d'attaque minimale.</p><p><strong>Pourquoi ça différencie :</strong> L'immutabilité poussée au bout ; c'est ce que choisissent les plateformes sur site et edge exigeantes, et un sujet qui impressionne en entretien sécurité.</p><p><strong>À essayer en une heure :</strong> <code>talosctl cluster create</code> (image <code>ghcr.io/siderolabs/talosctl</code>) crée un cluster Talos dans Docker ; compare avec kind et essaie d'obtenir un shell sur un nœud.</p></div>
+<div class="niche"><span class="tag"><span class="badge badge-niche">Techno de niche</span>Pour sortir du lot — Talos Linux (la distribution retenue pour le cluster du homelab, chapitre 7.5)</span><p>Un système d'exploitation conçu uniquement pour Kubernetes : immuable, sans SSH ni shell, entièrement piloté par API (<code>talosctl</code>) et déclaré en YAML ; nœuds jetables, mises à jour atomiques, surface d'attaque minimale.</p><p><strong>Pourquoi ça différencie :</strong> L'immutabilité poussée au bout ; c'est ce que choisissent les plateformes sur site et edge exigeantes, et un sujet qui impressionne en entretien sécurité.</p><p><strong>À essayer en une heure :</strong> <code>talosctl cluster create</code> (image <code>ghcr.io/siderolabs/talosctl</code>) crée un cluster Talos dans Docker ; compare avec kind et essaie d'obtenir un shell sur un nœud.</p></div>
 
 <div class="entretien"><strong>En entretien</strong> — « À quoi sert Packer si on a Docker ? » Docker fait tourner des applications ; Packer fabrique les machines qui font tourner Docker (nœuds Kubernetes, agents CI, bastions) et tout ce qui n'est pas conteneurisable. Golden image = démarrage rapide, conformité prouvable, patching par remplacement. Et la chaîne : Ansible dans Packer, AMI consommée par Terraform.</div>
 
@@ -1048,7 +1050,8 @@ end</code></pre>
 <li>Si tu as un compte AWS et que tu acceptes le coût de quelques centimes : même chaîne avec <code>amazon-ebs</code> vers une AMI, sinon documente le fichier <code>.pkr.hcl</code> AMI sans l'exécuter.</li>
 </ol>
 <p>Livrable : <code>packer/</code>, pipeline planifié, <code>tp18.md</code> avec le récapitulatif Ansible montrant zéro <code>changed</code> sur <code>common</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp18-chaine-packer-terraform-ansible-en-local.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c18"> Chapitre 18 terminé</label>
 </article>
 
@@ -1126,7 +1129,8 @@ crisisshield-config/     (dépôt de configuration : l'état désiré)
 <li>Chiffre le fichier de secrets du dépôt de config avec SOPS + age (image <code>ghcr.io/getsops/sops</code>), et fais-le déchiffrer par l'agent.</li>
 </ol>
 <p>Livrable : dépôt de config, <code>reconcile.sh</code>, pipeline de dérive, et <code>docs/cours-gitops.md</code> dans CrisisShield : le flux complet code → image → config → réconciliation, et pourquoi ce modèle est plus sûr.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp19-detection-de-derive-et-depot-de-configuration.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c19"> Chapitre 19 terminé</label>
 </article>
 

@@ -666,7 +666,8 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 <li>Tue un nœud (<code>docker stop crisisshield-worker2</code>), observe <code>kubectl get nodes</code> passer NotReady après ~40 s, puis redémarre-le.</li>
 <li>Débogage méthodique : construis huit scénarios cassés sur CrisisShield (mauvais sélecteur de Service, <code>targetPort</code> faux, image inexistante, liveness sur la base, quota du namespace saturé, NetworkPolicy qui bloque le DNS, PVC sans StorageClass, PDB qui empêche un drain) sous forme de manifests <code>k8s/kata/casse-N.yaml</code> ; pour chacun, écris le diagnostic en trois commandes maximum et la correction. C'est ton kata de révision CKA.</li><li>Administration : sur kind, prends un snapshot etcd (depuis le conteneur du control plane), déploie un objet, restaure le snapshot et constate la disparition de l'objet ; vérifie l'expiration des certificats du control plane ; installe k9s, stern et cinq plugins krew dans ton image outillée ; passe le cluster d'une version mineure à la suivante avec Pluto en amont.</li><li>OpenShift : ouvre un <strong>Red Hat Developer Sandbox</strong> (OpenShift gratuit en ligne, 30 jours, rien à installer) ; <code>oc login</code> depuis ton conteneur outillé ; déploie l'API CrisisShield avec <code>oc new-app</code> depuis ton registre, expose une Route edge puis reencrypt, constate l'échec de ton image si elle suppose un UID fixe, corrige le Dockerfile selon la section 25.7 et vérifie avec <code>docker run --user 1000680000:0</code> avant de pousser ; active le user workload monitoring et branche ton ServiceMonitor ; installe l'opérateur GitOps et fais synchroniser ton dépôt de config ; note les différences avec kind dans <code>tp25.md</code>. Sans sandbox : convertis tes manifests (Ingress → Route, PSA → SCC) et valide-les avec <code>oc</code> en mode <code>--dry-run=client</code>.</li></ol>
 <p>Livrable : <code>k8s/tools/</code>, <code>kind-config.yaml</code>, <code>tp25.md</code> avec la cartographie des composants observés.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp25-un-cluster-a-trois-n-uds-dans-docker.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c25"> Chapitre 25 terminé</label>
 </article>
 
@@ -971,7 +972,8 @@ spec:
 <li>Casse : mets une liveness qui vérifie la base, tue la base, observe le CrashLoopBackOff de toute l'API, comprends, corrige.</li>
 <li>Manifests avancés : ajoute à l'API un init container de migration Flyway, un sidecar natif de collecte de logs, la Downward API pour <code>POD_NAME</code> dans les logs, un jeton de ServiceAccount projeté à audience <code>vault</code>, <code>ndots: 2</code>, <code>enableServiceLinks: false</code> ; un Job indexé de traitement par lots avec <code>podFailurePolicy</code> ; un canary manuel à deux Deployments derrière le même Service, mesuré avec une boucle curl. Vérifie la classe QoS de chaque Pod (<code>get pod -o jsonpath='{.status.qosClass}'</code>) et corrige pour qu'aucun ne soit BestEffort.</li><li>Entretien : réponds aux vingt questions de la section 26.8 à voix haute, chronométrées à 45 secondes chacune ; enregistre-toi ; note celles où tu as hésité et reprends la section correspondante.</li></ol>
 <p>Livrable : <code>k8s/base/</code> dans CrisisShield, preuves dans <code>tp26.md</code>, et <code>docs/cours-kubernetes-objets.md</code> avec chaque objet expliqué et les deux réponses d'entretien.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp26-crisisshield-sur-le-cluster-en-manifests-bruts.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c26"> Chapitre 26 terminé</label>
 </article>
 
@@ -1081,7 +1083,8 @@ spec: {schedule: "0 0 2 * * *", cluster: {name: db}}</code></pre>
 <li>Kafka en bonus : installe Strimzi, un cluster Kafka à 3 brokers en mode KRaft, et un topic <code>incidents</code> par CRD <code>KafkaTopic</code>. Fais publier un événement par l'API (tu as Kafka dans ta stack).</li>
 </ol>
 <p>Livrable : <code>k8s/database/</code>, temps de bascule mesurés et procédure de restauration dans <code>tp27.md</code>, <code>docs/cours-stateful.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp27-la-base-de-crisisshield-en-haute-disponibilite.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c27"> Chapitre 27 terminé</label>
 </article>
 
@@ -1225,7 +1228,8 @@ commonLabels: {environment: prod}</code></pre>
 <li>Décide et documente ce que tu gardes pour la suite (le TP 29 utilisera ArgoCD avec l'un des deux).</li>
 </ol>
 <p>Livrable : <code>charts/</code>, <code>k8s/overlays/</code>, pipeline, <code>docs/cours-helm-kustomize.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp28-chart-et-overlays-pour-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c28"> Chapitre 28 terminé</label>
 </article>
 
@@ -1340,7 +1344,8 @@ spec:
 <li>Sync waves : la migration Flyway en <code>PreSync</code> hook, un smoke test en <code>PostSync</code> ; provoque l'échec du PostSync et regarde l'état de l'Application.</li>
 </ol>
 <p>Livrable : dépôt de config, manifests ArgoCD, pipeline modifié, <code>tp29.md</code> avec captures des états, <code>docs/cours-gitops-argocd.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp29-crisisshield-en-gitops-complet.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c29"> Chapitre 29 terminé</label>
 </article>
 
@@ -1440,7 +1445,8 @@ spec:
 <li>Rédige un avis d'une demi-page : CrisisShield a-t-il besoin d'un mesh ? Avec quels critères et quelle alternative.</li>
 </ol>
 <p>Livrable : manifests mesh, captures Hubble/Kiali, avis dans <code>tp30.md</code>, <code>docs/cours-service-mesh.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp30-mtls-et-canary-avec-un-mesh.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c30"> Chapitre 30 terminé</label>
 </article>
 
@@ -1545,7 +1551,8 @@ priorityClassName: critical</code></pre>
 <li>Sans compte cloud, écris le NodePool Karpenter de la production CrisisShield (Spot + ARM, limites) et explique en dix lignes ce qu'il ferait sur EKS. Avec compte : déploie EKS Auto Mode ou Karpenter sur un cluster de test pendant une heure (coût ≈ 0,20 €), observe la consolidation, détruis.</li>
 </ol>
 <p>Livrable : manifests HPA/VPA/KEDA/scheduling, résultats k6 et graphiques, <code>tp31.md</code>, <code>docs/cours-autoscaling.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp31-charge-scaling-et-capacite.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c31"> Chapitre 31 terminé</label>
 </article>
 

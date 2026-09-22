@@ -499,7 +499,8 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 </ol>
 <p>Alternative si ta machine manque de mémoire : utilise gitlab.com avec un runner local enregistré dessus (les runners partagés suffisent aussi pour ce niveau).</p>
 <p>Livrable : <code>infra/gitlab/compose.yaml</code> dans devops-lab, et <code>tp11.md</code> avec la capture du premier pipeline vert.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp11-un-runner-gitlab-dans-docker.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c11"> Chapitre 11 terminé</label>
 </article>
 
@@ -729,7 +730,8 @@ jobs:
 <li>Bonus : un <code>Jenkinsfile</code> équivalent, et lance Jenkins dans Docker (<code>jenkins/jenkins:lts</code>) pour l'exécuter une fois.</li>
 </ol>
 <p>Livrable : les trois fichiers de pipeline dans CrisisShield, et <code>docs/cours-ci-cd.md</code> : ce qui a été fait, les choix (Kaniko, needs, keyless), et la réponse d'entretien.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp12-le-pipeline-complet-de-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c12"> Chapitre 12 terminé</label>
 </article>
 
@@ -851,7 +853,8 @@ zap:
 <li>Introduis volontairement une injection SQL dans une méthode, constate quelle analyse la détecte, corrige.</li>
 </ol>
 <p>Livrable : pipeline enrichi, <code>docs/cours-qualite-securite.md</code> avec tableau des analyses, seuils choisis et justification, et la démonstration de la détection de l'injection.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp13-quality-gate-bloquant-sur-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c13"> Chapitre 13 terminé</label>
 </article>
 
@@ -927,7 +930,8 @@ zap:
 <li>Applique l'enforcer Maven pour interdire les plages de versions et les dépendances en SNAPSHOT dans une release.</li>
 </ol>
 <p>Livrable : configuration Renovate, <code>.releaserc</code>, <code>infra/nexus/compose.yaml</code>, temps mesurés dans <code>tp14.md</code>, et <code>docs/cours-versioning.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp14-releases-automatiques-et-proxy-d-artefacts.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c14"> Chapitre 14 terminé</label>
 </article>
 
@@ -1012,7 +1016,8 @@ return legacyMapService.render(zone);</code></pre>
 <li>Implémente un feature flag (OpenFeature + flagd dans le Compose, ou une table avec un endpoint d'administration) devant une fonctionnalité de CrisisShield, active-le pour un utilisateur, puis pour tous, sans redéployer.</li>
 </ol>
 <p>Livrable : scripts, pipeline, migrations, mesures dans <code>tp15.md</code>, et <code>docs/cours-deploiement.md</code> avec le déroulé complet à raconter en entretien.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp15-blue-green-et-feature-flag-sur-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c15"> Chapitre 15 terminé</label>
 </article>
 

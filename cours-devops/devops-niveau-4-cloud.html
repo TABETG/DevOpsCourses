@@ -495,7 +495,8 @@ pre .xpl::before{content:"↳ ";opacity:.7}
 <li>Écris <code>scripts/nuke-check.sh</code> qui liste tout ce qui coûte dans le sandbox (EC2, RDS, NAT, EIP, volumes, buckets) pour vérifier avant de fermer le poste. Regarde aussi <code>aws-nuke</code> (à manier avec précaution).</li>
 </ol>
 <p>Livrable : <code>infra/aws-bootstrap/</code> (organisation, budget, SCP), et <code>tp20.md</code> avec la capture du budget et de la connexion SSO.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp20-compte-aws-pret-pour-la-suite.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c20"> Chapitre 20 terminé</label>
 </article>
 
@@ -659,7 +660,8 @@ resource "aws_lambda_event_source_mapping" "queue" {
 <li>Coupe le service RDS primaire (reboot with failover) et mesure le temps d'indisponibilité vu par un <code>curl</code> en boucle.</li>
 </ol>
 <p>Livrable : <code>infra/aws/</code> dans CrisisShield, schéma d'architecture (Mermaid ou draw.io) dans le README, coûts réels relevés dans Cost Explorer après destruction dans <code>tp21.md</code>, et <code>docs/cours-aws.md</code> : le déroulé d'entretien en trois minutes, écrit puis répété.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp21-crisisshield-sur-aws-en-terraform-de-bout-en-bout.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c21"> Chapitre 21 terminé</label>
 </article>
 
@@ -735,7 +737,8 @@ resource "google_cloud_run_v2_service" "api" {
 <li>Rédige un tableau comparatif d'une page : services, modèle d'identité, réseau, coût estimé mensuel du service (calculatrices officielles), et un avis.</li>
 </ol>
 <p>Livrable : les deux modules, le comparatif dans <code>tp22.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp22-le-meme-service-sur-trois-clouds-sans-compte.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c22"> Chapitre 22 terminé</label>
 </article>
 
@@ -796,7 +799,8 @@ resource "google_cloud_run_v2_service" "api" {
 <li>Construis une estimation complète de la production CrisisShield à 3 tailles (100, 10 000, 1 M d'utilisateurs) avec la calculatrice AWS, et identifie le poste dominant à chaque taille. Présente-le dans un tableau avec l'unité de coût par utilisateur.</li>
 </ol>
 <p>Livrable : configuration, scripts, tableau dans <code>tp23.md</code>, et <code>docs/cours-finops.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp23-finops-sur-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c23"> Chapitre 23 terminé</label>
 </article>
 
@@ -846,7 +850,8 @@ resource "google_cloud_run_v2_service" "api" {
 <li>Consolide les coûts AWS et GCP de tes TP au format FOCUS (un CSV avec les colonnes principales) et produis un graphique par fournisseur et par service.</li>
 </ol>
 <p>Livrable : configuration VPN et DNS, plan de réversibilité dans <code>docs/reversibilite.md</code> de CrisisShield, CSV et graphique dans <code>tp24.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp24-hybride-en-local-et-plan-de-reversibilite.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c24"> Chapitre 24 terminé</label>
 </article>
 
