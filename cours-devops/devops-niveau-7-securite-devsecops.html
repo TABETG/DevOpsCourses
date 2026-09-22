@@ -568,7 +568,8 @@ http.headers(h -> h
 <li>Indicateurs : un dashboard Grafana ou une page dans le README avec les métriques du programme (couverture, délai de correction, ouvertes par âge).</li>
 <li>Sécurité dans le code : passe CrisisShield au crible des dix catégories de la section 37.7, corrige au moins cinq motifs réels trouvés (IDOR, validation, en-têtes, Actuator, SSRF sur l'import), ajoute le test négatif correspondant à chacun, et mets la checklist de revue dans le template de merge request.</li></ol>
 <p>Livrable : threat model, pipeline, DefectDojo et Dependency-Track dans <code>infra/security/</code>, preuves dans <code>tp37.md</code>, <code>docs/cours-appsec.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp37-programme-appsec-de-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c37"> Chapitre 37 terminé</label>
 </article>
 
@@ -695,7 +696,8 @@ v write -f transit/keys/crisisshield/rotate     # nouvelle version ; rewrap poss
 <li>Humains : auth OIDC Keycloak avec MFA vers Vault, un rôle « lecteur prod » à durée de 30 minutes. Documente la procédure d'accès d'urgence (break-glass) avec le token root scellé.</li>
 </ol>
 <p>Livrable : <code>infra/vault/</code>, configuration application, preuves de rotation et de révocation dans <code>tp38.md</code>, <code>docs/cours-secrets.md</code> avec la hiérarchie d'entretien.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp38-zero-secret-statique-pour-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c38"> Chapitre 38 terminé</label>
 </article>
 
@@ -840,7 +842,8 @@ spec:
 <li>Attaque : depuis un Pod compromis (netshoot dans le namespace), tente d'atteindre l'API Kubernetes, l'IMDS de LocalStack, un autre namespace, le socket containerd. Chaque tentative doit échouer et être visible (audit, Falco, NetworkPolicy). Rédige le rapport de la tentative.</li>
 </ol>
 <p>Livrable : <code>k8s/policies/</code> (Kyverno, Gatekeeper, VAP, Falco), scores avant/après et rapport d'attaque dans <code>tp39.md</code>, <code>docs/cours-securite-kubernetes.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp39-cluster-durci-et-prouve.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c39"> Chapitre 39 terminé</label>
 </article>
 
@@ -931,7 +934,8 @@ cosign sign-blob --yes --bundle release.bundle release.tar.gz</code></pre>
 <li>Évalue ton pipeline avec la checklist SLSA (site officiel) et l'OpenSSF Scorecard sur le dépôt ; note le niveau atteint et ce qui manque pour L3 complet.</li>
 </ol>
 <p>Livrable : pipeline, politiques, Sigstore privé dans <code>infra/sigstore/</code>, preuves de refus et de reproductibilité dans <code>tp40.md</code>, <code>docs/cours-supply-chain.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp40-slsa-niveau-3-pour-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c40"> Chapitre 40 terminé</label>
 </article>
 
@@ -1198,7 +1202,8 @@ keytool -importkeystore -srckeystore srv.p12 -srcstoretype PKCS12 -destkeystore 
 <li>Écris le document d'architecture zero trust de CrisisShield (2 pages, schéma) : identités, segmentation, chiffrement, accès, journalisation, et le reste à faire.</li>
 <li>PKI au quotidien : sur ta PKI du TP 41, émets un certificat de service avec tous les SAN nécessaires, vérifie la chaîne avec <code>openssl verify</code>, active l'OCSP stapling sur l'Ingress, convertis en PKCS#12 pour un client Java et charge-le par SSL bundle Spring ; reproduis et corrige les cinq erreurs du tableau 41.9 ; construis l'inventaire des certificats du cluster (cert-manager + un scan des endpoints) avec une alerte à 30 et 14 jours ; rédige et exécute la cérémonie de la racine hors ligne avec un journal signé.</li></ol>
 <p>Livrable : <code>infra/pki/</code>, <code>infra/spire/</code>, <code>infra/teleport/</code>, realm Keycloak, tests de sécurité, <code>docs/security/zero-trust.md</code>, preuves dans <code>tp41.md</code>, <code>docs/cours-zero-trust-pki.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp41-zero-trust-sur-la-plateforme-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c41"> Chapitre 41 terminé</label>
 </article>
 
@@ -1290,7 +1295,8 @@ ISO 27001 A.8.25-A.8.29 Développement sécurisé
 <li>Note de cadrage NIS2/DORA : en une page, ce que CrisisShield devrait ajouter si son client était un opérateur d'importance vitale ou une banque.</li>
 </ol>
 <p>Livrable : <code>docs/compliance/</code>, <code>scripts/evidence.sh</code>, rapports Prowler, procédure d'effacement, <code>tp42.md</code>, <code>docs/cours-conformite.md</code>.</p>
-</div>
+
+<p><strong>Correction type :</strong> <a href="corrections/tp42-dossier-de-conformite-de-crisisshield.html">solution complète, étape par étape</a>.</p></div>
 <label class="check"><input type="checkbox" data-ch="c42"> Chapitre 42 terminé</label>
 </article>
 

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Correction du TP 37 — Programme AppSec de CrisisShield</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+/* ============ Mode sprint : temps maximum, minuteurs, pression ============ */
+.tbox{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.35rem 0 .8rem;font-size:.82rem}
+.tbox .tb{font-weight:700;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem}
+.tbox button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.2rem .7rem;cursor:pointer;min-height:32px}
+.tbox button.go{background:var(--accent);color:#fff}
+.tbox button.ok{border-color:var(--ok);color:var(--ok)}
+.tbox .spent{color:var(--muted)}
+.tbox.done .tb{background:var(--tp-soft);border-color:var(--tp-line);color:var(--tp)}
+.tbox.done .spent{color:var(--ok);font-weight:700}
+.tbox.late .spent{color:#A11B1B;font-weight:700}
+.chaptime{font-size:.86rem;color:var(--muted);margin:-.2rem 0 .9rem;padding:.5rem .8rem;border:1px dashed var(--line-strong);border-radius:8px;background:var(--bg)}
+.chaptime b{color:var(--ink)}
+.sec-active{outline:3px solid var(--accent);outline-offset:6px;border-radius:6px}
+.sec-active.exo,.sec-active.tp{outline-offset:2px}
+h3.sec-active{padding-left:.75rem}
+#sprint{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--hero);color:#fff;padding:.5rem .9rem calc(.5rem + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 16px rgba(0,0,0,.25);font-size:.85rem}
+#sprint .row{display:flex;align-items:center;gap:.6rem .9rem;flex-wrap:wrap;max-width:1120px;margin:0 auto}
+#sprint .clock{font-family:"JetBrains Mono",monospace;font-size:1.5rem;font-weight:700;min-width:5.2rem;letter-spacing:.02em}
+#sprint .clock.late{color:#FF6B6B;animation:blink 1s steps(2,start) infinite}
+#sprint .cur{flex:1 1 200px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sprint .cur b{color:#fff}
+#sprint .stat{opacity:.85;white-space:nowrap}
+#sprint .pbar{flex:1 1 100%;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+#sprint .pbar i{display:block;height:100%;width:0;background:#6CD19B;transition:width .3s}
+#sprint button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:.3rem .65rem;cursor:pointer;min-height:34px}
+#sprint button.primary{background:#6FA3F5;border-color:#6FA3F5;color:#0B1220}
+#sprint button:disabled{opacity:.4;cursor:default}
+#sprint .late-msg{color:#FF6B6B;font-weight:700}
+body{padding-bottom:6.5rem}
+@keyframes blink{50%{opacity:.35}}
+@media (max-width:480px){#sprint{font-size:.74rem;padding:.35rem .6rem calc(.35rem + env(safe-area-inset-bottom,0px))} #sprint .row{gap:.3rem .6rem} #sprint .clock{font-size:1.2rem;min-width:4.2rem} #sprint button{padding:.25rem .5rem;min-height:30px;font-size:.74rem} #sprint .stat{font-size:.7rem} #sprint .pbar{height:4px} body{padding-bottom:7rem}}
+@media print{#sprint,.tbox,.chaptime{display:none !important} body{padding-bottom:0}}
+
+/* ============ Explication des commandes ============ */
+pre .explain{position:absolute;top:.5rem;right:4.9rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55}
+pre:hover .explain,pre .explain:focus-visible,pre .explain.on{opacity:1}
+pre .explain.on{background:#1B7A4E;border-color:#1B7A4E;color:#fff}
+pre .xpl{display:block;color:#8FD3A7;font-size:.82em;line-height:1.45;padding:.05rem 0 .35rem 1.4em;white-space:pre-wrap;word-break:break-word;font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+pre .xpl::before{content:"↳ ";opacity:.7}
+@media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
+@media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
+
+/* ============ Animations pédagogiques ============ */
+.anim{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.anim .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.anim .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.anim .ctl button.primary{background:var(--accent);color:#fff}
+.anim .ctl button:disabled{opacity:.4;cursor:default}
+.anim .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.anim svg{width:100%;height:auto;display:block;overflow:visible;font-family:inherit}
+.anim svg text{fill:var(--ink)}
+.anim .lbl{fill:var(--muted);font-size:11px}
+.anim .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.anim .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.anim .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.anim .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.anim .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.anim .redfill{fill:#C0392B}
+.anim .greenfill{fill:#1B7A4E}
+.anim .amberfill{fill:#B7791F}
+.anim .dim{opacity:.35}
+.anim .on{filter:drop-shadow(0 0 4px rgba(37,99,235,.5))}
+.anim .mono{font-family:"JetBrains Mono",monospace;font-size:11px}
+.anim .log{font-family:"JetBrains Mono",monospace;font-size:.78rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.6rem .8rem;min-height:3.6em;white-space:pre-wrap;margin-top:.6rem;line-height:1.45}
+.anim .log .ok{color:#8FD3A7}.anim .log .ko{color:#F29A9A}.anim .log .cmd{color:#9CC4FF}
+.anim figcaption{font-size:.85rem;color:var(--muted);margin-top:.6rem;text-align:center}
+:root[data-theme="dark"] .anim .red{fill:#3A1616;stroke:#F29A9A}
+@media (prefers-reduced-motion: reduce){.anim .auto{display:none}}
+@media print{.anim .ctl{display:none}}
+
+/* ============ Planches manga ============ */
+.fig.manga svg{min-width:640px;border-radius:6px}
+.fig.manga svg text{font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.fig.manga figcaption::before{content:"Manga — ";font-weight:700;color:var(--ink)}
+:root[data-theme="dark"] .fig.manga svg{opacity:.94}
+
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.out{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--bg);border:1px dashed var(--line-strong);border-radius:8px;padding:.6rem .8rem;white-space:pre-wrap;word-break:break-word;margin:.3rem 0 1rem}
+.out::before{content:"résultat attendu";display:block;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:.3rem;letter-spacing:.04em;text-transform:uppercase}
+.enonce{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem 1rem 0.4rem 1rem;margin:0 0 1rem}
+.enonce ol{margin:0 0 .5rem;padding-left:1.3rem;font-size:.9rem}
+body{padding-bottom:2rem}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="in">
+<div class="pagenav"><a href="../devops-niveau-7-securite-devsecops.html#c37">← Retour au chapitre 37</a><a href="../index.html">Accueil du parcours</a></div>
+<div class="level">Correction type — Travail pratique 37</div>
+<h1>Programme AppSec de CrisisShield</h1>
+<p class="lead">Une solution complète, étape par étape : ce qu'il faut produire, la commande ou le fichier clé, le résultat qui prouve que ça marche, et les pièges. Ta solution peut différer ; ce qui compte, c'est que chaque preuve soit là.</p>
+</div></header>
+<div class="single">
+<div class="enonce"><strong>Énoncé</strong><ol><li>Modélisation des menaces STRIDE sur trois fonctionnalités (création d&#x27;incident, authentification, export de rapports) avec DFD dans docs/security/threat-model.md. Chaque menace devient une exigence ASVS référencée et, quand c&#x27;est possible, un test automatisé.</li><li>Complète le pipeline du niveau 2 : Semgrep avec trois règles maison (concaténation JPA, CSRF désactivé, CORS ouvert), CodeQL si GitHub ou SonarQube avec règles sécurité, Trivy fs pour SCA, Checkov sur Terraform et Kubernetes, tous en SARIF.</li><li>Déploie DefectDojo (Compose officiel) et importe les résultats de chaque job par API ; configure la déduplication et un SLA par sévérité. Tableau de bord des vulnérabilités ouvertes par âge.</li><li>SBOM : Syft à chaque build, attaché à l&#x27;image, ingéré par Dependency-Track (Compose). Simule une nouvelle CVE en ajoutant une dépendance vulnérable connue (par exemple une vieille version de commons-text) : Dependency-Track doit alerter sans rebuild. Rédige un VEX pour une CVE non atteignable.</li><li>DAST : ZAP API scan authentifié contre staging (jeton Keycloak obtenu dans le job), Nuclei, Schemathesis sur le contrat OpenAPI. Corrige au moins trois findings (en-têtes, CORS, erreurs verbeuses).</li><li>Introduis volontairement cinq failles (une par catégorie de l&#x27;exercice 37.2) dans une branche ; vérifie que chacune est détectée par la bonne analyse et bloquée. Capture d&#x27;écran de chaque MR bloquée.</li><li>Indicateurs : un dashboard Grafana ou une page dans le README avec les métriques du programme (couverture, délai de correction, ouvertes par âge).</li><li>Sécurité dans le code : passe CrisisShield au crible des dix catégories de la section 37.7, corrige au moins cinq motifs réels trouvés (IDOR, validation, en-têtes, Actuator, SSRF sur l&#x27;import), ajoute le test négatif correspondant à chacun, et mets la checklist de revue dans le template de merge request.</li></ol></div>
+<article><div class="chaphead"><span class="chapnum">Étape 1</span></div><h2>Threat model STRIDE, DFD et exigences ASVS</h2><pre><code># docs/security/threat-model.md — un DFD Mermaid par fonctionnalité, puis un tableau STRIDE
+flowchart LR
+  U[Utilisateur] --&gt;|HTTPS + jeton| BFF[BFF Gateway]
+  BFF --&gt;|JWT| API[API Incidents]
+  API --&gt;|JDBC TLS| DB[(PostgreSQL)]
+  API --&gt;|Kafka mTLS| N[Notification]
+  API --&gt;|HTTP| GEO[geo-service]
+# | Menace (STRIDE) | Actif | Exigence ASVS 4.0 | Contrôle | Test |
+# | Spoofing : jeton forgé | API | V3.5.3 (signature vérifiée) | Spring Security resource server, jwks | SecurityIT.jetonAlgNone → 401 |
+# | Tampering : IDOR sur /incidents/{id} | API | V4.2.1 | vérification org_id = jeton.org | IncidentAccessIT.autreOrganisation → 403 |
+# | Information disclosure : export CSV avec PII | Export | V8.3.4 | champs masqués, journal d&#x27;export | ExportIT.pasDeTelephone |
+# | Denial of service : export massif | Export | V11.1.4 | limite 10 000 lignes, rate limit par org | k6 export → 429 |
+# | Elevation : rôle dans le corps de la requête | Auth | V4.1.3 | rôle lu uniquement dans le jeton | RoleIT.roleDansCorps → 403 |</code></pre><div class="out">3 DFD, 18 menaces, 14 exigences ASVS référencées, 11 tests automatisés (les 7 autres sont des contrôles de configuration vérifiés par Kyverno ou Checkov)</div><ul><li>Une menace sans exigence est une opinion ; une exigence sans test est une intention. La colonne « Test » est celle que le relecteur lit en premier.</li><li>Le DFD montre les frontières de confiance : c'est là que se placent les menaces, pas dans les boîtes.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 2</span></div><h2>SAST, SCA, IaC : tout en SARIF dans le pipeline</h2><pre><code># semgrep/rules/crisisshield.yml — trois règles maison
+rules:
+  - id: jpa-query-concatenation
+    languages: [java]
+    severity: ERROR
+    message: &quot;Concaténation dans une requête JPQL/SQL : utiliser des paramètres nommés (CS-SEC-01)&quot;
+    patterns:
+      - pattern-either:
+          - pattern: $EM.createQuery(&quot;...&quot; + $X, ...)
+          - pattern: $EM.createNativeQuery(&quot;...&quot; + $X, ...)
+  - id: csrf-disabled
+    languages: [java]
+    severity: WARNING
+    message: &quot;CSRF désactivé : acceptable uniquement pour une API sans cookie de session (CS-SEC-02)&quot;
+    pattern: $HTTP.csrf($C -&gt; $C.disable())
+  - id: cors-open
+    languages: [java]
+    severity: ERROR
+    message: &quot;CORS ouvert à * (CS-SEC-03)&quot;
+    pattern-either:
+      - pattern: $C.allowedOrigins(&quot;*&quot;)
+      - pattern: &#x27;@CrossOrigin(origins = &quot;*&quot;)&#x27;
+
+# .gitlab-ci.yml — stage security, tous les rapports en SARIF
+semgrep:
+  stage: security
+  image: semgrep/semgrep:1.90.0
+  script: [semgrep scan --config p/java --config p/owasp-top-ten --config semgrep/rules --sarif -o semgrep.sarif --error]
+  artifacts: { paths: [semgrep.sarif], when: always }
+trivy-fs:
+  stage: security
+  image: aquasec/trivy:0.56.2
+  script: [trivy fs --scanners vuln,secret --format sarif -o trivy-fs.sarif --exit-code 1 --severity HIGH,CRITICAL .]
+  artifacts: { paths: [trivy-fs.sarif], when: always }
+checkov:
+  stage: security
+  image: bridgecrew/checkov:3.2.255
+  script: [checkov -d infra -d k8s --framework terraform,kubernetes -o sarif --output-file-path checkov.sarif --soft-fail-on LOW]
+  artifacts: { paths: [checkov.sarif], when: always }
+sonar:
+  stage: security
+  image: eclipse-temurin:21-jdk
+  script: [./mvnw -q verify sonar:sonar -Dsonar.qualitygate.wait=true]</code></pre><div class="out">semgrep : 3 findings (les 3 règles maison déclenchent sur les motifs volontaires) ; trivy fs : 0 HIGH ; checkov : 2 MEDIUM (readOnlyRootFilesystem manquant sur le worker) ; sonar : quality gate PASSED</div><ul><li>Une règle Semgrep se teste avec un fichier d'exemples (<code>semgrep --test</code>) : chaque règle a un cas positif et un cas négatif dans <code>semgrep/rules/tests/</code>.</li><li>SARIF est le format commun : DefectDojo, GitLab et GitHub le lisent tous ; c'est ce qui permet l'étape suivante sans convertisseur.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 3</span></div><h2>DefectDojo : import par API, déduplication, SLA</h2><pre><code>git clone --depth 1 https://github.com/DefectDojo/django-DefectDojo infra/security/defectdojo &amp;&amp; cd infra/security/defectdojo &amp;&amp; docker compose up -d &amp;&amp; docker compose logs initializer | grep &#x27;Admin password&#x27;
+# un produit « CrisisShield », un engagement « CI » par branche ; import à chaque job :
+curl -s -X POST http://localhost:8080/api/v2/reimport-scan/ -H &quot;Authorization: Token $DD_TOKEN&quot; \
+  -F scan_type=&quot;SARIF&quot; -F product_name=&quot;CrisisShield&quot; -F engagement_name=&quot;CI main&quot; -F test_title=&quot;semgrep&quot; \
+  -F file=@semgrep.sarif -F active=true -F verified=false -F close_old_findings=true -F deduplication_on_engagement=true
+# Product → Settings : Enable deduplication ; SLA configuration : Critical 7 j, High 30 j, Medium 90 j, Low 180 j
+curl -s &quot;http://localhost:8080/api/v2/findings/?active=true&amp;limit=200&quot; -H &quot;Authorization: Token $DD_TOKEN&quot; | jq &#x27;[.results[] | {sev: .severity, age: .age, sla: .sla_days_remaining}] | group_by(.sev) | map({(.[0].sev): length}) | add&#x27;</code></pre><div class="out">{&quot;High&quot;: 4, &quot;Medium&quot;: 11, &quot;Low&quot;: 9}
+(après un second reimport identique : 0 nouveau finding, 24 dédupliqués ; 1 High à −3 jours de SLA)</div><ul><li><code>reimport</code> plutôt qu'<code>import</code> : les findings déjà connus sont mis à jour, ceux qui ont disparu sont clos (<code>close_old_findings</code>) ; sans ça, chaque pipeline double la liste.</li><li>Le SLA transforme une liste en obligation : « High ouvert depuis 33 jours » est un indicateur que l'on peut montrer à un RSSI.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 4</span></div><h2>SBOM, Dependency-Track, nouvelle CVE sans rebuild, VEX</h2><pre><code># job sbom : syft &lt;image&gt;@&lt;digest&gt; -o cyclonedx-json=sbom.json ; cosign attach sbom --sbom sbom.json &lt;image&gt;@&lt;digest&gt;
+docker compose -f infra/security/dependency-track/compose.yaml up -d   # apiserver + frontend, images officielles dependencytrack/*
+curl -s -X PUT http://localhost:8081/api/v1/bom -H &quot;X-Api-Key: $DT_KEY&quot; -F project=$DT_PROJECT -F bom=@sbom.json
+# simuler une CVE : ajouter org.apache.commons:commons-text:1.9 (CVE-2022-42889) au pom, rebuild, nouvel envoi du SBOM
+curl -s &quot;http://localhost:8081/api/v1/vulnerability/project/$DT_PROJECT&quot; -H &quot;X-Api-Key: $DT_KEY&quot; | jq &#x27;[.[] | {id: .vulnId, sev: .severity}]&#x27;
+# VEX (vex.json, CycloneDX) : la CVE n&#x27;est pas atteignable — StringSubstitutor n&#x27;est jamais appelé sur une entrée utilisateur
+{ &quot;bomFormat&quot;: &quot;CycloneDX&quot;, &quot;specVersion&quot;: &quot;1.5&quot;, &quot;vulnerabilities&quot;: [ { &quot;id&quot;: &quot;CVE-2022-42889&quot;,
+  &quot;analysis&quot;: { &quot;state&quot;: &quot;not_affected&quot;, &quot;justification&quot;: &quot;code_not_reachable&quot;, &quot;detail&quot;: &quot;commons-text n&#x27;est utilisé que pour WordUtils.capitalize sur des libellés internes&quot; } } ] }
+curl -s -X PUT http://localhost:8081/api/v1/vex -H &quot;X-Api-Key: $DT_KEY&quot; -F project=$DT_PROJECT -F vex=@vex.json</code></pre><div class="out">[{&quot;id&quot;:&quot;CVE-2022-42889&quot;,&quot;sev&quot;:&quot;CRITICAL&quot;}]  → notification Slack de Dependency-Track ; après le VEX : état NOT_AFFECTED, exclu des indicateurs
+(l&#x27;alerte est arrivée sans relancer un seul build : c&#x27;est Dependency-Track qui a réévalué le SBOM)</div><ul><li>Le point du chapitre : quand une CVE sort, l'inventaire (SBOM) est interrogé, pas les images ; on sait en une minute quels services sont concernés.</li><li>Un VEX est une décision argumentée et signée, pas une exception : la justification cite le code ; elle est revue quand la dépendance change.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 5</span></div><h2>DAST authentifié : ZAP, Nuclei, Schemathesis</h2><pre><code># job dast (staging) : jeton Keycloak obtenu dans le job, jamais stocké
+TOKEN=$(curl -s -d &#x27;grant_type=client_credentials&#x27; -d &quot;client_id=dast&quot; -d &quot;client_secret=$(vault kv get -field=secret secret/ci/dast)&quot; https://keycloak.staging/realms/crisis/protocol/openid-connect/token | jq -r .access_token)
+docker run --rm -v &quot;$PWD:/zap/wrk&quot; ghcr.io/zaproxy/zaproxy:stable zap-api-scan.py -t https://staging.crisisshield.example/v3/api-docs -f openapi -z &quot;-config replacer.full_list(0).description=auth -config replacer.full_list(0).enabled=true -config replacer.full_list(0).matchtype=REQ_HEADER -config replacer.full_list(0).matchstr=Authorization -config replacer.full_list(0).replacement=&#x27;Bearer $TOKEN&#x27;&quot; -J zap.json -r zap.html
+docker run --rm projectdiscovery/nuclei -u https://staging.crisisshield.example -t http/misconfiguration -t http/exposures -severity medium,high,critical -j -o nuclei.jsonl
+docker run --rm schemathesis/schemathesis:stable run https://staging.crisisshield.example/v3/api-docs --checks all -H &quot;Authorization: Bearer $TOKEN&quot; --hypothesis-max-examples 50</code></pre><div class="out">ZAP : 3 WARN — X-Content-Type-Options absent, CORS Access-Control-Allow-Origin reflété, message d&#x27;erreur avec stack trace sur /api/incidents/abc
+Nuclei : 1 medium (actuator/env exposé en staging)
+Schemathesis : 2 échecs — 500 sur un entier hors plage, réponse non conforme au schéma sur /export</div><ul><li>Les trois corrections attendues : <code>HeadersConfigurer</code> Spring (nosniff, frame-options, CSP, HSTS), liste d'origines explicite, <code>@ControllerAdvice</code> qui renvoie un problème RFC 9457 sans détail interne.</li><li>Schemathesis teste le contrat, pas la sécurité : un 500 sur une entrée bizarre est une validation manquante, donc une surface d'attaque.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 6</span></div><h2>Cinq failles volontaires, cinq analyses qui bloquent</h2><pre><code>git switch -c test/failles-volontaires
+# 1. SAST : &quot;select i from Incident i where i.title = &#x27;&quot; + q + &quot;&#x27;&quot;  → Semgrep jpa-query-concatenation
+# 2. SCA : commons-text 1.9 → trivy fs HIGH (exit 1)
+# 3. Secret : AWS_SECRET_ACCESS_KEY=wJalrXUt… dans application-dev.yml → trivy secret + gitleaks
+# 4. IaC : hostPath: /var/run/docker.sock dans un manifest → checkov CKV_K8S_27 + kyverno
+# 5. DAST : @CrossOrigin(origins = &quot;*&quot;) sur un contrôleur → Semgrep cors-open, puis ZAP en staging
+git push -o merge_request.create
+# capture : la MR affiche 5 jobs rouges, « Merge blocked: pipeline must succeed »</code></pre><div class="out">5 jobs en échec, MR bloquée ; tableau dans tp37.md : faille → analyse qui l&#x27;a vue → délai (toutes &lt; 4 min, DAST en 11 min)</div><ul><li>Chaque contrôle est testé par sa faille : un scanner qui ne bloque jamais n'a jamais été vérifié.</li><li>Si une faille passe (souvent le secret encodé en base64), c'est un finding sur le programme lui-même, à traiter comme les autres.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 7</span></div><h2>Sécurité dans le code : cinq motifs réels corrigés, tests négatifs</h2><pre><code>// IDOR : avant → repo.findById(id) ; après → repo.findByIdAndOrganizationId(id, jwt.getClaim(&quot;org&quot;))
+@Test void incidentAutreOrganisation_403() { mvc.perform(get(&quot;/api/incidents/42&quot;).with(jwt().jwt(j -&gt; j.claim(&quot;org&quot;, &quot;org-B&quot;)))).andExpect(status().isForbidden()); }
+// Validation : record CreateIncident(@NotBlank @Size(max=200) String title, @Pattern(regexp=&quot;^[A-Z0-9-]{2,12}$&quot;) String zone, @NotNull Priority priority)
+@Test void titreTropLong_400() { … 201 caractères … andExpect(status().isBadRequest()); }
+// En-têtes : http.headers(h -&gt; h.contentSecurityPolicy(c -&gt; c.policyDirectives(&quot;default-src &#x27;self&#x27;&quot;)).frameOptions(f -&gt; f.deny()).httpStrictTransportSecurity(s -&gt; s.maxAgeInSeconds(31536000)))
+@Test void entetesDeSecurite() { … andExpect(header().string(&quot;X-Content-Type-Options&quot;, &quot;nosniff&quot;)).andExpect(header().exists(&quot;Content-Security-Policy&quot;)); }
+// Actuator : management.endpoints.web.exposure.include=health,prometheus ; management.endpoint.health.show-details=when-authorized
+@Test void actuatorEnv_404() { mvc.perform(get(&quot;/actuator/env&quot;)).andExpect(status().isNotFound()); }
+// SSRF sur l&#x27;import : allowlist d&#x27;hôtes + refus des IP privées + pas de redirection
+@Test void importUrlPrivee_400() { … &quot;http://169.254.169.254/latest/meta-data&quot; … andExpect(status().isBadRequest()); }
+# .gitlab/merge_request_templates/default.md : checklist de revue sécurité (10 lignes de la section 37.7)</code></pre><div class="out">5 tests négatifs verts, 5 corrections en MR distinctes ; la checklist apparaît dans chaque nouvelle MR</div><ul><li>Un test négatif fige la correction : le jour où quelqu'un remet <code>findById</code>, le test rouge explique pourquoi.</li><li>Les cinq motifs sont les plus fréquents en revue de code Spring : IDOR, validation, en-têtes, Actuator, SSRF. Sache les nommer en entretien.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 8</span></div><h2>Indicateurs du programme</h2><pre><code># metrics/appsec.py : interroge DefectDojo et Dependency-Track, expose en Prometheus (ou écrit README-security.md)
+appsec_findings_open{severity=&quot;High&quot;} 4
+appsec_findings_over_sla{severity=&quot;High&quot;} 1
+appsec_mean_time_to_remediate_days{severity=&quot;High&quot;} 19
+appsec_coverage_ratio{control=&quot;sast&quot;} 1   # part des dépôts avec le job
+appsec_sbom_projects 3
+# dashboard Grafana : ouvertes par âge (histogramme), MTTR par sévérité, couverture des contrôles, CVE atteignables (hors VEX)</code></pre><div class="out">tableau de bord « Programme AppSec » avec 6 panneaux ; la page README montre les mêmes chiffres en Markdown pour un lecteur sans Grafana</div><ul><li>Un programme sans indicateur n'est pas pilotable : couverture (où les contrôles tournent), délai de correction, stock par âge. Trois chiffres, pas trente.</li><li>Ces indicateurs alimentent le tableau de bord de gouvernance du TP 51.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Livrable</span><span class="badge tag-important">Important</span></div><h2>Ce que le relecteur doit trouver</h2><ul><li><code>docs/security/threat-model.md</code> (3 DFD, tableau STRIDE → ASVS → test), les règles Semgrep testées, le stage <code>security</code> en SARIF, <code>infra/security/</code> avec DefectDojo et Dependency-Track en Compose, le VEX, les trois jobs DAST, les cinq corrections avec leurs tests négatifs, le template de MR.</li><li><code>tp37.md</code> : captures des 5 MR bloquées, l'alerte Dependency-Track sans rebuild, les findings ZAP avant/après, les indicateurs.</li><li><code>docs/cours-appsec.md</code> : quelles technos, quels fichiers, et comment expliquer SAST contre DAST contre SCA en entretien.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Pour aller plus loin</span><span class="badge tag-contexte">Bon à savoir</span></div><h2>Questions de relecteur</h2><ul><li>Pourquoi Dependency-Track en plus de Trivy ? Trivy scanne au moment du build ; Dependency-Track surveille en continu un inventaire existant.</li><li>Quelle est la limite d'un DAST en CI ? Il ne voit que ce qu'il sait appeler : sans jeton et sans contrat OpenAPI, il ne teste que la page d'accueil.</li></ul></article>
+<div class="footnav"><a href="../devops-niveau-7-securite-devsecops.html#c37">← Chapitre 37</a><a href="../devops-niveau-7-securite-devsecops.html#c38">Chapitre 38 →</a></div>
+</div>
+<script>
+(function(){ var root=document.documentElement; try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.querySelectorAll('pre').forEach(function(pre){ var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier';
+    b.addEventListener('click',function(){ var t=pre.querySelector('code').textContent; navigator.clipboard.writeText(t).then(function(){ b.textContent='Copié !'; setTimeout(function(){ b.textContent='Copier'; },1500); }); }); pre.appendChild(b); });
+})();
+</script>
+</body></html>

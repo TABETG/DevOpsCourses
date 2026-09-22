@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Correction du TP 41 — Zero trust sur la plateforme CrisisShield</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+/* ============ Mode sprint : temps maximum, minuteurs, pression ============ */
+.tbox{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.35rem 0 .8rem;font-size:.82rem}
+.tbox .tb{font-weight:700;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem}
+.tbox button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.2rem .7rem;cursor:pointer;min-height:32px}
+.tbox button.go{background:var(--accent);color:#fff}
+.tbox button.ok{border-color:var(--ok);color:var(--ok)}
+.tbox .spent{color:var(--muted)}
+.tbox.done .tb{background:var(--tp-soft);border-color:var(--tp-line);color:var(--tp)}
+.tbox.done .spent{color:var(--ok);font-weight:700}
+.tbox.late .spent{color:#A11B1B;font-weight:700}
+.chaptime{font-size:.86rem;color:var(--muted);margin:-.2rem 0 .9rem;padding:.5rem .8rem;border:1px dashed var(--line-strong);border-radius:8px;background:var(--bg)}
+.chaptime b{color:var(--ink)}
+.sec-active{outline:3px solid var(--accent);outline-offset:6px;border-radius:6px}
+.sec-active.exo,.sec-active.tp{outline-offset:2px}
+h3.sec-active{padding-left:.75rem}
+#sprint{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--hero);color:#fff;padding:.5rem .9rem calc(.5rem + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 16px rgba(0,0,0,.25);font-size:.85rem}
+#sprint .row{display:flex;align-items:center;gap:.6rem .9rem;flex-wrap:wrap;max-width:1120px;margin:0 auto}
+#sprint .clock{font-family:"JetBrains Mono",monospace;font-size:1.5rem;font-weight:700;min-width:5.2rem;letter-spacing:.02em}
+#sprint .clock.late{color:#FF6B6B;animation:blink 1s steps(2,start) infinite}
+#sprint .cur{flex:1 1 200px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sprint .cur b{color:#fff}
+#sprint .stat{opacity:.85;white-space:nowrap}
+#sprint .pbar{flex:1 1 100%;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+#sprint .pbar i{display:block;height:100%;width:0;background:#6CD19B;transition:width .3s}
+#sprint button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:.3rem .65rem;cursor:pointer;min-height:34px}
+#sprint button.primary{background:#6FA3F5;border-color:#6FA3F5;color:#0B1220}
+#sprint button:disabled{opacity:.4;cursor:default}
+#sprint .late-msg{color:#FF6B6B;font-weight:700}
+body{padding-bottom:6.5rem}
+@keyframes blink{50%{opacity:.35}}
+@media (max-width:480px){#sprint{font-size:.74rem;padding:.35rem .6rem calc(.35rem + env(safe-area-inset-bottom,0px))} #sprint .row{gap:.3rem .6rem} #sprint .clock{font-size:1.2rem;min-width:4.2rem} #sprint button{padding:.25rem .5rem;min-height:30px;font-size:.74rem} #sprint .stat{font-size:.7rem} #sprint .pbar{height:4px} body{padding-bottom:7rem}}
+@media print{#sprint,.tbox,.chaptime{display:none !important} body{padding-bottom:0}}
+
+/* ============ Explication des commandes ============ */
+pre .explain{position:absolute;top:.5rem;right:4.9rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55}
+pre:hover .explain,pre .explain:focus-visible,pre .explain.on{opacity:1}
+pre .explain.on{background:#1B7A4E;border-color:#1B7A4E;color:#fff}
+pre .xpl{display:block;color:#8FD3A7;font-size:.82em;line-height:1.45;padding:.05rem 0 .35rem 1.4em;white-space:pre-wrap;word-break:break-word;font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+pre .xpl::before{content:"↳ ";opacity:.7}
+@media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
+@media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
+
+/* ============ Animations pédagogiques ============ */
+.anim{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.anim .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.anim .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.anim .ctl button.primary{background:var(--accent);color:#fff}
+.anim .ctl button:disabled{opacity:.4;cursor:default}
+.anim .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.anim svg{width:100%;height:auto;display:block;overflow:visible;font-family:inherit}
+.anim svg text{fill:var(--ink)}
+.anim .lbl{fill:var(--muted);font-size:11px}
+.anim .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.anim .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.anim .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.anim .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.anim .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.anim .redfill{fill:#C0392B}
+.anim .greenfill{fill:#1B7A4E}
+.anim .amberfill{fill:#B7791F}
+.anim .dim{opacity:.35}
+.anim .on{filter:drop-shadow(0 0 4px rgba(37,99,235,.5))}
+.anim .mono{font-family:"JetBrains Mono",monospace;font-size:11px}
+.anim .log{font-family:"JetBrains Mono",monospace;font-size:.78rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.6rem .8rem;min-height:3.6em;white-space:pre-wrap;margin-top:.6rem;line-height:1.45}
+.anim .log .ok{color:#8FD3A7}.anim .log .ko{color:#F29A9A}.anim .log .cmd{color:#9CC4FF}
+.anim figcaption{font-size:.85rem;color:var(--muted);margin-top:.6rem;text-align:center}
+:root[data-theme="dark"] .anim .red{fill:#3A1616;stroke:#F29A9A}
+@media (prefers-reduced-motion: reduce){.anim .auto{display:none}}
+@media print{.anim .ctl{display:none}}
+
+/* ============ Planches manga ============ */
+.fig.manga svg{min-width:640px;border-radius:6px}
+.fig.manga svg text{font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.fig.manga figcaption::before{content:"Manga — ";font-weight:700;color:var(--ink)}
+:root[data-theme="dark"] .fig.manga svg{opacity:.94}
+
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.footnav a:hover{background:var(--accent-soft)}
+@media print{.pagenav,.footnav{display:none}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.footnav{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.footnav a{text-decoration:none;font-weight:700;background:var(--paper);border:1px solid var(--line);padding:.6rem 1rem;border-radius:var(--radius)}
+.out{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--bg);border:1px dashed var(--line-strong);border-radius:8px;padding:.6rem .8rem;white-space:pre-wrap;word-break:break-word;margin:.3rem 0 1rem}
+.out::before{content:"résultat attendu";display:block;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:.3rem;letter-spacing:.04em;text-transform:uppercase}
+.enonce{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem 1rem 0.4rem 1rem;margin:0 0 1rem}
+.enonce ol{margin:0 0 .5rem;padding-left:1.3rem;font-size:.9rem}
+body{padding-bottom:2rem}
+@media print{.pagenav,.footnav{display:none}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="in">
+<div class="pagenav"><a href="../devops-niveau-7-securite-devsecops.html#c41">← Retour au chapitre 41</a><a href="../index.html">Accueil du parcours</a></div>
+<div class="level">Correction type — Travail pratique 41</div>
+<h1>Zero trust sur la plateforme CrisisShield</h1>
+<p class="lead">Une solution complète, étape par étape : ce qu'il faut produire, la commande ou le fichier clé, le résultat qui prouve que ça marche, et les pièges. Ta solution peut différer ; ce qui compte, c'est que chaque preuve soit là.</p>
+</div></header>
+<div class="single">
+<div class="enonce"><strong>Énoncé</strong><ol><li>PKI : CA racine hors ligne (openssl dans un conteneur sans réseau, clé chiffrée stockée hors du poste ; documente la cérémonie), intermédiaire Vault PKI du TP 38 signée par la racine, trust-manager pour distribuer la racine dans tous les namespaces, certificats internes de 24 h via cert-manager pour l&#x27;API, le worker, Keycloak, Grafana. Alerte à 14 jours sur toute expiration (cert-manager metrics). Rotation de l&#x27;intermédiaire selon l&#x27;exercice 41.1, exécutée réellement.</li><li>Identité des charges : déploie SPIRE (serveur + agents) ; l&#x27;API obtient un SVID X.509 ; PostgreSQL (CloudNativePG) authentifie l&#x27;API par certificat client (auth cert) à la place du mot de passe dynamique, ou en complément ; Vault accepte l&#x27;auth par certificat SPIFFE. Compare avec l&#x27;identité fournie par le mesh du TP 30.</li><li>Humains : Keycloak comme IdP unique avec passkeys/WebAuthn obligatoires pour le groupe admin ; fédération vers GitLab, ArgoCD, Grafana, Vault, Kubernetes (OIDC sur l&#x27;API server via kind config). Désactive un compte et vérifie la perte d&#x27;accès partout.</li><li>Accès admin JIT : Teleport (Compose ou Helm, édition communautaire) ou Boundary devant kubectl et la base ; demande d&#x27;accès de 30 minutes approuvée, session enregistrée et rejouable. Supprime tout kubeconfig admin permanent.</li><li>Authentification des humains : realm Keycloak crisis en code (export JSON versionné, appliqué par keycloak-config-cli), politique de mots de passe NIST avec vérification des mots de passe compromis, passkeys (WebAuthn) obligatoires pour le groupe admin et proposées aux opérateurs, détection de force brute activée, flow de récupération de compte revu (second facteur exigé), événements exportés vers Loki, brokering vers un fournisseur externe (Google ou Entra ID de test).</li><li>Application : passe l&#x27;API en serveur de ressources Spring Security (émetteur et audience vérifiés, conversion des rôles, contrôle d&#x27;accès par objet), le front React derrière un BFF Spring Cloud Gateway avec cookie de session HttpOnly (variante : SPA directe avec oidc-client-ts et PKCE, à comparer). Refresh rotation et back-channel logout configurés et testés. Le service Notification (Quarkus) authentifie Incidents par Token Exchange et mTLS.</li><li>Tests de sécurité automatisés, tous en CI : jeton expiré, alg: none, HS256 avec clé publique, mauvais émetteur, mauvaise audience, id_token utilisé comme access token, rôle insuffisant, IDOR entre organisations, refresh token rejoué après rotation, clé d&#x27;API révoquée. Chaque cas attend 401 ou 403 et un événement journalisé. Testcontainers Keycloak pour les tests d&#x27;intégration.</li><li>Partenaires : une clé d&#x27;API hachée, préfixée et à quota pour un partenaire fictif, un webhook sortant signé HMAC avec horodatage, et la vérification côté récepteur.</li><li>Keycloak as code : export du realm en JSON versionné, appliqué par keycloak-config-cli dans le pipeline GitOps ; MFA admin, brute force, journal d&#x27;événements vers Loki.</li><li>Écris le document d&#x27;architecture zero trust de CrisisShield (2 pages, schéma) : identités, segmentation, chiffrement, accès, journalisation, et le reste à faire.</li><li>PKI au quotidien : sur ta PKI du TP 41, émets un certificat de service avec tous les SAN nécessaires, vérifie la chaîne avec openssl verify, active l&#x27;OCSP stapling sur l&#x27;Ingress, convertis en PKCS#12 pour un client Java et charge-le par SSL bundle Spring ; reproduis et corrige les cinq erreurs du tableau 41.9 ; construis l&#x27;inventaire des certificats du cluster (cert-manager + un scan des endpoints) avec une alerte à 30 et 14 jours ; rédige et exécute la cérémonie de la racine hors ligne avec un journal signé.</li></ol></div>
+<article><div class="chaphead"><span class="chapnum">Étape 1</span></div><h2>PKI complète : cérémonie de la racine, intermédiaire, distribution, 24 h</h2><pre><code># docs/security/ceremonie-racine.md : date, participants (2 détenteurs), lieu, conteneur --network none, génération, division de la passphrase (age + 2 destinataires), copies sur 2 supports scellés, vérification des empreintes, journal signé par les deux (cosign sign-blob du PV)
+docker run --rm --network none -v &quot;$PWD/infra/pki/root:/w&quot; -w /w alpine/openssl sh -c &#x27;openssl x509 -in root.crt -noout -fingerprint -sha256 -dates&#x27;
+k helm install trust-manager jetstack/trust-manager -n cert-manager --version 0.12.0
+k kubectl apply -f - &lt;&lt;&#x27;EOF&#x27;
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata: { name: crisis-root }
+spec: { sources: [{ configMap: { name: crisis-root-ca, key: root.crt } }], target: { configMap: { key: ca.crt }, namespaceSelector: { matchLabels: { trust: crisis } } } }
+EOF
+# Certificates 24 h : api, worker, keycloak, grafana (cert-manager, issuer vault, duration 24h, renewBefore 8h)
+k kubectl get certificate -A -o custom-columns=&#x27;NS:.metadata.namespace,NOM:.metadata.name,EXPIRE:.status.notAfter,PRET:.status.conditions[0].status&#x27;
+# alerte (PrometheusRule) : certmanager_certificate_expiration_timestamp_seconds - time() &lt; 14*86400 → warning ; &lt; 30 j info
+# rotation de l&#x27;intermédiaire (exercice 41.1) : nouvelle CSR → signée par la racine hors ligne → set-signed → les nouveaux certificats sortent de la nouvelle intermédiaire ; l&#x27;ancienne reste dans le bundle jusqu&#x27;à expiration des feuilles (24 h), puis retirée</code></pre><div class="out">sha256 Fingerprint=3A:9F:… notBefore=Sep 22 2026 notAfter=Sep 20 2036
+configmap crisis-root présent dans 6 namespaces (label trust=crisis)
+crisis  api-tls   2026-09-23T10:52:00Z  True   (idem worker, keycloak, grafana)
+rotation : chaîne api → int-2 → root vérifiée par openssl verify ; 0 erreur TLS pendant les 24 h de recouvrement</div><ul><li>Des certificats de 24 h rendent la révocation presque inutile : un certificat volé meurt avant qu'on ait fini de s'inquiéter. C'est l'argument contre les certificats d'un an.</li><li>La rotation de l'intermédiaire est jouée, pas lue : la seule preuve que le bundle, les issuers et les clients la supportent.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 2</span></div><h2>SPIRE : identité X.509 des charges, PostgreSQL et Vault par certificat</h2><pre><code>k helm install spire spiffe/spire -n spire-system --create-namespace --version 0.21.0 --set global.spire.trustDomain=crisis.local --set global.spire.clusterName=crisis
+k kubectl exec -n spire-system spire-server-0 -- spire-server entry create -spiffeID spiffe://crisis.local/ns/crisis/sa/api -parentID spiffe://crisis.local/spire/agent/k8s_psat/crisis/… -selector k8s:ns:crisis -selector k8s:sa:api -dns api.crisis.svc
+# Pod api : volume csi.spiffe.io monté sur /run/spire ; Spring : SSL bundle PEM pointant sur svid.pem / svid_key.pem / bundle.pem, rechargé (spring.ssl.bundle.watch)
+# CloudNativePG : spec.certificates.clientCASecret = bundle SPIRE ; pg_hba : hostssl crisis api 10.244.0.0/16 cert clientcert=verify-full ; le CN du SVID (api.crisis.svc) mappé au rôle crisis_app par pg_ident
+# application.yml : spring.datasource.url=jdbc:postgresql://crisis-db-rw:5432/crisis?sslmode=verify-full&amp;sslrootcert=/run/spire/bundle.pem&amp;sslcert=/run/spire/svid.pem&amp;sslkey=/run/spire/svid_key.pk8 (plus de mot de passe)
+k kubectl exec -n crisis crisis-db-1 -- psql -U postgres -c &quot;SELECT usename, ssl, clientdn FROM pg_stat_ssl JOIN pg_stat_activity USING (pid) WHERE usename=&#x27;crisis_app&#x27; LIMIT 1&quot;
+v write auth/cert/certs/api display_name=api certificate=@spire-bundle.pem allowed_uri_sans=&quot;spiffe://crisis.local/ns/crisis/sa/api&quot; policies=api
+# tp41.md : SPIRE contre Istio — Istio délivre aussi des SVID SPIFFE (même format d&#x27;identité), mais seulement pour le trafic dans le mesh ; SPIRE donne l&#x27;identité au processus, utilisable hors mesh (base, Vault, appels sortants)</code></pre><div class="out">usename    | ssl | clientdn
+crisis_app | t   | CN=api.crisis.svc,O=SPIRE   (authentification par certificat, aucun mot de passe en jeu)
+vault login -method=cert → token avec la politique api</div><ul><li>L'identité de la charge est un certificat émis par la plateforme, renouvelé toutes les heures, lié au ServiceAccount : c'est le « zéro secret » poussé jusqu'à la base.</li><li>Istio et SPIRE parlent le même SPIFFE ; Istio ambient peut même consommer les SVID de SPIRE. En entretien : le mesh sécurise les liens, SPIRE identifie les charges.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 3</span></div><h2>Humains : Keycloak IdP unique, passkeys, fédération, désactivation</h2><pre><code># realm crisis : Authentication → flow « browser-passkey » : Username form → WebAuthn Passwordless (REQUIRED pour le groupe admins via conditional flow « Condition - user role ») ; OTP pour les autres
+# clients OIDC : gitlab, argocd, grafana, vault, kubernetes ; mappers : groups (claim groups), audience
+# kind-config : apiServer.extraArgs oidc-issuer-url=https://keycloak.crisis.local/realms/crisis, oidc-client-id=kubernetes, oidc-username-claim=email, oidc-groups-claim=groups, oidc-ca-file=/etc/kubernetes/pki/crisis-root.crt
+k kubectl oidc-login setup --oidc-issuer-url=https://keycloak.crisis.local/realms/crisis --oidc-client-id=kubernetes   # plugin krew oidc-login, dans l&#x27;image outillée
+# ClusterRoleBinding : Group crisis-admins → cluster-admin ; crisis-devs → view sur crisis-dev
+# désactivation : Keycloak → Users → alice → Enabled: off ; puis :
+for u in https://gitlab.local https://argocd.crisis.local https://grafana.crisis.local https://vault.crisis.local ; do echo &quot;$u $(curl -sk -o /dev/null -w &#x27;%{http_code}&#x27; -H &quot;Authorization: Bearer $ALICE_TOKEN&quot; $u/api/user 2&gt;/dev/null)&quot;; done
+k kubectl --user=alice get pods -n crisis-dev 2&gt;&amp;1 | tail -1</code></pre><div class="out">gitlab 401, argocd 401, grafana 401, vault 403, kubectl : error: You must be logged in (le jeton refresh d&#x27;alice est refusé : session Keycloak révoquée)
+(les jetons d&#x27;accès déjà émis restent valables jusqu&#x27;à leur expiration : 5 minutes — d&#x27;où des jetons courts)</div><ul><li>Un seul IdP = une seule désactivation : c'est le contrôle A.5.18 de l'ISO 27001 (TP 42), prouvé par la boucle curl.</li><li>La fenêtre de 5 minutes entre désactivation et perte effective est le compromis des jetons sans état ; pour la réduire : jetons plus courts, ou back-channel logout (étape 6).</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 4</span></div><h2>Accès admin juste-à-temps avec Teleport</h2><pre><code>docker compose -f infra/teleport/compose.yaml up -d   # teleport:16 (auth+proxy), config teleport.yaml avec auth_service.authentication.type=oidc (Keycloak), db_service PostgreSQL, kube agent sur kind
+# rôle demandeur : allow.request.roles = [k8s-admin, db-admin], search_as_roles ; rôle approbateur : allow.review_requests
+tsh login --proxy=teleport.crisis.local --auth=keycloak
+tsh request create --roles=k8s-admin --reason=&quot;incident INC-42 : diagnostic api&quot; --max-duration=30m
+# approbation par un second compte (ou via Slack plugin) : tctl requests approve &lt;id&gt;
+tsh request wait &lt;id&gt; &amp;&amp; tsh kube login crisis &amp;&amp; kubectl get pods -n crisis-prod   # kubectl passe par Teleport, session enregistrée
+tsh recordings ls | head -2 ; tsh play &lt;session-id&gt; | head -3
+# suppression : k kubectl delete clusterrolebinding admin-gael ; rm ~/.kube/config-admin ; kubeconfig restant = identité OIDC lecture seule</code></pre><div class="out">Request ID 7b2e… — PENDING → APPROVED (by bob, expires in 30m)
+session ID 0f9a… kube  crisis  gael  2026-09-22 11:02  12m
+tsh play : « kubectl get pods -n crisis-prod » … (rejouable, horodaté)
+kubectl --context crisis-admin : error: context not found</div><ul><li>L'accès d'urgence est demandé, motivé, approuvé, limité et enregistré : cinq propriétés qu'un kubeconfig admin dans <code>~/.kube</code> n'a pas.</li><li>La suppression du kubeconfig permanent est la partie douloureuse et la seule qui compte : sans elle, le JIT est une option, pas une règle.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 5</span></div><h2>Keycloak as code : realm exporté, politique NIST, force brute, événements, brokering</h2><pre><code>k kubectl exec -n crisis deploy/keycloak -- /opt/keycloak/bin/kc.sh export --realm crisis --file /tmp/crisis.json --users skip &amp;&amp; k kubectl cp crisis/keycloak-…:/tmp/crisis.json infra/keycloak/realm-crisis.json
+# realm-crisis.json (extraits) : &quot;passwordPolicy&quot;: &quot;length(12) and notUsername and notEmail and passwordBlacklist(top-100k.txt)&quot; (pas d&#x27;expiration, pas de règle de caractères : NIST 800-63B) ; &quot;bruteForceProtected&quot;: true, &quot;failureFactor&quot;: 10, &quot;waitIncrementSeconds&quot;: 60 ; &quot;eventsEnabled&quot;: true, &quot;eventsListeners&quot;: [&quot;jboss-logging&quot;] ; flow de récupération : Reset Credentials → OTP REQUIRED avant le nouveau mot de passe ; identityProviders : google (test)
+# job GitOps : image adorsys/keycloak-config-cli:6.1.6-25 -e KEYCLOAK_URL … -e IMPORT_FILES_LOCATIONS=/config/realm-crisis.json -e IMPORT_VARSUBSTITUTION_ENABLED=true (secrets depuis Vault)
+# Alloy : logs Keycloak → Loki ; {app=&quot;keycloak&quot;} | json | type=~&quot;LOGIN_ERROR|LOGIN&quot; | line_format &quot;{{.type}} {{.username}} {{.ipAddress}} {{.error}}&quot;
+for i in $(seq 12); do curl -s -o /dev/null -d &#x27;grant_type=password&amp;client_id=web&amp;username=alice&amp;password=faux&#x27; https://keycloak.crisis.local/realms/crisis/protocol/openid-connect/token; done ; curl -s -d &#x27;grant_type=password&amp;client_id=web&amp;username=alice&amp;password=BonMotDePasse&#x27; … | jq -r .error_description</code></pre><div class="out">keycloak-config-cli : realm crisis updated (diff : 2 changements)
+Loki : 10 LOGIN_ERROR invalid_user_credentials puis « user_temporarily_disabled »
+&quot;Invalid user credentials&quot; avec le bon mot de passe pendant 60 s : la protection force brute est active</div><ul><li>Le realm en JSON dans Git, appliqué par l'outil, est la seule façon de savoir ce qui est configuré et de le reconstruire (TP 44) ; l'interface d'administration ne sert plus qu'à lire.</li><li>NIST 800-63B : longueur et liste noire, pas de complexité imposée ni d'expiration ; c'est contre-intuitif pour beaucoup de RSSI, sache l'argumenter.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 6</span></div><h2>Application : resource server, BFF, refresh rotation, back-channel logout, Token Exchange</h2><pre><code>// API — SecurityConfig : http.oauth2ResourceServer(o -&gt; o.jwt(j -&gt; j.jwtAuthenticationConverter(conv))) ; spring.security.oauth2.resourceserver.jwt.issuer-uri + audiences=[crisis-api] ; conv : realm_access.roles → ROLE_* ; @PreAuthorize(&quot;hasRole(&#x27;OPERATOR&#x27;) and @access.canRead(#id, authentication)&quot;)
+// BFF — Spring Cloud Gateway : spring.security.oauth2.client.registration.keycloak (authorization_code, PKCE) ; TokenRelay filter ; cookie SESSION HttpOnly Secure SameSite=Lax ; session Redis ; CSRF token double-submit pour le front
+// Keycloak client web : « Revoke Refresh Token » ON, « Refresh Token Max Reuse » 0 ; Backchannel Logout URL https://bff.crisis.local/logout/connect/back-channel/keycloak
+// Notification (Quarkus) : quarkus.oidc-client.grant.type=exchange ; appelle Incidents avec le jeton échangé (aud=crisis-api, sub=utilisateur d&#x27;origine, azp=notification) ; mTLS via le SVID SPIRE
+curl -s -d &quot;grant_type=refresh_token&amp;client_id=web&amp;refresh_token=$RT&quot; https://keycloak…/token | jq -r .refresh_token &gt; /tmp/rt2 ; curl -s -d &quot;grant_type=refresh_token&amp;client_id=web&amp;refresh_token=$RT&quot; https://keycloak…/token | jq -r .error
+# back-channel logout : déconnexion depuis Keycloak (admin → sessions → logout) puis :
+curl -sk -b &quot;SESSION=$COOKIE&quot; https://bff.crisis.local/api/me -o /dev/null -w &#x27;%{http_code}&#x27;
+# tp41.md : tableau BFF contre SPA+PKCE — jeton jamais dans le navigateur / une brique de plus ; XSS ne vole rien / XSS vole le jeton ; CSRF à gérer / pas de cookie</code></pre><div class="out">refresh rejoué : &quot;invalid_grant&quot; (et Keycloak révoque toute la session : détection de vol)
+après back-channel logout : 401 (la session BFF a été invalidée sans attendre l&#x27;expiration)
+Notification → Incidents : 200 avec un jeton dont azp=notification et sub=alice (délégation tracée)</div><ul><li>Le BFF garde le jeton côté serveur : un XSS dans le front React ne peut pas l'exfiltrer. C'est la recommandation OAuth 2.1 pour les applications navigateur, et la réponse d'entretien attendue.</li><li>Token Exchange, pas propagation du jeton utilisateur : l'audience change, le service appelant est nommé, la chaîne d'appel est lisible dans les journaux.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 7</span></div><h2>Dix tests de sécurité automatisés, Testcontainers Keycloak</h2><pre><code>@Testcontainers class SecurityIT {
+  @Container static KeycloakContainer kc = new KeycloakContainer(&quot;quay.io/keycloak/keycloak:26.0&quot;).withRealmImportFile(&quot;realm-test.json&quot;);
+  @DynamicPropertySource static void p(DynamicPropertyRegistry r) { r.add(&quot;spring.security.oauth2.resourceserver.jwt.issuer-uri&quot;, () -&gt; kc.getAuthServerUrl() + &quot;/realms/crisis&quot;); }
+  @Test void jetonExpire_401()            { … jwt exp=now-60 … isUnauthorized() }
+  @Test void algNone_401()               { … header {&quot;alg&quot;:&quot;none&quot;} … isUnauthorized() }
+  @Test void hs256AvecClePublique_401()  { … signé HS256 avec le PEM public du realm … isUnauthorized() }
+  @Test void mauvaisEmetteur_401()       { … iss=https://evil … }
+  @Test void mauvaiseAudience_401()      { … aud=autre-api … }
+  @Test void idTokenCommeAccessToken_401() { … typ=ID, pas d&#x27;aud crisis-api … }
+  @Test void roleInsuffisant_403()       { … viewer sur DELETE /api/incidents/1 … isForbidden() }
+  @Test void idorEntreOrganisations_403(){ … org-B lit incident org-A … }
+  @Test void refreshRejoue_400()         { … second usage du même refresh → invalid_grant … }
+  @Test void cleApiRevoquee_401()        { … X-Api-Key révoquée → 401 + événement api_key.rejected … }
+}
+// chaque test vérifie aussi qu&#x27;une ligne de log security_event{type=…} a été émise (appender de test)</code></pre><div class="out">Tests run: 10, Failures: 0   (durée 14 s, Keycloak démarré une fois)</div><ul><li>Chaque test est une attaque connue rejouée à chaque commit ; le jour où quelqu'un met <code>jwt().decoder(NimbusJwtDecoder.withJwkSetUri(...))</code> sans validateur d'audience, <code>mauvaiseAudience_401</code> devient rouge.</li><li>Le test <code>hs256AvecClePublique</code> est l'attaque de confusion d'algorithme : elle a touché plusieurs bibliothèques, elle mérite d'être connue par son nom.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 8</span></div><h2>Partenaires : clé d&#x27;API hachée, webhook signé HMAC</h2><pre><code>// ApiKeyService : clé = &quot;cs_live_&quot; + 32 octets aléatoires base62 ; stockage : prefix (8 premiers caractères, pour la recherche), hash Argon2id, quota (1 000/jour), scopes, expiration, révocation
+// filtre : X-Api-Key → cherche par prefix → Argon2 verify → quota (Bucket4j sur Redis) → SecurityContext avec ROLE_PARTNER
+// webhook sortant : X-Crisis-Signature: t=1758536400,v1=hex(HMAC-SHA256(secret, t + &quot;.&quot; + body)) ; X-Crisis-Delivery: uuid ; retry avec backoff, dead-letter
+// récepteur (exemple Python fourni au partenaire) : rejeter si |now - t| &gt; 300 s ; comparer avec hmac.compare_digest
+curl -s -H &quot;X-Api-Key: cs_live_aB3…&quot; https://api.crisis.local/partner/incidents | jq length ; for i in $(seq 1001); do curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -H &quot;X-Api-Key: cs_live_aB3…&quot; https://api.crisis.local/partner/incidents; done | sort | uniq -c</code></pre><div class="out">12
+   1000 200
+      1 429   (quota journalier atteint, en-tête Retry-After)
+webhook : signature vérifiée par le récepteur de test ; rejouée 10 min plus tard → rejetée (horodatage)</div><ul><li>La clé n'est jamais stockée : seul son hash l'est ; le préfixe permet la recherche et l'identification dans un log sans révéler la clé.</li><li>L'horodatage dans la signature HMAC ferme le rejeu ; l'identifiant de livraison rend le récepteur idempotent.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 9</span></div><h2>Zero trust : le document d&#x27;architecture</h2><pre><code># docs/security/zero-trust.md (2 pages, schéma Mermaid)
+# 1. Identités : humains (Keycloak, passkeys, groupes), charges (SPIRE SVID, ServiceAccount), machines (Teleport, jetons GitLab), partenaires (clés hachées)
+# 2. Segmentation : NetworkPolicy default-deny, mesh mTLS STRICT, AuthorizationPolicy par identité, namespaces et PSA
+# 3. Chiffrement : TLS partout (24 h), Transit pour les données, secrets Vault dynamiques, chiffrement etcd
+# 4. Accès : JIT (Teleport), RBAC par groupe, jetons courts, révocation centrale, break-glass documenté
+# 5. Journalisation : audit API, Vault audit, Keycloak events, Falco, logs applicatifs avec identité
+# 6. Reste à faire : SPIRE sur le worker Kafka, attestation de nœud (TPM), DLP sur les exports, revue trimestrielle des groupes</code></pre><div class="out">document relu par un pair, chaque contrôle renvoie au TP qui le prouve</div><ul><li>Zero trust n'est pas un produit : le document liste des contrôles, chacun avec sa preuve. Une case « à faire » honnête vaut mieux qu'une case cochée sans preuve.</li><li>C'est le document que tu présenteras à un RSSI en entretien : sache le dérouler en 5 minutes.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Étape 10</span></div><h2>PKI au quotidien : SAN, chaîne, OCSP, PKCS#12, cinq erreurs, inventaire</h2><pre><code>v write pki_int/issue/crisis-internal common_name=notification.crisis.svc alt_names=&quot;notification,notification.crisis,notification.crisis.svc.cluster.local&quot; ip_sans=10.96.12.4 ttl=24h -format=json &gt; /tmp/n.json
+jq -r .data.certificate /tmp/n.json &gt; n.crt ; jq -r .data.issuing_ca /tmp/n.json &gt; int.crt
+docker run --rm -v &quot;$PWD:/w&quot; -w /w alpine/openssl sh -c &#x27;openssl verify -CAfile infra/pki/root/root.crt -untrusted int.crt n.crt &amp;&amp; openssl x509 -in n.crt -noout -ext subjectAltName&#x27;
+# OCSP stapling sur l&#x27;Ingress : annotation nginx.ingress.kubernetes.io/ssl-ocsp… ou ConfigMap ingress-nginx enable-ocsp: &quot;true&quot; ; test :
+docker run --rm --network host alpine/openssl s_client -connect api.crisis.local:443 -status &lt;/dev/null 2&gt;/dev/null | grep -A2 &#x27;OCSP Response Status&#x27;
+# PKCS#12 pour un client Java :
+docker run --rm -v &quot;$PWD:/w&quot; -w /w alpine/openssl pkcs12 -export -in n.crt -inkey n.key -certfile int.crt -out notification.p12 -passout pass:changeit
+# Spring : spring.ssl.bundle.jks.notif.keystore.location=/certs/notification.p12, type=PKCS12 ; RestClient.builder().apply(ssl.fromBundle(&quot;notif&quot;))
+# les cinq erreurs du tableau 41.9, reproduites puis corrigées : SAN absent (hostname mismatch), chaîne incomplète (unable to get local issuer), horloge décalée (not yet valid), CA non distribuée (self-signed in chain), certificat expiré (expired) — chaque fois : la commande openssl qui la révèle, la correction
+# inventaire : cert-manager (kubectl get certificate -A) + scan : for h in $(kubectl get ingress -A -o jsonpath=&#x27;{.items[*].spec.tls[*].hosts[*]}&#x27;); do echo &quot;$h $(echo | openssl s_client -connect $h:443 -servername $h 2&gt;/dev/null | openssl x509 -noout -enddate)&quot;; done &gt; docs/security/inventaire-certificats.md
+# alerte : certmanager_certificate_expiration_timestamp_seconds à 30 et 14 j ; blackbox_exporter probe_ssl_earliest_cert_expiry pour les endpoints hors cert-manager</code></pre><div class="out">n.crt: OK
+DNS:notification, DNS:notification.crisis, DNS:notification.crisis.svc.cluster.local, IP Address:10.96.12.4
+OCSP Response Status: successful (0x0)
+inventaire : 11 certificats (7 cert-manager, 4 scannés), prochain à expirer dans 22 h (normal : 24 h) ; 1 hors périmètre trouvé (Grafana expose encore un auto-signé sur :3000 → corrigé)</div><ul><li>Les cinq erreurs du tableau sont 90 % des tickets TLS en production : les avoir provoquées une fois évite une heure à chaque fois.</li><li>L'inventaire trouve ce que cert-manager ne gère pas : c'est toujours là que l'expiration surprend.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Livrable</span><span class="badge tag-important">Important</span></div><h2>Ce que le relecteur doit trouver</h2><ul><li><code>infra/pki/</code> (cérémonie, racine, intermédiaire, trust-manager, certificats 24 h, alertes, inventaire), <code>infra/spire/</code>, <code>infra/teleport/</code>, <code>infra/keycloak/realm-crisis.json</code> avec keycloak-config-cli, le code (resource server, BFF, Token Exchange, clés d'API, webhooks), les dix tests de sécurité, <code>docs/security/zero-trust.md</code>.</li><li><code>tp41.md</code> : la chaîne vérifiée après rotation, la connexion PostgreSQL par certificat, la boucle de désactivation (401 partout), la session Teleport rejouée, le refresh rejoué refusé, le back-channel logout, les 10 tests verts, le quota 429, les cinq erreurs TLS corrigées.</li><li><code>docs/cours-zero-trust-pki.md</code> : les cinq piliers, le vocabulaire (SVID, SPIFFE, JIT, BFF, PKCE, Token Exchange) et les réponses d'entretien.</li></ul></article>
+<article><div class="chaphead"><span class="chapnum">Pour aller plus loin</span><span class="badge tag-contexte">Bon à savoir</span></div><h2>Questions de relecteur</h2><ul><li>Pourquoi un BFF plutôt qu'une SPA avec PKCE ? Le jeton ne quitte pas le serveur ; PKCE reste correct pour une application mobile ou sans backend.</li><li>Que fait-on si la racine hors ligne est perdue ? Rien n'est perdu tant que l'intermédiaire est valide ; on prépare une nouvelle racine, on la distribue par trust-manager, on migre à la prochaine rotation. D'où deux copies scellées.</li></ul></article>
+<div class="footnav"><a href="../devops-niveau-7-securite-devsecops.html#c41">← Chapitre 41</a><a href="../devops-niveau-7-securite-devsecops.html#c42">Chapitre 42 →</a></div>
+</div>
+<script>
+(function(){ var root=document.documentElement; try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.querySelectorAll('pre').forEach(function(pre){ var b=document.createElement('button'); b.type='button'; b.className='copy'; b.textContent='Copier';
+    b.addEventListener('click',function(){ var t=pre.querySelector('code').textContent; navigator.clipboard.writeText(t).then(function(){ b.textContent='Copié !'; setTimeout(function(){ b.textContent='Copier'; },1500); }); }); pre.appendChild(b); });
+})();
+</script>
+</body></html>
