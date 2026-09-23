@@ -544,6 +544,8 @@ details>summary{cursor:pointer;font-weight:700;color:var(--accent-ink)}
 <p>Vocabulaire à connaître : image disque (qcow2, VMDK, AMI chez AWS), snapshot, migration à chaud, sur-allocation (overcommit), extensions matérielles Intel VT-x / AMD-V.</p>
 
 <h3>7.2 VM contre conteneur<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="fig" id="virtualisation-conteneurs-idees-cles"><a href="images/virtualisation-conteneurs-idees-cles.webp" target="_blank" rel="noopener" title="Ouvrir le schéma en grand"><img src="images/virtualisation-conteneurs-idees-cles.webp" alt="Virtualisation et conteneurs, les idées clés en images : VM contre conteneur, namespaces / cgroups / couches, Docker sous Windows par WSL 2, hyperviseurs de type 1 et 2, comment choisir, et VMware / Proxmox / Nutanix en entreprise." style="width:100%;height:auto;display:block;border-radius:6px" loading="lazy" decoding="async"></a><figcaption>Virtualisation et conteneurs, les idées clés en images : VM contre conteneur, namespaces / cgroups / couches, Docker sous Windows par WSL 2, hyperviseurs de type 1 et 2, comment choisir, et VMware / Proxmox / Nutanix en entreprise.</figcaption></figure>
+
 <p>Un conteneur n'est <em>pas</em> une petite VM. C'est un processus Linux ordinaire, isolé par le noyau de l'hôte grâce à trois mécanismes :</p>
 <ul>
 <li><strong>Namespaces</strong> : chaque conteneur voit ses propres PID, réseau, points de montage, utilisateurs, nom d'hôte. <code>ps</code> dans le conteneur ne voit que ses processus.</li>
@@ -573,6 +575,8 @@ docker info | head -30      # runtime, cgroups, stockage
 docker run --rm alpine uname -a   # le noyau vu du conteneur = noyau de la VM WSL</code></pre>
 
 <h3>7.4 Hyperviseurs en entreprise : VMware, Proxmox, Nutanix<span class="badge tag-coeur">Par cœur</span></h3>
+<figure class="fig" id="isolation-hyperviseurs-entreprise"><a href="images/isolation-hyperviseurs-entreprise.webp" target="_blank" rel="noopener" title="Ouvrir le schéma en grand"><img src="images/isolation-hyperviseurs-entreprise.webp" alt="Comment un conteneur isole (namespaces, cgroups, couches), les deux types d'hyperviseurs, Docker sous Windows, l'isolation renforcée (gVisor, Firecracker), et l'ordre de construction d'un homelab security-first : réseau, identité et secrets, cluster, chaîne d'approvisionnement." style="width:100%;height:auto;display:block;border-radius:6px" loading="lazy" decoding="async"></a><figcaption>Comment un conteneur isole (namespaces, cgroups, couches), les deux types d'hyperviseurs, Docker sous Windows, l'isolation renforcée (gVisor, Firecracker), et l'ordre de construction d'un homelab security-first : réseau, identité et secrets, cluster, chaîne d'approvisionnement.</figcaption></figure>
+
 <p>En mission, les conteneurs tournent sur des VM, et ces VM tournent sur l'un de ces trois. Depuis le rachat de VMware par Broadcom (2023) et ses hausses de licences, la « sortie de VMware » est l'un des programmes les plus fréquents des DSI françaises ; Proxmox et Nutanix en sont les deux destinations principales, avec le cloud public.</p>
 <div class="tablewrap"><table>
 <tr><th></th><th>VMware vSphere</th><th>Proxmox VE</th><th>Nutanix</th></tr>
