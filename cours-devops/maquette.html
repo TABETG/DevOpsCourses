@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Correction du TP 1 — Cartographier une chaîne de livraison</title>
+<title>Charte graphique — DevOps Courses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -351,10 +351,79 @@ h3.sec-active{padding-left:.75rem}
 #sprint button.primary{background:#6FA3F5;border-color:#6FA3F5;color:#0B1220}
 #sprint button:disabled{opacity:.4;cursor:default}
 #sprint .late-msg{color:#FF6B6B;font-weight:700}
-body{padding-bottom:2rem}
+body{padding-bottom:6.5rem}
 @keyframes blink{50%{opacity:.35}}
-@media (max-width:480px){#sprint{font-size:.74rem;padding:.35rem .6rem calc(.35rem + env(safe-area-inset-bottom,0px))} #sprint .row{gap:.3rem .6rem} #sprint .clock{font-size:1.2rem;min-width:4.2rem} #sprint button{padding:.25rem .5rem;min-height:30px;font-size:.74rem} #sprint .stat{font-size:.7rem} #sprint .pbar{height:4px} body{padding-bottom:2rem}}
+@media (max-width:480px){#sprint{font-size:.74rem;padding:.35rem .6rem calc(.35rem + env(safe-area-inset-bottom,0px))} #sprint .row{gap:.3rem .6rem} #sprint .clock{font-size:1.2rem;min-width:4.2rem} #sprint button{padding:.25rem .5rem;min-height:30px;font-size:.74rem} #sprint .stat{font-size:.7rem} #sprint .pbar{height:4px} body{padding-bottom:7rem}}
 @media print{#sprint,.tbox,.chaptime{display:none !important} body{padding-bottom:0}}
+
+/* ============ Explication des commandes ============ */
+pre .explain{position:absolute;top:.5rem;right:4.9rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55}
+pre:hover .explain,pre .explain:focus-visible,pre .explain.on{opacity:1}
+pre .explain.on{background:#1B7A4E;border-color:#1B7A4E;color:#fff}
+pre .xpl{display:block;color:#8FD3A7;font-size:.82em;line-height:1.45;padding:.05rem 0 .35rem 1.4em;white-space:pre-wrap;word-break:break-word;font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+pre .xpl::before{content:"↳ ";opacity:.7}
+@media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
+@media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
+
+/* ============ Animations pédagogiques ============ */
+.anim{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.anim .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.anim .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.anim .ctl button.primary{background:var(--accent);color:#fff}
+.anim .ctl button:disabled{opacity:.4;cursor:default}
+.anim .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.anim svg{width:100%;height:auto;display:block;overflow:visible;font-family:inherit}
+.anim svg text{fill:var(--ink)}
+.anim .lbl{fill:var(--muted);font-size:11px}
+.anim .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.anim .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.anim .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.anim .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.anim .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.anim .redfill{fill:#C0392B}
+.anim .greenfill{fill:#1B7A4E}
+.anim .amberfill{fill:#B7791F}
+.anim .dim{opacity:.35}
+.anim .on{filter:drop-shadow(0 0 4px rgba(37,99,235,.5))}
+.anim .mono{font-family:"JetBrains Mono",monospace;font-size:11px}
+.anim .log{font-family:"JetBrains Mono",monospace;font-size:.78rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.6rem .8rem;min-height:3.6em;white-space:pre-wrap;margin-top:.6rem;line-height:1.45}
+.anim .log .ok{color:#8FD3A7}.anim .log .ko{color:#F29A9A}.anim .log .cmd{color:#9CC4FF}
+.anim figcaption{font-size:.85rem;color:var(--muted);margin-top:.6rem;text-align:center}
+:root[data-theme="dark"] .anim .red{fill:#3A1616;stroke:#F29A9A}
+@media (prefers-reduced-motion: reduce){.anim .auto{display:none}}
+@media print{.anim .ctl{display:none}}
+
+/* ============ Planches manga ============ */
+.fig.manga svg{min-width:640px;border-radius:6px}
+.fig.manga svg text{font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.fig.manga figcaption::before{content:"Manga — ";font-weight:700;color:var(--ink)}
+:root[data-theme="dark"] .fig.manga svg{opacity:.94}
+
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
 
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
@@ -445,114 +514,55 @@ details>summary{cursor:pointer;font-weight:700;color:var(--accent-ink)}
 </head>
 <body>
 <header class="topbar" id="topbar"><div class="in">
-<a class="brand" href="../index.html"><span class="logo">D</span>DevOps Courses</a>
+<a class="brand" href="index.html"><span class="logo">D</span>DevOps Courses</a>
 <button class="burger" type="button" aria-label="Menu" onclick="document.getElementById('topbar').classList.toggle('open')">☰</button>
-<nav><a href="../index.html">Accueil</a><details><summary>Parcours DevOps</summary><div><a href="../devops-niveau-0-fondations.html">0 · Fondations</a><a href="../devops-niveau-1-conteneurs.html">1 · Conteneurs</a><a href="../devops-niveau-2-ci-cd.html">2 · CI/CD</a><a href="../devops-niveau-3-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-niveau-4-cloud.html">4 · Cloud</a><a href="../devops-niveau-5-kubernetes.html">5 · Kubernetes</a><a href="../devops-niveau-6-observabilite.html">6 · Observabilité</a><a href="../devops-niveau-7-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="../devops-niveau-8-sre-architecture.html">8 · SRE et architecture</a><a href="../devops-niveau-9-expert-leadership.html">9 · Expert et leadership</a></div></details><details><summary>Cours</summary><div><a href="../cours-react.html">React</a><a href="../cours-angular.html">Angular</a><a href="../cours-vue.html">Vue.js</a><a href="../cours-cloud.html">Cloud</a><a href="../cours-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-data-platform-aws-talend.html">Data Platform AWS Talend</a></div></details><a href="../devops-aide-memoire.html">Aide-mémoire</a><a href="../devops-fiches-entretien.html">Entretien</a>
+<nav><a href="index.html">Accueil</a><details><summary>Parcours DevOps</summary><div><a href="devops-niveau-0-fondations.html">0 · Fondations</a><a href="devops-niveau-1-conteneurs.html">1 · Conteneurs</a><a href="devops-niveau-2-ci-cd.html">2 · CI/CD</a><a href="devops-niveau-3-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="devops-niveau-4-cloud.html">4 · Cloud</a><a href="devops-niveau-5-kubernetes.html">5 · Kubernetes</a><a href="devops-niveau-6-observabilite.html">6 · Observabilité</a><a href="devops-niveau-7-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="devops-niveau-8-sre-architecture.html">8 · SRE et architecture</a><a href="devops-niveau-9-expert-leadership.html">9 · Expert et leadership</a></div></details><details><summary>Cours</summary><div><a href="cours-react.html">React</a><a href="cours-angular.html">Angular</a><a href="cours-vue.html">Vue.js</a><a href="cours-cloud.html">Cloud</a><a href="cours-java-pki-signature-electronique.html">Java PKI et signature</a><a href="cours-data-platform-aws-talend.html">Data Platform AWS Talend</a></div></details><a href="devops-aide-memoire.html">Aide-mémoire</a><a href="devops-fiches-entretien.html">Entretien</a>
 <button class="theme-btn" type="button" aria-label="Basculer clair / sombre" onclick="(function(){var r=document.documentElement;var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('devops-theme',n)}catch(e){}})()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
 </nav></div></header>
-<header class="hero">
-  <div class="in">
-    <div class="pagenav"><a href="../devops-niveau-0-fondations.html#c1">← Retour au chapitre 1</a><a href="../index.html">Accueil du parcours</a></div>
-    <div class="level">Correction type — Travail pratique 1</div>
-    <h1>Cartographier une chaîne de livraison</h1>
-    <p class="lead">« Niveau 2 », « niveau 6 » désignent les niveaux de ce parcours (0 à 9, voir l'accueil) : la correction annonce où tu apprendras à faire ce qu'elle recommande. Exemple complet sur CrisisShield tel qu'il est probablement aujourd'hui : projet solo, sans pipeline. Les durées sont réalistes mais ce sont des exemples : la valeur du TP est dans ton relevé honnête, pas dans le modèle.</p>
-  </div>
-</header>
-
+<header class="hero"><div class="in"><div class="level">Maquette · charte graphique</div><h1>Une seule charte pour tout le site</h1>
+<p class="lead">Cette page est la maquette de référence : chaque page du site (accueil, niveaux, cours, aide-mémoire, fiches, corrections) applique exactement ces composants, ces couleurs et cette structure. Toute évolution visuelle se fait ici d'abord, puis se propage par <code>outils-generation/restyle.py</code>.</p>
+<div class="meta"><span>Barre de navigation commune</span><span>Bandeau compact</span><span>Sommaire collant</span><span>Cartes et blocs</span><span>Pied de page</span><span>Clair / sombre</span></div></div></header>
 <div class="single">
-
-<article>
-<div class="chaphead"><span class="chapnum">Partie 1</span><span class="badge tag-coeur">Par cœur</span></div>
-<h2>Les étapes, de l'idée à la production</h2>
-<div class="tablewrap"><table>
-<tr><th>#</th><th>Étape</th><th>Qui</th><th>Outil</th><th>Travail actif</th><th>Attente avant l'étape suivante</th></tr>
-<tr><td>1</td><td>Idée notée</td><td>moi</td><td>tête, notes</td><td>5 min</td><td>2 à 10 jours (pas de backlog priorisé)</td></tr>
-<tr><td>2</td><td>Développement backend et front</td><td>moi</td><td>IntelliJ, VS Code</td><td>4 h</td><td>0</td></tr>
-<tr><td>3</td><td>Tests manuels sur le poste</td><td>moi</td><td>navigateur, Postman</td><td>30 min</td><td>0</td></tr>
-<tr><td>4</td><td>Commit et push</td><td>moi</td><td>Git</td><td>5 min</td><td>1 à 3 jours (j'accumule avant de pousser)</td></tr>
-<tr><td>5</td><td>Build du jar et du front</td><td>moi</td><td><code>mvn package</code> et <code>npm build</code> à la main</td><td>15 min</td><td>dépend de ma disponibilité</td></tr>
-<tr><td>6</td><td>Déploiement</td><td>moi</td><td>copie du jar, redémarrage à la main</td><td>20 min</td><td>1 à 7 jours (« je déploierai ce week-end »)</td></tr>
-<tr><td>7</td><td>Vérification en production</td><td>moi</td><td>navigateur</td><td>10 min</td><td>—</td></tr>
-<tr><td>8</td><td>Bug découvert en production</td><td>moi</td><td>logs dans un fichier sur le serveur</td><td>1 h</td><td>découverte tardive : plusieurs jours</td></tr>
-</table></div>
-<div class="objectifs"><strong>Ce que les chiffres disent</strong>
-<ul>
-<li>Travail actif total : environ <strong>6 h</strong>.</li>
-<li>Délai réel idée → production : <strong>5 à 20 jours</strong>.</li>
-<li>Ratio d'efficacité (temps actif / temps total) : 6 h sur 10 jours × 24 h ≈ <strong>2,5 %</strong>.</li>
-</ul></div>
-</article>
-
-<article>
-<div class="chaphead"><span class="chapnum">Partie 2</span><span class="badge tag-important">Important</span></div>
-<h2>Les trois attentes les plus longues</h2>
-<ol>
-<li><strong>Entre le push et le déploiement</strong> (1 à 7 jours) : le déploiement est manuel, donc repoussé.</li>
-<li><strong>Entre l'idée et le début du développement</strong> (2 à 10 jours) : aucun backlog, je choisis au feeling.</li>
-<li><strong>Entre le bug en production et sa détection</strong> (plusieurs jours) : aucune alerte, je découvre en utilisant l'application.</li>
-</ol>
-</article>
-
-<article>
-<div class="chaphead"><span class="chapnum">Partie 3</span><span class="badge tag-important">Important</span></div>
-<h2>Ce qu'une automatisation changerait</h2>
-<div class="tp"><span class="tag">1. Pipeline CI/CD — appris au <a href="../devops-niveau-2-ci-cd.html">niveau 2 du parcours</a></span>
-<p>Push → build → tests → image → déploiement automatique en staging, un clic pour la production. L'attente 1 passe de plusieurs jours à quelques minutes ; le déploiement cesse d'être un événement.</p></div>
-<div class="tp"><span class="tag">2. Backlog minimal</span>
-<p>Issues GitLab avec priorité, limite de deux tâches en cours. L'attente 2 devient un choix explicite, pas un oubli. Ce n'est pas de l'automatisation, c'est du Lean : petits lots, travail visible.</p></div>
-<div class="tp"><span class="tag">3. Healthcheck, logs centralisés et une alerte — appris au <a href="../devops-niveau-6-observabilite.html">niveau 6 du parcours</a></span>
-<p>L'attente 3 passe de jours à minutes, et le rollback devient possible avant que quelqu'un ne subisse le bug.</p></div>
-</article>
-
-<article>
-<div class="chaphead"><span class="chapnum">Partie 4</span><span class="badge tag-coeur">Par cœur</span></div>
-<h2>Métriques DORA estimées aujourd'hui</h2>
-<div class="tablewrap"><table>
-<tr><th>Métrique</th><th>Estimation</th><th>Catégorie DORA</th></tr>
-<tr><td>Fréquence de déploiement</td><td>1 à 2 par mois</td><td>Low</td></tr>
-<tr><td>Délai commit → production</td><td>3 à 10 jours</td><td>Medium à Low</td></tr>
-<tr><td>Taux d'échec des changements</td><td>≈ 30 % (un déploiement sur trois demande une correction rapide)</td><td>Low</td></tr>
-<tr><td>Temps de rétablissement</td><td>1 à 3 jours (détection tardive, correction manuelle)</td><td>Low</td></tr>
-</table></div>
-<div class="exo"><span class="tag">Cible à la fin du niveau 2</span>
-<p>Déploiement à chaque merge sur main, délai commit → production inférieur à 1 h, taux d'échec inférieur à 15 %, rétablissement en moins d'une heure par rollback d'image.</p></div>
-</article>
-
-<article>
-<div class="chaphead"><span class="chapnum">Partie 5</span><span class="badge tag-coeur">Par cœur</span></div>
-<h2>Ce que ce relevé démontre</h2>
-<div class="entretien"><strong>En entretien</strong> — Le travail actif se compte en heures, le délai en semaines : presque tout le temps est de l'attente, et l'attente vient toujours d'une étape manuelle ou de l'absence de signal. C'est l'argument à donner à la question « pourquoi le DevOps ».</div>
-<h3>Suivi, à mettre à jour à chaque niveau</h3>
-<div class="tablewrap"><table>
-<tr><th>Niveau terminé</th><th>Fréquence de déploiement</th><th>Délai commit → prod</th><th>Taux d'échec</th><th>Rétablissement</th><th>Ce qui a changé</th></tr>
-<tr><td>0</td><td>1 à 2 par mois</td><td>3 à 10 jours</td><td>≈ 30 %</td><td>1 à 3 jours</td><td>Relevé initial</td></tr>
-<tr><td>2</td><td>…</td><td>…</td><td>…</td><td>…</td><td>Pipeline CI/CD</td></tr>
-<tr><td>5</td><td>…</td><td>…</td><td>…</td><td>…</td><td>Kubernetes et GitOps</td></tr>
-<tr><td>6</td><td>…</td><td>…</td><td>…</td><td>…</td><td>Observabilité et alertes</td></tr>
-<tr><td>9</td><td>…</td><td>…</td><td>…</td><td>…</td><td>Plateforme complète</td></tr>
-</table></div>
-</article>
-
-<div class="footnav"><a href="../devops-niveau-0-fondations.html#c1">← Chapitre 1</a><a href="../devops-niveau-0-fondations.html#c2">Chapitre 2 →</a></div>
+<nav class="toc"><strong>Sommaire</strong><ol><li><a href="#structure">Structure d'une page</a></li><li><a href="#couleurs">Couleurs et typographie</a></li><li><a href="#composants">Composants</a></li><li><a href="#regles">Règles</a></li></ol></nav>
+<article id="structure"><div class="chaphead"><span class="chapnum">Maquette</span><span class="badge lvl-junior">Structure</span></div><h2>Structure d'une page</h2>
+<pre><code>┌──────────────────────────────────────────────────────────────────────┐
+│ TOPBAR (collante, 64 px) : logo · Accueil · Parcours ▾ · Cours ▾ · Aide-mémoire · Entretien · ◐   │
+├──────────────────────────────────────────────────────────────────────┤
+│ HERO (dégradé marine, ≤ 200 px) : pastille de contexte · titre · résumé (70 ch) · métadonnées      │
+├──────────────┬───────────────────────────────────────────────────────┤
+│ SOMMAIRE     │ CONTENU : une carte blanche par chapitre               │
+│ (collant,    │   pastilles « Chapitre N » + niveau · h2 · En 30 s     │
+│  270 px)     │   objectifs · sections h3 · code · exercices · TP      │
+├──────────────┴───────────────────────────────────────────────────────┤
+│ FOOTER (marine) : présentation · parcours · cours · réviser                                        │
+└──────────────────────────────────────────────────────────────────────┘
+Largeur utile : 1180 px · marges 1,25 rem · sous 900 px : menu hamburger, sommaire en tête, une colonne</code></pre>
+<p>Le bandeau ne contient plus de boutons ni de trois rangées de pastilles : la navigation est dans la barre du haut, le thème dans le bouton ◐, et les métadonnées tiennent sur une ligne.</p></article>
+<article id="couleurs"><div class="chaphead"><span class="chapnum">Maquette</span><span class="badge lvl-confirme">Couleurs</span></div><h2>Couleurs et typographie</h2>
+<table><tr><th>Jeton</th><th>Clair</th><th>Sombre</th><th>Usage</th></tr>
+<tr><td><code>--hero</code> / <code>--hero-2</code></td><td>#0B1220 → #132A57</td><td>#070D1A → #0F2148</td><td>barre, bandeau, pied de page</td></tr>
+<tr><td><code>--accent</code> / <code>--accent-ink</code></td><td>#2563EB / #1E40AF</td><td>#60A5FA / #93C5FD</td><td>liens, titres h3, pastille de chapitre, bloc « En 30 secondes »</td></tr>
+<tr><td><code>--bg</code> / <code>--paper</code></td><td>#F4F6FA / #FFFFFF</td><td>#0B1220 / #111A2E</td><td>fond de page / cartes</td></tr>
+<tr><td><code>--ink</code> / <code>--muted</code></td><td>#0F172A / #5B6474</td><td>#E5EAF3 / #9AA6BA</td><td>texte / texte secondaire</td></tr>
+<tr><td>exercice / TP</td><td>ambre / vert (existants)</td><td>idem atténués</td><td>blocs d'exercice et de travail pratique</td></tr></table>
+<p>Police de texte : <strong>Inter</strong> (400, 600, 700, 800), 16,5 px, interligne 1,65. Code : <strong>JetBrains Mono</strong>, 0,84 em. Titres : h1 dans le bandeau (clamp 1,7–2,5 rem), h2 de chapitre 1,65 rem, h3 1,15 rem avec filet gauche accentué. Rayon des cartes 12 px, des blocs 10 px ; ombre douce unique.</p></article>
+<article id="composants"><div class="chaphead"><span class="chapnum">Chapitre 1</span><span class="badge lvl-senior">Composants</span></div><h2>Composants</h2>
+<div class="bref"><span class="tag">En 30 secondes</span><ol><li>Le bloc « En 30 secondes » ouvre chaque chapitre : fond accent doux, filet gauche.</li><li>Trois puces maximum, une phrase chacune.</li></ol></div>
+<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul><li>Reconnaître chaque composant de la charte</li><li>Les réutiliser sans en inventer d'autres</li></ul></div>
+<h3>Bloc de code</h3><pre><code>docker compose up -d   # bouton « Copier » en haut à droite, fond marine, JetBrains Mono</code></pre>
+<div class="exo"><span class="tag">Exercice 1.1</span><p>Un exercice : question en gras implicite, corrigé dans un dépliant.</p><details><summary>Corrigé</summary><div class="sol">Réponse courte, puis explication.</div></details></div>
+<div class="tp"><span class="tag">Travail pratique 1 — Exemple</span><ol><li>Étapes numérotées.</li><li>Livrable explicite.</li></ol><details><summary>Correction type</summary><div class="sol">Correction avec les commandes et la preuve attendue.</div></details></div>
+<h3>Pastilles de niveau</h3><p><span class="badge lvl-junior">Débutant</span> <span class="badge lvl-confirme">Confirmé</span> <span class="badge lvl-senior">Senior</span> <span class="badge lvl-expert">Expert</span> <span class="badge tag-coeur">Par cœur</span> <span class="badge tag-important">Important</span> <span class="badge tag-contexte">Bon à savoir</span></p>
+<h3>Tableau</h3><table><tr><th>Colonne</th><th>Valeur</th></tr><tr><td>En-tête</td><td>fond accent doux, texte accent foncé</td></tr><tr><td>Lignes</td><td>filets fins, police 0,92 em</td></tr></table></article>
+<article id="regles"><div class="chaphead"><span class="chapnum">Maquette</span><span class="badge lvl-expert">Règles</span></div><h2>Règles</h2>
+<ol><li>Une seule barre de navigation, identique partout, avec la page courante surlignée.</li><li>Le bandeau tient en un écran de téléphone : pastille, titre, résumé, une ligne de métadonnées.</li><li>Un sommaire collant à gauche sur toutes les pages longues (niveaux, cours, aide-mémoire) ; en tête sur mobile.</li><li>Un chapitre = une carte ; les blocs (30 secondes, objectifs, exercice, TP) gardent leurs couleurs sémantiques.</li><li>Pas de composant nouveau sans l'ajouter ici d'abord.</li><li>Clair et sombre testés à chaque livraison, à 360 px et 1280 px.</li></ol></article>
+<div class="footnav"><a href="index.html">← Accueil</a></div>
 </div>
-
-<script>
-(function(){
-  var root=document.documentElement;
-  try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
-  document.querySelectorAll('table').forEach(function(t){
-    var rows=t.rows; if(!rows.length) return; var head=rows[0]; if(!head.querySelector('th')) return;
-    head.classList.add('head'); var labels=Array.prototype.map.call(head.cells,function(c){return c.textContent.trim();});
-    for(var i=1;i<rows.length;i++){ var cells=rows[i].cells; for(var j=0;j<cells.length;j++){ if(cells[j].tagName==='TD') cells[j].setAttribute('data-label',labels[j]||''); } }
-    t.classList.add('stack');
-  });
-})();
-</script>
+<script>(function(){try{var t=localStorage.getItem('devops-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}document.querySelectorAll('pre').forEach(function(pre){var b=document.createElement('button');b.type='button';b.className='copy';b.textContent='Copier';b.addEventListener('click',function(){navigator.clipboard.writeText(pre.querySelector('code').textContent).then(function(){b.textContent='Copié !';setTimeout(function(){b.textContent='Copier'},1500)})});pre.appendChild(b)});})();</script>
 <footer class="sitefooter"><div class="in">
 <div><div class="brand">DevOps Courses</div>Parcours DevOps de zéro à expert et cours complémentaires, avec CrisisShield comme fil conducteur. Tout tourne en Docker. Code source et outils de génération sur <a href="https://github.com/TABETG/DevOpsCourses" rel="noopener" style="display:inline">GitHub</a>.</div>
-<div><h4>Parcours</h4><a href="../devops-niveau-0-fondations.html">0 · Fondations</a><a href="../devops-niveau-1-conteneurs.html">1 · Conteneurs</a><a href="../devops-niveau-2-ci-cd.html">2 · CI/CD</a><a href="../devops-niveau-3-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-niveau-4-cloud.html">4 · Cloud</a><a href="../index.html">Tous les niveaux →</a></div>
-<div><h4>Cours</h4><a href="../cours-react.html">React</a><a href="../cours-angular.html">Angular</a><a href="../cours-vue.html">Vue.js</a><a href="../cours-cloud.html">Cloud</a><a href="../cours-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-data-platform-aws-talend.html">Data Platform AWS Talend</a></div>
-<div><h4>Réviser</h4><a href="../devops-aide-memoire.html">Aide-mémoire</a><a href="../devops-fiches-entretien.html">Fiches entretien</a><a href="../maquette.html">Charte graphique</a></div>
+<div><h4>Parcours</h4><a href="devops-niveau-0-fondations.html">0 · Fondations</a><a href="devops-niveau-1-conteneurs.html">1 · Conteneurs</a><a href="devops-niveau-2-ci-cd.html">2 · CI/CD</a><a href="devops-niveau-3-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="devops-niveau-4-cloud.html">4 · Cloud</a><a href="index.html">Tous les niveaux →</a></div>
+<div><h4>Cours</h4><a href="cours-react.html">React</a><a href="cours-angular.html">Angular</a><a href="cours-vue.html">Vue.js</a><a href="cours-cloud.html">Cloud</a><a href="cours-java-pki-signature-electronique.html">Java PKI et signature</a><a href="cours-data-platform-aws-talend.html">Data Platform AWS Talend</a></div>
+<div><h4>Réviser</h4><a href="devops-aide-memoire.html">Aide-mémoire</a><a href="devops-fiches-entretien.html">Fiches entretien</a><a href="maquette.html">Charte graphique</a></div>
 </div></footer>
-</body>
-</html>
+</body></html>
