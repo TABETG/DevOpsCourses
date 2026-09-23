@@ -15,9 +15,10 @@ ONLINE = {
  'cours-vue.html': 'https://claude.ai/artifact/8c6eyxcphVfq93PeD3Uz7j', 'cours-cloud.html': 'https://claude.ai/artifact/9nfso3dXBZ9gFuRq7EbTjW',
  'cours-java-pki-signature-electronique.html': 'https://claude.ai/artifact/5G3dH1PuugUZzgy9dX353T', 'cours-data-platform-aws-talend.html': 'https://claude.ai/artifact/MginNSvHw2cEiK1iGuirjh',
  'maquette.html': 'https://claude.ai/artifact/E9pjLtYvMT664fGGVyyVpy',
+ 'cours-struts-hibernate-jsp.html': 'https://claude.ai/artifact/PdV8HSJ2VzyweicX7YQwxD',
 }
 LEVELS = [('devops-niveau-0-fondations.html', '0 · Fondations'), ('devops-niveau-1-conteneurs.html', '1 · Conteneurs'), ('devops-niveau-2-ci-cd.html', '2 · CI/CD'), ('devops-niveau-3-infrastructure-as-code.html', '3 · Infrastructure as Code'), ('devops-niveau-4-cloud.html', '4 · Cloud'), ('devops-niveau-5-kubernetes.html', '5 · Kubernetes'), ('devops-niveau-6-observabilite.html', '6 · Observabilité'), ('devops-niveau-7-securite-devsecops.html', '7 · Sécurité DevSecOps'), ('devops-niveau-8-sre-architecture.html', '8 · SRE et architecture'), ('devops-niveau-9-expert-leadership.html', '9 · Expert et leadership')]
-COURSES = [('cours-react.html', 'React'), ('cours-angular.html', 'Angular'), ('cours-vue.html', 'Vue.js'), ('cours-cloud.html', 'Cloud'), ('cours-java-pki-signature-electronique.html', 'Java PKI et signature'), ('cours-data-platform-aws-talend.html', 'Data Platform AWS Talend')]
+COURSES = [('cours-react.html', 'React'), ('cours-angular.html', 'Angular'), ('cours-vue.html', 'Vue.js'), ('cours-cloud.html', 'Cloud'), ('cours-java-pki-signature-electronique.html', 'Java PKI et signature'), ('cours-data-platform-aws-talend.html', 'Data Platform AWS Talend'), ('cours-struts-hibernate-jsp.html', 'Struts, Hibernate et JSP')]
 
 CSS = r"""
 /* ===== Charte graphique unifiée (maquette.html) ===== */
