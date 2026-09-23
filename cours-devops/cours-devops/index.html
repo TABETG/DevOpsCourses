@@ -399,6 +399,23 @@ details>summary{cursor:pointer;font-weight:700;color:var(--accent-ink)}
 #sprint{background:var(--hero)}
 @media print{.topbar,.sitefooter{display:none}}
 </style>
+<style id="index-design">
+.single.index{display:block}
+.block{margin:0 0 2.2rem}.block>h2{font-size:1.45rem;margin:0 0 .4rem}.legend{color:var(--muted);font-size:.92rem;margin:0 0 1rem}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.card.pad{padding:1.2rem 1.4rem}.card.small{font-size:.9rem;color:var(--muted);text-align:center}
+.global{padding:1.1rem 1.4rem;margin:0}.global .bar{height:8px;background:var(--line);border-radius:999px;margin:.6rem 0;overflow:hidden}.global .bar>div{height:100%;background:var(--accent);width:0;transition:width .3s}.note-inline{margin:.4rem 0 0;color:var(--muted);font-size:.92rem}
+.lvl{display:grid;grid-template-columns:52px minmax(0,1fr);grid-template-rows:auto auto;gap:.2rem 1rem;padding:1.1rem 1.2rem;border-left:4px solid var(--accent);margin:0}
+.lvl.done{border-left-color:#16A34A}.lvl .n{grid-row:1/span 2;align-self:start;width:52px;height:52px;border-radius:12px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:1.5rem;display:grid;place-items:center}
+.lvl.done .n{background:#DCFCE7;color:#166534}.lvl h3{margin:0 0 .25rem;border:0;padding:0;font-size:1.1rem;color:var(--ink)}.lvl h3 .badge{margin-left:.35rem}.lvl p{margin:0 0 .3rem;font-size:.95rem}.lvl .meta2{font-size:.85rem;color:var(--muted)}
+.lvl .go{grid-column:2;display:flex;flex-direction:row;justify-content:flex-start;align-items:center;text-align:left;gap:1rem;margin-top:.4rem}.lvl .btn{background:var(--accent);color:#fff;text-decoration:none;font-weight:700;padding:.45rem 1rem;border-radius:8px;font-size:.92rem}.lvl label{font-size:.9rem;color:var(--muted);cursor:pointer}
+.ccard{display:block;padding:1.2rem 1.3rem;text-decoration:none;color:var(--ink);transition:transform .15s,box-shadow .15s}.ccard:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,23,42,.12)}
+.ccard .ic{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:1.1rem;margin-bottom:.6rem}
+.ccard h3{margin:0 0 .4rem;border:0;padding:0;font-size:1.08rem;color:var(--ink)}.ccard p{margin:0 0 .5rem;font-size:.93rem;color:var(--muted)}.ccard .meta2{font-size:.82rem;color:var(--accent-ink);font-weight:700}.ccard ol{margin:.2rem 0 0;padding-left:1.2rem;font-size:.93rem}
+[data-theme="dark"] .lvl.done .n{background:#14532D;color:#BBF7D0}
+.index table{width:100%}.index .tablewrap{overflow-x:auto}
+</style>
 </head>
 <body>
 <header class="topbar" id="topbar"><div class="in">
@@ -411,75 +428,40 @@ details>summary{cursor:pointer;font-weight:700;color:var(--accent-ink)}
 <header class="hero">
   <div class="in">
     <div class="level">Parcours DevOps — Page d'accueil</div>
-    <h1>Du poste vide à l'expert : 10 niveaux, 54 chapitres, 54 travaux pratiques</h1>
+    <h1>DevOps Courses : le parcours DevOps de zéro à expert, et six cours complémentaires</h1>
     <p class="lead">Un parcours complet, du shell Linux à l'agent LLM sous contrôle, avec un fil conducteur unique : la plateforme CrisisShield, construite, sécurisée, observée et industrialisée niveau après niveau, entièrement sous Docker depuis Git Bash.</p>
-    <div class="meta">
-      <span>≈ 316 h de travail</span><span>Prérequis : Docker Desktop</span><span>Chaque chapitre : résumé en 30 secondes, cours, schémas, technologie de niche, encadré entretien, exercices corrigés, TP</span><span>54 technologies de niche pour sortir du lot</span>
-    </div>
+    <div class="meta"><span>10 niveaux · 54 chapitres · 54 TP</span><span>6 cours complémentaires</span><span>≈ 316 h + 295 h</span><span>Prérequis : Docker Desktop</span></div>
     <button class="theme" id="theme">Basculer clair / sombre</button>
   </div>
 </header>
 
-<div class="single">
-
-<div class="global">
-  <strong>Progression globale : <span id="gpct">0 %</span></strong> — <span id="gdone">0</span> niveau(x) sur 10
-  <div class="bar"><i id="gbar"></i></div>
-  <p class="note" style="margin:.8rem 0 0">Coche un niveau ici quand tu l'as terminé. Chaque page de niveau garde sa propre progression par chapitre ; cette page ne peut pas la lire, elle garde la tienne.</p>
-</div>
-
-<h2 style="border-top:none;padding-top:0;margin-top:2.5rem">Les dix niveaux</h2>
-<div class="legend">Échelle des chapitres : <span class="badge lvl-junior">Junior</span><span class="badge lvl-confirme">Confirmé</span><span class="badge lvl-senior">Senior</span><span class="badge lvl-expert">Expert</span> <span class="badge badge-niche">Techno de niche</span> = un encadré différenciant par chapitre</div>
-<div class="memo"><b>Que retenir :</b> <span class="badge tag-coeur">Par cœur</span> à restituer sans support (définitions, commandes, chiffres) <span class="badge tag-important">Important</span> à savoir expliquer avec ses mots <span class="badge tag-contexte">Bon à savoir</span> lu une fois, on sait où le retrouver</div>
-<div class="levels">
-
-<div class="lvl" data-l="0"><div class="n">0</div>
-  <div><h3>Fondations<span class="badge lvl-junior">Junior</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-confirme">Confirmé</span></h3><p>DevOps et DORA, Linux, réseau et TLS, Bash et Python, Git, bases de données et architecture 12 facteurs.</p><div class="meta2">6 chapitres · ≈ 24 h · TP final : audit 12 facteurs de CrisisShield</div></div>
-  <div class="go"><a class="btn" href="devops-niveau-0-fondations.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div>
-
-<div class="lvl" data-l="1"><div class="n">1</div>
-  <div><h3>Virtualisation et conteneurs<span class="badge lvl-junior">Junior</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-confirme">Confirmé</span></h3><p>VM et hyperviseurs (VMware, Proxmox, Nutanix), Docker en profondeur (images, réseaux, volumes, sécurité), Compose, registres, scan et signature.</p><div class="meta2">4 chapitres · ≈ 17 h · TP final : chaîne de publication signée</div></div>
-  <div class="go"><a class="btn" href="devops-niveau-1-conteneurs.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div>
-
-<div class="lvl" data-l="2"><div class="n">2</div>
-  <div><h3>Intégration et livraison continues<span class="badge lvl-confirme">Confirmé</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-senior">Senior</span></h3><p>Principes CI/CD, GitLab CI, GitHub Actions, Jenkins, tests et quality gates, versioning, stratégies de déploiement.</p><div class="meta2">5 chapitres · ≈ 25 h · TP final : blue/green et feature flags</div></div>
-  <div class="go"><a class="btn" href="devops-niveau-2-ci-cd.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div>
-
-<div class="lvl" data-l="3"><div class="n">3</div>
-  <div><h3>Infrastructure as Code<span class="badge lvl-confirme">Confirmé</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-senior">Senior</span></h3><p>Terraform/OpenTofu, Ansible, Packer et Vagrant, immutabilité, dérive et GitOps.</p><div class="meta2">4 chapitres · ≈ 22 h · TP final : agent de réconciliation GitOps</div></div>
-  <div class="go"><a class="btn" href="devops-niveau-3-infrastructure-as-code.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div>
-
-<div class="lvl" data-l="4"><div class="n">4</div>
-  <div><h3>Cloud<span class="badge lvl-confirme">Confirmé</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-expert">Expert</span></h3><p>Concepts, AWS en profondeur (IAM, VPC, calcul, S3, RDS, Lambda, sécurité native), Azure et GCP, FinOps, multi-cloud et hybride.</p><div class="meta2">5 chapitres · ≈ 24 h · TP final : plan de réversibilité</div></div>
-  <div class="go"><a class="btn" href="devops-niveau-4-cloud.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div>
-
-<div class="lvl" data-l="5"><div class="n">5</div>
-  <div><h3>Kubernetes<span class="badge lvl-confirme">Confirmé</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-expert">Expert</span></h3><p>Architecture et OpenShift, objets, stockage et opérateurs, Helm et Kustomize, ArgoCD, service mesh, autoscaling et scheduling.</p><div class="meta2">7 chapitres · ≈ 40 h · TP final : charge, scaling et capacité</div></div>
-  <div class="go"><a class="btn" href="devops-niveau-5-kubernetes.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div>
-
-<div class="lvl" data-l="6"><div class="n">6</div>
-  <div><h3>Observabilité<span class="badge lvl-confirme">Confirmé</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-senior">Senior</span></h3><p>Logs, métriques, traces OpenTelemetry, SLO et alerting par burn rate, astreinte, incidents et post-mortems.</p><div class="meta2">5 chapitres · ≈ 27 h · TP final : game day</div></div>
-  <div class="go"><a class="btn" href="devops-niveau-6-observabilite.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div>
-
-<div class="lvl" data-l="7"><div class="n">7</div>
-  <div><h3>Sécurité DevSecOps<span class="badge lvl-senior">Senior</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-expert">Expert</span></h3><p>Shift-left et SBOM, Vault et KMS, durcissement Kubernetes et politiques, supply chain Sigstore et SLSA, zero trust, authentification (OAuth 2.1, OpenID Connect, Keycloak) et PKI, conformité.</p><div class="meta2">6 chapitres · ≈ 46 h · TP final : dossier de conformité</div></div>
-  <div class="go"><a class="btn" href="devops-niveau-7-securite-devsecops.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div>
-
-<div class="lvl" data-l="8"><div class="n">8</div>
-  <div><h3>SRE et architecture<span class="badge lvl-senior">Senior</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-expert">Expert</span></h3><p>Modèle SRE et rôle du Tech Lead SRE, résilience et chaos engineering, haute disponibilité et PRA, performance, architectures événementielles, bases en production, platform engineering.</p><div class="meta2">6 chapitres · ≈ 47 h · TP final : plateforme interne</div></div>
-  <div class="go"><a class="btn" href="devops-niveau-8-sre-architecture.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div>
-
-<div class="lvl" data-l="9"><div class="n">9</div>
-  <div><h3>Expert et leadership<span class="badge lvl-expert">Expert</span></h3><p>Plateformes multi-tenant, migration legacy, gouvernance as code, DORA et maturité, conduite du changement, IA appliquée au DevOps et GitHub Copilot (usage, Enterprise, adoption). Projet final.</p><div class="meta2">6 chapitres · ≈ 44 h · Projet final : la plateforme présentée comme en mission</div></div>
-  <div class="go"><a class="btn" href="devops-niveau-9-expert-leadership.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div>
-
-</div>
-
-<h2>Carte des compétences</h2>
-<p>Pour retrouver un sujet de fiche de poste ou de mission : où il est traité, et à quel niveau de profondeur.</p>
+<div class="single index">
+<section class="block">
+<div class="global card"><strong>Progression globale : <span id="gpct">0 %</span></strong> — <span id="gdone">0</span> niveau(x) sur 10<div class="bar"><div id="gbar"></div></div><p class="note-inline">Coche un niveau quand tu l'as terminé. Chaque page de niveau garde sa propre progression par chapitre.</p></div>
+</section>
+<section class="block"><h2>Le parcours DevOps en dix niveaux</h2>
+<p class="legend">Échelle des chapitres : <span class="badge lvl-junior">Junior</span> <span class="badge lvl-confirme">Confirmé</span> <span class="badge lvl-senior">Senior</span> <span class="badge lvl-expert">Expert</span> <span class="badge badge-niche">Techno de niche</span> · à retenir : <span class="badge tag-coeur">Par cœur</span> <span class="badge tag-important">Important</span> <span class="badge tag-contexte">Bon à savoir</span></p>
+<div class="grid2"><div class="lvl card" data-l="0"><div class="n">0</div><div class="body"><h3>Fondations<span class="badge lvl-junior">Junior</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-confirme">Confirmé</span></h3><p>DevOps et DORA, Linux, réseau et TLS, Bash et Python, Git, bases de données et architecture 12 facteurs.</p><div class="meta2">6 chapitres · ≈ 24 h · TP final : audit 12 facteurs de CrisisShield</div></div><div class="go"><a class="btn" href="devops-niveau-0-fondations.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div><div class="lvl card" data-l="1"><div class="n">1</div><div class="body"><h3>Virtualisation et conteneurs<span class="badge lvl-junior">Junior</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-confirme">Confirmé</span></h3><p>VM et hyperviseurs (VMware, Proxmox, Nutanix), Docker en profondeur (images, réseaux, volumes, sécurité), Compose, registres, scan et signature.</p><div class="meta2">4 chapitres · ≈ 17 h · TP final : chaîne de publication signée</div></div><div class="go"><a class="btn" href="devops-niveau-1-conteneurs.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div><div class="lvl card" data-l="2"><div class="n">2</div><div class="body"><h3>Intégration et livraison continues<span class="badge lvl-confirme">Confirmé</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-senior">Senior</span></h3><p>Principes CI/CD, GitLab CI, GitHub Actions, Jenkins, tests et quality gates, versioning, stratégies de déploiement.</p><div class="meta2">5 chapitres · ≈ 25 h · TP final : blue/green et feature flags</div></div><div class="go"><a class="btn" href="devops-niveau-2-ci-cd.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div><div class="lvl card" data-l="3"><div class="n">3</div><div class="body"><h3>Infrastructure as Code<span class="badge lvl-confirme">Confirmé</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-senior">Senior</span></h3><p>Terraform/OpenTofu, Ansible, Packer et Vagrant, immutabilité, dérive et GitOps.</p><div class="meta2">4 chapitres · ≈ 22 h · TP final : agent de réconciliation GitOps</div></div><div class="go"><a class="btn" href="devops-niveau-3-infrastructure-as-code.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div><div class="lvl card" data-l="4"><div class="n">4</div><div class="body"><h3>Cloud<span class="badge lvl-confirme">Confirmé</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-expert">Expert</span></h3><p>Concepts, AWS en profondeur (IAM, VPC, calcul, S3, RDS, Lambda, sécurité native), Azure et GCP, FinOps, multi-cloud et hybride.</p><div class="meta2">5 chapitres · ≈ 24 h · TP final : plan de réversibilité</div></div><div class="go"><a class="btn" href="devops-niveau-4-cloud.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div><div class="lvl card" data-l="5"><div class="n">5</div><div class="body"><h3>Kubernetes<span class="badge lvl-confirme">Confirmé</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-expert">Expert</span></h3><p>Architecture et OpenShift, objets, stockage et opérateurs, Helm et Kustomize, ArgoCD, service mesh, autoscaling et scheduling.</p><div class="meta2">7 chapitres · ≈ 40 h · TP final : charge, scaling et capacité</div></div><div class="go"><a class="btn" href="devops-niveau-5-kubernetes.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div><div class="lvl card" data-l="6"><div class="n">6</div><div class="body"><h3>Observabilité<span class="badge lvl-confirme">Confirmé</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-senior">Senior</span></h3><p>Logs, métriques, traces OpenTelemetry, SLO et alerting par burn rate, astreinte, incidents et post-mortems.</p><div class="meta2">5 chapitres · ≈ 27 h · TP final : game day</div></div><div class="go"><a class="btn" href="devops-niveau-6-observabilite.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div><div class="lvl card" data-l="7"><div class="n">7</div><div class="body"><h3>Sécurité DevSecOps<span class="badge lvl-senior">Senior</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-expert">Expert</span></h3><p>Shift-left et SBOM, Vault et KMS, durcissement Kubernetes et politiques, supply chain Sigstore et SLSA, zero trust, authentification (OAuth 2.1, OpenID Connect, Keycloak) et PKI, conformité.</p><div class="meta2">6 chapitres · ≈ 46 h · TP final : dossier de conformité</div></div><div class="go"><a class="btn" href="devops-niveau-7-securite-devsecops.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div><div class="lvl card" data-l="8"><div class="n">8</div><div class="body"><h3>SRE et architecture<span class="badge lvl-senior">Senior</span><span style="color:var(--muted);margin-left:.3rem">→</span><span class="badge lvl-expert">Expert</span></h3><p>Modèle SRE et rôle du Tech Lead SRE, résilience et chaos engineering, haute disponibilité et PRA, performance, architectures événementielles, bases en production, platform engineering.</p><div class="meta2">6 chapitres · ≈ 47 h · TP final : plateforme interne</div></div><div class="go"><a class="btn" href="devops-niveau-8-sre-architecture.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div><div class="lvl card" data-l="9"><div class="n">9</div><div class="body"><h3>Expert et leadership<span class="badge lvl-expert">Expert</span></h3><p>Plateformes multi-tenant, migration legacy, gouvernance as code, DORA et maturité, conduite du changement, IA appliquée au DevOps et GitHub Copilot (usage, Enterprise, adoption). Projet final.</p><div class="meta2">6 chapitres · ≈ 44 h · Projet final : la plateforme présentée comme en mission</div></div><div class="go"><a class="btn" href="devops-niveau-9-expert-leadership.html">Ouvrir</a><label><input type="checkbox"> Terminé</label></div></div></div></section>
+<section class="block"><h2>Cours complémentaires de zéro à expert</h2>
+<p class="legend">Même gabarit que le parcours : exercices corrigés et travaux pratiques sur CrisisShield, tout en Docker.</p>
+<div class="grid3"><a class="ccard card" href="cours-react.html"><span class="ic">⚛</span><h3>React 19</h3><p>Hooks, TanStack Query, stores et signals, formulaires, tests, production, patrons avancés.</p><span class="meta2">11 chapitres · ≈ 45 h</span></a><a class="ccard card" href="cours-angular.html"><span class="ic">A</span><h3>Angular 19/20</h3><p>Standalone, signals, resource(), SignalStore, formulaires typés, zoneless, SSR, CDK, Nx.</p><span class="meta2">11 chapitres · ≈ 45 h</span></a><a class="ccard card" href="cours-vue.html"><span class="ic">V</span><h3>Vue 3</h3><p>Réactivité, composables, Pinia, Vue Router, Nuxt, et le comparatif React / Angular / Vue.</p><span class="meta2">9 chapitres · ≈ 35 h</span></a><a class="ccard card" href="cours-cloud.html"><span class="ic">☁</span><h3>Cloud (AWS, Azure, GCP)</h3><p>Identité, réseau, calcul, données, sécurité, IaC, exploitation, FinOps, architecture, certification.</p><span class="meta2">10 chapitres · ≈ 50 h</span></a><a class="ccard card" href="cours-java-pki-signature-electronique.html"><span class="ic">🔐</span><h3>Java, PKI et signature électronique</h3><p>Cryptographie, X.509, TLS/mTLS, CAdES/XAdES/PAdES, Bouncy Castle, eIDAS/RGS, HSM, 40 questions d'entretien.</p><span class="meta2">13 chapitres · ≈ 40 h</span></a><a class="ccard card" href="cours-data-platform-aws-talend.html"><span class="ic">🗄</span><h3>Data Platform, AWS, Talend, Airflow</h3><p>AWS data, PostgreSQL, RDS/Aurora, DynamoDB/Redshift, Druid/ES, Talend et TAC, Airflow, MCO, support N3.</p><span class="meta2">15 chapitres · ≈ 80 h</span></a></div></section>
+<section class="block"><h2>Réviser</h2>
+<div class="grid3">
+<a class="ccard card" href="devops-aide-memoire.html"><span class="ic">📎</span><h3>Aide-mémoire</h3><p>Toutes les commandes à connaître, ce qu'elles font, et cinq bonnes pratiques par technologie ; page filtrable avec badges Minimum / Confirmé / Expert.</p></a>
+<a class="ccard card" href="devops-fiches-entretien.html"><span class="ic">🎤</span><h3>Fiches entretien</h3><p>Les 54 encadrés « En entretien », 30 questions Tech Lead, 15 SRE, 15 DevSecOps, 20 Kubernetes, avec la réponse attendue.</p></a>
+<div class="ccard card"><span class="ic">⏱</span><h3>Cinq réponses à dérouler en trois minutes</h3><ol>
+<li>Concevoir l'infrastructure AWS d'une application web avec base de données (niveau 4).</li>
+<li>Déployer sans interruption avec une migration de schéma (niveau 2).</li>
+<li>Sécuriser un cluster Kubernetes (niveau 7).</li>
+<li>Gérer les secrets, de l'identité au chiffrement dans Git (niveau 7).</li>
+<li>Sécuriser une application ou un agent LLM (niveau 9).</li>
+</ol></div>
+</div></section>
+<section class="block"><h2>Carte des compétences</h2><div class="card pad"><p>Pour retrouver un sujet de fiche de poste ou de mission : où il est traité, et à quel niveau de profondeur.</p>
 <div class="tablewrap"><table><tr><th>Compétence</th><th>Où dans le parcours</th></tr><tr><td><strong>DevSecOps</strong></td><td>Niveau 7 entier : <a href="devops-niveau-7-securite-devsecops.html#c37">analyses et SBOM (37)</a>, <a href="devops-niveau-7-securite-devsecops.html#c38">secrets (38)</a>, <a href="devops-niveau-7-securite-devsecops.html#c39">Kubernetes (39)</a>, <a href="devops-niveau-7-securite-devsecops.html#c40">supply chain (40)</a>, <a href="devops-niveau-7-securite-devsecops.html#c41">zero trust (41)</a>, <a href="devops-niveau-7-securite-devsecops.html#c42">conformité et 15 questions (42)</a> ; <a href="devops-niveau-2-ci-cd.html#c13">quality gates (13)</a>, <a href="devops-niveau-1-conteneurs.html#c10">scan et signature d'images (10)</a></td></tr><tr><td><strong>Cybersécurité applicative</strong></td><td><a href="devops-niveau-7-securite-devsecops.html#c37">threat modeling, SAST/DAST/SCA, OWASP Top 10 dans le code Spring (37.7)</a>, <a href="devops-niveau-7-securite-devsecops.html#c41">authentification, OAuth 2.1, Spring Security (41.4 à 41.7)</a>, <a href="devops-niveau-2-ci-cd.html#c13">tests de sécurité en pipeline (13)</a></td></tr><tr><td><strong>PKI, TLS, HSM</strong></td><td><a href="devops-niveau-0-fondations.html#c3">TLS et certificats (3.6)</a>, <a href="devops-niveau-7-securite-devsecops.html#c38">Vault PKI et Transit (38)</a>, <a href="devops-niveau-7-securite-devsecops.html#c41">PKI interne, SPIFFE, PKI en pratique : X.509, révocation, erreurs, cérémonie, HSM (41.2, 41.3, 41.9)</a>, <a href="devops-niveau-4-cloud.html#c21">KMS et Nitro Enclaves (21)</a></td></tr><tr><td><strong>LLM et IA</strong></td><td><a href="devops-niveau-9-expert-leadership.html#c54">agents, AIOps, LLMOps, OWASP LLM Top 10, application LLM en production (54.1 à 54.4, 54.8)</a>, <a href="devops-niveau-9-expert-leadership.html#c54">passerelle IA sécurisée (TP 54)</a></td></tr><tr><td><strong>GitHub Copilot et IA générative</strong></td><td><a href="devops-niveau-9-expert-leadership.html#c54">usage développeur (54.5), Enterprise (54.6), prompts, sécurité et adoption (54.7)</a></td></tr><tr><td><strong>Terraform</strong></td><td><a href="devops-niveau-3-infrastructure-as-code.html#c16">chapitre 16 : modèle, modules, state, CI, langage avancé, débogage (16.1 à 16.8)</a>, <a href="devops-niveau-4-cloud.html#c21">AWS en Terraform (21)</a>, <a href="devops-niveau-9-expert-leadership.html#c49">landing zone (49)</a></td></tr><tr><td><strong>Ansible</strong></td><td><a href="devops-niveau-3-infrastructure-as-code.html#c17">chapitre 17 : playbooks, rôles, Vault, Molecule, flux et stratégies, performance (17.1 à 17.8)</a>, <a href="devops-niveau-3-infrastructure-as-code.html#c18">Packer (18)</a></td></tr><tr><td><strong>Kubernetes et OpenShift</strong></td><td>Niveau 5 entier : <a href="devops-niveau-5-kubernetes.html#c25">architecture, kubectl expert, administration, OpenShift (25)</a>, <a href="devops-niveau-5-kubernetes.html#c26">objets, manifests avancés, 20 questions (26)</a>, <a href="devops-niveau-5-kubernetes.html#c27">stockage et opérateurs (27)</a>, <a href="devops-niveau-5-kubernetes.html#c28">Helm et Kustomize (28)</a>, <a href="devops-niveau-5-kubernetes.html#c29">ArgoCD (29)</a>, <a href="devops-niveau-5-kubernetes.html#c30">mesh (30)</a>, <a href="devops-niveau-5-kubernetes.html#c31">autoscaling (31)</a> ; <a href="devops-niveau-7-securite-devsecops.html#c39">sécurité (39)</a></td></tr><tr><td><strong>Virtualisation et homelab</strong></td><td><a href="devops-niveau-1-conteneurs.html#c7">hyperviseurs en entreprise, commandes, IaC, HA, sauvegarde (7.4), homelab security-first (7.5)</a>, <a href="devops-niveau-9-expert-leadership.html#c50">sortie de VMware (50)</a>, <a href="devops-niveau-3-infrastructure-as-code.html#c18">Packer et Talos (18)</a></td></tr>
 <tr><td><strong>Docker et CI/CD</strong></td><td><a href="devops-niveau-1-conteneurs.html#c8">Docker (8)</a>, <a href="devops-niveau-1-conteneurs.html#c9">Compose (9)</a>, <a href="devops-niveau-2-ci-cd.html#c12">GitLab CI, GitHub Actions, Jenkins (12)</a>, <a href="devops-niveau-2-ci-cd.html#c15">stratégies de déploiement (15)</a></td></tr><tr><td><strong>Cloud AWS et FinOps</strong></td><td><a href="devops-niveau-4-cloud.html#c21">AWS en profondeur (21)</a>, <a href="devops-niveau-4-cloud.html#c22">Azure et GCP (22)</a>, <a href="devops-niveau-4-cloud.html#c23">FinOps (23)</a></td></tr><tr><td><strong>Observabilité et SRE</strong></td><td><a href="devops-niveau-6-observabilite.html#c32">logs (32)</a>, <a href="devops-niveau-6-observabilite.html#c33">métriques (33)</a>, <a href="devops-niveau-6-observabilite.html#c34">traces (34)</a>, <a href="devops-niveau-6-observabilite.html#c35">SLO et alerting (35)</a>, <a href="devops-niveau-6-observabilite.html#c36">incidents (36)</a>, <a href="devops-niveau-8-sre-architecture.html#c43">modèle SRE, Tech Lead SRE, SRE de plateforme, 15 questions (43)</a>, <a href="devops-niveau-8-sre-architecture.html#c44">PRA (44)</a></td></tr><tr><td><strong>Architecture et données</strong></td><td><a href="devops-niveau-8-sre-architecture.html#c45">performance (45)</a>, <a href="devops-niveau-8-sre-architecture.html#c46">microservices et Kafka (46)</a>, <a href="devops-niveau-8-sre-architecture.html#c47">PostgreSQL en production (47)</a>, <a href="devops-niveau-8-sre-architecture.html#c48">platform engineering (48)</a></td></tr><tr><td><strong>Tech Lead et leadership</strong></td><td><a href="devops-niveau-9-expert-leadership.html#c51">gouvernance (51)</a>, <a href="devops-niveau-9-expert-leadership.html#c52">DORA et audit (52)</a>, <a href="devops-niveau-9-expert-leadership.html#c53">conduite du changement, coaching, 30 questions Tech Lead (53)</a>, <a href="devops-niveau-9-expert-leadership.html#c50">migration legacy (50)</a></td></tr></table></div>
-<h2>Comment travailler ce parcours</h2>
+</div></section>
+<section class="block"><h2>Comment travailler ce parcours</h2><div class="card pad"><details open><summary>Les règles du jeu</summary><h2>Comment travailler ce parcours</h2>
 <ul>
 <li><strong>Dans l'ordre</strong> : chaque niveau s'appuie sur les précédents et sur le dépôt <code>devops-lab</code> créé au TP 5 ; CrisisShield grandit d'un TP à l'autre.</li>
 <li><strong>Un TP à la fois, jusqu'au bout</strong> : le livrable de chaque TP (fichier <code>tpNN.md</code>, cours joint dans <code>docs/cours-*.md</code>) est ce que tu montreras en entretien et en mission.</li>
@@ -496,29 +478,14 @@ details>summary{cursor:pointer;font-weight:700;color:var(--accent-ink)}
 <li><strong>Coût</strong> : tout se pratique gratuitement (Docker, kind, LocalStack, MinIO) sauf le TP 21 (quelques centimes par heure sur AWS, avec destruction) et quelques options signalées.</li>
 </ul>
 
-<h2>Ressources externes</h2>
+</details></div></section>
+<section class="block"><h2>Ressources externes</h2><div class="card pad"><h2>Ressources externes</h2>
 <ul>
 <li><a href="https://blog.stephane-robert.info/docs/homelab/" rel="noopener">HomeLab DevSecOps, Stéphane Robert</a> : le parcours de référence en français pour construire un laboratoire personnel security-first (matériel, OPNsense et Tailscale, nœud admin Proxmox avec authentik et OpenBao, roadmap en quatre phases). Le chapitre 7.5 de ce cours s'en inspire et le relie aux chapitres concernés ; le reste du blog (formations OPNsense, Proxmox, Talos, supply chain, examens blancs) est un complément utile à chaque niveau.</li>
 </ul>
-<h2>Cours frontend et cloud : React, Angular, Vue, Cloud</h2>
-<p>Quatre cours complets de zéro à expert, avec exercices corrigés et travaux pratiques sur CrisisShield : <a href="cours-react.html"><strong>React 19</strong></a> (hooks, TanStack Query, stores et signals, React 19, patrons avancés), <a href="cours-angular.html"><strong>Angular 19/20</strong></a> (standalone, signals, resource(), SignalStore, zoneless, SSR, CDK, Nx), <a href="cours-vue.html"><strong>Vue 3</strong></a> (réactivité, composables, Pinia, Nuxt, et le comparatif des trois frameworks) et <a href="cours-cloud.html"><strong>Cloud</strong></a> (AWS avec équivalences Azure et GCP : identité, réseau, calcul, données, sécurité, IaC, exploitation, FinOps, architecture, certification).</p>
-<h2>Cours de préparation de mission : Java PKI, Data Platform</h2>
-<p>Deux cours orientés mission et entretien technique : <a href="cours-java-pki-signature-electronique.html"><strong>Java, PKI et signature électronique</strong></a> (cryptographie, X.509, keystores, TLS/mTLS, CAdES/XAdES/PAdES, Bouncy Castle, application Spring Boot de signature, CRL/OCSP, eIDAS et RGS, HSM, débogage, 40 questions d'entretien) et <a href="cours-data-platform-aws-talend.html"><strong>Data Platform, AWS, Talend, Airflow et InfraOps</strong></a> (AWS pour la data, EC2 et Linux, PostgreSQL, RDS/Aurora, DynamoDB/S3/Redshift, Druid et Elasticsearch, Talend jusqu'à l'audit et TIS/TAC/Job Server, Airflow, Kubernetes, monitoring, MCO et support N3, Terraform/Ansible/self-service, projet final et fiche de survie).</p>
-<h2>Aide-mémoire</h2>
-<p>Toutes les commandes à connaître avec ce qu'elles font, et cinq bonnes pratiques par technologie, sur une page filtrable : <a href="devops-aide-memoire.html"><strong>ouvrir l'aide-mémoire</strong></a>.</p>
-<h2>Réviser pour un entretien</h2>
-<p>Une page compile tout ce qui sert en entretien : les 54 encadrés « En entretien », trente questions Tech Lead, quinze Tech Lead SRE et DevOps, quinze DevSecOps, vingt Kubernetes, avec la réponse attendue. <a href="devops-fiches-entretien.html"><strong>Ouvrir les fiches entretien</strong></a>.</p>
-<h2>Les cinq réponses à savoir dérouler en trois minutes</h2>
-<ol>
-<li>Concevoir l'infrastructure AWS d'une application web avec base de données (niveau 4).</li>
-<li>Déployer sans interruption avec une migration de schéma (niveau 2).</li>
-<li>Sécuriser un cluster Kubernetes (niveau 7).</li>
-<li>Gérer les secrets, de l'identité au chiffrement dans Git (niveau 7).</li>
-<li>Sécuriser une application ou un agent LLM (niveau 9).</li>
-</ol>
-
+</div></section>
+<div class="card pad small"><a href="maquette.html">Charte graphique du site</a> · code source et outils de génération sur <a href="https://github.com/TABETG/DevOpsCourses" rel="noopener">GitHub</a>.</div>
 </div>
-
 <script>
 (function(){
   var KEY='devops-index-progress', THEME='devops-theme';
@@ -536,7 +503,7 @@ details>summary{cursor:pointer;font-weight:700;color:var(--accent-ink)}
   render();
   var root=document.documentElement;
   try{ var t=localStorage.getItem(THEME); if(t) root.setAttribute('data-theme',t); }catch(e){}
-  document.getElementById('theme').addEventListener('click',function(){
+  var tb=document.getElementById('theme'); if(tb) tb.addEventListener('click',function(){
     var cur=root.getAttribute('data-theme');
     var dark=cur==='dark';
     var next=dark?'light':'dark';
