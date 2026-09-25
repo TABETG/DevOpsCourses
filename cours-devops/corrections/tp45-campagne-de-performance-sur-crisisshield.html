@@ -447,7 +447,7 @@ body{padding-bottom:2rem}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style id="site-design">
-/* ===== Charte graphique unifiée (maquette.html) ===== */
+/* ===== Charte graphique unifiée (site-00-charte-graphique.html) ===== */
 :root{--bg:#F4F6FA;--paper:#FFFFFF;--ink:#0F172A;--muted:#5B6474;--line:#E2E8F0;--line-strong:#CBD5E1;--accent:#2563EB;--accent-ink:#1E40AF;--accent-soft:#EAF1FE;--hero:#0B1220;--hero-2:#132A57;--radius:12px;--shadow:0 1px 2px rgba(15,23,42,.05),0 6px 18px rgba(15,23,42,.06);--topbar:64px;--code-bg:#0F172A;--code-ink:#E2E8F0;--code-line:#1E293B}
 [data-theme="dark"]{--bg:#0B1220;--paper:#111A2E;--ink:#E5EAF3;--muted:#9AA6BA;--line:#22304A;--line-strong:#33456A;--accent:#60A5FA;--accent-ink:#93C5FD;--accent-soft:#16264A;--hero:#070D1A;--hero-2:#0F2148;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--code-bg:#060B16;--code-line:#1F2C46}
 html{scroll-padding-top:calc(var(--topbar) + 16px)}
@@ -521,25 +521,138 @@ details>summary{cursor:pointer;font-weight:700;color:var(--accent-ink)}
 .sitefooter .brand{color:#fff;font-weight:800;font-size:1.05rem;margin-bottom:.4rem}
 @media(max-width:800px){.sitefooter .in{grid-template-columns:1fr 1fr}}
 #sprint{background:var(--hero)}
-@media print{.topbar,.sitefooter{display:none}}
+
+
+/* --- code : thème IDE (GitHub Dark), commun à tout le site --- */
+:root{--code-bg:#0D1117;--code-ink:#E6EDF3;--code-line:#30363D;--code-kw:#FF7B72;--code-str:#A5D6FF;--code-com:#8B949E;--code-num:#79C0FF;--code-fn:#D2A8FF;--code-type:#FFA657;--code-ann:#F2CC60;--code-prompt:#7EE787;--code-key:#7EE787;--code-op:#FF7B72;--code-var:#FFA657}
+pre{background:var(--code-bg)!important;color:var(--code-ink)!important;border:1px solid var(--code-line)!important;border-radius:10px;padding:2.4rem 1.1rem 1rem;font-size:.86em;line-height:1.6;tab-size:4;overflow:auto;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+pre code{background:none!important;color:inherit!important;padding:0!important;font-size:inherit!important;border:0!important}
+pre::-webkit-scrollbar{height:10px}pre::-webkit-scrollbar-thumb{background:#484F58;border-radius:6px}pre::-webkit-scrollbar-track{background:#161B22}
+pre .copy{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important;border-radius:6px;font-size:.78rem;padding:.25rem .6rem;position:absolute;top:.6rem;right:.6rem;cursor:pointer;opacity:.85}pre .copy:hover{opacity:1;background:#30363D!important}
+pre .explain{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important}
+.tk-kw{color:var(--code-kw)}.tk-str{color:var(--code-str)}.tk-com{color:var(--code-com);font-style:italic}.tk-num{color:var(--code-num)}.tk-fn{color:var(--code-fn)}.tk-type{color:var(--code-type)}.tk-ann{color:var(--code-ann)}.tk-prompt{color:var(--code-prompt);font-weight:700}.tk-key{color:var(--code-key)}.tk-op{color:var(--code-op)}.tk-var{color:var(--code-var)}.tk-tag{color:var(--code-prompt)}
+code:not(pre code){background:var(--accent-soft);color:var(--accent-ink);padding:.1em .4em;border-radius:5px;font-size:.9em}
+[data-theme="dark"] code:not(pre code){background:#1C2A48;color:#93C5FD}
+/* --- sommaire : grille sans dépendre de :has() --- */
+.single.with-toc{display:grid;grid-template-columns:270px minmax(0,1fr);gap:2rem;align-items:start}
+.single.with-toc>.toc{grid-column:1;grid-row:1 / span 60;position:sticky;top:calc(var(--topbar) + 16px);max-height:calc(100vh - var(--topbar) - 32px);overflow:auto}
+.single.with-toc>:not(.toc){grid-column:2}
+@media(max-width:900px){.single.with-toc{display:block}.single.with-toc>.toc{position:static;max-height:none;margin-bottom:1.2rem;overflow-x:auto}}
+
+/* --- sommaire : design commun --- */
+.toc{padding:1rem .9rem!important}
+.toc strong{display:flex!important;align-items:center;gap:.5rem;font-size:.74rem!important;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)!important;margin:0 .2rem .6rem!important}
+.toc strong::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.toc ol{list-style:none!important;padding:0!important;margin:0!important;display:grid!important;gap:.15rem;counter-reset:toc}
+.toc li{margin:0!important;display:block!important;padding:0!important;counter-increment:none!important}
+.toc li::before,.toc li::after,.toc li a::after{content:none!important;display:none!important}
+.toc li a{display:grid;grid-template-columns:26px minmax(0,1fr);align-items:start;gap:.55rem;padding:.42rem .55rem;border-radius:8px;color:var(--ink)!important;text-decoration:none;font-size:.9rem;line-height:1.35;counter-increment:toc;transition:background .12s}
+.toc li a::before{content:counter(toc);display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--accent-soft);color:var(--accent-ink);font-size:.72rem;font-weight:800;margin-top:1px}
+
+.toc li a:hover{background:var(--accent-soft)}
+.toc li a.active{background:var(--accent);color:#fff!important}.toc li a.active::before{background:rgba(255,255,255,.22);color:#fff}
+.toc li a[href="#rev"]::before,.toc li a[href="#revision"]::before,nav.toc ol[start] a[href="#rev"]::before{content:"✓"!important}
+.toc li a.toc-junior::before{background:#DCFCE7;color:#166534}.toc li a.toc-confirme::before{background:#DBEAFE;color:#1E40AF}.toc li a.toc-senior::before{background:#FEF3C7;color:#92400E}.toc li a.toc-expert::before{background:#FCE7F3;color:#9D174D}
+.toc li a.active.toc-junior::before,.toc li a.active.toc-confirme::before,.toc li a.active.toc-senior::before,.toc li a.active.toc-expert::before{background:rgba(255,255,255,.22);color:#fff}
+.toc .legend{margin-top:.8rem!important;padding-top:.7rem;border-top:1px solid var(--line);font-size:.8rem!important}
+.toc .prog,.toc .progress{margin-top:.7rem}
+@media(max-width:900px){.toc ol{grid-template-columns:1fr 1fr}.toc li a{font-size:.86rem}}
+@media(max-width:560px){.toc ol{grid-template-columns:1fr}}
+/* --- code : retour à la ligne avec indentation conservée --- */
+pre.wrapped code{white-space:pre-wrap;word-break:break-word}
+pre .ln{display:block;white-space:pre-wrap;overflow-wrap:anywhere}
+pre .ln[data-ind]{text-indent:calc(var(--ind) * -1ch);padding-left:calc(var(--ind) * 1ch)}
+pre .wrapbtn{position:absolute;top:.6rem;right:5.2rem;background:#21262D;color:#C9D1D9;border:1px solid #30363D;border-radius:6px;font-size:.78rem;padding:.25rem .55rem;cursor:pointer;opacity:.85}pre .wrapbtn:hover{opacity:1}
+pre.wrapped{overflow-x:hidden}
+pre .nl{display:none}
+
+
+/* --- menus groupés --- */
+.topbar nav>details>div.groups{grid-template-columns:repeat(2,minmax(220px,1fr));min-width:500px;gap:.1rem .6rem}
+.topbar nav>details>div .g{display:grid;align-content:start}
+.topbar nav>details>div .grp{font-size:.68rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:.55rem .7rem .2rem}
+@media(max-width:900px){.topbar nav>details>div.groups{grid-template-columns:1fr;min-width:0}.topbar nav>details>div .grp{color:#8FA0BA}}
+/* --- lecture rapide : ne garder que l'essentiel de chaque chapitre --- */
+body.rapid article:not(.expanded) > :is(p,ul,ol,table,pre,.tablewrap,.avap,.se-why,.se-week,.se-recap,.se-check,.roadmap,.grid2,.grid3,details,.note,.memo,.card,figure:not(.fig)),
+body.rapid article:not(.expanded) .exo > :not(.tag),body.rapid article:not(.expanded) .tp > :not(.tag){display:none!important}
+body.rapid article:not(.expanded) .exo,body.rapid article:not(.expanded) .tp{padding:.5rem .9rem;opacity:.75}
+body.rapid article:not(.expanded) h3{cursor:pointer}
+body.rapid article:not(.expanded) h3::after{content:"  afficher ▾";font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.04em}
+body.rapid article .rapid-hint{display:block;font-size:.8rem;color:var(--muted);margin:.4rem 0 0}
+.rapid-hint{display:none}
+body.rapid article.expanded h3.rapid-toggle::after{content:"  réduire ▴";font-size:.72rem;font-weight:600;color:var(--muted)}
+.topbar .rapid-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;height:36px;padding:0 .7rem;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;margin-left:.25rem;white-space:nowrap}
+.topbar .rapid-btn.on{background:#2563EB;border-color:#2563EB}
+@media(max-width:900px){.topbar .rapid-btn{margin:.4rem 0 0}}
+
+.fig.portrait img{max-height:680px;width:auto!important;max-width:100%;margin:0 auto}.gallery .fig.portrait img{max-height:none;width:100%!important}
+
+/* --- tuiles (accueil, charte) --- */
+.grp-label{display:flex;align-items:center;gap:.6rem;margin:1.2rem 0 .6rem;font-size:.74rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}.grp-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}@media(max-width:1150px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.tiles{grid-template-columns:1fr}}
+.tile{position:relative;display:flex;flex-direction:column;gap:.45rem;background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--tile-c,var(--accent));border-radius:12px;padding:1rem 1.1rem;box-shadow:var(--shadow)}
+.tile-head{display:flex;align-items:center;gap:.65rem}.tile .ic{flex:0 0 38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--tile-soft,var(--accent-soft));color:var(--tile-c,var(--accent-ink));font-weight:800}
+.tile h3{margin:0;border:0!important;padding:0!important;font-size:1.02rem;color:var(--ink)}.tile h3 a{color:inherit;text-decoration:none}.tile h3 a::after{content:"";position:absolute;inset:0}
+.tile p{margin:0;font-size:.9rem;color:var(--muted)}.tile-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding-top:.55rem;border-top:1px solid var(--line);font-size:.82rem}
+.tile-foot .meta{color:var(--tile-c,var(--accent-ink));font-weight:700;white-space:nowrap}.tile-foot label{position:relative;z-index:2;color:var(--muted);display:flex;gap:.35rem;align-items:center}
+.s-dev{--tile-c:#7C3AED;--tile-soft:#EDE9FE}
+/* --- galerie de fiches, sous-parties repliables, code long replié --- */
+.gallery{margin:1.4rem 0;padding:1rem;border:1px dashed var(--line-strong);border-radius:12px;background:var(--bg)}
+.gallery>strong{display:block;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem}
+.gallery .g-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+.gallery figure.fig{margin:0;padding:.4rem;background:var(--paper)}
+.gallery figure.fig img{aspect-ratio:4/3;object-fit:cover;object-position:top;border-radius:6px}
+.gallery figcaption{font-size:.78rem;text-align:left;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gallery .fig.zoomable::after{top:.7rem;right:.7rem;font-size:.7rem;padding:.2rem .45rem}
+@media(max-width:700px){.gallery .g-items{grid-template-columns:1fr 1fr}}
+details.sub{border:1px solid var(--line);border-radius:10px;background:var(--paper);margin:.7rem 0;padding:0}
+details.sub>summary{padding:.75rem 1rem!important;font-weight:700;font-size:1rem!important;color:var(--ink)!important;cursor:pointer;list-style:none;display:flex!important;align-items:center;gap:.6rem;border:0!important;border-radius:10px!important;background:none!important;width:100%;box-sizing:border-box}
+details.sub>summary:hover{background:var(--accent-soft)!important}
+details.sub>summary::-webkit-details-marker{display:none}
+details.sub>summary::before{content:""!important;width:0;height:0;border-left:7px solid var(--accent)!important;border-top:5px solid transparent!important;border-bottom:5px solid transparent!important;transition:transform .15s;flex:0 0 auto}
+details.sub>summary::after{content:"afficher"!important;margin-left:auto;font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.04em}
+details.sub[open]>summary::after{content:"réduire"!important}
+details.sub[open]>summary::before{transform:rotate(90deg)}
+details.sub>*:not(summary){margin-left:1rem;margin-right:1rem}
+details.sub[open]{padding-bottom:.4rem}
+pre.clamped{max-height:calc(30 * 1.6em + 3.4rem);overflow:hidden}
+pre.clamped::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5rem;background:linear-gradient(rgba(13,17,23,0),var(--code-bg) 75%);pointer-events:none}
+pre .morebtn{position:absolute;left:50%;transform:translateX(-50%);bottom:.7rem;z-index:2;background:#1F6FEB;color:#fff;border:0;border-radius:999px;font-size:.8rem;font-weight:700;padding:.35rem .9rem;cursor:pointer}
+pre:not(.clamped) .morebtn{position:static;display:block;margin:.8rem auto 0;transform:none}
+/* --- images agrandissables (visionneuse) --- */
+.fig.zoomable{position:relative;cursor:zoom-in}
+.fig.zoomable img{width:100%;height:auto;display:block;border-radius:6px}
+.fig.zoomable::after{content:"⤢ Agrandir";position:absolute;top:.9rem;right:.9rem;background:rgba(15,23,42,.78);color:#fff;font-size:.78rem;font-weight:700;padding:.3rem .6rem;border-radius:6px;pointer-events:none}
+.fig a[title="Ouvrir le schéma en grand"]{cursor:zoom-in}
+.lightbox{position:fixed;inset:0;z-index:200;background:rgba(5,10,20,.94);display:none;flex-direction:column}
+.lightbox.open{display:flex}
+.lightbox .bar{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;color:#fff;font-size:.9rem;background:rgba(0,0,0,.35)}
+.lightbox .bar .cap{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#D7DEEA}
+.lightbox .bar button,.lightbox .bar a{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:.35rem .7rem;font:inherit;font-size:.85rem;text-decoration:none;cursor:pointer}
+.lightbox .view{flex:1;overflow:auto;touch-action:pan-x pan-y pinch-zoom;display:flex;align-items:flex-start;justify-content:center;padding:1rem}
+.lightbox .view img{flex:0 0 auto;max-width:none;width:min(96vw,1400px);height:auto;transform-origin:top center;transition:width .15s;cursor:zoom-in}
+.lightbox .view img.big{width:2400px;cursor:zoom-out}
+@media print{.topbar,.sitefooter,.lightbox{display:none}}
 </style>
 </head>
 <body>
 <header class="topbar" id="topbar"><div class="in">
 <a class="brand" href="../index.html"><span class="logo">D</span>DevOps Courses</a>
 <button class="burger" type="button" aria-label="Menu" onclick="document.getElementById('topbar').classList.toggle('open')">☰</button>
-<nav><a href="../index.html">Accueil</a><details><summary>Parcours DevOps</summary><div><a href="../devops-niveau-0-fondations.html">0 · Fondations</a><a href="../devops-niveau-1-conteneurs.html">1 · Conteneurs</a><a href="../devops-niveau-2-ci-cd.html">2 · CI/CD</a><a href="../devops-niveau-3-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-niveau-4-cloud.html">4 · Cloud</a><a href="../devops-niveau-5-kubernetes.html">5 · Kubernetes</a><a href="../devops-niveau-6-observabilite.html">6 · Observabilité</a><a href="../devops-niveau-7-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="../devops-niveau-8-sre-architecture.html">8 · SRE et architecture</a><a href="../devops-niveau-9-expert-leadership.html">9 · Expert et leadership</a></div></details><details><summary>Cours</summary><div><a href="../cours-react.html">React</a><a href="../cours-angular.html">Angular</a><a href="../cours-vue.html">Vue.js</a><a href="../cours-cloud.html">Cloud</a><a href="../cours-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a></div></details><a href="../devops-aide-memoire.html">Aide-mémoire</a><a href="../devops-fiches-entretien.html">Entretien</a>
+<nav><a href="../index.html">Accueil</a><details><summary>Parcours DevOps</summary><div class="groups"><div class="g"><span class="grp">Phase 1 · Les bases</span><a href="../devops-00-fondations.html">0 · Fondations</a><a href="../devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a></div><div class="g"><span class="grp">Phase 2 · Automatiser</span><a href="../devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="../devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a></div><div class="g"><span class="grp">Phase 3 · La plateforme</span><a href="../devops-04-cloud.html">4 · Cloud</a><a href="../devops-05-kubernetes.html">5 · Kubernetes</a><a href="../devops-06-observabilite.html">6 · Observabilité</a></div><div class="g"><span class="grp">Phase 4 · Sécuriser, fiabiliser, diriger</span><a href="../devops-07-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="../devops-08-sre-et-architecture.html">8 · SRE et architecture</a><a href="../devops-09-expert-et-leadership.html">9 · Expert et leadership</a></div></div></details><details><summary>Cours</summary><div class="groups"><div class="g"><span class="grp">Frontend</span><a href="../cours-01-react.html">React</a><a href="../cours-02-angular.html">Angular</a><a href="../cours-03-vue.html">Vue.js</a></div><div class="g"><span class="grp">Java et JVM</span><a href="../cours-04-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="../cours-05-kotlin.html">Kotlin</a><a href="../cours-06-java-pki-signature-electronique.html">Java PKI et signature</a></div><div class="g"><span class="grp">Cloud et données</span><a href="../cours-07-cloud.html">Cloud</a><a href="../cours-08-data-platform-aws-talend.html">Data Platform AWS Talend</a></div><div class="g"><span class="grp">Savoir-être</span><a href="../cours-09-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="../cours-10-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div></div></details><a href="../devops-10-aide-memoire.html">Aide-mémoire</a><a href="../devops-11-fiches-entretien.html">Entretien</a>
+<button class="rapid-btn" type="button" title="N'afficher que le résumé, les objectifs, les titres et les schémas de chaque chapitre" onclick="(function(b){var on=document.body.classList.toggle('rapid');b.classList.toggle('on',on);try{localStorage.setItem('devops-rapid',on?'1':'')}catch(e){}})(this)">Lecture rapide</button>
 <button class="theme-btn" type="button" aria-label="Basculer clair / sombre" onclick="(function(){var r=document.documentElement;var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('devops-theme',n)}catch(e){}})()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
 </nav></div></header>
 <header class="hero"><div class="in">
-<div class="pagenav"><a href="../devops-niveau-8-sre-architecture.html#c45">← Retour au chapitre 45</a><a href="../index.html">Accueil du parcours</a></div>
+<div class="pagenav"><a href="../devops-08-sre-et-architecture.html#c45">← Retour au chapitre 45</a><a href="../index.html">Accueil du parcours</a></div>
 <div class="level">Correction type — Travail pratique 45</div>
 <h1>Campagne de performance sur CrisisShield</h1>
 <p class="lead">Une solution complète, étape par étape : ce qu'il faut produire, la commande ou le fichier clé, le résultat qui prouve que ça marche, et les pièges. Ta solution peut différer ; ce qui compte, c'est que chaque preuve soit là.</p>
 </div></header>
-<div class="single">
+<div class="single with-toc">
+<nav class="toc" data-auto="corrections"><strong>Étapes de la correction</strong><ol><li><a href="#etape-1">Jeu de données réaliste et profil de charge</a></li><li><a href="#etape-2">Six scripts k6, seuils = SLO, résultats dans Prometheus</a></li><li><a href="#etape-3">Trouver et corriger le goulot, itération par itération</a></li><li><a href="#etape-4">Stress, rupture, et le HPA à 5× le nominal</a></li><li><a href="#etape-5">Endurance 4 h, fuite volontaire, heap dump</a></li><li><a href="#etape-6">Profilage continu avec Pyroscope</a></li><li><a href="#etape-7">Pièges conteneur : limite CPU et MaxRAMPercentage</a></li><li><a href="#etape-8">Plan de capacité à 12 mois</a></li><li><a href="#etape-9">Ce que le relecteur doit trouver</a></li><li><a href="#etape-10">Questions de relecteur</a></li></ol></nav>
 <div class="enonce"><strong>Énoncé</strong><ol><li>Génère un jeu de données réaliste (100 000 incidents, 500 organisations, 5 000 utilisateurs) par script, et un profil de charge à partir des logs d&#x27;accès de tes TP précédents (répartition par route).</li><li>Scripts k6 pour les six types de tests avec seuils = SLO ; résultats vers Prometheus ; dashboard « test de charge » superposant k6 et les métriques système (RED, HikariCP, GC, throttling).</li><li>Test de charge : trouve le premier goulot avec la méthode 45.2 (traces → USE). Corrige (index, N+1, pool, cache, asynchrone), rejoue, documente chaque itération avec le gain mesuré. Objectif : doubler le débit à SLO constant.</li><li>Stress et rupture : détermine la capacité maximale par Pod (requêtes/s à SLO), puis vérifie que le HPA (chapitre 31) maintient les SLO jusqu&#x27;à 5× le nominal.</li><li>Endurance 4 h : surveille le heap après GC et les descripteurs de fichiers ; introduis volontairement une fuite (cache non borné) et montre comment elle se voit sur le graphe puis dans un heap dump.</li><li>Profilage continu : Pyroscope avec l&#x27;agent Java ; identifie la méthode la plus coûteuse pendant la charge ; optimise-la.</li><li>Pièges conteneur : compare la latence p99 avec et sans limite CPU (throttling visible dans container_cpu_cfs_throttled_seconds_total) et avec deux réglages de MaxRAMPercentage.</li><li>Capacité : à partir des mesures, écris le plan de capacité à 12 mois pour 3 scénarios de croissance avec Pods, taille de base, coût mensuel (calculatrice AWS), et les quotas à demander.</li></ol></div>
-<article><div class="chaphead"><span class="chapnum">Étape 1</span></div><h2>Jeu de données réaliste et profil de charge</h2><pre><code># perf/seed.py — 500 organisations, 5 000 utilisateurs (10/org), 100 000 incidents (distribution de Pareto : 20 % des orgs font 80 % des incidents ; dates sur 18 mois ; 3 % avec localisation précise), 400 000 événements d&#x27;incident
+<article id="etape-1"><div class="chaphead"><span class="chapnum">Étape 1</span></div><h2>Jeu de données réaliste et profil de charge</h2><pre><code># perf/seed.py — 500 organisations, 5 000 utilisateurs (10/org), 100 000 incidents (distribution de Pareto : 20 % des orgs font 80 % des incidents ; dates sur 18 mois ; 3 % avec localisation précise), 400 000 événements d&#x27;incident
 docker run --rm --network host -v &quot;$PWD/perf:/w&quot; -w /w python:3.12-slim sh -c &#x27;pip -q install psycopg[binary] faker &amp;&amp; python seed.py --dsn postgresql://crisis:$PW@localhost:5432/crisis&#x27;
 # profil : depuis les logs nginx/ingress des TP précédents (Loki) →
 docker run --rm -i alpine sh -c &#x27;sort | uniq -c | sort -rn&#x27; &lt; &lt;(logcli query &#x27;{namespace=&quot;ingress-nginx&quot;} | json | line_format &quot;{{.method}} {{.path | regexReplaceAll &quot;/[0-9]+&quot; &quot;/{id}&quot;}}&quot;&#x27; --since=7d --limit=1000000 -o raw) | head -8</code></pre><div class="out">seed : 100 000 incidents en 41 s (COPY par lots de 10 000)
@@ -549,14 +662,14 @@ docker run --rm -i alpine sh -c &#x27;sort | uniq -c | sort -rn&#x27; &lt; &lt;(
    9 330 PATCH /api/incidents/{id}       (10 %)
    6 105 GET /api/incidents/map          (7 %)
    3 470 GET /api/reports/export         (4 %)</div><ul><li>Un test de charge sur un jeu vide ou uniforme ment : l'index qui manque n'apparaît qu'avec 100 000 lignes réparties comme en production.</li><li>Le profil vient des vrais accès : 42 % de listes, 4 % d'exports ; c'est la pondération des scénarios k6, pas une intuition.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 2</span></div><h2>Six scripts k6, seuils = SLO, résultats dans Prometheus</h2><pre><code># perf/k6/ — common.js (auth Keycloak par client_credentials, jeton mis en cache, distribution des routes selon le profil) ; smoke.js (1 VU, 1 min), load.js (100 VU, 10 min, paliers), stress.js (jusqu&#x27;à 600 VU), spike.js (10 → 400 VU en 5 s), soak.js (60 VU, 4 h), breakpoint.js (rampe jusqu&#x27;à violation des seuils)
+<article id="etape-2"><div class="chaphead"><span class="chapnum">Étape 2</span></div><h2>Six scripts k6, seuils = SLO, résultats dans Prometheus</h2><pre><code># perf/k6/ — common.js (auth Keycloak par client_credentials, jeton mis en cache, distribution des routes selon le profil) ; smoke.js (1 VU, 1 min), load.js (100 VU, 10 min, paliers), stress.js (jusqu&#x27;à 600 VU), spike.js (10 → 400 VU en 5 s), soak.js (60 VU, 4 h), breakpoint.js (rampe jusqu&#x27;à violation des seuils)
 export const options = {
   scenarios: { nominal: { executor: &#x27;ramping-arrival-rate&#x27;, startRate: 20, timeUnit: &#x27;1s&#x27;, preAllocatedVUs: 50, maxVUs: 300, stages: [{ target: 60, duration: &#x27;2m&#x27; }, { target: 60, duration: &#x27;6m&#x27; }, { target: 0, duration: &#x27;1m&#x27; }] } },
   thresholds: { &#x27;http_req_duration{route:list}&#x27;: [&#x27;p(95)&lt;300&#x27;], &#x27;http_req_duration{route:create}&#x27;: [&#x27;p(95)&lt;500&#x27;], http_req_failed: [&#x27;rate&lt;0.001&#x27;], checks: [&#x27;rate&gt;0.999&#x27;] } };
 docker run --rm -i --network host -v &quot;$PWD/perf/k6:/w&quot; -e K6_PROMETHEUS_RW_SERVER_URL=http://localhost:9090/api/v1/write -e K6_PROMETHEUS_RW_TREND_STATS=p(95),p(99),avg grafana/k6:0.54.0 run -o experimental-prometheus-rw /w/load.js
 # dashboard « Test de charge » : k6_http_reqs (débit), k6_http_req_duration p95/p99 par route, superposés à : RED de l&#x27;API, hikaricp_connections_active/pending, jvm_gc_pause_seconds, container_cpu_cfs_throttled_seconds_total, rate des logs ERROR</code></pre><div class="out">load.js : ✗ http_req_duration{route:list} p(95)=812ms (seuil 300) ; http_req_failed 0.02 % ; débit tenu 60 req/s
 (le premier goulot est visible : la liste dépasse le SLO dès 60 req/s)</div><ul><li><code>ramping-arrival-rate</code> impose un débit (requêtes/s), pas un nombre d'utilisateurs : c'est la charge réelle, indépendante de la lenteur du serveur.</li><li>Les métriques k6 et système sur le même graphe, même horloge : c'est ce qui permet de lire « la latence monte quand le pool sature », pas seulement « la latence monte ».</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 3</span></div><h2>Trouver et corriger le goulot, itération par itération</h2><pre><code># itération 1 — trace lente (Tempo, TraceQL { name = &quot;GET /api/incidents&quot; &amp;&amp; duration &gt; 500ms }) : 1 span JDBC de 640 ms : SELECT … FROM incident WHERE org_id = $1 ORDER BY created_at DESC LIMIT 20 → Seq Scan (EXPLAIN) → CREATE INDEX CONCURRENTLY idx_incident_org_created ON incident(org_id, created_at DESC)
+<article id="etape-3"><div class="chaphead"><span class="chapnum">Étape 3</span></div><h2>Trouver et corriger le goulot, itération par itération</h2><pre><code># itération 1 — trace lente (Tempo, TraceQL { name = &quot;GET /api/incidents&quot; &amp;&amp; duration &gt; 500ms }) : 1 span JDBC de 640 ms : SELECT … FROM incident WHERE org_id = $1 ORDER BY created_at DESC LIMIT 20 → Seq Scan (EXPLAIN) → CREATE INDEX CONCURRENTLY idx_incident_org_created ON incident(org_id, created_at DESC)
 # itération 2 — après l&#x27;index : p95 list 280 ms, mais 21 spans JDBC par requête de liste : N+1 sur incident.reporter → @EntityGraph(attributePaths = &quot;reporter&quot;) ; 21 → 2 requêtes
 # itération 3 — à 120 req/s : hikaricp_connections_pending &gt; 0, p95 remonte → pool 10 → 20 (nœud USE : CPU base à 35 %, marge) ; statement_timeout conservé
 # itération 4 — GET /api/incidents/map à 7 % du trafic coûte 30 % du CPU base : cache Caffeine 10 s par organisation (@Cacheable) ; invalidation à l&#x27;écriture
@@ -568,37 +681,37 @@ it.2 N+1 : list 160 ms → 110 req/s
 it.3 pool : 140 req/s
 it.4 cache map : 165 req/s (CPU base −25 %)
 it.5 : 170 req/s à SLO — objectif ×2 dépassé (×2,8), 5 commits, chacun avec sa mesure</div><ul><li>Une correction à la fois, une mesure à chaque fois : deux corrections en même temps et on ne sait plus laquelle a agi.</li><li>L'ordre trace → USE est celui du chapitre : la trace dit <em>où</em> (quel span), USE dit <em>pourquoi</em> (quelle ressource saturée).</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 4</span></div><h2>Stress, rupture, et le HPA à 5× le nominal</h2><pre><code>docker run … grafana/k6 run /w/breakpoint.js   # 1 Pod (HPA désactivé, replicas 1) : rampe 10 → 400 req/s jusqu&#x27;à violation
+<article id="etape-4"><div class="chaphead"><span class="chapnum">Étape 4</span></div><h2>Stress, rupture, et le HPA à 5× le nominal</h2><pre><code>docker run … grafana/k6 run /w/breakpoint.js   # 1 Pod (HPA désactivé, replicas 1) : rampe 10 → 400 req/s jusqu&#x27;à violation
 # capacité par Pod : le seuil casse à 58 req/s (p95 &gt; 300 ms), CPU Pod 92 % de la request → 55 req/s à SLO par Pod
 k kubectl autoscale deploy api -n crisis --cpu-percent=70 --min=2 --max=12 ; docker run … grafana/k6 run /w/stress.js   # 300 req/s = 5× le nominal de 60
 k kubectl get hpa api -n crisis -w | head -8</code></pre><div class="out">breakpoint : 55 req/s à SLO par Pod (rupture nette à 58 : latence exponentielle, 0 erreur jusqu&#x27;à 70 puis 503)
 stress à 300 req/s : HPA 2 → 4 → 7 → 8 Pods en 3 min 20 ; p95 list 340 ms pendant 90 s (seuil dépassé le temps de la montée), puis 190 ms ; 0,04 % d&#x27;erreurs
 capacité : 8 Pods × 55 = 440 req/s théoriques ; la base tient à 42 % CPU</div><ul><li>La capacité par Pod est le chiffre de base du plan de capacité : tout se déduit de « 55 req/s à SLO par 250 m de CPU ».</li><li>Les 90 s de dépassement pendant la montée sont le coût du HPA : pour un pic prévisible, on pré-scale (KEDA cron) ; pour l'imprévisible, on accepte ou on surdimensionne le minimum.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 5</span></div><h2>Endurance 4 h, fuite volontaire, heap dump</h2><pre><code>docker run … grafana/k6 run /w/soak.js   # 60 VU, 4 h
+<article id="etape-5"><div class="chaphead"><span class="chapnum">Étape 5</span></div><h2>Endurance 4 h, fuite volontaire, heap dump</h2><pre><code>docker run … grafana/k6 run /w/soak.js   # 60 VU, 4 h
 # panneau : jvm_memory_used_bytes{area=&quot;heap&quot;} après GC (min sur 5 min), process_open_fds, jvm_threads_live
 # fuite : @Cacheable(&quot;incidentById&quot;) sans taille ni TTL (Caffeine par défaut : illimité) sur GET /api/incidents/{id}, 100 000 clés possibles
 k kubectl exec -n crisis deploy/api -- jcmd 1 GC.heap_dump /tmp/heap.hprof &amp;&amp; k kubectl cp crisis/api-…:/tmp/heap.hprof heap.hprof
 docker run --rm -v &quot;$PWD:/w&quot; -w /w eclipse-temurin:21-jdk sh -c &#x27;apt-get -qq update &amp;&amp; apt-get -qq install -y wget unzip &gt;/dev/null &amp;&amp; wget -q https://github.com/eclipse-mat/… -O mat.zip … ; ./ParseHeapDump.sh heap.hprof org.eclipse.mat.api:suspects&#x27;   # ou VisualVM en conteneur avec X11 : ici l&#x27;analyse « leak suspects » en ligne de commande</code></pre><div class="out">sans fuite : heap après GC stable à 210 Mo ± 15 sur 4 h ; fds 180 constants ; threads 64
 avec fuite : heap après GC monte de 210 à 470 Mo en 2 h 10, puis OOMKilled (limite 512 Mo) → le graphe monte en escalier après chaque GC : signature d&#x27;une fuite
 MAT : Leak suspect 1 — com.github.benmanes.caffeine.cache.BoundedLocalCache : 241 Mo (98 %) retenus, 87 314 entrées Incident</div><ul><li>Le heap après GC est la seule courbe qui compte : le heap brut monte et descend toujours ; c'est son plancher qui doit être plat.</li><li>Le dump nomme le coupable : un cache sans borne. Correction : <code>maximumSize=10000, expireAfterWrite=30s</code>, et une métrique de taille de cache.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 6</span></div><h2>Profilage continu avec Pyroscope</h2><pre><code>k helm install pyroscope grafana/pyroscope -n observability --version 1.8.0
+<article id="etape-6"><div class="chaphead"><span class="chapnum">Étape 6</span></div><h2>Profilage continu avec Pyroscope</h2><pre><code>k helm install pyroscope grafana/pyroscope -n observability --version 1.8.0
 # Deployment api : -javaagent:/opt/pyroscope.jar ; env PYROSCOPE_APPLICATION_NAME=api, PYROSCOPE_SERVER_ADDRESS=http://pyroscope.observability:4040, PYROSCOPE_PROFILER_EVENT=cpu, PYROSCOPE_PROFILER_ALLOC=512k
 # Grafana → Explore → Pyroscope → process_cpu:cpu, service_name=api, fenêtre = le test de charge ; flame graph
 # méthode la plus coûteuse : IncidentMapper.toDto → ObjectMapper.writeValueAsString appelé par incident pour construire un champ « summary » JSON (18 % du CPU) → sérialisation une fois par lot, et champ calculé retiré de la liste (renvoyé seulement sur le détail)</code></pre><div class="out">flame graph : 18 % dans toDto → 4 % après correction ; débit à SLO 170 → 196 req/s</div><ul><li>Le profilage en continu montre ce que la trace ne voit pas : du CPU dépensé <em>dans</em> l'application, entre deux spans.</li><li>Optimiser la méthode du sommet du flame graph d'abord : 18 % d'un seul endroit, c'est rare et rentable.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 7</span></div><h2>Pièges conteneur : limite CPU et MaxRAMPercentage</h2><pre><code># A : requests cpu 500m, limits cpu 500m ; B : requests 500m, pas de limite ; même charge (load.js 100 req/s)
+<article id="etape-7"><div class="chaphead"><span class="chapnum">Étape 7</span></div><h2>Pièges conteneur : limite CPU et MaxRAMPercentage</h2><pre><code># A : requests cpu 500m, limits cpu 500m ; B : requests 500m, pas de limite ; même charge (load.js 100 req/s)
 for cfg in avec-limite sans-limite; do k kubectl apply -f perf/k8s/api-$cfg.yaml &amp;&amp; k kubectl rollout status deploy/api -n crisis &amp;&amp; docker run … grafana/k6 run /w/load.js --tag cfg=$cfg; done
 curl -s &#x27;http://prometheus:9090/api/v1/query?query=rate(container_cpu_cfs_throttled_seconds_total{container=&quot;api&quot;}[5m])&#x27; | jq &#x27;.data.result[].value[1]&#x27;
 # mémoire : MaxRAMPercentage=50 contre 75 sous limite 512 Mo, soak 30 min : GC pauses (jvm_gc_pause_seconds) et OOMKilled</code></pre><div class="out">avec limite 500m : p99 list 920 ms, throttled 0,31 s/s (31 % du temps bridé) ; sans limite : p99 310 ms, throttled 0 ; CPU réellement consommé identique (480 m en moyenne) — les pics de GC et de démarrage sont bridés
 MaxRAMPercentage 50 : heap max 256 Mo, 34 pauses GC/min &gt; 100 ms, p99 dégradé ; 75 : heap 384 Mo, 6 pauses/min, 0 OOM (le reste, 128 Mo, suffit au non-heap) ; 90 : OOMKilled en 12 min (métaspace + threads hors heap)</div><ul><li>La limite CPU bride les <em>pics</em> même quand le nœud a du CPU libre : la latence p99 en souffre sans que l'utilisation moyenne bouge. D'où « pas de limite CPU » dans le Deployment de référence.</li><li>75 % est la valeur juste pour une JVM sous 512 Mo ; le reste est le non-heap (métaspace, threads, buffers). Le chiffre se mesure, il ne se copie pas.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 8</span></div><h2>Plan de capacité à 12 mois</h2><pre><code># tp45.md — à partir de : 55 req/s par Pod (250 m CPU, 512 Mi), base 42 % CPU à 300 req/s (2 vCPU), 100 000 incidents = 180 Mo, croissance 8 000 incidents/mois
+<article id="etape-8"><div class="chaphead"><span class="chapnum">Étape 8</span></div><h2>Plan de capacité à 12 mois</h2><pre><code># tp45.md — à partir de : 55 req/s par Pod (250 m CPU, 512 Mi), base 42 % CPU à 300 req/s (2 vCPU), 100 000 incidents = 180 Mo, croissance 8 000 incidents/mois
 # | Scénario | Trafic pic à M+12 | Pods (pic, +30 % marge) | Base | Stockage | Coût AWS/mois (Fargate + RDS multi-AZ + ALB + NAT) | Quotas à demander |
 # | Bas (+30 %) | 80 req/s | 2 (min 2) | db.t4g.medium | 60 Go | ≈ 175 $ | aucun |
 # | Médian (+150 %) | 150 req/s | 4 | db.t4g.large | 70 Go | ≈ 260 $ | vCPU Fargate 16 → 32 |
 # | Haut (×5, appel d&#x27;offres national) | 300 req/s | 8 | db.r7g.large + réplica lecture | 90 Go | ≈ 640 $ | vCPU Fargate 64, ENI, IP publiques |
 # hypothèses, révision trimestrielle, signal de déclenchement (p95 &gt; 250 ms sur 7 j ou CPU base &gt; 60 %)</code></pre><div class="out">trois scénarios chiffrés à partir des mesures, un déclencheur de révision, les quotas cloud à demander avant d&#x27;en avoir besoin</div><ul><li>Un plan de capacité est une règle de trois à partir de mesures, pas une prévision : 55 req/s par Pod fait tout le calcul.</li><li>Les quotas cloud sont l'oubli classique : le jour du pic, la demande de quota prend 48 h.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Livrable</span><span class="badge tag-important">Important</span></div><h2>Ce que le relecteur doit trouver</h2><ul><li><code>perf/</code> : seed.py, six scripts k6 avec seuils, le rapport par itération avec commits, les manifests de comparaison, le dashboard « Test de charge », la configuration Pyroscope.</li><li><code>tp45.md</code> : profil de charge, tableau des itérations (×2,8), capacité par Pod et comportement du HPA à 5×, les deux courbes d'endurance et le rapport MAT, le flame graph avant/après, les mesures CPU limite/sans limite et MaxRAMPercentage, le plan de capacité.</li><li><code>docs/cours-performance.md</code> : la méthode (profil → seuils → trace → USE → une correction → mesure), les six types de tests, et les trois pièges conteneur pour l'entretien.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Pour aller plus loin</span><span class="badge tag-contexte">Bon à savoir</span></div><h2>Questions de relecteur</h2><ul><li>Pourquoi un débit imposé (arrival rate) plutôt qu'un nombre de VU ? Avec des VU, un serveur lent reçoit moins de requêtes et le test se ment à lui-même.</li><li>Que faire d'un test de charge qui passe alors que la production tombe ? Vérifier le profil (routes, données, cache chaud) : un test qui ne ressemble pas à la production ne prédit pas la production.</li></ul></article>
-<div class="footnav"><a href="../devops-niveau-8-sre-architecture.html#c45">← Chapitre 45</a><a href="../devops-niveau-8-sre-architecture.html#c46">Chapitre 46 →</a></div>
+<article id="etape-9"><div class="chaphead"><span class="chapnum">Livrable</span><span class="badge tag-important">Important</span></div><h2>Ce que le relecteur doit trouver</h2><ul><li><code>perf/</code> : seed.py, six scripts k6 avec seuils, le rapport par itération avec commits, les manifests de comparaison, le dashboard « Test de charge », la configuration Pyroscope.</li><li><code>tp45.md</code> : profil de charge, tableau des itérations (×2,8), capacité par Pod et comportement du HPA à 5×, les deux courbes d'endurance et le rapport MAT, le flame graph avant/après, les mesures CPU limite/sans limite et MaxRAMPercentage, le plan de capacité.</li><li><code>docs/cours-performance.md</code> : la méthode (profil → seuils → trace → USE → une correction → mesure), les six types de tests, et les trois pièges conteneur pour l'entretien.</li></ul></article>
+<article id="etape-10"><div class="chaphead"><span class="chapnum">Pour aller plus loin</span><span class="badge tag-contexte">Bon à savoir</span></div><h2>Questions de relecteur</h2><ul><li>Pourquoi un débit imposé (arrival rate) plutôt qu'un nombre de VU ? Avec des VU, un serveur lent reçoit moins de requêtes et le test se ment à lui-même.</li><li>Que faire d'un test de charge qui passe alors que la production tombe ? Vérifier le profil (routes, données, cache chaud) : un test qui ne ressemble pas à la production ne prédit pas la production.</li></ul></article>
+<div class="footnav"><a href="../devops-08-sre-et-architecture.html#c45">← Chapitre 45</a><a href="../devops-08-sre-et-architecture.html#c46">Chapitre 46 →</a></div>
 </div>
 <script>
 (function(){ var root=document.documentElement; try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
@@ -608,8 +721,88 @@ MaxRAMPercentage 50 : heap max 256 Mo, 34 pauses GC/min &gt; 100 ms, p99 dégrad
 </script>
 <footer class="sitefooter"><div class="in">
 <div><div class="brand">DevOps Courses</div>Parcours DevOps de zéro à expert et cours complémentaires, avec CrisisShield comme fil conducteur. Tout tourne en Docker. Code source et outils de génération sur <a href="https://github.com/TABETG/DevOpsCourses" rel="noopener" style="display:inline">GitHub</a>.</div>
-<div><h4>Parcours</h4><a href="../devops-niveau-0-fondations.html">0 · Fondations</a><a href="../devops-niveau-1-conteneurs.html">1 · Conteneurs</a><a href="../devops-niveau-2-ci-cd.html">2 · CI/CD</a><a href="../devops-niveau-3-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-niveau-4-cloud.html">4 · Cloud</a><a href="../index.html">Tous les niveaux →</a></div>
-<div><h4>Cours</h4><a href="../cours-react.html">React</a><a href="../cours-angular.html">Angular</a><a href="../cours-vue.html">Vue.js</a><a href="../cours-cloud.html">Cloud</a><a href="../cours-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a></div>
-<div><h4>Réviser</h4><a href="../devops-aide-memoire.html">Aide-mémoire</a><a href="../devops-fiches-entretien.html">Fiches entretien</a><a href="../maquette.html">Charte graphique</a></div>
+<div><h4>Parcours</h4><a href="../devops-00-fondations.html">0 · Fondations</a><a href="../devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a><a href="../devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="../devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-04-cloud.html">4 · Cloud</a><a href="../index.html">Tous les niveaux →</a></div>
+<div><h4>Cours</h4><a href="../cours-01-react.html">React</a><a href="../cours-02-angular.html">Angular</a><a href="../cours-03-vue.html">Vue.js</a><a href="../cours-04-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="../cours-05-kotlin.html">Kotlin</a><a href="../cours-06-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-07-cloud.html">Cloud</a><a href="../cours-08-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-09-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="../cours-10-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div>
+<div><h4>Réviser</h4><a href="../devops-10-aide-memoire.html">Aide-mémoire</a><a href="../devops-11-fiches-entretien.html">Fiches entretien</a><a href="../site-00-charte-graphique.html">Charte graphique</a></div>
 </div></footer>
+<script id="site-lightbox">(function(){
+var lb=document.createElement('div');lb.className='lightbox';lb.innerHTML='<div class="bar"><span class="cap"></span><button type="button" data-zoom>Zoom ×2</button><a data-open target="_blank" rel="noopener">Nouvel onglet</a><button type="button" data-close>Fermer ✕</button></div><div class="view"><img alt=""></div>';
+document.body.appendChild(lb);var img=lb.querySelector('.view img'),cap=lb.querySelector('.cap'),open=lb.querySelector('[data-open]');
+function show(src,text){img.src=src;img.classList.remove('big');cap.textContent=text||'';open.href=src;lb.classList.add('open');document.body.style.overflow='hidden';}
+function hide(){lb.classList.remove('open');document.body.style.overflow='';img.src='';}
+lb.querySelector('[data-close]').addEventListener('click',hide);lb.addEventListener('click',function(e){if(e.target===lb||e.target.classList.contains('view'))hide();});
+lb.querySelector('[data-zoom]').addEventListener('click',function(){img.classList.toggle('big');this.textContent=img.classList.contains('big')?'Zoom ×1':'Zoom ×2';});
+img.addEventListener('click',function(){img.classList.toggle('big');});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
+document.querySelectorAll('figure.fig img').forEach(function(i){var f=i.closest('figure');var pc=function(){if(i.naturalHeight>i.naturalWidth*1.15)f.classList.add('portrait')};if(i.complete)pc();else i.addEventListener('load',pc);if(!f.classList.contains('zoomable')&&!i.closest('a'))f.classList.add('zoomable');
+ var a=i.closest('a');if(a){a.addEventListener('click',function(e){e.preventDefault();show(i.getAttribute('data-full')||i.currentSrc||i.src,(f.querySelector('figcaption')||{}).textContent);});}
+ else i.addEventListener('click',function(){show(i.getAttribute('data-full')||i.currentSrc||i.src,(f.querySelector('figcaption')||{}).textContent);});});
+})();</script>
+<script id="site-highlight">(function(){
+/* Coloration syntaxique légère pour tout le site (bash, yaml, java, kotlin, js/ts, python, sql, hcl, html, dockerfile). Injectée par restyle.py. */
+var KW = new RegExp('^(?:' + [
+ 'abstract','actual','as','async','await','break','case','catch','class','companion','const','constructor','continue','data','def','default','do','else','elif','enum','except','export','extends','final','finally','for','from','fun','function','if','implements','import','in','inline','interface','internal','is','lambda','lateinit','let','match','new','not','object','open','operator','override','package','pass','private','protected','public','raise','record','reified','return','sealed','static','suspend','switch','this','throw','throws','try','typealias','val','var','void','when','where','while','with','yield','and','or','null','true','false','None','True','False','undefined','nil',
+ 'resource','provider','variable','output','locals','module','terraform','data',
+ 'select','from','where','join','left','inner','outer','group','by','order','having','limit','offset','insert','into','values','update','set','delete','create','table','index','alter','add','drop','primary','key','references','on','using','exists','between','like','asc','desc','distinct','union','begin','commit','rollback','declare','partition','concurrently','not','null','default',
+ 'FROM','RUN','COPY','ADD','CMD','ENTRYPOINT','ENV','ARG','EXPOSE','USER','WORKDIR','VOLUME','HEALTHCHECK','LABEL','SHELL','AS',
+ 'docker','kubectl','helm','terraform','ansible-playbook','git','curl','wget','npm','npx','mvn','gradle','java','python3','python','pip','aws','az','gcloud','openssl','keytool','cosign','trivy','k6','psql','sudo','echo','cat','grep','sed','awk','ls','cd','mkdir','rm','cp','mv','chmod','chown','source','alias','done','then','fi','esac','exit','tar','zip','unzip','ssh','scp','systemctl','journalctl','vault','argocd','kind','jq','yq'
+].join('|') + ')$');
+var esc = function(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+var TOKEN = new RegExp([
+ '(<!--[\\s\\S]*?-->|/\\*[\\s\\S]*?\\*/)',                                   // 1 commentaire bloc
+ '((?<![:\\w/])//(?!/)[^\\n]*|#(?![0-9a-fA-F]{3,6}\\b)[^\\n]*|--\\s[^\\n]*)',            // 2 commentaire ligne
+ '("""[\\s\\S]*?"""|\'\'\'[\\s\\S]*?\'\'\'|"(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\'|`(?:\\\\.|[^`\\\\])*`)', // 3 chaîne
+ '(^[ \\t]*(?:\\$|>>>|❯)(?=\\s))',                                          // 4 prompt
+ '(^[ \\t]*[\\w.\\-/\\[\\]"\']+(?=:(?:\\s|$)))',                            // 5 clé yaml / json
+ '(@[A-Za-z_][\\w.]*)',                                                      // 6 annotation
+ '(\\$\\{?[A-Za-z_][\\w.]*\\}?|\\$\\d)',                                     // 7 variable shell
+ '(</?[A-Za-z][\\w:.-]*(?=[\\s>/])|/?>(?=\\s|$|<))',                          // 8 balise
+ '(\\b0x[0-9a-fA-F]+\\b|\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?[a-zA-Z%]{0,3}\\b)', // 9 nombre
+ '(\\b[A-Za-z_][\\w.-]*\\b)',                                                // 10 mot
+ '(=>|->|::|===|!==|==|!=|<=|>=|&&|\\|\\||\\?:|\\?\\.|!!|[+\\-*/%=<>!?&|^~])'  // 11 opérateur
+].join('|'), 'gm');
+function highlight(src){
+ var out = '', last = 0, m;
+ TOKEN.lastIndex = 0;
+ while ((m = TOKEN.exec(src))) {
+  out += esc(src.slice(last, m.index)); last = m.index + m[0].length;
+  var t = m[0], cls = null;
+  if (m[1] || m[2]) cls = 'com';
+  else if (m[3]) cls = 'str';
+  else if (m[4]) cls = 'prompt';
+  else if (m[5]) cls = 'key';
+  else if (m[6]) cls = 'ann';
+  else if (m[7]) cls = 'var';
+  else if (m[8]) cls = 'tag';
+  else if (m[9]) cls = 'num';
+  else if (m[10]) { if (KW.test(t)) cls = 'kw'; else if (/^[A-Z][A-Za-z0-9_]*$/.test(t)) cls = 'type'; else if (/\(/.test(src.slice(last, last + 2)) || src.charAt(last) === '(') cls = 'fn'; }
+  else if (m[11]) cls = 'op';
+  out += cls ? '<span class="tk-' + cls + '">' + esc(t) + '</span>' : esc(t);
+ }
+ return out + esc(src.slice(last));
+}
+document.querySelectorAll('pre > code').forEach(function(c){ if (c.querySelector('span')) return; try { c.innerHTML = highlight(c.textContent); } catch (e) {} });
+})();
+</script>
+<script id="site-toc">(function(){
+/* scroll-spy du sommaire */
+document.querySelectorAll('.toc ol[start]').forEach(function(o){o.style.counterReset='toc '+(parseInt(o.getAttribute('start'),10)-1);});
+var links=Array.prototype.slice.call(document.querySelectorAll('.toc a[href^="#"]'));if(!links.length)return;
+var map={};links.forEach(function(a){var id=a.getAttribute('href').slice(1);var el=document.getElementById(id);if(el)map[id]=a;});
+var ids=Object.keys(map);if(!ids.length)return;var cur=null;
+function setActive(id){if(cur===id)return;cur=id;links.forEach(function(a){a.classList.remove('active')});map[id].classList.add('active');var t=map[id].closest('.toc');if(t&&t.scrollHeight>t.clientHeight){var r=map[id].getBoundingClientRect(),tr=t.getBoundingClientRect();if(r.top<tr.top||r.bottom>tr.bottom)map[id].scrollIntoView({block:'nearest'});}}
+function update(){var top=64+24,best=ids[0];for(var i=0;i<ids.length;i++){var r=document.getElementById(ids[i]).getBoundingClientRect();if(r.top<=top+8)best=ids[i];else break;}setActive(best);}
+document.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);update();
+/* retour à la ligne du code avec indentation conservée */
+document.querySelectorAll('pre > code').forEach(function(code){var pre=code.parentElement;var html=code.innerHTML.replace(/\n$/,'');var lines=html.split('\n');
+ code.innerHTML=lines.map(function(l){var m=/^((?:&nbsp;|[ \t])*)/.exec(l.replace(/<[^>]+>/g,''));var ind=(m?m[1].replace(/\t/g,'    '):'').length;return '<span class="ln"'+(ind?' data-ind style="--ind:'+(ind+2)+'"':'')+'>'+l+'</span>';}).join('<span class="nl">\n</span>');
+ var wide=false;lines.forEach(function(l){if(l.replace(/<[^>]+>/g,'').length>72)wide=true;});
+ if(lines.length>34){pre.classList.add('clamped');var mb=document.createElement('button');mb.type='button';mb.className='morebtn';mb.textContent='Afficher les '+lines.length+' lignes ▾';mb.addEventListener('click',function(){var c=pre.classList.toggle('clamped');mb.textContent=c?'Afficher les '+lines.length+' lignes ▾':'Réduire ▴';if(c)pre.scrollIntoView({block:'nearest'});});pre.appendChild(mb);}
+ if(wide){pre.classList.add('wrapped');var b=document.createElement('button');b.type='button';b.className='wrapbtn';b.textContent='⇤ Une ligne';b.title='Basculer le retour à la ligne';b.addEventListener('click',function(){pre.classList.toggle('wrapped');b.textContent=pre.classList.contains('wrapped')?'⇤ Une ligne':'⇌ Replier';});pre.appendChild(b);}
+});
+})();</script>
+<script id="site-rapid">(function(){try{if(localStorage.getItem('devops-rapid')==='1'){document.body.classList.add('rapid');var b=document.querySelector('.rapid-btn');if(b)b.classList.add('on');}}catch(e){}
+document.querySelectorAll('article').forEach(function(a){var h=a.querySelector('h2');if(h&&!a.querySelector('.rapid-hint')){var s=document.createElement('span');s.className='rapid-hint';s.textContent='Lecture rapide : clique sur un titre de section pour afficher le chapitre entier.';h.insertAdjacentElement('afterend',s);}
+ a.querySelectorAll('h3').forEach(function(t){t.classList.add('rapid-toggle');t.addEventListener('click',function(){if(document.body.classList.contains('rapid'))a.classList.toggle('expanded');});});});
+})();</script>
 </body></html>

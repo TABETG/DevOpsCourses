@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fiches entretien — tout le parcours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Jetons ============ */
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#172033; --muted:#55606F; --line:#DCE2EA; --line-strong:#B9C3CF;
+  --accent:#1D5FD1; --accent-ink:#0F3F94; --accent-soft:#E6EEFB;
+  --exo:#9A5B00; --exo-soft:#FFF6E3; --exo-line:#E9B860;
+  --tp:#1B7A4E; --tp-soft:#E4F5EB; --tp-line:#7CC79C;
+  --ent:#6A3FA6; --ent-soft:#F1EAFB; --ent-line:#B99BE0;
+  --code-bg:#111827; --code-ink:#E5E7EB; --code-line:#273244;
+  --hero:#0F1B33; --ok:#1B7A4E; --niche:#0E7C86; --niche-soft:#E1F4F6; --niche-line:#8CCFD6;
+  --radius:10px; --shadow:0 1px 2px rgba(23,32,51,.06), 0 4px 16px rgba(23,32,51,.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --paper:#171E27; --ink:#E6EBF2; --muted:#9AA7B8; --line:#26303C; --line-strong:#3A4654;
+  --accent:#6FA3F5; --accent-ink:#A9C7FA; --accent-soft:#1A2A45;
+  --exo:#F1B75A; --exo-soft:#2C2410; --exo-line:#7E5D1C;
+  --tp:#6CD19B; --tp-soft:#12291D; --tp-line:#2A6B48;
+  --ent:#C4A3F2; --ent-soft:#251A38; --ent-line:#5B3F86;
+  --code-bg:#0B1017; --code-ink:#E6EBF2; --code-line:#1C2632;
+  --hero:#0B1220; --ok:#6CD19B; --shadow:none; --niche:#66D3DD; --niche-soft:#0F2A2E; --niche-line:#1F5D64;
+}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.65}
+a{color:var(--accent);text-underline-offset:.15em}
+a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--accent-soft);color:var(--accent-ink);padding:.08em .38em;border-radius:5px;font-size:.88em;word-break:break-word}
+pre{position:relative;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);padding:1rem 1.1rem;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.6;margin:1rem 0;tab-size:2}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+pre .copy{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55;transition:opacity .15s}
+pre:hover .copy,pre .copy:focus-visible{opacity:1}
+pre .copy.ok{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
+h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,4.6vw,3rem)}
+h2{font-size:1.7rem;margin-top:3rem;padding-top:1.4rem;border-top:3px solid var(--accent)}
+h3{font-size:1.2rem;color:var(--accent-ink);margin-top:2.2rem;padding-left:.75rem;border-left:3px solid var(--accent)}
+h4{font-size:1.05rem;margin-top:1.4rem}
+p{margin:.85rem 0}
+ul,ol{padding-left:1.4rem}
+li{margin:.35rem 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:.6rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+tr:last-child td{border-bottom:none}
+table:not(.tablewrap table){margin:1rem 0}
+
+/* ============ Barre de lecture et hero ============ */
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:width .1s linear}
+.hero{background-color:var(--hero);color:#fff;padding:3.2rem 1.25rem 2.6rem;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:28px 28px}
+.hero .in{max-width:1120px;margin:0 auto}
+.hero .level{display:inline-block;font-size:.9rem;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero p.lead{font-size:1.12rem;max-width:64ch;opacity:.92;margin-top:1rem;line-height:1.6}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;font-size:.92rem}
+.hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:.3rem .75rem;border-radius:6px}
+button.theme{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:.4rem .8rem;font:inherit;font-size:.85rem;cursor:pointer;margin-top:1.3rem}
+button.theme:hover{background:rgba(255,255,255,.1)}
+button.theme:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ============ Mise en page ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:1.5rem 1.25rem 5rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2.25rem;align-items:start}
+.single{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+nav.toc{position:sticky;top:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;font-size:.92rem;box-shadow:var(--shadow)}
+nav.toc strong{display:block;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+nav.toc ol{padding-left:0;margin:0;list-style:none;counter-reset:toc}
+nav.toc li{margin:0;counter-increment:toc}
+nav.toc a{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink);padding:.35rem .5rem;border-radius:6px;border-left:3px solid transparent}
+nav.toc a::before{content:counter(toc);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:1.4em}
+nav.toc ol[start] a::before{content:counter(toc)}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+nav.toc .prog{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+nav.toc .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:.35rem}
+nav.toc .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:1.25rem}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+  nav.toc li{flex:0 0 auto}
+  nav.toc a{border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;white-space:nowrap}
+  nav.toc a.active{border-color:var(--accent)}
+}
+main{min-width:0}
+
+/* ============ Chapitres ============ */
+article{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){article{padding:1.2rem 1rem 1.4rem;border-radius:10px}}
+article h2{border-top:none;padding-top:0;margin-top:0;font-size:1.85rem}
+.chapnum{display:inline-block;color:var(--accent-ink);background:var(--accent-soft);font-weight:700;font-size:.82rem;letter-spacing:.02em;padding:.2rem .65rem;border-radius:999px;margin-bottom:.7rem}
+.objectifs{background:var(--accent-soft);border-left:4px solid var(--accent);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.2rem 0 1.6rem}
+.objectifs strong{display:block;margin-bottom:.35rem;color:var(--accent-ink)}
+.objectifs ul{margin:0}
+.note{border-left:4px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 94%,var(--ink));padding:.7rem 1rem;color:var(--muted);margin:1rem 0;font-size:.95em;border-radius:0 var(--radius) var(--radius) 0}
+.entretien{background:var(--ent-soft);border:1px solid var(--ent-line);border-left:4px solid var(--ent);padding:.9rem 1.1rem;border-radius:var(--radius);margin:1.4rem 0}
+.entretien strong{color:var(--ent)}
+.exo{background:var(--exo-soft);border:1px solid var(--exo-line);border-left:4px solid var(--exo);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.2rem 0}
+.exo .tag{font-weight:700;color:var(--exo);display:block;margin-bottom:.35rem}
+.tp{background:var(--tp-soft);border:1px solid var(--tp-line);border-left:5px solid var(--tp);border-radius:var(--radius);padding:1.1rem 1.3rem;margin:1.6rem 0}
+.tp .tag{font-weight:700;color:var(--tp);display:block;margin-bottom:.5rem;font-size:1.08rem}
+.tp ol>li{margin:.55rem 0}
+.tp pre,.exo pre{background:var(--code-bg)}
+details{margin-top:.7rem}
+summary{cursor:pointer;font-weight:700;color:var(--accent-ink);list-style:none;display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);font-size:.92rem;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--accent-soft)}
+details .sol{border-top:1px dashed var(--line-strong);padding-top:.7rem;margin-top:.7rem}
+.check{display:flex;align-items:center;gap:.7rem;margin-top:1.8rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:var(--radius);font-weight:700;background:var(--bg);cursor:pointer}
+.check input{width:1.25rem;height:1.25rem;accent-color:var(--ok);margin:0}
+.check:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--tp-soft)}
+
+/* ============ Révision ============ */
+.rev{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.75rem 2rem 2rem;box-shadow:var(--shadow)}
+@media (max-width:600px){.rev{padding:1.2rem 1rem 1.4rem}}
+.rev h2{border-top:none;padding-top:0;margin-top:0}
+.rev h3{margin-top:2rem}
+.quiz{counter-reset:q;list-style:none;padding-left:0}
+.quiz li{counter-increment:q;position:relative;padding:.55rem 0 .55rem 2.6rem;border-bottom:1px solid var(--line);margin:0}
+.quiz li::before{content:counter(q);position:absolute;left:0;top:.5rem;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:500;display:flex;align-items:center;justify-content:center}
+.quiz li:last-child{border-bottom:none}
+
+/* ============ Page d'accueil ============ */
+.global{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.5rem;margin-top:1.5rem;box-shadow:var(--shadow)}
+.global .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:.6rem}
+.global .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.global .note{margin:.9rem 0 0}
+.levels{display:grid;gap:.9rem;margin-top:1.4rem}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.35rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;box-shadow:var(--shadow);border-left:5px solid var(--accent)}
+@media (max-width:600px){.lvl{grid-template-columns:auto 1fr}.lvl .go{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.lvl .n{font-family:"JetBrains Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--accent);min-width:2.2rem;text-align:center}
+.lvl h3{margin:0;padding:0;border:0;color:var(--ink);font-size:1.15rem}
+.lvl p{margin:.3rem 0 0;color:var(--muted);font-size:.95em}
+.lvl .meta2{font-size:.85em;color:var(--muted);margin-top:.45rem}
+.lvl .go{display:flex;flex-direction:column;gap:.55rem;align-items:flex-end}
+.lvl a.btn{background:var(--accent);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:8px;font-weight:700;font-size:.95em;white-space:nowrap}
+.lvl a.btn:hover{background:var(--accent-ink);color:#fff}
+.lvl label{font-size:.88em;display:flex;gap:.45rem;align-items:center;white-space:nowrap;cursor:pointer}
+.lvl label input{accent-color:var(--ok);width:1.1rem;height:1.1rem}
+.lvl.done{border-left-color:var(--ok)}
+.lvl.done .n{color:var(--ok)}
+.lvl.done h3::after{content:" ✓";color:var(--ok)}
+
+/* ============ Impression ============ */
+@media print{
+  .readbar,button.theme,nav.toc,pre .copy{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:#fff !important;color:#000;padding:0 0 1rem;border-bottom:2px solid #000}
+  .hero .level,.hero .meta span{border-color:#000;background:none;color:#000}
+  .wrap,.single{display:block;padding:0;max-width:none}
+  article,.rev,.lvl,.global{box-shadow:none;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999;background:#f4f4f4 !important;color:#000 !important}
+  a{color:#000;text-decoration:underline}
+  summary{border:none;padding:0}
+  .exo,.tp,.entretien,.objectifs,.note{background:none !important}
+}
+
+/* ============ Technologie de niche ============ */
+.niche{background:var(--niche-soft);border:1px solid var(--niche-line);border-left:4px solid var(--niche);border-radius:var(--radius);padding:.95rem 1.15rem;margin:1.3rem 0}
+.niche .tag{font-weight:700;color:var(--niche);display:block;margin-bottom:.35rem}
+.niche p{margin:.45rem 0}
+@media print{.niche{background:none !important}}
+
+/* ============ Badges de niveau ============ */
+.badge{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.01em;padding:.15rem .6rem;border-radius:999px;border:1px solid;margin-left:.45rem;vertical-align:middle;white-space:nowrap}
+.badge::before{content:"";display:inline-block;width:.5em;height:.5em;border-radius:50%;background:currentColor;margin-right:.4em;vertical-align:middle}
+.lvl-junior{color:#1B7A4E;background:#E4F5EB;border-color:#7CC79C}
+.lvl-confirme{color:#0F3F94;background:#E6EEFB;border-color:#8FB1EC}
+.lvl-senior{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.lvl-expert{color:#8A1C3A;background:#FBE7EC;border-color:#E39CB0}
+.badge-niche{color:#0E7C86;background:#E1F4F6;border-color:#8CCFD6;margin-left:0;margin-right:.5rem}
+:root[data-theme="dark"] .lvl-junior{color:#6CD19B;background:#12291D;border-color:#2A6B48}
+:root[data-theme="dark"] .lvl-confirme{color:#A9C7FA;background:#1A2A45;border-color:#2F4F8A}
+:root[data-theme="dark"] .lvl-senior{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .lvl-expert{color:#F2A2B8;background:#33151F;border-color:#7A2E44}
+:root[data-theme="dark"] .badge-niche{color:#66D3DD;background:#0F2A2E;border-color:#1F5D64}
+.chaphead{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.7rem}
+.chaphead .chapnum{margin-bottom:0}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.8rem 0 0;font-size:.9rem;color:var(--muted)}
+.legend .badge{margin-left:0}
+@media print{.badge{border-color:#000;color:#000;background:none}}
+nav.toc a[class^="toc-"]::after{content:"";width:.5em;height:.5em;border-radius:50%;margin-left:auto;align-self:center}
+nav.toc a.toc-junior::after{background:#1B7A4E}nav.toc a.toc-confirme::after{background:#1D5FD1}nav.toc a.toc-senior::after{background:#9A5B00}nav.toc a.toc-expert::after{background:#8A1C3A}
+@media (max-width:900px){nav.toc a[class^="toc-"]::after{margin-left:.4rem}}
+
+/* ============ Lisibilité mobile ============ */
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{min-width:0;max-width:100%} nav.toc ol{max-width:100%}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+a,code{overflow-wrap:anywhere}
+.tag,h1,h2,h3,h4,p,li,td,th{overflow-wrap:break-word}
+pre{overflow-wrap:normal}
+/* Repli pour les navigateurs sans color-mix */
+tr:nth-child(even) td{background:var(--bg)}
+.note{background:var(--bg)}
+@supports (color: color-mix(in srgb, red, blue)){
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--paper) 93%,var(--ink))}
+  .note{background:color-mix(in srgb,var(--paper) 94%,var(--ink))}
+}
+/* Blocs de code : replié sur mobile, sauf les schémas */
+@media (max-width:760px){
+  pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;font-size:.82em;line-height:1.55;padding:2.4rem .9rem .9rem}
+  pre code{word-break:break-word;overflow-wrap:anywhere}
+  pre.diagram{white-space:pre;word-break:normal;overflow-wrap:normal;overflow-x:auto;font-size:.72em}
+  pre.diagram code{word-break:normal;overflow-wrap:normal}
+  pre .copy{top:.45rem;right:.45rem;opacity:.85;padding:.3rem .7rem;font-size:.8rem}
+}
+/* Tableaux empilés en fiches sur petit écran */
+@media (max-width:640px){
+  .tablewrap{border:none;overflow:visible;margin:1rem 0}
+  table.stack{display:block;width:100%}
+  table.stack tbody,table.stack thead{display:block;width:100%}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:.55rem .8rem;margin:0 0 .7rem}
+  table.stack tr.head{display:none}
+  table.stack th,table.stack td{display:block;width:100%;border:none;padding:.3rem 0;background:none !important}
+  table.stack td::before{content:attr(data-label);display:block;font-size:.76rem;font-weight:700;color:var(--accent-ink);margin-bottom:.1rem}
+  table.stack td:empty,table.stack td[data-label=""]:empty{display:none}
+  table.stack th{font-weight:700;color:var(--accent-ink);padding-bottom:.35rem;border-bottom:1px solid var(--line);margin-bottom:.25rem}
+}
+/* Tailles et marges sur téléphone */
+@media (max-width:480px){
+  body{font-size:16px;line-height:1.6}
+  .hero{padding:2rem 1rem 1.6rem}
+  .hero .level{font-size:.8rem}
+  h1{font-size:1.75rem;line-height:1.15}
+  .hero p.lead{font-size:1rem}
+  .hero .meta{gap:.4rem;font-size:.85rem}
+  .hero .meta span{padding:.25rem .55rem}
+  .wrap,.single{padding:1rem .8rem 4rem}
+  article,.rev{padding:1rem .85rem 1.2rem;border-radius:10px}
+  article h2{font-size:1.45rem}
+  h2{font-size:1.4rem;margin-top:2.2rem}
+  h3{font-size:1.08rem;margin-top:1.6rem;padding-left:.6rem}
+  h4{font-size:1rem}
+  .objectifs,.exo,.tp,.entretien,.niche,.note{padding:.75rem .85rem;margin:1rem 0;border-radius:8px}
+  .tp .tag{font-size:1rem}
+  .badge{font-size:.7rem;padding:.12rem .5rem;margin-left:.3rem}
+  .chaphead{gap:.3rem}
+  ul,ol{padding-left:1.2rem}
+  .tp ol,.tp ul{padding-left:1.1rem}
+  summary{padding:.4rem .8rem;font-size:.9rem}
+  .check{padding:.7rem .8rem;margin-top:1.3rem}
+  .quiz li{padding-left:2.3rem}
+  .quiz li::before{width:1.7rem;height:1.7rem;font-size:.75rem}
+  nav.toc{padding:.8rem .8rem}
+  nav.toc a{padding:.35rem .65rem;font-size:.85rem}
+  .legend{font-size:.82rem}
+  .lvl{padding:.9rem .9rem}
+  .lvl .n{font-size:1.4rem;min-width:1.8rem}
+  .lvl h3{font-size:1.05rem}
+  .lvl a.btn{padding:.5rem .9rem}
+  .footnav a{padding:.55rem .8rem;font-size:.92rem;flex:1 1 100%;text-align:center}
+  .pagenav a{font-size:.85rem}
+  button.theme{margin-top:1rem}
+}
+/* Cibles tactiles */
+@media (pointer:coarse){
+  summary,.check,nav.toc a,.lvl a.btn,.footnav a,pre .copy,button.theme{min-height:40px;display:inline-flex;align-items:center}
+  .check{display:flex}
+  nav.toc a{display:flex}
+}
+
+/* ============ Tags de mémorisation ============ */
+.tag-coeur{color:#A11B1B;background:#FDECEC;border-color:#E8A1A1}
+.tag-important{color:#9A5B00;background:#FFF6E3;border-color:#E9B860}
+.tag-contexte{color:#55606F;background:#EEF1F5;border-color:#C5CDD8}
+.tag-coeur::before{content:"\2605";background:none;width:auto;height:auto;border-radius:0;font-size:.85em;margin-right:.35em;vertical-align:baseline}
+.tag-important::before{content:"!";background:none;width:auto;height:auto;border-radius:0;font-weight:900;margin-right:.35em;vertical-align:baseline}
+.tag-contexte::before{content:"i";background:none;width:auto;height:auto;border-radius:0;font-weight:900;font-style:italic;margin-right:.35em;vertical-align:baseline}
+:root[data-theme="dark"] .tag-coeur{color:#F29A9A;background:#3A1616;border-color:#7A2E2E}
+:root[data-theme="dark"] .tag-important{color:#F1B75A;background:#2C2410;border-color:#7E5D1C}
+:root[data-theme="dark"] .tag-contexte{color:#9AA7B8;background:#1F2833;border-color:#3A4654}
+h3 .badge{font-size:.72rem;vertical-align:middle;margin-left:.5rem;font-weight:700;letter-spacing:0}
+.memo{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:1rem 0 .2rem;padding:.7rem .9rem;border:1px dashed var(--line-strong);border-radius:var(--radius);font-size:.88rem;color:var(--muted);background:var(--bg)}
+.memo .badge{margin-left:0}
+.memo b{color:var(--ink)}
+@media (max-width:480px){h3 .badge{display:inline-block;margin:.3rem 0 0 0}}
+
+/* ============ Résumés et schémas ============ */
+.bref{background:var(--paper);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:var(--radius);padding:.85rem 1rem;margin:1rem 0}
+.bref .tag{font-weight:700;color:var(--accent-ink);display:block;margin-bottom:.35rem}
+.bref ol{margin:0;padding-left:1.3rem}
+.bref li{margin:.3rem 0}
+.fig{margin:1.2rem 0;padding:.6rem .6rem .4rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fig svg{width:100%;height:auto;display:block;font-family:inherit}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+.fig text{fill:var(--ink)}
+.fig .lbl{fill:var(--muted);font-size:12px}
+.fig .lblw{fill:#fff;font-size:12px;font-weight:700}
+.fig .glab{fill:var(--accent-ink);font-size:12px;font-weight:700}
+.fig .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.fig .frame{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3}
+.fig .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.fig .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.fig .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.fig .purple{fill:var(--ent-soft);stroke:var(--ent);stroke-width:1.5}
+.fig .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.fig .redfill{fill:#C0392B}
+:root[data-theme="dark"] .fig .red{fill:#3A1616;stroke:#F29A9A}
+.fig .arrow{fill:none;stroke:var(--ink);stroke-width:1.6}
+.fig .arrow.dashed{stroke-dasharray:5 4}
+.fig .axis{stroke:var(--line-strong);stroke-width:1.5}
+.fig .ahead{fill:var(--ink)}
+@media (max-width:480px){.fig{overflow-x:auto} .fig svg{min-width:440px} .fig::before{content:"Schéma : faire défiler horizontalement";display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.3rem}}
+@media print{.fig{break-inside:avoid}}
+
+/* ============ Mode sprint : temps maximum, minuteurs, pression ============ */
+.tbox{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.35rem 0 .8rem;font-size:.82rem}
+.tbox .tb{font-weight:700;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem}
+.tbox button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.2rem .7rem;cursor:pointer;min-height:32px}
+.tbox button.go{background:var(--accent);color:#fff}
+.tbox button.ok{border-color:var(--ok);color:var(--ok)}
+.tbox .spent{color:var(--muted)}
+.tbox.done .tb{background:var(--tp-soft);border-color:var(--tp-line);color:var(--tp)}
+.tbox.done .spent{color:var(--ok);font-weight:700}
+.tbox.late .spent{color:#A11B1B;font-weight:700}
+.chaptime{font-size:.86rem;color:var(--muted);margin:-.2rem 0 .9rem;padding:.5rem .8rem;border:1px dashed var(--line-strong);border-radius:8px;background:var(--bg)}
+.chaptime b{color:var(--ink)}
+.sec-active{outline:3px solid var(--accent);outline-offset:6px;border-radius:6px}
+.sec-active.exo,.sec-active.tp{outline-offset:2px}
+h3.sec-active{padding-left:.75rem}
+#sprint{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--hero);color:#fff;padding:.5rem .9rem calc(.5rem + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 16px rgba(0,0,0,.25);font-size:.85rem}
+#sprint .row{display:flex;align-items:center;gap:.6rem .9rem;flex-wrap:wrap;max-width:1120px;margin:0 auto}
+#sprint .clock{font-family:"JetBrains Mono",monospace;font-size:1.5rem;font-weight:700;min-width:5.2rem;letter-spacing:.02em}
+#sprint .clock.late{color:#FF6B6B;animation:blink 1s steps(2,start) infinite}
+#sprint .cur{flex:1 1 200px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sprint .cur b{color:#fff}
+#sprint .stat{opacity:.85;white-space:nowrap}
+#sprint .pbar{flex:1 1 100%;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+#sprint .pbar i{display:block;height:100%;width:0;background:#6CD19B;transition:width .3s}
+#sprint button{font:inherit;font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:.3rem .65rem;cursor:pointer;min-height:34px}
+#sprint button.primary{background:#6FA3F5;border-color:#6FA3F5;color:#0B1220}
+#sprint button:disabled{opacity:.4;cursor:default}
+#sprint .late-msg{color:#FF6B6B;font-weight:700}
+body{padding-bottom:6.5rem}
+@keyframes blink{50%{opacity:.35}}
+@media (max-width:480px){#sprint{font-size:.74rem;padding:.35rem .6rem calc(.35rem + env(safe-area-inset-bottom,0px))} #sprint .row{gap:.3rem .6rem} #sprint .clock{font-size:1.2rem;min-width:4.2rem} #sprint button{padding:.25rem .5rem;min-height:30px;font-size:.74rem} #sprint .stat{font-size:.7rem} #sprint .pbar{height:4px} body{padding-bottom:7rem}}
+@media print{#sprint,.tbox,.chaptime{display:none !important} body{padding-bottom:0}}
+
+/* ============ Explication des commandes ============ */
+pre .explain{position:absolute;top:.5rem;right:4.9rem;background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;opacity:.55}
+pre:hover .explain,pre .explain:focus-visible,pre .explain.on{opacity:1}
+pre .explain.on{background:#1B7A4E;border-color:#1B7A4E;color:#fff}
+pre .xpl{display:block;color:#8FD3A7;font-size:.82em;line-height:1.45;padding:.05rem 0 .35rem 1.4em;white-space:pre-wrap;word-break:break-word;font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+pre .xpl::before{content:"↳ ";opacity:.7}
+@media (max-width:760px){pre .explain{right:4.6rem;top:.45rem;opacity:.85;padding:.3rem .6rem;font-size:.8rem}}
+@media print{pre .explain{display:none} pre .xpl{color:#1B7A4E}}
+
+/* ============ Animations pédagogiques ============ */
+.anim{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.anim .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.anim .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.anim .ctl button.primary{background:var(--accent);color:#fff}
+.anim .ctl button:disabled{opacity:.4;cursor:default}
+.anim .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.anim svg{width:100%;height:auto;display:block;overflow:visible;font-family:inherit}
+.anim svg text{fill:var(--ink)}
+.anim .lbl{fill:var(--muted);font-size:11px}
+.anim .box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.anim .soft{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.anim .green{fill:var(--tp-soft);stroke:var(--tp);stroke-width:1.5}
+.anim .amber{fill:var(--exo-soft);stroke:var(--exo);stroke-width:1.5}
+.anim .red{fill:#FDECEC;stroke:#A11B1B;stroke-width:1.5}
+.anim .redfill{fill:#C0392B}
+.anim .greenfill{fill:#1B7A4E}
+.anim .amberfill{fill:#B7791F}
+.anim .dim{opacity:.35}
+.anim .on{filter:drop-shadow(0 0 4px rgba(37,99,235,.5))}
+.anim .mono{font-family:"JetBrains Mono",monospace;font-size:11px}
+.anim .log{font-family:"JetBrains Mono",monospace;font-size:.78rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.6rem .8rem;min-height:3.6em;white-space:pre-wrap;margin-top:.6rem;line-height:1.45}
+.anim .log .ok{color:#8FD3A7}.anim .log .ko{color:#F29A9A}.anim .log .cmd{color:#9CC4FF}
+.anim figcaption{font-size:.85rem;color:var(--muted);margin-top:.6rem;text-align:center}
+:root[data-theme="dark"] .anim .red{fill:#3A1616;stroke:#F29A9A}
+@media (prefers-reduced-motion: reduce){.anim .auto{display:none}}
+@media print{.anim .ctl{display:none}}
+
+/* ============ Planches manga ============ */
+.fig.manga svg{min-width:640px;border-radius:6px}
+.fig.manga svg text{font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.fig.manga figcaption::before{content:"Manga — ";font-weight:700;color:var(--ink)}
+:root[data-theme="dark"] .fig.manga svg{opacity:.94}
+
+/* ============ Pipelines pas à pas ============ */
+.pipe{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:.8rem;margin:1rem 0}
+.pipe .ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.pipe .ctl button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--accent);background:var(--paper);color:var(--accent-ink);border-radius:999px;padding:.25rem .75rem;cursor:pointer;min-height:32px}
+.pipe .ctl button.primary{background:var(--accent);color:#fff}
+.pipe .ctl .st{font-size:.82rem;color:var(--muted);margin-left:auto}
+.pipe .q{font-size:.9rem;margin:0 0 .5rem;font-weight:700}
+.pipe .cmd{font-family:"JetBrains Mono",monospace;font-size:.8rem;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:.55rem .8rem;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.pipe .cmd b{font-weight:400;background:rgba(111,163,245,.35);border-radius:3px;padding:0 .15em}
+.pipe .cols{display:flex;gap:6px;margin-top:.6rem;overflow-x:auto;padding-bottom:.3rem;-webkit-overflow-scrolling:touch}
+.pipe .col{flex:1 1 0;min-width:150px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);padding:.4rem .45rem;opacity:.35;transition:opacity .3s,background .3s,border-color .3s;position:relative}
+.pipe .col.on{opacity:1}
+.pipe .col.cur{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
+.pipe .col h5{margin:.2rem 0 .35rem;font-size:.76rem;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;word-break:break-word;line-height:1.25}
+.pipe .col .n{position:absolute;top:-.55rem;left:.45rem;font-size:.66rem;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 .45rem;line-height:1.2rem}
+.pipe .col ol{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.55}
+.pipe .col li{white-space:normal;word-break:break-word;border-top:1px dashed var(--line);padding:.12rem 0;line-height:1.4}
+.pipe .col li:first-child{border-top:0}
+.pipe .col li.hl{background:var(--tp-soft)}
+.pipe .col .empty{color:var(--muted);text-align:center;font-family:inherit;font-size:.78rem;padding:.6rem 0}
+.pipe .col .cnt{font-family:inherit;font-size:.7rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.pipe .col:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:45%;font-size:1rem;color:var(--muted);background:var(--paper);line-height:1}
+.pipe .expl{font-size:.82rem;color:var(--muted);min-height:2.4em;margin:.5rem 0 0}
+.pipe figcaption{font-size:.85rem;color:var(--muted);margin-top:.5rem;text-align:center}
+@media print{.pipe .ctl{display:none} .pipe .col{opacity:1}}
+
+.pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
+.pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
+.pagenav a:hover{background:rgba(255,255,255,.2);color:#fff}
+.entretien .src{display:block;font-size:.8rem;color:var(--muted);margin-top:.4rem}
+body{padding-bottom:2rem}
+@media print{.pagenav{display:none}}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style id="site-design">
+/* ===== Charte graphique unifiée (site-00-charte-graphique.html) ===== */
+:root{--bg:#F4F6FA;--paper:#FFFFFF;--ink:#0F172A;--muted:#5B6474;--line:#E2E8F0;--line-strong:#CBD5E1;--accent:#2563EB;--accent-ink:#1E40AF;--accent-soft:#EAF1FE;--hero:#0B1220;--hero-2:#132A57;--radius:12px;--shadow:0 1px 2px rgba(15,23,42,.05),0 6px 18px rgba(15,23,42,.06);--topbar:64px;--code-bg:#0F172A;--code-ink:#E2E8F0;--code-line:#1E293B}
+[data-theme="dark"]{--bg:#0B1220;--paper:#111A2E;--ink:#E5EAF3;--muted:#9AA6BA;--line:#22304A;--line-strong:#33456A;--accent:#60A5FA;--accent-ink:#93C5FD;--accent-soft:#16264A;--hero:#070D1A;--hero-2:#0F2148;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--code-bg:#060B16;--code-line:#1F2C46}
+html{scroll-padding-top:calc(var(--topbar) + 16px)}
+body{font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16.5px;line-height:1.65;background:var(--bg);color:var(--ink)}
+pre,code,kbd{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+h1,h2,h3,h4{letter-spacing:-.01em}
+/* --- barre de navigation --- */
+.topbar{position:sticky;top:0;z-index:80;height:var(--topbar);background:var(--hero);color:#fff;border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.topbar .in{max-width:1180px;margin:0 auto;padding:0 1.25rem;height:100%;display:flex;align-items:center;gap:1rem}
+.topbar .brand{display:flex;align-items:center;gap:.6rem;color:#fff;text-decoration:none;font-weight:800;font-size:1.05rem;letter-spacing:-.01em;white-space:nowrap}
+.topbar .brand .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#3B82F6,#22D3EE);display:grid;place-items:center;font-size:.95rem;color:#0B1220;font-weight:900}
+.topbar nav{margin-left:auto;display:flex;align-items:center;gap:.25rem}
+.topbar nav>a,.topbar nav>details>summary{color:#D7DEEA;text-decoration:none;font-size:.92rem;font-weight:600;padding:.45rem .7rem;border-radius:8px;cursor:pointer;list-style:none;white-space:nowrap}
+.topbar nav>details>summary::-webkit-details-marker{display:none}
+.topbar nav>details>summary::after{content:" ▾";font-size:.75em;opacity:.7}
+.topbar nav>a:hover,.topbar nav>details>summary:hover,.topbar nav>a.current{background:rgba(255,255,255,.1);color:#fff}
+.topbar nav>details{position:relative;margin:0;background:none;border:0;padding:0;box-shadow:none}
+.topbar nav>details>summary::before,.topbar nav>details>summary::marker{content:none;display:none}
+.topbar nav>details>summary{background:none;border:0;padding:.45rem .7rem}
+.topbar nav>details>div{position:absolute;right:0;top:calc(100% + 6px);min-width:260px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:.4rem;display:grid}
+.topbar nav>details>div a{color:var(--ink);text-decoration:none;font-size:.9rem;padding:.45rem .7rem;border-radius:8px}
+.topbar nav>details>div a:hover{background:var(--accent-soft);color:var(--accent-ink)}
+.topbar .theme-btn{display:inline-grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;width:36px;height:36px;font-size:1rem;cursor:pointer;margin-left:.25rem}
+.topbar .burger{display:none;background:none;border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:8px;width:38px;height:36px;font-size:1.1rem;cursor:pointer;margin-left:auto}
+@media(max-width:900px){.topbar nav{display:none;position:absolute;left:0;right:0;top:var(--topbar);background:var(--hero);flex-direction:column;align-items:stretch;padding:.6rem 1rem 1rem;gap:.15rem;border-bottom:1px solid rgba(255,255,255,.1)}
+ .topbar.open nav{display:flex}.topbar .burger{display:block}.topbar nav>details>div{position:static;margin:.2rem 0 .4rem .5rem;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}.topbar nav>details>div a{color:#D7DEEA}.topbar .theme-btn{display:inline-grid;place-items:center;margin:.4rem 0 0}}
+/* --- bandeau de page --- */
+.hero{background:linear-gradient(120deg,var(--hero) 0%,var(--hero-2) 100%);background-image:linear-gradient(120deg,var(--hero) 0%,var(--hero-2) 100%);padding:2.4rem 1.25rem 2rem;color:#fff}
+.hero .in{max-width:1180px;margin:0 auto}
+.hero .pagenav{display:none}
+.hero .level{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.25rem .7rem;border-radius:999px;margin-bottom:1rem}
+.hero h1{font-size:clamp(1.7rem,3.2vw,2.5rem);line-height:1.15;margin:.2rem 0 .8rem;max-width:30ch}
+.hero .lead,.hero p{max-width:70ch;color:#D7DEEA;font-size:1.05rem;line-height:1.6;margin:0 0 1rem}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 0}
+.hero .meta span,.hero .btn,.hero .pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:.3rem .7rem;font-size:.85rem;color:#E6ECF7}
+.hero .theme,#theme{display:none}
+.hero .global,.hero .bar{max-width:70ch}
+/* --- conteneurs --- */
+.wrap{max-width:1180px;margin:0 auto;padding:1.6rem 1.25rem 4rem;display:grid;grid-template-columns:270px minmax(0,1fr);gap:2rem;align-items:start}
+.single{max-width:1180px;margin:0 auto;padding:1.6rem 1.25rem 4rem}
+.single:has(> .toc){display:grid;grid-template-columns:270px minmax(0,1fr);gap:2rem;align-items:start}
+.single:has(> .toc)>.toc{grid-column:1;grid-row:1 / span 60;position:sticky;top:calc(var(--topbar) + 16px);max-height:calc(100vh - var(--topbar) - 32px);overflow:auto}
+.single:has(> .toc)>:not(.toc){grid-column:2}
+.wrap>nav.toc,.single>.toc{position:sticky;top:calc(var(--topbar) + 16px);max-height:calc(100vh - var(--topbar) - 32px);overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;box-shadow:var(--shadow);font-size:.92rem}
+.toc strong{display:block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.toc ol{columns:1!important;padding-left:1.2rem;margin:.2rem 0}
+.toc li{margin:.15rem 0}
+.toc a{color:var(--ink);text-decoration:none}.toc a:hover{color:var(--accent)}
+@media(max-width:900px){.wrap,.single:has(> .toc){display:block}.wrap>nav.toc,.single>.toc{position:static;max-height:none;margin-bottom:1.2rem;overflow-x:auto}body{overflow-x:hidden}}
+article,.card,.memo,.global,.note{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+article{padding:1.6rem 1.9rem 1.8rem;margin-bottom:1.6rem}
+.chaphead .chapnum,.chaphead .badge{font-size:.74rem}
+.chapnum{background:var(--accent-soft);color:var(--accent-ink);font-weight:700;padding:.2rem .6rem;border-radius:999px}
+article h2,.single h2{border-top:0;margin-top:.4rem;padding-top:0;font-size:1.65rem}
+h2{border-top:0;padding-top:0}
+h3{border-left:3px solid var(--accent);padding-left:.7rem;font-size:1.15rem;color:var(--accent-ink)}
+a{color:var(--accent)}
+.bref,.objectifs,.exo,.tp,.fig,.memo,.note{border-radius:10px}
+.bref{background:var(--accent-soft);border:1px solid transparent;border-left:4px solid var(--accent)}
+.bref .tag,.exo .tag,.tp .tag{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem}
+pre{border-radius:10px;font-size:.84em}
+.copy{border-radius:6px}
+table{font-size:.92em}th{background:var(--accent-soft);color:var(--accent-ink)}
+details>summary{cursor:pointer;font-weight:700;color:var(--accent-ink)}
+.footnav a{border-radius:10px}
+/* --- pied de page --- */
+.sitefooter{background:var(--hero);color:#B7C1D3;padding:2rem 1.25rem 2.4rem;margin-top:2rem;font-size:.9rem}
+.sitefooter .in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:1.5rem}
+.sitefooter h4{color:#fff;margin:0 0 .5rem;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase}
+.sitefooter a{color:#D7DEEA;text-decoration:none;display:block;padding:.15rem 0}.sitefooter a:hover{color:#fff}
+.sitefooter .brand{color:#fff;font-weight:800;font-size:1.05rem;margin-bottom:.4rem}
+@media(max-width:800px){.sitefooter .in{grid-template-columns:1fr 1fr}}
+#sprint{background:var(--hero)}
+
+
+/* --- code : thème IDE (GitHub Dark), commun à tout le site --- */
+:root{--code-bg:#0D1117;--code-ink:#E6EDF3;--code-line:#30363D;--code-kw:#FF7B72;--code-str:#A5D6FF;--code-com:#8B949E;--code-num:#79C0FF;--code-fn:#D2A8FF;--code-type:#FFA657;--code-ann:#F2CC60;--code-prompt:#7EE787;--code-key:#7EE787;--code-op:#FF7B72;--code-var:#FFA657}
+pre{background:var(--code-bg)!important;color:var(--code-ink)!important;border:1px solid var(--code-line)!important;border-radius:10px;padding:2.4rem 1.1rem 1rem;font-size:.86em;line-height:1.6;tab-size:4;overflow:auto;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+pre code{background:none!important;color:inherit!important;padding:0!important;font-size:inherit!important;border:0!important}
+pre::-webkit-scrollbar{height:10px}pre::-webkit-scrollbar-thumb{background:#484F58;border-radius:6px}pre::-webkit-scrollbar-track{background:#161B22}
+pre .copy{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important;border-radius:6px;font-size:.78rem;padding:.25rem .6rem;position:absolute;top:.6rem;right:.6rem;cursor:pointer;opacity:.85}pre .copy:hover{opacity:1;background:#30363D!important}
+pre .explain{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important}
+.tk-kw{color:var(--code-kw)}.tk-str{color:var(--code-str)}.tk-com{color:var(--code-com);font-style:italic}.tk-num{color:var(--code-num)}.tk-fn{color:var(--code-fn)}.tk-type{color:var(--code-type)}.tk-ann{color:var(--code-ann)}.tk-prompt{color:var(--code-prompt);font-weight:700}.tk-key{color:var(--code-key)}.tk-op{color:var(--code-op)}.tk-var{color:var(--code-var)}.tk-tag{color:var(--code-prompt)}
+code:not(pre code){background:var(--accent-soft);color:var(--accent-ink);padding:.1em .4em;border-radius:5px;font-size:.9em}
+[data-theme="dark"] code:not(pre code){background:#1C2A48;color:#93C5FD}
+/* --- sommaire : grille sans dépendre de :has() --- */
+.single.with-toc{display:grid;grid-template-columns:270px minmax(0,1fr);gap:2rem;align-items:start}
+.single.with-toc>.toc{grid-column:1;grid-row:1 / span 60;position:sticky;top:calc(var(--topbar) + 16px);max-height:calc(100vh - var(--topbar) - 32px);overflow:auto}
+.single.with-toc>:not(.toc){grid-column:2}
+@media(max-width:900px){.single.with-toc{display:block}.single.with-toc>.toc{position:static;max-height:none;margin-bottom:1.2rem;overflow-x:auto}}
+
+/* --- sommaire : design commun --- */
+.toc{padding:1rem .9rem!important}
+.toc strong{display:flex!important;align-items:center;gap:.5rem;font-size:.74rem!important;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)!important;margin:0 .2rem .6rem!important}
+.toc strong::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.toc ol{list-style:none!important;padding:0!important;margin:0!important;display:grid!important;gap:.15rem;counter-reset:toc}
+.toc li{margin:0!important;display:block!important;padding:0!important;counter-increment:none!important}
+.toc li::before,.toc li::after,.toc li a::after{content:none!important;display:none!important}
+.toc li a{display:grid;grid-template-columns:26px minmax(0,1fr);align-items:start;gap:.55rem;padding:.42rem .55rem;border-radius:8px;color:var(--ink)!important;text-decoration:none;font-size:.9rem;line-height:1.35;counter-increment:toc;transition:background .12s}
+.toc li a::before{content:counter(toc);display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--accent-soft);color:var(--accent-ink);font-size:.72rem;font-weight:800;margin-top:1px}
+
+.toc li a:hover{background:var(--accent-soft)}
+.toc li a.active{background:var(--accent);color:#fff!important}.toc li a.active::before{background:rgba(255,255,255,.22);color:#fff}
+.toc li a[href="#rev"]::before,.toc li a[href="#revision"]::before,nav.toc ol[start] a[href="#rev"]::before{content:"✓"!important}
+.toc li a.toc-junior::before{background:#DCFCE7;color:#166534}.toc li a.toc-confirme::before{background:#DBEAFE;color:#1E40AF}.toc li a.toc-senior::before{background:#FEF3C7;color:#92400E}.toc li a.toc-expert::before{background:#FCE7F3;color:#9D174D}
+.toc li a.active.toc-junior::before,.toc li a.active.toc-confirme::before,.toc li a.active.toc-senior::before,.toc li a.active.toc-expert::before{background:rgba(255,255,255,.22);color:#fff}
+.toc .legend{margin-top:.8rem!important;padding-top:.7rem;border-top:1px solid var(--line);font-size:.8rem!important}
+.toc .prog,.toc .progress{margin-top:.7rem}
+@media(max-width:900px){.toc ol{grid-template-columns:1fr 1fr}.toc li a{font-size:.86rem}}
+@media(max-width:560px){.toc ol{grid-template-columns:1fr}}
+/* --- code : retour à la ligne avec indentation conservée --- */
+pre.wrapped code{white-space:pre-wrap;word-break:break-word}
+pre .ln{display:block;white-space:pre-wrap;overflow-wrap:anywhere}
+pre .ln[data-ind]{text-indent:calc(var(--ind) * -1ch);padding-left:calc(var(--ind) * 1ch)}
+pre .wrapbtn{position:absolute;top:.6rem;right:5.2rem;background:#21262D;color:#C9D1D9;border:1px solid #30363D;border-radius:6px;font-size:.78rem;padding:.25rem .55rem;cursor:pointer;opacity:.85}pre .wrapbtn:hover{opacity:1}
+pre.wrapped{overflow-x:hidden}
+pre .nl{display:none}
+
+
+/* --- menus groupés --- */
+.topbar nav>details>div.groups{grid-template-columns:repeat(2,minmax(220px,1fr));min-width:500px;gap:.1rem .6rem}
+.topbar nav>details>div .g{display:grid;align-content:start}
+.topbar nav>details>div .grp{font-size:.68rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:.55rem .7rem .2rem}
+@media(max-width:900px){.topbar nav>details>div.groups{grid-template-columns:1fr;min-width:0}.topbar nav>details>div .grp{color:#8FA0BA}}
+/* --- lecture rapide : ne garder que l'essentiel de chaque chapitre --- */
+body.rapid article:not(.expanded) > :is(p,ul,ol,table,pre,.tablewrap,.avap,.se-why,.se-week,.se-recap,.se-check,.roadmap,.grid2,.grid3,details,.note,.memo,.card,figure:not(.fig)),
+body.rapid article:not(.expanded) .exo > :not(.tag),body.rapid article:not(.expanded) .tp > :not(.tag){display:none!important}
+body.rapid article:not(.expanded) .exo,body.rapid article:not(.expanded) .tp{padding:.5rem .9rem;opacity:.75}
+body.rapid article:not(.expanded) h3{cursor:pointer}
+body.rapid article:not(.expanded) h3::after{content:"  afficher ▾";font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.04em}
+body.rapid article .rapid-hint{display:block;font-size:.8rem;color:var(--muted);margin:.4rem 0 0}
+.rapid-hint{display:none}
+body.rapid article.expanded h3.rapid-toggle::after{content:"  réduire ▴";font-size:.72rem;font-weight:600;color:var(--muted)}
+.topbar .rapid-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;height:36px;padding:0 .7rem;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;margin-left:.25rem;white-space:nowrap}
+.topbar .rapid-btn.on{background:#2563EB;border-color:#2563EB}
+@media(max-width:900px){.topbar .rapid-btn{margin:.4rem 0 0}}
+
+.fig.portrait img{max-height:680px;width:auto!important;max-width:100%;margin:0 auto}.gallery .fig.portrait img{max-height:none;width:100%!important}
+
+/* --- tuiles (accueil, charte) --- */
+.grp-label{display:flex;align-items:center;gap:.6rem;margin:1.2rem 0 .6rem;font-size:.74rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}.grp-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}@media(max-width:1150px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.tiles{grid-template-columns:1fr}}
+.tile{position:relative;display:flex;flex-direction:column;gap:.45rem;background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--tile-c,var(--accent));border-radius:12px;padding:1rem 1.1rem;box-shadow:var(--shadow)}
+.tile-head{display:flex;align-items:center;gap:.65rem}.tile .ic{flex:0 0 38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--tile-soft,var(--accent-soft));color:var(--tile-c,var(--accent-ink));font-weight:800}
+.tile h3{margin:0;border:0!important;padding:0!important;font-size:1.02rem;color:var(--ink)}.tile h3 a{color:inherit;text-decoration:none}.tile h3 a::after{content:"";position:absolute;inset:0}
+.tile p{margin:0;font-size:.9rem;color:var(--muted)}.tile-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding-top:.55rem;border-top:1px solid var(--line);font-size:.82rem}
+.tile-foot .meta{color:var(--tile-c,var(--accent-ink));font-weight:700;white-space:nowrap}.tile-foot label{position:relative;z-index:2;color:var(--muted);display:flex;gap:.35rem;align-items:center}
+.s-dev{--tile-c:#7C3AED;--tile-soft:#EDE9FE}
+/* --- galerie de fiches, sous-parties repliables, code long replié --- */
+.gallery{margin:1.4rem 0;padding:1rem;border:1px dashed var(--line-strong);border-radius:12px;background:var(--bg)}
+.gallery>strong{display:block;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem}
+.gallery .g-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+.gallery figure.fig{margin:0;padding:.4rem;background:var(--paper)}
+.gallery figure.fig img{aspect-ratio:4/3;object-fit:cover;object-position:top;border-radius:6px}
+.gallery figcaption{font-size:.78rem;text-align:left;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gallery .fig.zoomable::after{top:.7rem;right:.7rem;font-size:.7rem;padding:.2rem .45rem}
+@media(max-width:700px){.gallery .g-items{grid-template-columns:1fr 1fr}}
+details.sub{border:1px solid var(--line);border-radius:10px;background:var(--paper);margin:.7rem 0;padding:0}
+details.sub>summary{padding:.75rem 1rem!important;font-weight:700;font-size:1rem!important;color:var(--ink)!important;cursor:pointer;list-style:none;display:flex!important;align-items:center;gap:.6rem;border:0!important;border-radius:10px!important;background:none!important;width:100%;box-sizing:border-box}
+details.sub>summary:hover{background:var(--accent-soft)!important}
+details.sub>summary::-webkit-details-marker{display:none}
+details.sub>summary::before{content:""!important;width:0;height:0;border-left:7px solid var(--accent)!important;border-top:5px solid transparent!important;border-bottom:5px solid transparent!important;transition:transform .15s;flex:0 0 auto}
+details.sub>summary::after{content:"afficher"!important;margin-left:auto;font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.04em}
+details.sub[open]>summary::after{content:"réduire"!important}
+details.sub[open]>summary::before{transform:rotate(90deg)}
+details.sub>*:not(summary){margin-left:1rem;margin-right:1rem}
+details.sub[open]{padding-bottom:.4rem}
+pre.clamped{max-height:calc(30 * 1.6em + 3.4rem);overflow:hidden}
+pre.clamped::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5rem;background:linear-gradient(rgba(13,17,23,0),var(--code-bg) 75%);pointer-events:none}
+pre .morebtn{position:absolute;left:50%;transform:translateX(-50%);bottom:.7rem;z-index:2;background:#1F6FEB;color:#fff;border:0;border-radius:999px;font-size:.8rem;font-weight:700;padding:.35rem .9rem;cursor:pointer}
+pre:not(.clamped) .morebtn{position:static;display:block;margin:.8rem auto 0;transform:none}
+/* --- images agrandissables (visionneuse) --- */
+.fig.zoomable{position:relative;cursor:zoom-in}
+.fig.zoomable img{width:100%;height:auto;display:block;border-radius:6px}
+.fig.zoomable::after{content:"⤢ Agrandir";position:absolute;top:.9rem;right:.9rem;background:rgba(15,23,42,.78);color:#fff;font-size:.78rem;font-weight:700;padding:.3rem .6rem;border-radius:6px;pointer-events:none}
+.fig a[title="Ouvrir le schéma en grand"]{cursor:zoom-in}
+.lightbox{position:fixed;inset:0;z-index:200;background:rgba(5,10,20,.94);display:none;flex-direction:column}
+.lightbox.open{display:flex}
+.lightbox .bar{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;color:#fff;font-size:.9rem;background:rgba(0,0,0,.35)}
+.lightbox .bar .cap{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#D7DEEA}
+.lightbox .bar button,.lightbox .bar a{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:.35rem .7rem;font:inherit;font-size:.85rem;text-decoration:none;cursor:pointer}
+.lightbox .view{flex:1;overflow:auto;touch-action:pan-x pan-y pinch-zoom;display:flex;align-items:flex-start;justify-content:center;padding:1rem}
+.lightbox .view img{flex:0 0 auto;max-width:none;width:min(96vw,1400px);height:auto;transform-origin:top center;transition:width .15s;cursor:zoom-in}
+.lightbox .view img.big{width:2400px;cursor:zoom-out}
+@media print{.topbar,.sitefooter,.lightbox{display:none}}
+</style>
+</head>
+<body>
+<header class="topbar" id="topbar"><div class="in">
+<a class="brand" href="index.html"><span class="logo">D</span>DevOps Courses</a>
+<button class="burger" type="button" aria-label="Menu" onclick="document.getElementById('topbar').classList.toggle('open')">☰</button>
+<nav><a href="index.html">Accueil</a><details><summary>Parcours DevOps</summary><div class="groups"><div class="g"><span class="grp">Phase 1 · Les bases</span><a href="devops-00-fondations.html">0 · Fondations</a><a href="devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a></div><div class="g"><span class="grp">Phase 2 · Automatiser</span><a href="devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a></div><div class="g"><span class="grp">Phase 3 · La plateforme</span><a href="devops-04-cloud.html">4 · Cloud</a><a href="devops-05-kubernetes.html">5 · Kubernetes</a><a href="devops-06-observabilite.html">6 · Observabilité</a></div><div class="g"><span class="grp">Phase 4 · Sécuriser, fiabiliser, diriger</span><a href="devops-07-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="devops-08-sre-et-architecture.html">8 · SRE et architecture</a><a href="devops-09-expert-et-leadership.html">9 · Expert et leadership</a></div></div></details><details><summary>Cours</summary><div class="groups"><div class="g"><span class="grp">Frontend</span><a href="cours-01-react.html">React</a><a href="cours-02-angular.html">Angular</a><a href="cours-03-vue.html">Vue.js</a></div><div class="g"><span class="grp">Java et JVM</span><a href="cours-04-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="cours-05-kotlin.html">Kotlin</a><a href="cours-06-java-pki-signature-electronique.html">Java PKI et signature</a></div><div class="g"><span class="grp">Cloud et données</span><a href="cours-07-cloud.html">Cloud</a><a href="cours-08-data-platform-aws-talend.html">Data Platform AWS Talend</a></div><div class="g"><span class="grp">Savoir-être</span><a href="cours-09-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="cours-10-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div></div></details><a href="devops-10-aide-memoire.html">Aide-mémoire</a><a href="devops-11-fiches-entretien.html" class="current">Entretien</a>
+<button class="rapid-btn" type="button" title="N'afficher que le résumé, les objectifs, les titres et les schémas de chaque chapitre" onclick="(function(b){var on=document.body.classList.toggle('rapid');b.classList.toggle('on',on);try{localStorage.setItem('devops-rapid',on?'1':'')}catch(e){}})(this)">Lecture rapide</button>
+<button class="theme-btn" type="button" aria-label="Basculer clair / sombre" onclick="(function(){var r=document.documentElement;var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('devops-theme',n)}catch(e){}})()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+</nav></div></header>
+<header class="hero"><div class="in">
+<div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
+<div class="level">Révision</div>
+<h1>Fiches entretien : tout le parcours en une page</h1>
+<p class="lead">Les 54 encadrés « En entretien » du cours, puis les quatre banques de questions-réponses : trente questions Tech Lead, quinze Tech Lead SRE et DevOps, quinze DevSecOps, vingt Kubernetes. À travailler à voix haute, chronométré, la veille d'un entretien.</p>
+<div class="meta"><span>Méthode : une réponse = un critère de décision + un chiffre + une histoire STAR, en 90 secondes</span></div>
+</div></header>
+<div class="single">
+<article><div class="chaphead"><span class="chapnum">Les cinq réponses de trois minutes</span><span class="badge tag-coeur">Par cœur</span></div>
+<h2>À dérouler sans support</h2>
+<ol>
+<li>Concevoir l'infrastructure AWS d'une application web avec base de données (chapitre 21).</li>
+<li>Déployer sans interruption avec une migration de schéma (chapitres 15 et 47).</li>
+<li>Sécuriser un cluster Kubernetes (chapitre 39).</li>
+<li>Gérer les secrets, de l'identité au chiffrement dans Git (chapitre 38).</li>
+<li>Sécuriser une application ou un agent LLM (chapitre 54).</li>
+</ol></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 0 — Fondations</span></div><h2>Encadrés « En entretien »</h2><div class="entretien"><strong>En entretien</strong> — question classique : « C'est quoi le DevOps pour vous ? » Réponse structurée : un problème (silos Dev/Ops), une culture (responsabilité partagée), des pratiques (CI/CD, IaC, observabilité), une mesure (DORA). Évite de réciter une liste d'outils.<span class="src">Chapitre 1 — Qu&#x27;est-ce que le DevOps · <a href="devops-00-fondations.html#c1">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Un serveur répond lentement, tu fais quoi ? » Ordre attendu : <code>uptime</code>/<code>top</code> (CPU ou wait ?), <code>free</code> (swap ?), <code>df</code> (disque plein ? inodes ?), <code>ss</code> (le service écoute-t-il ?), <code>journalctl</code> (erreurs ?). Montre une méthode, pas une liste.<span class="src">Chapitre 2 — Linux essentiel · <a href="devops-00-fondations.html#c2">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « L'application retourne 502, où cherches-tu ? » Réponse : le 502 est émis par le reverse proxy ; l'application derrière est injoignable ou répond mal. Vérifier que l'application écoute (<code>ss</code>), qu'elle est joignable depuis le proxy (<code>nc</code>, <code>curl</code> interne), ses logs, puis les logs du proxy. Bonus : distinguer 502 (refus/erreur) de 504 (timeout).<span class="src">Chapitre 3 — Réseau · <a href="devops-00-fondations.html#c3">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Bash ou Python ? » Réponse attendue : Bash pour la glue entre commandes et les hooks courts ; Python dès qu'il y a de la logique, des données structurées ou un besoin de tests. Cite <code>set -euo pipefail</code> et <code>shellcheck</code> : c'est ce qui distingue quelqu'un qui a écrit des scripts de prod.<span class="src">Chapitre 4 — Scripting : Bash, puis Python · <a href="devops-00-fondations.html#c4">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Merge ou rebase ? » Ne pas répondre « ça dépend » sans suite. Dire : rebase sur ma branche locale pour rester à jour et garder un historique lisible ; merge (ou squash) pour intégrer dans <code>main</code> ; jamais de rebase sur une branche partagée ; revert et non reset sur <code>main</code>. Et cite le reflog comme filet de sécurité.<span class="src">Chapitre 5 — Git · <a href="devops-00-fondations.html#c5">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Qu'est-ce que tu demandes aux développeurs pour que leur application soit exploitable ? » Réponse : les 12 facteurs résumés (config par variables, stateless, logs stdout, arrêt propre), un healthcheck liveness/readiness, des métriques, des migrations de schéma versionnées et rétro-compatibles. Tu es Tech Lead Java : illustre avec Actuator et Flyway, ça crédibilise immédiatement.<span class="src">Chapitre 6 — Données et architecture applicative · <a href="devops-00-fondations.html#c6">ouvrir</a></span></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 1 — Conteneurs</span></div><h2>Encadrés « En entretien »</h2><div class="entretien"><strong>En entretien</strong> — « Vous avez un homelab ? » est une vraie question de recruteur DevSecOps. La bonne réponse décrit une architecture, pas une liste de VM : « réseau segmenté par OPNsense, identité et secrets hors cluster pour éviter la dépendance circulaire, Talos piloté en GitOps, images signées vérifiées à l'admission ». Puis une panne que tu as réparée toi-même, et ce que tu en as changé.<span class="src">Chapitre 7 — Machines virtuelles et hyperviseurs : VMware, Proxmox, Nutanix · <a href="devops-01-virtualisation-et-conteneurs.html#c7">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Différence entre VM et conteneur ? » Réponse en une phrase, puis les trois mécanismes : namespaces (isolation de ce qu'on voit), cgroups (limitation de ce qu'on consomme), couches (ce qu'on stocke). Puis la conséquence sécurité : noyau partagé. C'est ce niveau de réponse qui fait la différence.<span class="src">Chapitre 7 — Machines virtuelles et hyperviseurs : VMware, Proxmox, Nutanix · <a href="devops-01-virtualisation-et-conteneurs.html#c7">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu réduis la taille et la surface d'attaque d'une image Java ? » Multi-étapes JDK → JRE, base slim ou distroless, non root, versions épinglées, <code>.dockerignore</code>, une couche par groupe de changement, scan Trivy dans la CI. Ajoute <code>MaxRAMPercentage</code> et la forme exec de l'ENTRYPOINT : tu montres que tu as exploité du Java en conteneur.<span class="src">Chapitre 8 — Docker : images, Dockerfile, réseaux, volumes, sécurité · <a href="devops-01-virtualisation-et-conteneurs.html#c8">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « <code>depends_on</code> suffit pour que l'API attende la base ? » Non : sans <code>condition: service_healthy</code>, Compose attend le lancement du conteneur, pas que PostgreSQL accepte des connexions. Et en production, l'application doit de toute façon retenter (résilience), car la base peut redémarrer à tout moment.<span class="src">Chapitre 9 — Docker Compose · <a href="devops-01-virtualisation-et-conteneurs.html#c9">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu garantis qu'une image en prod est celle que la CI a construite ? » Réponse : build unique dans la CI, tag par SHA de commit, scan Trivy bloquant, SBOM publié, signature Cosign, déploiement par digest, vérification de signature à l'admission. Cinq mots-clés qui te placent immédiatement sur le terrain DevSecOps.<span class="src">Chapitre 10 — Registres, tagging et scan de vulnérabilités · <a href="devops-01-virtualisation-et-conteneurs.html#c10">ouvrir</a></span></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 2 — CI/CD</span></div><h2>Encadrés « En entretien »</h2><div class="entretien"><strong>En entretien</strong> — « Livraison continue ou déploiement continu chez vous ? » Sache expliquer la différence et ce qui manque pour passer de l'une à l'autre (couverture de tests, observabilité, feature flags, rollback automatique). Et cite « build once, deploy everywhere » avec le digest : c'est le détail qui montre que tu as vécu une prod.<span class="src">Chapitre 11 — Principes CI/CD, pipelines, artefacts · <a href="devops-02-integration-et-livraison-continues.html#c11">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « GitLab CI ou GitHub Actions ? » Les deux font le même travail. Différences réelles : GitLab est une plateforme intégrée (registre, environnements, SAST inclus, auto-hébergeable) très répandue en France dans le public et la banque ; GitHub Actions a l'écosystème d'actions le plus riche et le meilleur OIDC. Jenkins : tu sais le reprendre, tu sais expliquer pourquoi on en sort.<span class="src">Chapitre 12 — GitLab CI, GitHub Actions, Jenkins · <a href="devops-02-integration-et-livraison-continues.html#c12">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place la qualité dans une équipe qui n'a pas de tests ? » Réponse : quality gate sur le nouveau code seulement, tests d'intégration réels avec Testcontainers plutôt que des mocks fragiles, analyses de sécurité d'abord en mode observation puis bloquantes, et la règle des tests flaky. Ta double casquette Tech Lead + DevSecOps est exactement ce que cette question mesure.<span class="src">Chapitre 13 — Tests automatisés et quality gates · <a href="devops-02-integration-et-livraison-continues.html#c13">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu gères les montées de version des dépendances ? » Renovate avec auto-merge des correctifs sur pipeline vert, regroupement des mineures, majeures manuelles, SCA pour prioriser la sécurité, et lockfiles partout pour que « ça marchait hier » ait un sens. Si tu ajoutes « proxy Nexus pour la conformité et les licences », tu parles le langage des grands comptes.<span class="src">Chapitre 14 — Dépendances et versioning · <a href="devops-02-integration-et-livraison-continues.html#c14">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu déploies sans interruption ? » Choisis une stratégie et déroule tout : image immuable prête, migration expand compatible, bascule blue/green ou rolling avec readiness, smoke, observation des métriques, rollback par digest en une commande, contract retiré à la release suivante. Mentionne les feature flags pour découpler déploiement et activation.<span class="src">Chapitre 15 — Stratégies de déploiement · <a href="devops-02-integration-et-livraison-continues.html#c15">ouvrir</a></span></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 3 — Infrastructure as Code</span></div><h2>Encadrés « En entretien »</h2><div class="entretien"><strong>En entretien</strong> — « Deux personnes lancent <code>apply</code> en même temps, que se passe-t-il ? » Sans verrou : corruption du state. Avec backend S3 + verrou : la seconde attend ou échoue. Enchaîne : state distant chiffré versionné, un state par environnement et domaine, <code>apply</code> uniquement depuis la CI avec <code>resource_group</code>, plan revu en merge request. Puis « et si le state est corrompu ? » : restaurer la version S3 précédente, <code>refresh-only</code>, <code>import</code> au pire.<span class="src">Chapitre 16 — Terraform / OpenTofu · <a href="devops-03-infrastructure-as-code.html#c16">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Terraform ou Ansible ? » Ce n'est pas un choix : Terraform gère le cycle de vie des ressources avec un state ; Ansible applique une configuration sans state, de façon idempotente, en SSH. Ansible peut créer des VM, Terraform peut lancer des scripts, mais chacun est mauvais dans le rôle de l'autre. Ajoute : inventaire dynamique par tags pour les relier.<span class="src">Chapitre 17 — Ansible · <a href="devops-03-infrastructure-as-code.html#c17">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « À quoi sert Packer si on a Docker ? » Docker fait tourner des applications ; Packer fabrique les machines qui font tourner Docker (nœuds Kubernetes, agents CI, bastions) et tout ce qui n'est pas conteneurisable. Golden image = démarrage rapide, conformité prouvable, patching par remplacement. Et la chaîne : Ansible dans Packer, AMI consommée par Terraform.<span class="src">Chapitre 18 — Packer et Vagrant · <a href="devops-03-infrastructure-as-code.html#c18">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « C'est quoi GitOps, en quoi c'est différent de la CI/CD ? » Les quatre principes, puis la différence push/pull et ses trois bénéfices : sécurité (pas d'identifiants prod dans la CI), dérive corrigée en continu, rollback par revert. Cite ArgoCD et la séparation dépôt code / dépôt config. Ce chapitre prépare le niveau 5 où tu le pratiqueras.<span class="src">Chapitre 19 — Immutabilité, dérive et GitOps · <a href="devops-03-infrastructure-as-code.html#c19">ouvrir</a></span></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 4 — Cloud</span></div><h2>Encadrés « En entretien »</h2><div class="entretien"><strong>En entretien</strong> — « Pourquoi le cloud plutôt qu'un datacenter ? » Éviter la réponse marketing. Dire : élasticité (payer l'usage, absorber les pics), vitesse (une base répliquée en 10 minutes), services managés qui remplacent des équipes, résilience géographique accessible. Puis les contreparties : coût à l'usage qui dérape sans FinOps, dépendance, compétences, et souveraineté des données (sujet sensible en France : SecNumCloud, S3NS, Bleu, OVHcloud).<span class="src">Chapitre 20 — Concepts du cloud · <a href="devops-04-cloud.html#c20">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Conçois l'infrastructure AWS d'une application web avec base de données. » Déroule : VPC 3 AZ, sous-réseaux publics/privés/données, ALB avec ACM et WAF dans le public, ECS Fargate (ou EKS) dans le privé avec rôle de tâche, RDS PostgreSQL Multi-AZ dans données avec Secrets Manager et rotation, S3 + CloudFront pour le front, endpoints VPC pour éviter la NAT, CloudWatch avec rétention, CloudTrail et GuardDuty, tout en Terraform avec state S3, déploiement par pipeline OIDC. Puis les coûts : NAT, transfert, dimensionnement RDS. C'est la question la plus fréquente ; répète-la jusqu'à la dérouler en trois minutes.<span class="src">Chapitre 21 — AWS en profondeur · <a href="devops-04-cloud.html#c21">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — On te demandera rarement de maîtriser les trois. On te demandera de ne pas être perdu. Sache dire : « je suis AWS d'abord ; sur Azure, je sais que la structure est tenant/abonnement/groupe de ressources avec Entra ID et identités managées, et que Container Apps et AKS remplacent ECS et EKS ». Pour un client Azure, cette phrase suffit à passer le premier filtre ; le reste s'apprend en deux semaines.<span class="src">Chapitre 22 — Azure et GCP : équivalences · <a href="devops-04-cloud.html#c22">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « La facture AWS a augmenté de 40 % en six mois, que fais-tu ? » Méthode : Cost Explorer par service et par tag pour trouver le poste, vérifier si l'unité de coût a augmenté aussi (croissance saine ?), puis les leviers dans l'ordre : éteindre, redimensionner, architecture, engagement. Donne un exemple chiffré (NAT, logs). Termine par la mise en place du processus pour que ça ne se reproduise pas.<span class="src">Chapitre 23 — FinOps · <a href="devops-04-cloud.html#c23">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Faut-il être multi-cloud pour éviter la dépendance ? » Réponse d'expert : la dépendance réelle est dans les données et les compétences, pas dans les API. Le coût de la portabilité est certain, son bénéfice hypothétique. Préférer : bien choisir un fournisseur principal, garder les données dans des formats ouverts (PostgreSQL, Parquet, Kafka), documenter un plan de sortie, et n'utiliser un second cloud que pour un service qui le justifie. Mentionne la réglementation quand elle impose la réversibilité.<span class="src">Chapitre 24 — Multi-cloud et hybride · <a href="devops-04-cloud.html#c24">ouvrir</a></span></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 5 — Kubernetes</span></div><h2>Encadrés « En entretien »</h2><div class="entretien"><strong>En entretien</strong> — « Vous connaissez OpenShift ? » Réponse : c'est Kubernetes avec des opinions : Routes, projets, SCC et UID arbitraire, RHCOS et MachineConfig, opérateurs pour tout, monitoring et GitOps intégrés, mises à jour par canaux, abonnement par cœur. Le piège classique : les images qui supposent un UID fixe ; la mauvaise réponse : anyuid. Et le contexte 2026 : OpenShift Virtualization pour sortir de VMware. Cite <code>oc get co</code> et <code>oc adm must-gather</code> comme premiers réflexes.<span class="src">Chapitre 25 — Architecture, et OpenShift · <a href="devops-05-kubernetes.html#c25">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Que se passe-t-il quand tu fais <code>kubectl apply</code> d'un Deployment ? » kubectl envoie l'objet à l'API ; authN, authZ (RBAC), admission (validation, mutation) ; écriture dans etcd ; le contrôleur Deployment crée un ReplicaSet ; le contrôleur ReplicaSet crée les Pods ; le scheduler leur assigne un nœud ; le kubelet du nœud demande au runtime de lancer les conteneurs et au CNI de connecter le Pod ; les Endpoints du Service se mettent à jour. Cette chaîne vaut un entretien à elle seule.<span class="src">Chapitre 25 — Architecture, et OpenShift · <a href="devops-05-kubernetes.html#c25">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Différence entre liveness et readiness ? » et « pourquoi ne pas mettre de limite CPU ? » sont les deux questions les plus posées. Liveness : « suis-je vivant ? » → redémarrage, sans dépendance externe. Readiness : « puis-je servir ? » → retrait du trafic. CPU : la limite provoque du throttling CFS qui augmente la latence même sous la limite moyenne ; les requests suffisent à partager équitablement ; la limite mémoire, elle, est obligatoire.<span class="src">Chapitre 26 — Objets fondamentaux · <a href="devops-05-kubernetes.html#c26">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Mettrais-tu une base de données dans Kubernetes ? » Ne pas répondre oui ou non. Expliquer StatefulSet et ses limites, le rôle d'un opérateur (CloudNativePG), les critères (managé par défaut, opérateur si beaucoup de bases, portabilité, sur site), et la condition non négociable : sauvegardes vers stockage objet et restauration testée.<span class="src">Chapitre 27 — Stockage, StatefulSets, Operators et CRD · <a href="devops-05-kubernetes.html#c27">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Helm ou Kustomize ? » Réponse : les deux, à des places différentes ; Helm pour les composants tiers et un produit à distribuer, Kustomize pour les overlays d'environnement de nos applications. Cite <code>helm diff</code>, <code>--atomic</code>, le checksum de ConfigMap et les hooks de migration : ce sont les détails qui distinguent l'usage réel.<span class="src">Chapitre 28 — Helm et Kustomize · <a href="devops-05-kubernetes.html#c28">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu gères les secrets avec ArgoCD ? » Ne jamais dire « en base64 dans Git ». External Secrets Operator vers le gestionnaire du cloud ou Vault par défaut ; Sealed Secrets pour un cluster autonome ; SOPS pour du multi-outil. Puis : ArgoCD lui-même en SSO, AppProjects restrictifs, deploy tokens en lecture seule.<span class="src">Chapitre 29 — GitOps : ArgoCD et Flux · <a href="devops-05-kubernetes.html#c29">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Vous utiliseriez un service mesh ? » Réponse : d'abord ce qu'il apporte (mTLS, autorisation par identité, résilience, métriques sans code), puis le coût (complexité, ressources), puis le critère (nombre de services, exigence de chiffrement, équipe capable de l'opérer), et la tendance sans sidecar. Le lien avec ton profil : le mesh est l'outil qui implémente le zero trust réseau ; sache le dire.<span class="src">Chapitre 30 — Service mesh · <a href="devops-05-kubernetes.html#c30">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu dimensionnes et fais évoluer un cluster ? » Requests calibrées avec VPA en mode recommandation, HPA sur métrique métier plutôt que CPU seul, KEDA pour les workers, Karpenter avec Spot et consolidation pour les nœuds, PDB et topologie pour que tout cela n'abîme pas la disponibilité, quotas par équipe, et OpenCost pour rendre le coût visible. Cite le piège de la JVM et du scaling mémoire.<span class="src">Chapitre 31 — Autoscaling, scheduling, affinités, quotas · <a href="devops-05-kubernetes.html#c31">ouvrir</a></span></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 6 — Observabilité</span></div><h2>Encadrés « En entretien »</h2><div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place les logs sur un cluster ? » Applications en JSON sur stdout avec trace_id, agent DaemonSet (Alloy ou OTel Collector), Loki sur S3 avec peu de labels, Grafana pour interroger, rétention par type, coût mesuré par service, données sensibles masquées à la source. Et le pont vers les métriques et traces : le trace_id qui permet de cliquer d'un log vers la trace.<span class="src">Chapitre 32 — Logs · <a href="devops-06-observabilite.html#c32">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Quelles métriques tu regardes en premier sur un service qui va mal ? » RED : le taux d'erreur et la latence p99 par route, puis la saturation (CPU vs request, mémoire vs limite, pool de connexions, lag Kafka), puis les événements Kubernetes (redémarrages, Pending). Précise : percentiles et pas moyennes, et le piège de la cardinalité.<span class="src">Chapitre 33 — Métriques : Prometheus et Grafana · <a href="devops-06-observabilite.html#c33">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place le tracing distribué ? » OpenTelemetry comme standard, agent Java injecté par l'opérateur (zéro changement d'image), propagation W3C incluant Kafka, Collector en agent + gateway avec tail sampling, Tempo derrière Grafana, corrélation avec logs et métriques par trace_id et exemplars. Un exemple concret de ce que tu as trouvé avec une trace (le SMTP ci-dessus) vaut plus que la liste.<span class="src">Chapitre 34 — Traces et OpenTelemetry · <a href="devops-06-observabilite.html#c34">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu conçois l'alerting ? » SLI centrés utilisateur, SLO négociés avec le produit, budget d'erreur, alertes de burn rate multi-fenêtres pour les pages, alertes de cause en ticket, Alertmanager avec regroupement et inhibition, runbook obligatoire, revue mensuelle du bruit. Et la phrase clé : « on alerte sur ce que l'utilisateur subit, pas sur ce que la machine fait ».<span class="src">Chapitre 35 — Alerting, SLI, SLO, budgets d&#x27;erreur · <a href="devops-06-observabilite.html#c35">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Raconte un incident que tu as géré. » Structure : contexte, détection, ton rôle, la mitigation choisie et pourquoi, la cause, ce qui a changé après. Insiste sur la mitigation avant la compréhension et sur le post-mortem sans blâme avec des actions réellement fermées. Ta double casquette Scrum Master te donne la légitimité sur la partie organisationnelle : utilise-la.<span class="src">Chapitre 36 — Astreinte, gestion d&#x27;incident, post-mortems · <a href="devops-06-observabilite.html#c36">ouvrir</a></span></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 7 — Sécurité DevSecOps</span></div><h2>Encadrés « En entretien »</h2><div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place le DevSecOps dans une équipe ? » Modélisation des menaces sur les fonctionnalités sensibles, analyses au bon endroit avec bruit maîtrisé et agrégation (DefectDojo), SBOM à chaque build, priorisation EPSS/KEV/reachability avec SLA de correction, DAST authentifié sur staging, mesure et SAMM. Et la posture : la sécurité au service des développeurs, avec correction proposée, pas un mur.<span class="src">Chapitre 37 — Shift-left : SAST, DAST, SCA, SBOM · <a href="devops-07-securite-devsecops.html#c37">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu gères les secrets ? » Hiérarchie : d'abord supprimer le secret (identité : rôle IAM, Workload Identity, OIDC en CI), ensuite secret dynamique de courte durée (Vault database, PKI), ensuite secret statique centralisé avec rotation (Vault KV, Secrets Manager) livré par External Secrets, et en dernier le chiffrement dans Git (Sealed Secrets, SOPS) avec ses limites énoncées. KMS et enveloppe pour les données. Ta PKI/HSM est ton point fort : place-la.<span class="src">Chapitre 38 — Gestion des secrets : Vault, KMS, sealed secrets · <a href="devops-07-securite-devsecops.html#c38">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu sécurises un cluster Kubernetes ? » Les 4 C, puis par couche : API OIDC + RBAC + audit, etcd chiffré, nœuds immuables sans SSH, NetworkPolicies default-deny, PSA restricted, Kyverno pour registre/signatures/ressources, Falco à l'exécution, kube-bench et Trivy Operator pour mesurer. Précise la méthode : audit → warn → enforce, jamais enforce d'un coup sur un cluster existant.<span class="src">Chapitre 39 — Sécurité des conteneurs et de Kubernetes · <a href="devops-07-securite-devsecops.html#c39">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu sécurises la supply chain ? » Trois questions (provenance, intégrité, contenu), puis la chaîne : dépendances épinglées et proxifiées, build unique sur runner éphémère sans Docker socket, SBOM et provenance SLSA attestés, signature keyless Sigstore, vérification à l'admission (Kyverno), déploiement par digest, actions et images de job par SHA. Cite XZ et tj-actions pour montrer que tu suis l'actualité, et le CRA pour le côté conformité.<span class="src">Chapitre 40 — Chaîne d&#x27;approvisionnement : signatures, Sigstore, SLSA · <a href="devops-07-securite-devsecops.html#c40">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — C'est ton terrain. Construis une réponse type « zero trust appliqué à une plateforme Kubernetes » : IdP unique avec MFA phishing-resistant, SPIFFE pour les charges, mTLS par mesh, PKI Vault avec certificats de 24 h renouvelés par cert-manager, racine hors ligne dans un HSM, accès admin JIT enregistré, NetworkPolicies, secrets dynamiques, tout journalisé dans un SIEM. Puis OAuth 2.1 côté application : PKCE, jetons courts, BFF. Prépare une anecdote PKI/HSM réelle.<span class="src">Chapitre 41 — Zero trust, PKI, IAM avancé · <a href="devops-07-securite-devsecops.html#c41">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Un client veut l'ISO 27001, que fais-tu ? » Gap analysis sur l'annexe A, priorisation par risque, traduction des contrôles techniques en code et en preuves automatiques (donner trois exemples concrets comme ci-dessus), procédures écrites, préparation d'audit avec échantillons. Ajoute NIS2 et DORA pour montrer que tu connais le calendrier réglementaire européen, et le RGPD comme obligation transverse. Ton profil Tech Lead + Scrum Master donne la crédibilité organisationnelle que ces missions exigent.<span class="src">Chapitre 42 — Conformité : ISO 27001, SOC 2, RGPD et référentiels français · <a href="devops-07-securite-devsecops.html#c42">ouvrir</a></span></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 8 — SRE et architecture</span></div><h2>Encadrés « En entretien »</h2><div class="entretien"><strong>En entretien</strong> — « Que fait un Tech Lead SRE au quotidien ? » Réponse en trois blocs : porter les SLO et arbitrer avec le produit (budget d'erreur) ; rendre l'exploitation soutenable (toil mesuré et automatisé, astreinte sous deux pages par semaine, post-mortems fermés) ; concevoir pour la panne (revues d'architecture, capacité, PRA testé). Puis les rituels (revue de fiabilité hebdomadaire, rapport mensuel) et ton plan de 30 jours. Ton passé de Tech Lead et de Scrum Master rend crédible la partie arbitrage et rituels : appuie dessus.<span class="src">Chapitre 43 — Fiabilité, résilience, chaos engineering · <a href="devops-08-sre-et-architecture.html#c43">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Quelle est la différence entre SRE et platform engineering ? » Le platform engineering construit une plateforme interne en libre-service ; la SRE garantit la fiabilité par des objectifs mesurés. Ils se rejoignent : la plateforme est un service qui a besoin de SRE (ses propres SLO, son astreinte, son canary), et la SRE passe à l'échelle en devenant une plateforme (SLO as code, observabilité par défaut, livraison progressive, incident tooling). Le Tech Lead SRE d'aujourd'hui pilote les deux : la fiabilité de la plateforme, et la fiabilité en libre-service pour les équipes.<span class="src">Chapitre 43 — Fiabilité, résilience, chaos engineering · <a href="devops-08-sre-et-architecture.html#c43">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu rends une application résiliente ? » Les patrons dans l'ordre : timeouts partout, retries bornés et idempotents, circuit breaker, bulkheads, dégradation gracieuse avec feature flags ops, load shedding ; puis la preuve : chaos engineering avec hypothèses mesurées, en staging puis en prod. Donne l'exemple HikariCP : c'est concret et Java.<span class="src">Chapitre 43 — Fiabilité, résilience, chaos engineering · <a href="devops-08-sre-et-architecture.html#c43">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu conçois la reprise d'activité ? » Partir des RTO/RPO métier et du coût par stratégie, distinguer HA et PRA, dérouler les SPOF par couche (avec l'IdP et le monitoring, souvent oubliés), 3-2-1 immutable dans un compte isolé, test de restauration automatisé, bascule multi-région où les données sont le vrai sujet, et un PRA en code testé au moins annuellement. Avec DORA et NIS2 (niveau 7), les tests deviennent obligatoires : dis-le.<span class="src">Chapitre 44 — Haute disponibilité et reprise d&#x27;activité · <a href="devops-08-sre-et-architecture.html#c44">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « L'application est lente en production, comment tu procèdes ? » Méthode : SLO et symptôme précis (quelle route, quel percentile, depuis quand, corrélé à quel changement), traces pour localiser, USE sur la ressource, hypothèse, correction ciblée, mesure, test de charge en CI pour ne pas régresser. Cite HikariCP, pg_stat_statements, throttling CPU cgroup et JFR : c'est du vécu Java en conteneur.<span class="src">Chapitre 45 — Performance, tests de charge, capacité · <a href="devops-08-sre-et-architecture.html#c45">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Monolithe ou microservices ? » Critères (taille d'équipe, frontières de domaine, besoins d'échelle différenciés, autonomie de déploiement), le monolithe modulaire comme défaut, l'extraction progressive par domaine. Puis la partie événementielle qui fait la différence : outbox transactionnel, idempotence, schémas compatibles, ordre par clé, dead-letter, lag. Tu as Kafka dans ta stack : raconte l'outbox avec Debezium.<span class="src">Chapitre 46 — Architectures : microservices, événementiel, serverless · <a href="devops-08-sre-et-architecture.html#c46">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu fais évoluer une base de 500 Go sans coupure ? » Migrations expand/contract avec <code>lock_timeout</code>, index concurrents, contraintes NOT VALID puis VALIDATE, mises à jour par lots, testées sur une copie ; réplication logique pour la version majeure ; PgBouncer pour les connexions ; partitionnement par date pour les grosses tables ; lecture répartie avec read-your-writes ; autovacuum surveillé. Et la règle « le code N-1 fonctionne toujours ».<span class="src">Chapitre 47 — Bases de données en production · <a href="devops-08-sre-et-architecture.html#c47">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Qu'est-ce que le platform engineering et comment tu le mettrais en place ? » Le problème (charge cognitive, hétérogénéité), la plateforme comme produit avec des golden paths, l'abstraction au bon niveau (Crossplane, templates), le portail (Backstage) comme interface, la conformité par construction, la mesure (délai de création, adoption, DORA, satisfaction), et le démarrage : un golden path pour le cas le plus fréquent, avec une équipe pilote volontaire.<span class="src">Chapitre 48 — Platform engineering et Internal Developer Platform · <a href="devops-08-sre-et-architecture.html#c48">ouvrir</a></span></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 9 — Expert et leadership</span></div><h2>Encadrés « En entretien »</h2><div class="entretien"><strong>En entretien</strong> — « Conçois la plateforme d'une entreprise de 50 équipes. » Landing zone (comptes par domaine et environnement, hub-and-spoke, IdP, garde-fous), modèle de tenancy mixte justifié par confiance et réglementation, flotte de clusters en code avec bootstrap GitOps et cadence de mise à jour, plateforme interne (niveau 8) par-dessus, et la gouvernance (chapitre 51). Termine par les compromis que tu as faits et ce que tu ferais différemment à 5 ou à 500 équipes.<span class="src">Chapitre 49 — Design de plateformes à l&#x27;échelle, multi-tenant · <a href="devops-09-expert-et-leadership.html#c49">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu aborderais la migration de notre parc de 80 applications ? » Découverte et scoring, stratégie par application avec la répartition réaliste des 7 R, fondations avant les vagues, vagues par dépendances avec critères et retour arrière, données en réplication continue avec bascule courte, décommissionnement effectif, FinOps après. Sur le Java legacy : conteneuriser d'abord, tests de caractérisation, strangler fig, données en dernier. Une anecdote de mise à niveau Java crédibilise.<span class="src">Chapitre 50 — Migration legacy vers le cloud · <a href="devops-09-expert-et-leadership.html#c50">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place une gouvernance sans bloquer les équipes ? » Garde-fous en trois niveaux, règle des règles (justification, propriétaire, message, exception), standards vivants en dépôt avec RFC, policy as code à chaque couche (OPA sur Terraform, Kyverno sur Kubernetes, Spectral sur les API, compliance pipelines), exceptions à durée limitée, revue d'architecture asynchrone, dette budgétée, tableau de bord mensuel pour la direction. Ton expérience Scrum Master rend ce discours crédible.<span class="src">Chapitre 51 — Gouvernance, standards, politique as code · <a href="devops-09-expert-et-leadership.html#c51">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Comment tu mesures le succès d'une transformation DevOps ? » DORA automatisées par service avec leur définition opérationnelle et la loi de Goodhart, complétées par la fiabilité (SLO), la sécurité (délais), le coût (unité) et la satisfaction (SPACE), reliées à la valeur métier ; modèle de maturité par axe pour la feuille de route ; revue mensuelle où l'on décide. Si on te demande un audit : la méthode en cinq points et les trois horizons.<span class="src">Chapitre 52 — Mesure : métriques DORA, maturité DevOps, valeur · <a href="devops-09-expert-et-leadership.html#c52">ouvrir</a></span></div><div class="entretien"><strong>Pour t'entraîner</strong> — Tire trois questions au hasard, réponds à voix haute en 90 secondes chacune, enregistre-toi, écoute : cherche le critère de décision, le chiffre et l'histoire dans chaque réponse. Fais-le dix fois avant un entretien. Tes quatorze ans de Tech Lead et de Scrum Master contiennent toutes les histoires nécessaires ; le travail est de les mettre en forme.<span class="src">Chapitre 53 — Conduite du changement, coaching, posture de consultant · <a href="devops-09-expert-et-leadership.html#c53">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — Les questions de leadership : « une équipe refuse de changer », « le RSSI bloque tout », « la direction veut des résultats en trois mois ». Réponds avec une méthode (comprendre la résistance, pilote, preuve, ancrage), une posture (influence, arbitrages explicites, refus argumenté du dangereux) et une histoire vraie de ta carrière de Tech Lead et Scrum Master. C'est ici que tes 14 ans se voient ; prépare trois histoires.<span class="src">Chapitre 53 — Conduite du changement, coaching, posture de consultant · <a href="devops-09-expert-et-leadership.html#c53">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — « Vous déployez Copilot Enterprise chez nous, par où commencez-vous ? » Cadrage avec sécurité et juridique (exclusions, filtre de code public, conservation des données), politiques d'entreprise (fonctionnalités et modèles autorisés, dépassement interdit), sièges par équipe via SSO, instructions de dépôt versionnées, pilote mesuré, formation courte, ouverture par vagues, revue mensuelle usage et coût. Et la phrase clé : « Copilot passe par la même merge request et le même pipeline que tout le monde ».<span class="src">Chapitre 54 — IA appliquée au DevOps : AIOps, LLM dans les pipelines, sécurité des agents, GitHub Copilot · <a href="devops-09-expert-et-leadership.html#c54">ouvrir</a></span></div><div class="entretien"><strong>En entretien</strong> — C'est le sujet qui te distingue : « comment sécuriser une application ou un agent LLM ? » OWASP LLM Top 10 avec l'injection indirecte comme fil rouge, passerelle LLM comme point de contrôle (auth, quotas, masquage, journalisation, coût), RAG avec contrôle d'accès, agents en moindre privilège avec approbation humaine et isolation, evals et red teaming en CI, observabilité des appels, AI Act. Ton projet de passerelle IA sécurisée est la démonstration : sache le présenter en trois minutes avec son architecture.<span class="src">Chapitre 54 — IA appliquée au DevOps : AIOps, LLM dans les pipelines, sécurité des agents, GitHub Copilot · <a href="devops-09-expert-et-leadership.html#c54">ouvrir</a></span></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 9, chapitre 53</span><span class="badge tag-coeur">Par cœur</span></div><h2>Trente questions Tech Lead</h2><p><strong>Comment répondre, quelle que soit la question</strong> : une méthode (deux ou trois étapes), un exemple vécu en format STAR (situation, tâche, action, résultat) avec un chiffre, et ce que tu ferais différemment. Quatre-vingt-dix secondes, pas plus. Le recruteur d'un Tech Lead ne cherche pas la bonne réponse technique, il cherche quelqu'un qui décide avec des critères, qui rend les arbitrages explicites, qui protège l'équipe et qui assume ses erreurs. Prépare une histoire vraie par thème ci-dessous ; c'est la seule préparation qui compte.</p><h4>Leadership sans autorité</h4><div class="tablewrap"><table><tr><th>Question</th><th>Réponse attendue</th></tr><tr><td><strong>Qu'est-ce qu'un Tech Lead, pour vous ?</strong></td><td>Le responsable de la qualité technique et de la capacité à livrer d'une équipe, sans en être le manager : il décide de l'architecture avec l'équipe, arbitre la dette, protège le flux de travail, fait grandir les gens, et code encore, sur ce qui débloque les autres. Le senior optimise son travail ; le Tech Lead optimise le résultat de l'équipe.</td></tr><tr><td><strong>Comment faites-vous accepter une décision technique à une équipe qui n'est pas d'accord ?</strong></td><td>Exposer le problème et les contraintes avant la solution, écouter les alternatives, décider avec des critères écrits (ADR), puis « disagree and commit » : chacun s'engage sur la décision même s'il aurait choisi autrement, avec une date de revue où l'on regarde les faits.</td></tr><tr><td><strong>Comment gérez-vous un désaccord avec l'architecte ou votre manager ?</strong></td><td>Faits et risques chiffrés, pas d'opinions ; proposer une expérimentation bornée pour trancher ; si ça ne suffit pas, escalader avec une recommandation claire, puis se ranger derrière la décision et la porter devant l'équipe.</td></tr><tr><td><strong>Un développeur senior conteste vos choix devant toute l'équipe.</strong></td><td>Sur le moment : reconnaître ce qui est valide, ramener aux critères, proposer d'en discuter à deux. En privé : cadrer la forme (le désaccord est bienvenu, le mode ne l'est pas) et lui donner un rôle dans la décision. Ne jamais répondre sur le terrain de l'ego.</td></tr><tr><td><strong>Comment dites-vous non à un product owner ?</strong></td><td>Jamais un non sec : montrer le coût (délai, risque, dette), proposer une alternative (périmètre réduit, autre date, feature flag), et rendre l'arbitrage explicite pour que le sponsor décide en connaissance de cause. Le Tech Lead informe et propose ; le produit priorise.</td></tr><tr><td><strong>Comment influencez-vous sans autorité hiérarchique ?</strong></td><td>Crédibilité technique démontrée, alliances avec les personnes influentes, décisions portées par ceux qui les appliqueront, choix des batailles, et la règle « une solution à 80 % adoptée vaut mieux qu'une parfaite refusée ».</td></tr></table></div><h4>Décisions techniques</h4><div class="tablewrap"><table><tr><th>Question</th><th>Réponse attendue</th></tr><tr><td><strong>Comment choisissez-vous une technologie ?</strong></td><td>Le besoin d'abord, puis des critères pondérés : maturité, compétences de l'équipe, exploitabilité, coût, sécurité, réversibilité ; un PoC borné dans le temps ; une ADR ; et la question « comment en sortira-t-on ? » avant d'y entrer.</td></tr><tr><td><strong>Comment gérez-vous la dette technique ?</strong></td><td>Inventaire avec le coût d'intérêt de chaque dette (incidents, temps perdu, risque) ; part fixe du temps (20 %) ou objectifs trimestriels ; dette visible dans le backlog comme le reste ; lien avec les incidents et les fins de support ; on ne rembourse pas tout, on rembourse ce qui coûte.</td></tr><tr><td><strong>Monolithe ou microservices ?</strong></td><td>Monolithe modulaire par défaut ; extraction par domaine quand une équipe, une contrainte d'échelle ou de technologie le justifie ; le coût des microservices est opérationnel (réseau, données réparties, observabilité) et il faut une plateforme pour l'absorber (chapitre 46).</td></tr><tr><td><strong>Comment garantissez-vous la qualité du code ?</strong></td><td>Définition of done écrite, revue obligatoire sous 24 h par quelqu'un qui n'a pas écrit, tests en CI avec quality gate sur le nouveau code, linters pour le style (jamais en revue humaine), pairing sur les sujets difficiles, et des mesures : taux d'échec des changements, bugs en production.</td></tr><tr><td><strong>Comment faites-vous une revue de code utile ?</strong></td><td>Petites merge requests (moins de 400 lignes), revue rapide, commentaires sur ce qui compte (conception, sécurité, tests, lisibilité), ton bienveillant et questions plutôt qu'ordres, distinction entre bloquant et suggestion, et l'auteur explique son intention dans la description.</td></tr><tr><td><strong>Comment produisez-vous une estimation fiable ?</strong></td><td>Décomposer en petits lots, comparer à du connu, exprimer en fourchette avec les hypothèses, mesurer le réel pour calibrer, et surtout réduire la taille des lots : une estimation d'un jour est fiable, une de trois mois ne l'est jamais.</td></tr></table></div><h4>Livraison et priorisation</h4><div class="tablewrap"><table><tr><th>Question</th><th>Réponse attendue</th></tr><tr><td><strong>Le projet est en retard, que faites-vous ?</strong></td><td>Le rendre visible tôt avec les faits ; réduire le périmètre plutôt que la qualité ; refuser les heures supplémentaires structurelles qui créent les bugs de la semaine suivante ; replanifier avec le produit ; chercher la cause (estimation, dépendance, périmètre mouvant) pour la prochaine fois.</td></tr><tr><td><strong>Comment priorisez-vous entre fonctionnalités, dette, sécurité et incidents ?</strong></td><td>Incidents d'abord ; sécurité par niveau de risque avec un SLA de correction ; dette par coût d'intérêt ; le budget d'erreur arbitre entre vitesse et fiabilité ; une règle de proportion annoncée (par exemple 60/20/20) plutôt que des négociations à chaque sprint.</td></tr><tr><td><strong>Comment gérez-vous une mise en production risquée ?</strong></td><td>Petits lots, feature flags pour séparer déploiement et activation, canary ou blue/green, fenêtre annoncée, rollback testé avant, astreinte prévenue, communication ; et la question « comment saura-t-on que ça a marché ? » avant de déployer.</td></tr><tr><td><strong>La production est cassée après votre déploiement.</strong></td><td>Rollback d'abord, comprendre ensuite ; communiquer à cadence fixe ; post-mortem sans blâme dans la semaine avec des actions suivies ; et dire publiquement ce qu'on a appris. Un Tech Lead qui cache un incident perd l'équipe.</td></tr><tr><td><strong>Comment gérez-vous les demandes urgentes en cours de sprint ?</strong></td><td>Une seule porte d'entrée, une classification (incident, sécurité, engagement client, autre), une capacité réservée aux imprévus, et pour tout ce qui entre, ce qui sort, décidé avec le produit ; puis mesurer la part d'imprévus pour la réduire.</td></tr></table></div><h4>Les personnes</h4><div class="tablewrap"><table><tr><th>Question</th><th>Réponse attendue</th></tr><tr><td><strong>Comment faites-vous monter en compétence un junior ?</strong></td><td>Objectifs explicites à trois mois, pairing régulier, merge requests guidées avec feedback détaillé, responsabilités croissantes (une fonctionnalité de bout en bout, puis une astreinte en shadowing), feedback court et fréquent, et le droit à l'erreur dans un cadre sûr (CI, revue, staging).</td></tr><tr><td><strong>Un membre de l'équipe sous-performe.</strong></td><td>Comprendre avant d'agir : contexte personnel, clarté des attentes, compétences, motivation. Feedback factuel et privé, plan avec objectifs et échéance, implication du manager, suivi hebdomadaire. La plupart du temps, c'est un problème de clarté ou de placement, pas de compétence.</td></tr><tr><td><strong>Deux développeurs sont en conflit.</strong></td><td>Écouter chacun séparément, ramener aux faits et aux intérêts plutôt qu'aux positions, prendre la décision technique avec des critères explicites, poser des règles d'équipe (revue, communication), et intervenir vite : un conflit qui dure contamine l'équipe.</td></tr><tr><td><strong>Comment recrutez-vous ?</strong></td><td>Fiche de poste honnête, exercice réaliste et court (pas d'algorithmique hors sol), entretien structuré avec une grille écrite, plusieurs évaluateurs, décision collective, réponse rapide et argumentée au candidat ; on recrute la capacité d'apprendre et le comportement en équipe autant que la technique.</td></tr><tr><td><strong>Comment gérez-vous une équipe distribuée ?</strong></td><td>Écrit par défaut (ADR, RFC, décisions dans le dépôt), rituels courts et à heure fixe, documentation vivante, pairing à distance, confiance par résultats plutôt que par présence, et des moments synchrones réservés à ce qui en a besoin.</td></tr><tr><td><strong>Comment donnez-vous un feedback difficile ?</strong></td><td>Vite, en privé, sur des faits observés et leur impact, en demandant le point de vue de l'autre, avec une attente claire pour la suite ; et le feedback positif en public, régulier, spécifique.</td></tr></table></div><h4>Communication et parties prenantes</h4><div class="tablewrap"><table><tr><th>Question</th><th>Réponse attendue</th></tr><tr><td><strong>Comment expliquez-vous un sujet technique à la direction ?</strong></td><td>En risque, coût, délai et options, avec une recommandation et une décision à prendre ; une page, pas de jargon, un schéma ; le détail technique en annexe pour ceux qui le veulent.</td></tr><tr><td><strong>Comment annoncez-vous une mauvaise nouvelle ?</strong></td><td>Tôt (plus tôt que confortable), avec les faits, l'impact, les options et une recommandation ; sans excuse ni blâme ; et un rendez-vous de suivi. La mauvaise nouvelle qui sort tard est la seule qui coûte un poste.</td></tr><tr><td><strong>Comment travaillez-vous avec la sécurité ?</strong></td><td>Sécurité intégrée dans le pipeline plutôt qu'en audit final, un security champion dans l'équipe, arbitrages explicites par niveau de risque avec le RSSI, preuves automatiques ; et le refus argumenté et écrit de ce qui est dangereux.</td></tr><tr><td><strong>Comment mesurez-vous que votre équipe va bien ?</strong></td><td>Métriques de flux (DORA, temps de revue, taille des lots), de fiabilité (incidents, pages d'astreinte), et humaines (satisfaction, rotation, participation aux revues) ; une revue mensuelle où l'on décide quelque chose à partir de ces chiffres.</td></tr></table></div><h4>Vous</h4><div class="tablewrap"><table><tr><th>Question</th><th>Réponse attendue</th></tr><tr><td><strong>Quelle part de votre temps codez-vous ?</strong></td><td>Entre 30 et 50 %, sur ce qui débloque l'équipe ou sur les sujets structurants, jamais sur le chemin critique d'une livraison ; le reste en revue, architecture, coaching et coordination. Un Tech Lead qui code 90 % ne dirige pas ; à 0 %, il perd la crédibilité et le contact.</td></tr><tr><td><strong>Votre plus grosse erreur de Tech Lead ?</strong></td><td>Une vraie, racontée en STAR, avec ce qu'elle a coûté et ce qui a changé durablement dans ta façon de faire. Le recruteur teste la lucidité, pas la perfection.</td></tr><tr><td><strong>Qu'est-ce qui vous distingue d'un développeur senior ?</strong></td><td>Le senior est responsable de son code ; le Tech Lead est responsable du résultat de l'équipe : les décisions, le flux, les gens, et la relation avec le produit et la direction.</td></tr><tr><td><strong>Pourquoi voulez-vous être Tech Lead ?</strong></td><td>Pour l'impact au-delà de son propre code, le goût des arbitrages et des décisions d'architecture, et le plaisir de voir les autres progresser ; avec une histoire qui le prouve.</td></tr></table></div><div class="entretien"><strong>Pour t'entraîner</strong> — Tire trois questions au hasard, réponds à voix haute en 90 secondes chacune, enregistre-toi, écoute : cherche le critère de décision, le chiffre et l'histoire dans chaque réponse. Fais-le dix fois avant un entretien. Tes quatorze ans de Tech Lead et de Scrum Master contiennent toutes les histoires nécessaires ; le travail est de les mettre en forme.</div>
+</article>
+<article><div class="chaphead"><span class="chapnum">Niveau 8, chapitre 43</span><span class="badge tag-coeur">Par cœur</span></div><h2>Quinze questions Tech Lead SRE et DevOps</h2><div class="tablewrap"><table><tr><th>Question</th><th>Réponse attendue</th></tr><tr><td><strong>Comment organisez-vous l'astreinte ?</strong></td><td>Rotation hebdomadaire à cinq ou six, primaire et secondaire, moins de deux pages par semaine et par personne comme objectif d'équipe, alertes uniquement sur les symptômes avec runbook, compensation, passation hebdomadaire ; et quand la charge dépasse, la fiabilité passe avant les fonctionnalités.</td></tr><tr><td><strong>Que faites-vous dans les dix premières minutes d'un incident majeur ?</strong></td><td>Déclarer, prendre ou attribuer le commandement, ouvrir le canal, mesurer l'impact, mitiger avant de comprendre (rollback du dernier changement en premier suspect), communiquer une première fois, nommer un scribe.</td></tr><tr><td><strong>Comment convainquez-vous le produit d'investir dans la fiabilité ?</strong></td><td>Avec un budget d'erreur : on négocie un SLO, on le mesure, et quand le budget est consommé la règle s'applique sans discussion ; avec le coût des incidents en heures et en clients ; et avec un pilote qui montre que la fiabilité accélère la livraison.</td></tr><tr><td><strong>Une équipe refuse de définir des SLO.</strong></td><td>Commencer par mesurer sans objectif (un SLI, un dashboard), montrer ce que les utilisateurs vivent, puis proposer un SLO réaliste dérivé de la mesure ; ne pas imposer 99,9 % à une équipe qui fait 98 % : le premier SLO est descriptif, il devient prescriptif ensuite.</td></tr><tr><td><strong>Comment réduisez-vous le MTTR ?</strong></td><td>Détection plus tôt (alertes de symptômes), diagnostic plus rapide (traces, logs corrélés, runbooks), mitigation plus simple (rollback en une commande, feature flags), et post-mortems qui suppriment les causes récurrentes. Mesurer chaque étape séparément.</td></tr><tr><td><strong>Comment décidez-vous d'automatiser une tâche ?</strong></td><td>Le registre du toil : fréquence × durée × nombre de personnes, comparé au coût d'automatisation ; on automatise ce qui revient, ce qui réveille l'astreinte, ce qui est source d'erreur humaine ; on documente ce qui est trop rare pour être automatisé.</td></tr><tr><td><strong>Un post-mortem révèle qu'une personne a fait une erreur.</strong></td><td>La question n'est pas qui, mais ce qui a rendu l'erreur possible et son impact si grand : accès direct à la production, absence de confirmation, pas de canary. Les actions portent sur le système ; la personne participe à les définir. Sans cela, personne ne dira plus la vérité dans un post-mortem.</td></tr><tr><td><strong>Comment évaluez-vous la maturité DevOps d'une équipe ?</strong></td><td>Les métriques DORA sur trois mois, un modèle de maturité par axe (culture, livraison, infrastructure, observabilité, sécurité, fiabilité, mesure), des entretiens et l'observation d'un déploiement et d'un incident ; puis une feuille de route en trois horizons.</td></tr><tr><td><strong>Comment mettez-vous en place la CI/CD dans une équipe qui déploie à la main ?</strong></td><td>Pipeline minimal en une semaine (build, tests, image), déploiement automatique en staging, puis en production sur un service peu risqué, avec rollback ; mesurer la fréquence et le délai avant et après ; les développeurs écrivent le pipeline avec toi, pas pour toi.</td></tr><tr><td><strong>Qu'est-ce que vous refusez de mettre en production ?</strong></td><td>Ce qui n'a pas passé la revue de lancement : sans SLO, sans observabilité, sans rollback, sans sauvegarde testée, sans propriétaire d'astreinte, ou avec une vulnérabilité critique exploitable. Le refus est écrit, avec la liste de ce qui manque et une offre d'aide.</td></tr><tr><td><strong>Comment gérez-vous le coût cloud avec les équipes ?</strong></td><td>Coût attribué par équipe (tags, comptes), visible dans leur dashboard, revue mensuelle, Infracost dans les merge requests, leviers dans l'ordre (éteindre, redimensionner, architecture, engagement), et une unité de coût pour distinguer croissance et gaspillage.</td></tr><tr><td><strong>Comment faites-vous coexister sécurité et vitesse ?</strong></td><td>En rendant la sécurité automatique et par défaut : analyses dans le pipeline, images durcies fournies, secrets gérés, politiques d'admission ; bloquer seulement sur le critique, tout expliquer, proposer la correction ; la sécurité qui ralentit est contournée.</td></tr><tr><td><strong>Quelle est votre stratégie de rollback ?</strong></td><td>Image précédente conservée et référencée par digest, rollback en une commande ou un revert Git, testé à chaque déploiement en staging, migrations de schéma compatibles N-1 pour que le rollback du code suffise, et un critère de déclenchement automatique (burn rate) sur les canaries.</td></tr><tr><td><strong>Comment introduisez-vous Kubernetes dans une organisation qui n'en a pas ?</strong></td><td>Seulement si le besoin est là (plusieurs services, plusieurs équipes, élasticité) ; cluster managé, plateforme minimale (GitOps, observabilité, politiques) avant la première application, une équipe pilote volontaire, golden path pour les suivantes, et une équipe plateforme identifiée pour l'exploiter.</td></tr><tr><td><strong>Comment rendez-vous compte à la direction ?</strong></td><td>Une page par mois : SLO tenus, budget d'erreur, incidents et tendance, toil, coût, risques, et trois décisions à prendre ; les chiffres viennent des systèmes, pas de saisies manuelles.</td></tr></table></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 7, chapitre 42</span><span class="badge tag-coeur">Par cœur</span></div><h2>Quinze questions DevSecOps</h2><div class="tablewrap"><table><tr><th>Question</th><th>Réponse attendue</th></tr><tr><td><strong>Comment intégrez-vous la sécurité sans ralentir les équipes ?</strong></td><td>Au plus tôt et automatiquement : pre-commit et IDE, analyses dans le pipeline avec bruit maîtrisé et correction proposée, images et modules durcis fournis par la plateforme, politiques d'admission ; bloquant seulement sur le critique avec correctif disponible ; le reste en ticket avec SLA.</td></tr><tr><td><strong>SAST, DAST, SCA, scan d'image : différences et place dans le pipeline ?</strong></td><td>SAST lit le code (injection) au commit ; SCA lit les dépendances (CVE) au commit et en continu ; le scan d'image lit l'OS et les paquets après le build ; DAST attaque l'application déployée sur staging (en-têtes, authentification, configuration). Résultats agrégés dans un outil de gestion des vulnérabilités.</td></tr><tr><td><strong>Une CVE critique sort ce matin dans une bibliothèque Java très répandue. Déroulé ?</strong></td><td>Interroger les SBOM pour savoir quelles images la contiennent (secondes), vérifier l'exploitabilité (version, reachability, KEV), mitiger si nécessaire (WAF, flag), corriger par mise à jour de dépendance via Renovate, rebuild, redéploiement par pipeline, vérification, et un VEX pour ce qui n'est pas affecté. Communication aux parties prenantes à chaque étape.</td></tr><tr><td><strong>Comment gérez-vous les secrets ?</strong></td><td>Supprimer le secret quand une identité suffit (rôle IAM, OIDC en CI, SPIFFE), sinon secret dynamique de courte durée (Vault database, PKI), sinon secret statique centralisé avec rotation livré par External Secrets, et en dernier recours chiffré dans Git (SOPS, Sealed Secrets) avec ses limites énoncées ; détection de secrets en pre-commit et en CI ; un secret fuité est révoqué, pas supprimé de l'historique seulement.</td></tr><tr><td><strong>Comment sécurisez-vous la chaîne d'approvisionnement ?</strong></td><td>Dépendances épinglées et proxifiées, build unique sur runner éphémère sans socket Docker, SBOM et provenance SLSA attestés, signature keyless Sigstore, vérification à l'admission par Kyverno, déploiement par digest, actions et images de job épinglées par SHA ; XZ et tj-actions comme exemples.</td></tr><tr><td><strong>Modélisation des menaces : comment faites-vous concrètement ?</strong></td><td>Un atelier d'une heure par fonctionnalité sensible avec les développeurs, un diagramme de flux de données avec les frontières de confiance, STRIDE pour lister les menaces, chaque menace devient une exigence ASVS puis, si possible, un test automatisé ; versionné dans le dépôt, revu à chaque changement d'architecture.</td></tr><tr><td><strong>Comment traitez-vous les faux positifs et le bruit des outils ?</strong></td><td>Mode observation d'abord, tri des résultats, règles adaptées au contexte, fichiers d'exceptions justifiés et datés, priorisation par EPSS, KEV et reachability, VEX pour documenter, et une mesure : la part de findings qui donnent lieu à une action. Un outil qui produit 200 alertes inexploitables est désactivé en une semaine.</td></tr><tr><td><strong>Comment convainquez-vous les développeurs de faire de la sécurité ?</strong></td><td>En leur donnant les outils dans leur flux (pas un portail à part), des messages qui expliquent et proposent la correction, des security champions formés dans chaque équipe, des chiffres partagés, et en reconnaissant publiquement les corrections ; jamais en faisant la police.</td></tr><tr><td><strong>Un développeur a commité une clé AWS dans un dépôt public.</strong></td><td>Révoquer la clé immédiatement (elle est compromise en minutes, même supprimée après), vérifier CloudTrail pour tout usage, faire tourner ce qui en dépend, nettoyer l'historique, post-mortem sans blâme : pourquoi une clé statique existait (préférer les rôles), pourquoi la détection de secrets n'a pas bloqué.</td></tr><tr><td><strong>Zero trust en une phrase, et trois mesures concrètes.</strong></td><td>Ne jamais faire confiance implicitement au réseau : chaque accès est authentifié, autorisé, chiffré et journalisé. Mesures : identité forte avec MFA résistant au phishing et SSO, mTLS et identités de charges de travail (SPIFFE), accès administrateur juste-à-temps et enregistré à la place du VPN.</td></tr><tr><td><strong>Comment prouvez-vous la conformité ISO 27001 à un auditeur ?</strong></td><td>Chaque contrôle applicable est traduit en politique, implémentation et preuve automatique (merge requests approuvées, rapports de scan, revues d'accès, tests de restauration, politiques en enforce), collectées par script chaque mois et signées ; l'auditeur reçoit des échantillons en minutes, pas en semaines.</td></tr><tr><td><strong>Sécuriser un cluster Kubernetes en cinq mesures.</strong></td><td>Authentification OIDC et RBAC strict avec audit ; Pod Security Standards restricted par namespace ; politiques d'admission (registre interne, images signées, ressources) ; NetworkPolicies default-deny et secrets gérés hors etcd ; détection à l'exécution (Falco) et posture mesurée (kube-bench, Trivy Operator). Méthode : audit, warn, enforce.</td></tr><tr><td><strong>Comment sécurisez-vous une application ou un agent LLM ?</strong></td><td>OWASP LLM Top 10 avec l'injection indirecte en fil rouge ; passerelle LLM comme point de contrôle (authentification, quotas, masquage, journalisation, coût) ; RAG avec contrôle d'accès aux documents ; agents en lecture seule par défaut, écriture via merge request, outils minimaux, isolation ; evals et red teaming automatisés en CI ; observabilité des appels ; classification AI Act.</td></tr><tr><td><strong>Pentest, bug bounty, scan automatique : quand quoi ?</strong></td><td>Le scan automatique en continu pour le connu ; le pentest humain une fois par an et à chaque changement majeur pour la logique métier et les enchaînements ; le bug bounty quand la maturité permet de traiter le flux, pour la découverte continue par des tiers. Les trois se complètent.</td></tr><tr><td><strong>Votre premier mois comme DevSecOps dans une entreprise.</strong></td><td>Semaine 1 : inventaire (dépôts, pipelines, images, secrets, accès) et entretiens. Semaine 2 : les gains rapides sans friction (détection de secrets, scan d'images en observation, MFA sur les comptes à privilèges, sauvegardes testées). Semaine 3 : modélisation des menaces sur le service le plus critique, SLA de correction, agrégation des résultats. Semaine 4 : feuille de route à 90 jours, premiers security champions, rapport à la direction avec trois décisions.</td></tr></table></div></article>
+<article><div class="chaphead"><span class="chapnum">Niveau 5, chapitre 26</span><span class="badge tag-coeur">Par cœur</span></div><h2>Vingt questions Kubernetes</h2>
+<div class="tablewrap"><table>
+<tr><th>Question</th><th>Réponse attendue</th></tr>
+<tr><td>Que se passe-t-il quand un nœud tombe ?</td><td>Après ~40 s le nœud passe NotReady ; après le <code>tolerationSeconds</code> par défaut (5 min) les Pods sont marqués pour éviction et recréés ailleurs par leurs contrôleurs ; les Pods d'un StatefulSet attendent la confirmation (volume RWO).</td></tr>
+<tr><td>Deployment contre StatefulSet contre DaemonSet ?</td><td>Réplicas interchangeables ; identité et volume stables avec ordre ; un Pod par nœud.</td></tr>
+<tr><td>Requests contre limits ?</td><td>Requests : réservation pour le scheduler et le partage CPU ; limits : plafond (OOMKill mémoire, throttling CPU). QoS selon leur égalité.</td></tr>
+<tr><td>Liveness contre readiness contre startup ?</td><td>Redémarrer si bloqué ; retirer du trafic si indisponible ; protéger un démarrage lent.</td></tr>
+<tr><td>Comment un Service trouve-t-il ses Pods ?</td><td>Par sélecteur de labels ; les EndpointSlices listent les Pods prêts ; kube-proxy (ou eBPF) programme le routage.</td></tr>
+<tr><td>ClusterIP, NodePort, LoadBalancer, Ingress ?</td><td>Interne ; port sur chaque nœud ; équilibreur cloud par Service ; routage HTTP mutualisé derrière un seul équilibreur.</td></tr>
+<tr><td>Que fait <code>kubectl apply</code> exactement ?</td><td>Envoi à l'API, authentification, RBAC, admission (mutation puis validation), écriture etcd, puis les contrôleurs réconcilient (chapitre 25).</td></tr>
+<tr><td>Comment isoler deux équipes sur un cluster ?</td><td>Namespaces, RBAC, ResourceQuota, LimitRange, NetworkPolicy default-deny, PSA, politiques d'admission ; nœuds dédiés par taints si besoin.</td></tr>
+<tr><td>Un Secret est-il chiffré ?</td><td>Encodé en base64 seulement ; chiffrement au repos à activer (KMS), RBAC, et un gestionnaire externe via External Secrets.</td></tr>
+<tr><td>Comment déployer sans interruption ?</td><td>RollingUpdate avec <code>maxUnavailable: 0</code>, readiness, preStop, PDB, compatibilité N-1 du schéma.</td></tr>
+<tr><td>Comment revenir en arrière ?</td><td><code>rollout undo</code> (ReplicaSet précédent conservé), ou <code>git revert</code> en GitOps ; par digest, sans rebuild.</td></tr>
+<tr><td>Pourquoi un Pod reste Pending ?</td><td>Ressources, taints, affinités, PVC, quota, priorité ; <code>describe</code> le dit.</td></tr>
+<tr><td>Que contient etcd et comment le sauvegarder ?</td><td>Tout l'état du cluster ; <code>etcdctl snapshot save</code>, ou le fournisseur en managé ; Velero pour les volumes.</td></tr>
+<tr><td>Comment gérer la configuration par environnement ?</td><td>ConfigMaps et Secrets, Kustomize overlays ou Helm values, GitOps par environnement ; jamais une image par environnement.</td></tr>
+<tr><td>Comment un Pod s'authentifie-t-il auprès d'un service externe ?</td><td>ServiceAccount et jeton projeté (audience, durée), fédéré vers IAM, Vault ou l'IdP ; jamais de clé statique.</td></tr>
+<tr><td>Que fait un opérateur ?</td><td>Un contrôleur qui réconcilie une CRD et encode le savoir-faire d'exploitation d'une application (bascule, sauvegarde, mise à jour).</td></tr>
+<tr><td>Comment mettre à jour un cluster ?</td><td>Une mineure à la fois, API dépréciées détectées avant, control plane puis nœuds par drain et remplacement, add-ons vérifiés, staging d'abord.</td></tr>
+<tr><td>Comment limiter le rayon d'impact d'une maintenance de nœud ?</td><td>PDB, topologySpread, plusieurs réplicas, drain respectueux, autoscaler qui compense.</td></tr>
+<tr><td>Helm ou Kustomize ?</td><td>Helm pour les paquets tiers et la distribution, Kustomize pour les variantes de ses applications ; les deux avec ArgoCD.</td></tr>
+<tr><td>Que ferais-tu en premier sur un cluster que tu ne connais pas ?</td><td><code>get nodes</code>, <code>get pods -A</code> non Running, events récents, version et support, RBAC (qui est cluster-admin), sauvegardes etcd, PSA et politiques, coût ; puis les SLO de la plateforme (chapitre 43).</td></tr>
+</table></div>
+</article>
+</div>
+<script>
+(function(){ var root=document.documentElement; try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.querySelectorAll('table').forEach(function(t){ var rows=t.rows; if(!rows.length) return; var head=rows[0]; if(!head.querySelector('th')) return; head.classList.add('head');
+    var labels=Array.prototype.map.call(head.cells,function(c){return c.textContent.trim();});
+    for(var i=1;i<rows.length;i++){ var cells=rows[i].cells; for(var j=0;j<cells.length;j++){ if(cells[j].tagName==='TD') cells[j].setAttribute('data-label',labels[j]||''); } } t.classList.add('stack'); });
+})();
+</script>
+<footer class="sitefooter"><div class="in">
+<div><div class="brand">DevOps Courses</div>Parcours DevOps de zéro à expert et cours complémentaires, avec CrisisShield comme fil conducteur. Tout tourne en Docker. Code source et outils de génération sur <a href="https://github.com/TABETG/DevOpsCourses" rel="noopener" style="display:inline">GitHub</a>.</div>
+<div><h4>Parcours</h4><a href="devops-00-fondations.html">0 · Fondations</a><a href="devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a><a href="devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="devops-04-cloud.html">4 · Cloud</a><a href="index.html">Tous les niveaux →</a></div>
+<div><h4>Cours</h4><a href="cours-01-react.html">React</a><a href="cours-02-angular.html">Angular</a><a href="cours-03-vue.html">Vue.js</a><a href="cours-04-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="cours-05-kotlin.html">Kotlin</a><a href="cours-06-java-pki-signature-electronique.html">Java PKI et signature</a><a href="cours-07-cloud.html">Cloud</a><a href="cours-08-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="cours-09-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="cours-10-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div>
+<div><h4>Réviser</h4><a href="devops-10-aide-memoire.html">Aide-mémoire</a><a href="devops-11-fiches-entretien.html">Fiches entretien</a><a href="site-00-charte-graphique.html">Charte graphique</a></div>
+</div></footer>
+<script id="site-lightbox">(function(){
+var lb=document.createElement('div');lb.className='lightbox';lb.innerHTML='<div class="bar"><span class="cap"></span><button type="button" data-zoom>Zoom ×2</button><a data-open target="_blank" rel="noopener">Nouvel onglet</a><button type="button" data-close>Fermer ✕</button></div><div class="view"><img alt=""></div>';
+document.body.appendChild(lb);var img=lb.querySelector('.view img'),cap=lb.querySelector('.cap'),open=lb.querySelector('[data-open]');
+function show(src,text){img.src=src;img.classList.remove('big');cap.textContent=text||'';open.href=src;lb.classList.add('open');document.body.style.overflow='hidden';}
+function hide(){lb.classList.remove('open');document.body.style.overflow='';img.src='';}
+lb.querySelector('[data-close]').addEventListener('click',hide);lb.addEventListener('click',function(e){if(e.target===lb||e.target.classList.contains('view'))hide();});
+lb.querySelector('[data-zoom]').addEventListener('click',function(){img.classList.toggle('big');this.textContent=img.classList.contains('big')?'Zoom ×1':'Zoom ×2';});
+img.addEventListener('click',function(){img.classList.toggle('big');});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
+document.querySelectorAll('figure.fig img').forEach(function(i){var f=i.closest('figure');var pc=function(){if(i.naturalHeight>i.naturalWidth*1.15)f.classList.add('portrait')};if(i.complete)pc();else i.addEventListener('load',pc);if(!f.classList.contains('zoomable')&&!i.closest('a'))f.classList.add('zoomable');
+ var a=i.closest('a');if(a){a.addEventListener('click',function(e){e.preventDefault();show(i.getAttribute('data-full')||i.currentSrc||i.src,(f.querySelector('figcaption')||{}).textContent);});}
+ else i.addEventListener('click',function(){show(i.getAttribute('data-full')||i.currentSrc||i.src,(f.querySelector('figcaption')||{}).textContent);});});
+})();</script>
+<script id="site-highlight">(function(){
+/* Coloration syntaxique légère pour tout le site (bash, yaml, java, kotlin, js/ts, python, sql, hcl, html, dockerfile). Injectée par restyle.py. */
+var KW = new RegExp('^(?:' + [
+ 'abstract','actual','as','async','await','break','case','catch','class','companion','const','constructor','continue','data','def','default','do','else','elif','enum','except','export','extends','final','finally','for','from','fun','function','if','implements','import','in','inline','interface','internal','is','lambda','lateinit','let','match','new','not','object','open','operator','override','package','pass','private','protected','public','raise','record','reified','return','sealed','static','suspend','switch','this','throw','throws','try','typealias','val','var','void','when','where','while','with','yield','and','or','null','true','false','None','True','False','undefined','nil',
+ 'resource','provider','variable','output','locals','module','terraform','data',
+ 'select','from','where','join','left','inner','outer','group','by','order','having','limit','offset','insert','into','values','update','set','delete','create','table','index','alter','add','drop','primary','key','references','on','using','exists','between','like','asc','desc','distinct','union','begin','commit','rollback','declare','partition','concurrently','not','null','default',
+ 'FROM','RUN','COPY','ADD','CMD','ENTRYPOINT','ENV','ARG','EXPOSE','USER','WORKDIR','VOLUME','HEALTHCHECK','LABEL','SHELL','AS',
+ 'docker','kubectl','helm','terraform','ansible-playbook','git','curl','wget','npm','npx','mvn','gradle','java','python3','python','pip','aws','az','gcloud','openssl','keytool','cosign','trivy','k6','psql','sudo','echo','cat','grep','sed','awk','ls','cd','mkdir','rm','cp','mv','chmod','chown','source','alias','done','then','fi','esac','exit','tar','zip','unzip','ssh','scp','systemctl','journalctl','vault','argocd','kind','jq','yq'
+].join('|') + ')$');
+var esc = function(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+var TOKEN = new RegExp([
+ '(<!--[\\s\\S]*?-->|/\\*[\\s\\S]*?\\*/)',                                   // 1 commentaire bloc
+ '((?<![:\\w/])//(?!/)[^\\n]*|#(?![0-9a-fA-F]{3,6}\\b)[^\\n]*|--\\s[^\\n]*)',            // 2 commentaire ligne
+ '("""[\\s\\S]*?"""|\'\'\'[\\s\\S]*?\'\'\'|"(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\'|`(?:\\\\.|[^`\\\\])*`)', // 3 chaîne
+ '(^[ \\t]*(?:\\$|>>>|❯)(?=\\s))',                                          // 4 prompt
+ '(^[ \\t]*[\\w.\\-/\\[\\]"\']+(?=:(?:\\s|$)))',                            // 5 clé yaml / json
+ '(@[A-Za-z_][\\w.]*)',                                                      // 6 annotation
+ '(\\$\\{?[A-Za-z_][\\w.]*\\}?|\\$\\d)',                                     // 7 variable shell
+ '(</?[A-Za-z][\\w:.-]*(?=[\\s>/])|/?>(?=\\s|$|<))',                          // 8 balise
+ '(\\b0x[0-9a-fA-F]+\\b|\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?[a-zA-Z%]{0,3}\\b)', // 9 nombre
+ '(\\b[A-Za-z_][\\w.-]*\\b)',                                                // 10 mot
+ '(=>|->|::|===|!==|==|!=|<=|>=|&&|\\|\\||\\?:|\\?\\.|!!|[+\\-*/%=<>!?&|^~])'  // 11 opérateur
+].join('|'), 'gm');
+function highlight(src){
+ var out = '', last = 0, m;
+ TOKEN.lastIndex = 0;
+ while ((m = TOKEN.exec(src))) {
+  out += esc(src.slice(last, m.index)); last = m.index + m[0].length;
+  var t = m[0], cls = null;
+  if (m[1] || m[2]) cls = 'com';
+  else if (m[3]) cls = 'str';
+  else if (m[4]) cls = 'prompt';
+  else if (m[5]) cls = 'key';
+  else if (m[6]) cls = 'ann';
+  else if (m[7]) cls = 'var';
+  else if (m[8]) cls = 'tag';
+  else if (m[9]) cls = 'num';
+  else if (m[10]) { if (KW.test(t)) cls = 'kw'; else if (/^[A-Z][A-Za-z0-9_]*$/.test(t)) cls = 'type'; else if (/\(/.test(src.slice(last, last + 2)) || src.charAt(last) === '(') cls = 'fn'; }
+  else if (m[11]) cls = 'op';
+  out += cls ? '<span class="tk-' + cls + '">' + esc(t) + '</span>' : esc(t);
+ }
+ return out + esc(src.slice(last));
+}
+document.querySelectorAll('pre > code').forEach(function(c){ if (c.querySelector('span')) return; try { c.innerHTML = highlight(c.textContent); } catch (e) {} });
+})();
+</script>
+<script id="site-toc">(function(){
+/* scroll-spy du sommaire */
+document.querySelectorAll('.toc ol[start]').forEach(function(o){o.style.counterReset='toc '+(parseInt(o.getAttribute('start'),10)-1);});
+var links=Array.prototype.slice.call(document.querySelectorAll('.toc a[href^="#"]'));if(!links.length)return;
+var map={};links.forEach(function(a){var id=a.getAttribute('href').slice(1);var el=document.getElementById(id);if(el)map[id]=a;});
+var ids=Object.keys(map);if(!ids.length)return;var cur=null;
+function setActive(id){if(cur===id)return;cur=id;links.forEach(function(a){a.classList.remove('active')});map[id].classList.add('active');var t=map[id].closest('.toc');if(t&&t.scrollHeight>t.clientHeight){var r=map[id].getBoundingClientRect(),tr=t.getBoundingClientRect();if(r.top<tr.top||r.bottom>tr.bottom)map[id].scrollIntoView({block:'nearest'});}}
+function update(){var top=64+24,best=ids[0];for(var i=0;i<ids.length;i++){var r=document.getElementById(ids[i]).getBoundingClientRect();if(r.top<=top+8)best=ids[i];else break;}setActive(best);}
+document.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);update();
+/* retour à la ligne du code avec indentation conservée */
+document.querySelectorAll('pre > code').forEach(function(code){var pre=code.parentElement;var html=code.innerHTML.replace(/\n$/,'');var lines=html.split('\n');
+ code.innerHTML=lines.map(function(l){var m=/^((?:&nbsp;|[ \t])*)/.exec(l.replace(/<[^>]+>/g,''));var ind=(m?m[1].replace(/\t/g,'    '):'').length;return '<span class="ln"'+(ind?' data-ind style="--ind:'+(ind+2)+'"':'')+'>'+l+'</span>';}).join('<span class="nl">\n</span>');
+ var wide=false;lines.forEach(function(l){if(l.replace(/<[^>]+>/g,'').length>72)wide=true;});
+ if(lines.length>34){pre.classList.add('clamped');var mb=document.createElement('button');mb.type='button';mb.className='morebtn';mb.textContent='Afficher les '+lines.length+' lignes ▾';mb.addEventListener('click',function(){var c=pre.classList.toggle('clamped');mb.textContent=c?'Afficher les '+lines.length+' lignes ▾':'Réduire ▴';if(c)pre.scrollIntoView({block:'nearest'});});pre.appendChild(mb);}
+ if(wide){pre.classList.add('wrapped');var b=document.createElement('button');b.type='button';b.className='wrapbtn';b.textContent='⇤ Une ligne';b.title='Basculer le retour à la ligne';b.addEventListener('click',function(){pre.classList.toggle('wrapped');b.textContent=pre.classList.contains('wrapped')?'⇤ Une ligne':'⇌ Replier';});pre.appendChild(b);}
+});
+})();</script>
+<script id="site-rapid">(function(){try{if(localStorage.getItem('devops-rapid')==='1'){document.body.classList.add('rapid');var b=document.querySelector('.rapid-btn');if(b)b.classList.add('on');}}catch(e){}
+document.querySelectorAll('article').forEach(function(a){var h=a.querySelector('h2');if(h&&!a.querySelector('.rapid-hint')){var s=document.createElement('span');s.className='rapid-hint';s.textContent='Lecture rapide : clique sur un titre de section pour afficher le chapitre entier.';h.insertAdjacentElement('afterend',s);}
+ a.querySelectorAll('h3').forEach(function(t){t.classList.add('rapid-toggle');t.addEventListener('click',function(){if(document.body.classList.contains('rapid'))a.classList.toggle('expanded');});});});
+})();</script>
+</body></html>

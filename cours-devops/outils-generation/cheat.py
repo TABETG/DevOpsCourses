@@ -219,7 +219,7 @@ S.append(("obs","Observabilité : Prometheus, Loki, OpenTelemetry, k6","Niveau 6
 ]))
 
 # ---------- rendu ----------
-head = re.sub(r'<title>[^<]*</title>', '<title>Aide-mémoire — commandes et bonnes pratiques</title>', re.search(r'^.*?</head>', (out/'devops-niveau-0-fondations.html').read_text(), flags=re.S).group(0))
+head = re.sub(r'<title>[^<]*</title>', '<title>Aide-mémoire — commandes et bonnes pratiques</title>', re.search(r'^.*?</head>', (out/'devops-00-fondations.html').read_text(), flags=re.S).group(0))
 extra = """
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
@@ -238,7 +238,7 @@ body{padding-bottom:2rem}
 head = head.replace('</style>', extra, 1)
 body = '''<body>
 <header class="hero"><div class="in">
-<div class="pagenav"><a href="index.html">← Accueil du parcours</a><a href="devops-fiches-entretien.html">Fiches entretien</a></div>
+<div class="pagenav"><a href="index.html">← Accueil du parcours</a><a href="devops-11-fiches-entretien.html">Fiches entretien</a></div>
 <div class="level">Aide-mémoire</div>
 <h1>Toutes les commandes à connaître, et les bonnes pratiques par technologie</h1>
 <p class="lead">Seize technologies, les commandes du quotidien avec ce qu'elles font, et cinq bonnes pratiques par outil : ce que le parcours enseigne, condensé pour l'usage en mission. À imprimer, ou à filtrer.</p>
@@ -269,11 +269,11 @@ body += '''</div>
 })();
 </script>
 </body></html>'''
-(out/'devops-aide-memoire.html').write_text(head + '\n' + body)
+(out/'devops-10-aide-memoire.html').write_text(head + '\n' + body)
 print('aide-mémoire :', sum(len(c) for _,_,_,c,_ in S), 'commandes,', sum(len(b) for _,_,_,_,b in S), 'bonnes pratiques')
 
 ip = out/'devops-parcours-complet.html'; t = ip.read_text()
-if 'devops-aide-memoire.html' not in t:
+if 'devops-10-aide-memoire.html' not in t:
     t = t.replace('<h2>Réviser pour un entretien</h2>',
-                  '<h2>Aide-mémoire</h2>\n<p>Toutes les commandes à connaître avec ce qu\'elles font, et cinq bonnes pratiques par technologie, sur une page filtrable : <a href="devops-aide-memoire.html"><strong>ouvrir l\'aide-mémoire</strong></a>.</p>\n<h2>Réviser pour un entretien</h2>', 1)
+                  '<h2>Aide-mémoire</h2>\n<p>Toutes les commandes à connaître avec ce qu\'elles font, et cinq bonnes pratiques par technologie, sur une page filtrable : <a href="devops-10-aide-memoire.html"><strong>ouvrir l\'aide-mémoire</strong></a>.</p>\n<h2>Réviser pour un entretien</h2>', 1)
     ip.write_text(t); print('index ok')

@@ -168,11 +168,11 @@ JS = r"""
 
 out = pathlib.Path('/mnt/user-data/outputs')
 files = [
- ("devops-niveau-0-fondations.html", 0, range(1,7)), ("devops-niveau-1-conteneurs.html", 1, range(7,11)),
- ("devops-niveau-2-ci-cd.html", 2, range(11,16)), ("devops-niveau-3-infrastructure-as-code.html", 3, range(16,20)),
- ("devops-niveau-4-cloud.html", 4, range(20,25)), ("devops-niveau-5-kubernetes.html", 5, range(25,32)),
- ("devops-niveau-6-observabilite.html", 6, range(32,37)), ("devops-niveau-7-securite-devsecops.html", 7, range(37,43)),
- ("devops-niveau-8-sre-architecture.html", 8, range(43,49)), ("devops-niveau-9-expert-leadership.html", 9, range(49,55)),
+ ("devops-00-fondations.html", 0, range(1,7)), ("devops-01-virtualisation-et-conteneurs.html", 1, range(7,11)),
+ ("devops-02-integration-et-livraison-continues.html", 2, range(11,16)), ("devops-03-infrastructure-as-code.html", 3, range(16,20)),
+ ("devops-04-cloud.html", 4, range(20,25)), ("devops-05-kubernetes.html", 5, range(25,32)),
+ ("devops-06-observabilite.html", 6, range(32,37)), ("devops-07-securite-devsecops.html", 7, range(37,43)),
+ ("devops-08-sre-et-architecture.html", 8, range(43,49)), ("devops-09-expert-et-leadership.html", 9, range(49,55)),
 ]
 for fn, lvl, chs in files:
     p = out/fn; s = p.read_text()

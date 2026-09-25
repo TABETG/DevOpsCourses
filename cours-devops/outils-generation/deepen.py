@@ -443,7 +443,7 @@ K26_TP = ('<li>Manifests avancés : ajoute à l\'API un init container de migrat
 # Application
 # =====================================================================
 # --- Niveau 3 : Terraform et Ansible
-p = out/'devops-niveau-3-infrastructure-as-code.html'; s = p.read_text()
+p = out/'devops-03-infrastructure-as-code.html'; s = p.read_text()
 assert '16.7 Le langage' not in s
 s = insert_before_niche(s, 16, 'Pulumi en Java ou Kotlin', TF)
 s = add_exos(s, 16, TF_EXOS); s = add_tp_steps(s, 16, TF_TP)
@@ -464,7 +464,7 @@ s = add_rev(s, '<li>Ansible Vault contre HashiCorp Vault.</li>',
 p.write_text(s); print('niveau 3 :', re.findall(r'<h3>(1[67]\.\d) ', s))
 
 # --- Niveau 5 : Kubernetes
-p = out/'devops-niveau-5-kubernetes.html'; s = p.read_text()
+p = out/'devops-05-kubernetes.html'; s = p.read_text()
 assert '25.5 kubectl expert' not in s
 s = insert_before_niche(s, 25, 'kwok (Kubernetes WithOut Kubelet)', K25)
 s = add_exos(s, 25, K25_EXOS); s = add_tp_steps(s, 25, K25_TP)

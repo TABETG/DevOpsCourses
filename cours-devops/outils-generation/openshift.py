@@ -75,7 +75,7 @@ EXOS = r'''<div class="exo"><span class="tag">Exercice 25.5</span>
 '''
 TP = ('<li>OpenShift : crée un compte sur le Developer Sandbox for Red Hat OpenShift, connecte-toi avec <code>oc login --web</code> depuis ton conteneur outillé (installe <code>oc</code> dedans), déploie CrisisShield avec les manifests du TP 26 adaptés (Deployment, Route edge, ServiceMonitor si disponible), corrige l\'image pour la SCC restricted-v2 (exercice 25.5) et prouve-le par l\'annotation SCC du Pod ; ajoute un PipelineRun Tekton minimal et une Application OpenShift GitOps si l\'opérateur est proposé dans le sandbox ; documente les différences rencontrées avec kind dans <code>docs/openshift.md</code>.</li>')
 
-p = out/'devops-niveau-5-kubernetes.html'; s = p.read_text()
+p = out/'devops-05-kubernetes.html'; s = p.read_text()
 assert '25.7 OpenShift' not in s
 key = 'Pour sortir du lot — kwok'; i = s.index(key); j = s.rfind('<div class="niche">', 0, i)
 s = s[:j] + SEC + s[j:]
@@ -94,7 +94,7 @@ if 'Kubernetes « vanilla » ou OpenShift' not in s:
 p.write_text(s); print('25 :', re.findall(r'<h3>(25\.\d) ', s))
 
 # aide-mémoire
-p = out/'devops-aide-memoire.html'; s = p.read_text()
+p = out/'devops-10-aide-memoire.html'; s = p.read_text()
 if 'id="openshift"' not in s:
     esc = html.escape
     cmds = [("oc login --web https://api.cluster:6443 ; oc whoami --show-console","connexion et console"),("oc project ns ; oc new-project lab","projets"),("oc get all ; oc status ; oc rsh deploy/api","résumé du projet ; shell"),
@@ -116,8 +116,8 @@ if 'id="openshift"' not in s:
 # carte des compétences
 p = out/'devops-parcours-complet.html'; s = p.read_text()
 if 'OpenShift' not in s:
-    s = s.replace('<tr><td><strong>Kubernetes</strong></td><td>Niveau 5 entier : <a href="devops-niveau-5-kubernetes.html#c25">architecture, kubectl expert, administration (25)</a>',
-                  '<tr><td><strong>Kubernetes et OpenShift</strong></td><td>Niveau 5 entier : <a href="devops-niveau-5-kubernetes.html#c25">architecture, kubectl expert, administration, OpenShift (25)</a>', 1)
+    s = s.replace('<tr><td><strong>Kubernetes</strong></td><td>Niveau 5 entier : <a href="devops-05-kubernetes.html#c25">architecture, kubectl expert, administration (25)</a>',
+                  '<tr><td><strong>Kubernetes et OpenShift</strong></td><td>Niveau 5 entier : <a href="devops-05-kubernetes.html#c25">architecture, kubectl expert, administration, OpenShift (25)</a>', 1)
     s = s.replace('<p>Architecture, cluster kind local, objets fondamentaux', '<p>Architecture, cluster kind local, OpenShift, objets fondamentaux', 1)
     p.write_text(s); print('carte ok')
 

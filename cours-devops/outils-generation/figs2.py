@@ -41,9 +41,9 @@ class Fig:
 def add(level, section, fig, caption):
     FIGS.append((level, section, fig.render(caption)))
 
-L0="devops-niveau-0-fondations.html"; L1="devops-niveau-1-conteneurs.html"; L2="devops-niveau-2-ci-cd.html"; L3="devops-niveau-3-infrastructure-as-code.html"
-L4="devops-niveau-4-cloud.html"; L5="devops-niveau-5-kubernetes.html"; L6="devops-niveau-6-observabilite.html"; L7="devops-niveau-7-securite-devsecops.html"
-L8="devops-niveau-8-sre-architecture.html"; L9="devops-niveau-9-expert-leadership.html"
+L0="devops-00-fondations.html"; L1="devops-01-virtualisation-et-conteneurs.html"; L2="devops-02-integration-et-livraison-continues.html"; L3="devops-03-infrastructure-as-code.html"
+L4="devops-04-cloud.html"; L5="devops-05-kubernetes.html"; L6="devops-06-observabilite.html"; L7="devops-07-securite-devsecops.html"
+L8="devops-08-sre-et-architecture.html"; L9="devops-09-expert-et-leadership.html"
 
 # ---------------- 2 : méthode de diagnostic ----------------
 f = Fig("diag", 480, 150, "La méthode de diagnostic d'une machine Linux")

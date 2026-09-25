@@ -105,7 +105,7 @@ SEC += qa_table([
 ])
 
 # ---------------- application ----------------
-p = out/'devops-niveau-9-expert-leadership.html'; s = p.read_text(); assert '53.6 Trente questions' not in s
+p = out/'devops-09-expert-et-leadership.html'; s = p.read_text(); assert '53.6 Trente questions' not in s
 s = insert_before_niche(s, 53, 'mob.sh', TL)
 s = s.replace('<li>Communiquer avec la direction, la sécurité, les métiers et les équipes dans leur langue</li>',
               '<li>Communiquer avec la direction, la sécurité, les métiers et les équipes dans leur langue</li><li>Répondre aux trente questions d\'entretien Tech Lead avec une méthode, un chiffre et une histoire</li>', 1)
@@ -113,20 +113,20 @@ s = s.replace('<li>Parler à la direction, au RSSI, aux développeurs : la même
               '<li>Parler à la direction, au RSSI, aux développeurs : la même chose, trois langues.</li><li>Les trente questions Tech Lead de la section 53.6, en 90 secondes chacune, avec une histoire STAR par thème.</li>', 1)
 p.write_text(s); print('53 :', re.findall(r'<h3>(53\.\d) ', s))
 
-p = out/'devops-niveau-8-sre-architecture.html'; s = p.read_text(); assert '43.6 Quinze questions' not in s
+p = out/'devops-08-sre-et-architecture.html'; s = p.read_text(); assert '43.6 Quinze questions' not in s
 s = insert_before_niche(s, 43, 'Byteman', SRE)
 s = s.replace('<li>SRE de plateforme : les SLO de la plateforme (huit composants), les règles propres au rayon d\'impact, les onze capacités de fiabilité en libre-service, la frontière avec les équipes produit.</li>',
               '<li>SRE de plateforme : les SLO de la plateforme (huit composants), les règles propres au rayon d\'impact, les onze capacités de fiabilité en libre-service, la frontière avec les équipes produit.</li><li>Les quinze questions Tech Lead SRE de la section 43.6.</li>', 1)
 p.write_text(s); print('43 :', re.findall(r'<h3>(43\.\d) ', s))
 
-p = out/'devops-niveau-7-securite-devsecops.html'; s = p.read_text(); assert '42.5 Quinze questions' not in s
+p = out/'devops-07-securite-devsecops.html'; s = p.read_text(); assert '42.5 Quinze questions' not in s
 s = insert_before_niche(s, 42, 'compliance-trestle', SEC)
 s = s.replace('<li>ISO 27001, SOC 2, RGPD, NIS2, DORA, SecNumCloud : nature, cible, et comment tu produis les preuves.</li>',
               '<li>ISO 27001, SOC 2, RGPD, NIS2, DORA, SecNumCloud : nature, cible, et comment tu produis les preuves.</li><li>Les quinze questions DevSecOps de la section 42.5.</li>', 1)
 p.write_text(s); print('42 :', re.findall(r'<h3>(42\.\d) ', s))
 
 # ---------------- page de révision « Entretien » ----------------
-head = re.sub(r'<title>[^<]*</title>', '<title>Fiches entretien — tout le parcours</title>', re.search(r'^.*?</head>', (out/'devops-niveau-0-fondations.html').read_text(), flags=re.S).group(0))
+head = re.sub(r'<title>[^<]*</title>', '<title>Fiches entretien — tout le parcours</title>', re.search(r'^.*?</head>', (out/'devops-00-fondations.html').read_text(), flags=re.S).group(0))
 extra = """
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
@@ -136,9 +136,9 @@ body{padding-bottom:2rem}
 @media print{.pagenav{display:none}}
 </style>"""
 head = head.replace('</style>', extra, 1)
-levels = [("devops-niveau-0-fondations.html","Niveau 0 — Fondations"),("devops-niveau-1-conteneurs.html","Niveau 1 — Conteneurs"),("devops-niveau-2-ci-cd.html","Niveau 2 — CI/CD"),
- ("devops-niveau-3-infrastructure-as-code.html","Niveau 3 — Infrastructure as Code"),("devops-niveau-4-cloud.html","Niveau 4 — Cloud"),("devops-niveau-5-kubernetes.html","Niveau 5 — Kubernetes"),
- ("devops-niveau-6-observabilite.html","Niveau 6 — Observabilité"),("devops-niveau-7-securite-devsecops.html","Niveau 7 — Sécurité DevSecOps"),("devops-niveau-8-sre-architecture.html","Niveau 8 — SRE et architecture"),("devops-niveau-9-expert-leadership.html","Niveau 9 — Expert et leadership")]
+levels = [("devops-00-fondations.html","Niveau 0 — Fondations"),("devops-01-virtualisation-et-conteneurs.html","Niveau 1 — Conteneurs"),("devops-02-integration-et-livraison-continues.html","Niveau 2 — CI/CD"),
+ ("devops-03-infrastructure-as-code.html","Niveau 3 — Infrastructure as Code"),("devops-04-cloud.html","Niveau 4 — Cloud"),("devops-05-kubernetes.html","Niveau 5 — Kubernetes"),
+ ("devops-06-observabilite.html","Niveau 6 — Observabilité"),("devops-07-securite-devsecops.html","Niveau 7 — Sécurité DevSecOps"),("devops-08-sre-et-architecture.html","Niveau 8 — SRE et architecture"),("devops-09-expert-et-leadership.html","Niveau 9 — Expert et leadership")]
 body = '''<body>
 <header class="hero"><div class="in">
 <div class="pagenav"><a href="index.html">← Accueil du parcours</a></div>
@@ -168,10 +168,10 @@ for fn, title in levels:
             body += f'<div class="entretien">{m.group(1)}<span class="src">Chapitre {num} — {html.escape(h2t)} · <a href="{fn}#c{num}">ouvrir</a></span></div>'
     body += '</article>\n'
 # banques de questions
-banks = [("devops-niveau-9-expert-leadership.html", r'<h3>53\.6 Trente questions.*?(?=<div class="niche">)', "Trente questions Tech Lead", "Niveau 9, chapitre 53"),
-         ("devops-niveau-8-sre-architecture.html", r'<h3>43\.6 Quinze questions.*?(?=<div class="niche">)', "Quinze questions Tech Lead SRE et DevOps", "Niveau 8, chapitre 43"),
-         ("devops-niveau-7-securite-devsecops.html", r'<h3>42\.5 Quinze questions.*?(?=<div class="niche">)', "Quinze questions DevSecOps", "Niveau 7, chapitre 42"),
-         ("devops-niveau-5-kubernetes.html", r'<h3>26\.8 Vingt questions.*?(?=<div class="niche">)', "Vingt questions Kubernetes", "Niveau 5, chapitre 26")]
+banks = [("devops-09-expert-et-leadership.html", r'<h3>53\.6 Trente questions.*?(?=<div class="niche">)', "Trente questions Tech Lead", "Niveau 9, chapitre 53"),
+         ("devops-08-sre-et-architecture.html", r'<h3>43\.6 Quinze questions.*?(?=<div class="niche">)', "Quinze questions Tech Lead SRE et DevOps", "Niveau 8, chapitre 43"),
+         ("devops-07-securite-devsecops.html", r'<h3>42\.5 Quinze questions.*?(?=<div class="niche">)', "Quinze questions DevSecOps", "Niveau 7, chapitre 42"),
+         ("devops-05-kubernetes.html", r'<h3>26\.8 Vingt questions.*?(?=<div class="niche">)', "Vingt questions Kubernetes", "Niveau 5, chapitre 26")]
 for fn, pat, title, src in banks:
     s = (out/fn).read_text(); m = re.search(pat, s, flags=re.S); assert m, title
     block = re.sub(r'<h3>.*?</h3>', '', m.group(0), count=1, flags=re.S)
@@ -185,12 +185,12 @@ body += '''</div>
 })();
 </script>
 </body></html>'''
-(out/'devops-fiches-entretien.html').write_text(head + '\n' + body)
-print('fiches entretien :', (out/'devops-fiches-entretien.html').stat().st_size, 'octets')
+(out/'devops-11-fiches-entretien.html').write_text(head + '\n' + body)
+print('fiches entretien :', (out/'devops-11-fiches-entretien.html').stat().st_size, 'octets')
 
 # lien depuis la page d'accueil
 ip = out/'devops-parcours-complet.html'; t = ip.read_text()
-if 'devops-fiches-entretien.html' not in t:
+if 'devops-11-fiches-entretien.html' not in t:
     t = t.replace('<h2>Les cinq réponses à savoir dérouler en trois minutes</h2>',
-                  '<h2>Réviser pour un entretien</h2>\n<p>Une page compile tout ce qui sert en entretien : les 54 encadrés « En entretien », trente questions Tech Lead, quinze Tech Lead SRE et DevOps, quinze DevSecOps, vingt Kubernetes, avec la réponse attendue. <a href="devops-fiches-entretien.html"><strong>Ouvrir les fiches entretien</strong></a>.</p>\n<h2>Les cinq réponses à savoir dérouler en trois minutes</h2>', 1)
+                  '<h2>Réviser pour un entretien</h2>\n<p>Une page compile tout ce qui sert en entretien : les 54 encadrés « En entretien », trente questions Tech Lead, quinze Tech Lead SRE et DevOps, quinze DevSecOps, vingt Kubernetes, avec la réponse attendue. <a href="devops-11-fiches-entretien.html"><strong>Ouvrir les fiches entretien</strong></a>.</p>\n<h2>Les cinq réponses à savoir dérouler en trois minutes</h2>', 1)
     ip.write_text(t); print('index ok')

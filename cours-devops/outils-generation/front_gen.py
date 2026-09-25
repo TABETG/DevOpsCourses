@@ -1,8 +1,8 @@
-"""Génère cours-react.html et cours-angular.html (zéro → expert) dans le gabarit du parcours.
+"""Génère cours-01-react.html et cours-02-angular.html (zéro → expert) dans le gabarit du parcours.
 Usage : python3 front_gen.py <dossier cours-devops>"""
 import re, sys, html as H, pathlib
 d = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].endswith('cours-devops') else '/home/claude/work/cours-devops')
-HEAD = re.search(r'^.*?</head>', (d/'devops-niveau-0-fondations.html').read_text(), flags=re.S).group(0)
+HEAD = re.search(r'^.*?</head>', (d/'devops-00-fondations.html').read_text(), flags=re.S).group(0)
 EXTRA = """
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
@@ -28,7 +28,7 @@ def page(fn, title, lead, meta, chapters, other):
 <p class="lead">{lead}</p>
 <p>{meta}</p>
 </div></header>
-<div class="single">
+<div class="single with-toc">
 <div class="toc"><strong>Sommaire</strong><ol>{''.join(f'<li><a href="#c{i}">{H.escape(c["t"])}</a></li>' for i, c in enumerate(chapters, 1))}</ol></div>
 '''
     for i, c in enumerate(chapters, 1):

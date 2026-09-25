@@ -1,7 +1,7 @@
 import re, pathlib, html as H
 
 out = pathlib.Path('/mnt/user-data/outputs')
-head = re.sub(r'<title>[^<]*</title>', '<title>Correction du TP 2 — Un serveur web sous Ubuntu, à la main</title>', re.search(r'^.*?</head>', (out/'devops-niveau-0-fondations.html').read_text(), flags=re.S).group(0))
+head = re.sub(r'<title>[^<]*</title>', '<title>Correction du TP 2 — Un serveur web sous Ubuntu, à la main</title>', re.search(r'^.*?</head>', (out/'devops-00-fondations.html').read_text(), flags=re.S).group(0))
 extra = """
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
@@ -17,7 +17,7 @@ head = head.replace('</style>', extra, 1)
 
 body = r'''<body>
 <header class="hero"><div class="in">
-<div class="pagenav"><a href="../devops-niveau-0-fondations.html#c2">← Retour au chapitre 2</a><a href="../index.html">Accueil du parcours</a></div>
+<div class="pagenav"><a href="../devops-00-fondations.html#c2">← Retour au chapitre 2</a><a href="../index.html">Accueil du parcours</a></div>
 <div class="level">Correction type — Travail pratique 2</div>
 <h1>Un serveur web sous Ubuntu, à la main</h1>
 <p class="lead">Chaque commande, son résultat attendu, et pourquoi. Le but n'est pas de copier : c'est de comprendre chaque ligne du <code>tp2.md</code> que tu vas écrire, et surtout la dernière phrase sur systemd.</p>
@@ -171,7 +171,7 @@ c'est pourquoi on lance nginx directement, ou via un script d'init (service), ja
 </ul>
 </article>
 
-<div class="footnav"><a href="../devops-niveau-0-fondations.html#c2">← Chapitre 2</a><a href="../devops-niveau-0-fondations.html#c3">Chapitre 3 →</a></div>
+<div class="footnav"><a href="../devops-00-fondations.html#c2">← Chapitre 2</a><a href="../devops-00-fondations.html#c3">Chapitre 3 →</a></div>
 </div>
 <script>
 (function(){ var root=document.documentElement; try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}

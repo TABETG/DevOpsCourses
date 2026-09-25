@@ -2,9 +2,9 @@ import re, pathlib, html as H
 
 out = pathlib.Path('/mnt/user-data/outputs')
 LEVEL = {}
-for lvl, fn, chs in [(0,"devops-niveau-0-fondations.html",range(1,7)),(1,"devops-niveau-1-conteneurs.html",range(7,11)),(2,"devops-niveau-2-ci-cd.html",range(11,16)),(3,"devops-niveau-3-infrastructure-as-code.html",range(16,20)),
-                     (4,"devops-niveau-4-cloud.html",range(20,25)),(5,"devops-niveau-5-kubernetes.html",range(25,32)),(6,"devops-niveau-6-observabilite.html",range(32,37)),(7,"devops-niveau-7-securite-devsecops.html",range(37,43)),
-                     (8,"devops-niveau-8-sre-architecture.html",range(43,49)),(9,"devops-niveau-9-expert-leadership.html",range(49,55))]:
+for lvl, fn, chs in [(0,"devops-00-fondations.html",range(1,7)),(1,"devops-01-virtualisation-et-conteneurs.html",range(7,11)),(2,"devops-02-integration-et-livraison-continues.html",range(11,16)),(3,"devops-03-infrastructure-as-code.html",range(16,20)),
+                     (4,"devops-04-cloud.html",range(20,25)),(5,"devops-05-kubernetes.html",range(25,32)),(6,"devops-06-observabilite.html",range(32,37)),(7,"devops-07-securite-devsecops.html",range(37,43)),
+                     (8,"devops-08-sre-et-architecture.html",range(43,49)),(9,"devops-09-expert-et-leadership.html",range(49,55))]:
     for ch in chs: LEVEL[ch] = fn
 
 def tp_info(ch):
@@ -24,7 +24,7 @@ HEAD = None
 def build_page(ch, title, steps, sol, deliverable, further):
     global HEAD
     if HEAD is None:
-        h = re.search(r'^.*?</head>', (out/'devops-niveau-0-fondations.html').read_text(), flags=re.S).group(0)
+        h = re.search(r'^.*?</head>', (out/'devops-00-fondations.html').read_text(), flags=re.S).group(0)
         extra = """
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}

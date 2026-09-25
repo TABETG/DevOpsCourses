@@ -1,6 +1,6 @@
 import re, pathlib, html as H, math
 
-p = pathlib.Path('/mnt/user-data/outputs/devops-niveau-0-fondations.html')
+p = pathlib.Path('/mnt/user-data/outputs/devops-00-fondations.html')
 S = p.read_text()
 assert 'class="fig manga"' not in S, 'déjà des planches : restaurer d\'abord'
 

@@ -154,7 +154,7 @@ LLM_TP = '<li><strong>Application LLM complète</strong> : un assistant « aide 
 # =====================================================================
 # Application
 # =====================================================================
-p = out/'devops-niveau-7-securite-devsecops.html'; s = p.read_text()
+p = out/'devops-07-securite-devsecops.html'; s = p.read_text()
 assert '37.7 Sécurité applicative' not in s
 s = insert_before_niche(s, 37, 'Bearer CLI', APPSEC)
 s = s.replace('<div class="tp"><span class="tag">Travail pratique 37', APPSEC_EXO + '<div class="tp"><span class="tag">Travail pratique 37', 1)
@@ -174,7 +174,7 @@ s = s.replace('<li>Les quinze questions DevSecOps de la section 42.5.</li>',
               '<li>Les quinze questions DevSecOps de la section 42.5.</li><li>OWASP Top 10 : pour chaque catégorie, le motif vulnérable, la correction Spring et le test.</li><li>X.509 : les sept champs et leurs pièges ; validation et révocation ; les sept erreurs TLS fréquentes ; cérémonie de clés et HSM.</li>', 1)
 p.write_text(s); print('niveau 7 :', re.findall(r'<h3>(37\.\d|41\.\d) ', s))
 
-p = out/'devops-niveau-9-expert-leadership.html'; s = p.read_text()
+p = out/'devops-09-expert-et-leadership.html'; s = p.read_text()
 assert '54.8 Construire' not in s
 s = insert_before_niche(s, 54, 'Signature de modèles et ML-BOM', LLM)
 s = s.replace('<div class="tp"><span class="tag">Travail pratique 54', LLM_EXO + '<div class="tp"><span class="tag">Travail pratique 54', 1)
@@ -193,7 +193,7 @@ p.write_text(s); print('niveau 9 :', re.findall(r'<h3>(54\.\d) ', s))
 # =====================================================================
 ip = out/'devops-parcours-complet.html'; t = ip.read_text()
 if 'Carte des compétences' not in t:
-    L = {0:"devops-niveau-0-fondations.html",1:"devops-niveau-1-conteneurs.html",2:"devops-niveau-2-ci-cd.html",3:"devops-niveau-3-infrastructure-as-code.html",4:"devops-niveau-4-cloud.html",5:"devops-niveau-5-kubernetes.html",6:"devops-niveau-6-observabilite.html",7:"devops-niveau-7-securite-devsecops.html",8:"devops-niveau-8-sre-architecture.html",9:"devops-niveau-9-expert-leadership.html"}
+    L = {0:"devops-00-fondations.html",1:"devops-01-virtualisation-et-conteneurs.html",2:"devops-02-integration-et-livraison-continues.html",3:"devops-03-infrastructure-as-code.html",4:"devops-04-cloud.html",5:"devops-05-kubernetes.html",6:"devops-06-observabilite.html",7:"devops-07-securite-devsecops.html",8:"devops-08-sre-et-architecture.html",9:"devops-09-expert-et-leadership.html"}
     def a(lvl, ch, txt): return f'<a href="{L[lvl]}#c{ch}">{txt}</a>'
     rows = [
      ("DevSecOps", "Niveau 7 entier : " + ", ".join([a(7,37,"analyses et SBOM (37)"), a(7,38,"secrets (38)"), a(7,39,"Kubernetes (39)"), a(7,40,"supply chain (40)"), a(7,41,"zero trust (41)"), a(7,42,"conformité et 15 questions (42)")]) + " ; " + a(2,13,"quality gates (13)") + ", " + a(1,10,"scan et signature d'images (10)")),

@@ -37,7 +37,7 @@ def tag(num):
 
 out = pathlib.Path('/mnt/user-data/outputs')
 seen = set()
-for f in sorted(out.glob('devops-niveau-*.html')):
+for f in sorted(out.glob('devops-0*.html')):
     s = f.read_text()
     if 'tag-coeur' in s:
         print(f.name, 'déjà fait'); continue

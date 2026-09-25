@@ -18,7 +18,7 @@ def st(title, lines, why, hl=None):
     if hl: d["hl"] = hl
     return d
 
-L = {1:"devops-niveau-1-conteneurs.html",2:"devops-niveau-2-ci-cd.html",3:"devops-niveau-3-infrastructure-as-code.html",4:"devops-niveau-4-cloud.html",5:"devops-niveau-5-kubernetes.html",6:"devops-niveau-6-observabilite.html",7:"devops-niveau-7-securite-devsecops.html",8:"devops-niveau-8-sre-architecture.html",9:"devops-niveau-9-expert-leadership.html"}
+L = {1:"devops-01-virtualisation-et-conteneurs.html",2:"devops-02-integration-et-livraison-continues.html",3:"devops-03-infrastructure-as-code.html",4:"devops-04-cloud.html",5:"devops-05-kubernetes.html",6:"devops-06-observabilite.html",7:"devops-07-securite-devsecops.html",8:"devops-08-sre-et-architecture.html",9:"devops-09-expert-et-leadership.html"}
 P = {k: [] for k in L}
 A = ' → '
 

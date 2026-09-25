@@ -439,7 +439,7 @@ body{padding-bottom:2rem}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style id="site-design">
-/* ===== Charte graphique unifiée (maquette.html) ===== */
+/* ===== Charte graphique unifiée (site-00-charte-graphique.html) ===== */
 :root{--bg:#F4F6FA;--paper:#FFFFFF;--ink:#0F172A;--muted:#5B6474;--line:#E2E8F0;--line-strong:#CBD5E1;--accent:#2563EB;--accent-ink:#1E40AF;--accent-soft:#EAF1FE;--hero:#0B1220;--hero-2:#132A57;--radius:12px;--shadow:0 1px 2px rgba(15,23,42,.05),0 6px 18px rgba(15,23,42,.06);--topbar:64px;--code-bg:#0F172A;--code-ink:#E2E8F0;--code-line:#1E293B}
 [data-theme="dark"]{--bg:#0B1220;--paper:#111A2E;--ink:#E5EAF3;--muted:#9AA6BA;--line:#22304A;--line-strong:#33456A;--accent:#60A5FA;--accent-ink:#93C5FD;--accent-soft:#16264A;--hero:#070D1A;--hero-2:#0F2148;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--code-bg:#060B16;--code-line:#1F2C46}
 html{scroll-padding-top:calc(var(--topbar) + 16px)}
@@ -513,30 +513,143 @@ details>summary{cursor:pointer;font-weight:700;color:var(--accent-ink)}
 .sitefooter .brand{color:#fff;font-weight:800;font-size:1.05rem;margin-bottom:.4rem}
 @media(max-width:800px){.sitefooter .in{grid-template-columns:1fr 1fr}}
 #sprint{background:var(--hero)}
-@media print{.topbar,.sitefooter{display:none}}
+
+
+/* --- code : thème IDE (GitHub Dark), commun à tout le site --- */
+:root{--code-bg:#0D1117;--code-ink:#E6EDF3;--code-line:#30363D;--code-kw:#FF7B72;--code-str:#A5D6FF;--code-com:#8B949E;--code-num:#79C0FF;--code-fn:#D2A8FF;--code-type:#FFA657;--code-ann:#F2CC60;--code-prompt:#7EE787;--code-key:#7EE787;--code-op:#FF7B72;--code-var:#FFA657}
+pre{background:var(--code-bg)!important;color:var(--code-ink)!important;border:1px solid var(--code-line)!important;border-radius:10px;padding:2.4rem 1.1rem 1rem;font-size:.86em;line-height:1.6;tab-size:4;overflow:auto;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+pre code{background:none!important;color:inherit!important;padding:0!important;font-size:inherit!important;border:0!important}
+pre::-webkit-scrollbar{height:10px}pre::-webkit-scrollbar-thumb{background:#484F58;border-radius:6px}pre::-webkit-scrollbar-track{background:#161B22}
+pre .copy{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important;border-radius:6px;font-size:.78rem;padding:.25rem .6rem;position:absolute;top:.6rem;right:.6rem;cursor:pointer;opacity:.85}pre .copy:hover{opacity:1;background:#30363D!important}
+pre .explain{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important}
+.tk-kw{color:var(--code-kw)}.tk-str{color:var(--code-str)}.tk-com{color:var(--code-com);font-style:italic}.tk-num{color:var(--code-num)}.tk-fn{color:var(--code-fn)}.tk-type{color:var(--code-type)}.tk-ann{color:var(--code-ann)}.tk-prompt{color:var(--code-prompt);font-weight:700}.tk-key{color:var(--code-key)}.tk-op{color:var(--code-op)}.tk-var{color:var(--code-var)}.tk-tag{color:var(--code-prompt)}
+code:not(pre code){background:var(--accent-soft);color:var(--accent-ink);padding:.1em .4em;border-radius:5px;font-size:.9em}
+[data-theme="dark"] code:not(pre code){background:#1C2A48;color:#93C5FD}
+/* --- sommaire : grille sans dépendre de :has() --- */
+.single.with-toc{display:grid;grid-template-columns:270px minmax(0,1fr);gap:2rem;align-items:start}
+.single.with-toc>.toc{grid-column:1;grid-row:1 / span 60;position:sticky;top:calc(var(--topbar) + 16px);max-height:calc(100vh - var(--topbar) - 32px);overflow:auto}
+.single.with-toc>:not(.toc){grid-column:2}
+@media(max-width:900px){.single.with-toc{display:block}.single.with-toc>.toc{position:static;max-height:none;margin-bottom:1.2rem;overflow-x:auto}}
+
+/* --- sommaire : design commun --- */
+.toc{padding:1rem .9rem!important}
+.toc strong{display:flex!important;align-items:center;gap:.5rem;font-size:.74rem!important;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)!important;margin:0 .2rem .6rem!important}
+.toc strong::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.toc ol{list-style:none!important;padding:0!important;margin:0!important;display:grid!important;gap:.15rem;counter-reset:toc}
+.toc li{margin:0!important;display:block!important;padding:0!important;counter-increment:none!important}
+.toc li::before,.toc li::after,.toc li a::after{content:none!important;display:none!important}
+.toc li a{display:grid;grid-template-columns:26px minmax(0,1fr);align-items:start;gap:.55rem;padding:.42rem .55rem;border-radius:8px;color:var(--ink)!important;text-decoration:none;font-size:.9rem;line-height:1.35;counter-increment:toc;transition:background .12s}
+.toc li a::before{content:counter(toc);display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--accent-soft);color:var(--accent-ink);font-size:.72rem;font-weight:800;margin-top:1px}
+
+.toc li a:hover{background:var(--accent-soft)}
+.toc li a.active{background:var(--accent);color:#fff!important}.toc li a.active::before{background:rgba(255,255,255,.22);color:#fff}
+.toc li a[href="#rev"]::before,.toc li a[href="#revision"]::before,nav.toc ol[start] a[href="#rev"]::before{content:"✓"!important}
+.toc li a.toc-junior::before{background:#DCFCE7;color:#166534}.toc li a.toc-confirme::before{background:#DBEAFE;color:#1E40AF}.toc li a.toc-senior::before{background:#FEF3C7;color:#92400E}.toc li a.toc-expert::before{background:#FCE7F3;color:#9D174D}
+.toc li a.active.toc-junior::before,.toc li a.active.toc-confirme::before,.toc li a.active.toc-senior::before,.toc li a.active.toc-expert::before{background:rgba(255,255,255,.22);color:#fff}
+.toc .legend{margin-top:.8rem!important;padding-top:.7rem;border-top:1px solid var(--line);font-size:.8rem!important}
+.toc .prog,.toc .progress{margin-top:.7rem}
+@media(max-width:900px){.toc ol{grid-template-columns:1fr 1fr}.toc li a{font-size:.86rem}}
+@media(max-width:560px){.toc ol{grid-template-columns:1fr}}
+/* --- code : retour à la ligne avec indentation conservée --- */
+pre.wrapped code{white-space:pre-wrap;word-break:break-word}
+pre .ln{display:block;white-space:pre-wrap;overflow-wrap:anywhere}
+pre .ln[data-ind]{text-indent:calc(var(--ind) * -1ch);padding-left:calc(var(--ind) * 1ch)}
+pre .wrapbtn{position:absolute;top:.6rem;right:5.2rem;background:#21262D;color:#C9D1D9;border:1px solid #30363D;border-radius:6px;font-size:.78rem;padding:.25rem .55rem;cursor:pointer;opacity:.85}pre .wrapbtn:hover{opacity:1}
+pre.wrapped{overflow-x:hidden}
+pre .nl{display:none}
+
+
+/* --- menus groupés --- */
+.topbar nav>details>div.groups{grid-template-columns:repeat(2,minmax(220px,1fr));min-width:500px;gap:.1rem .6rem}
+.topbar nav>details>div .g{display:grid;align-content:start}
+.topbar nav>details>div .grp{font-size:.68rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:.55rem .7rem .2rem}
+@media(max-width:900px){.topbar nav>details>div.groups{grid-template-columns:1fr;min-width:0}.topbar nav>details>div .grp{color:#8FA0BA}}
+/* --- lecture rapide : ne garder que l'essentiel de chaque chapitre --- */
+body.rapid article:not(.expanded) > :is(p,ul,ol,table,pre,.tablewrap,.avap,.se-why,.se-week,.se-recap,.se-check,.roadmap,.grid2,.grid3,details,.note,.memo,.card,figure:not(.fig)),
+body.rapid article:not(.expanded) .exo > :not(.tag),body.rapid article:not(.expanded) .tp > :not(.tag){display:none!important}
+body.rapid article:not(.expanded) .exo,body.rapid article:not(.expanded) .tp{padding:.5rem .9rem;opacity:.75}
+body.rapid article:not(.expanded) h3{cursor:pointer}
+body.rapid article:not(.expanded) h3::after{content:"  afficher ▾";font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.04em}
+body.rapid article .rapid-hint{display:block;font-size:.8rem;color:var(--muted);margin:.4rem 0 0}
+.rapid-hint{display:none}
+body.rapid article.expanded h3.rapid-toggle::after{content:"  réduire ▴";font-size:.72rem;font-weight:600;color:var(--muted)}
+.topbar .rapid-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;height:36px;padding:0 .7rem;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;margin-left:.25rem;white-space:nowrap}
+.topbar .rapid-btn.on{background:#2563EB;border-color:#2563EB}
+@media(max-width:900px){.topbar .rapid-btn{margin:.4rem 0 0}}
+
+.fig.portrait img{max-height:680px;width:auto!important;max-width:100%;margin:0 auto}.gallery .fig.portrait img{max-height:none;width:100%!important}
+
+/* --- tuiles (accueil, charte) --- */
+.grp-label{display:flex;align-items:center;gap:.6rem;margin:1.2rem 0 .6rem;font-size:.74rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}.grp-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}@media(max-width:1150px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.tiles{grid-template-columns:1fr}}
+.tile{position:relative;display:flex;flex-direction:column;gap:.45rem;background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--tile-c,var(--accent));border-radius:12px;padding:1rem 1.1rem;box-shadow:var(--shadow)}
+.tile-head{display:flex;align-items:center;gap:.65rem}.tile .ic{flex:0 0 38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--tile-soft,var(--accent-soft));color:var(--tile-c,var(--accent-ink));font-weight:800}
+.tile h3{margin:0;border:0!important;padding:0!important;font-size:1.02rem;color:var(--ink)}.tile h3 a{color:inherit;text-decoration:none}.tile h3 a::after{content:"";position:absolute;inset:0}
+.tile p{margin:0;font-size:.9rem;color:var(--muted)}.tile-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding-top:.55rem;border-top:1px solid var(--line);font-size:.82rem}
+.tile-foot .meta{color:var(--tile-c,var(--accent-ink));font-weight:700;white-space:nowrap}.tile-foot label{position:relative;z-index:2;color:var(--muted);display:flex;gap:.35rem;align-items:center}
+.s-dev{--tile-c:#7C3AED;--tile-soft:#EDE9FE}
+/* --- galerie de fiches, sous-parties repliables, code long replié --- */
+.gallery{margin:1.4rem 0;padding:1rem;border:1px dashed var(--line-strong);border-radius:12px;background:var(--bg)}
+.gallery>strong{display:block;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem}
+.gallery .g-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+.gallery figure.fig{margin:0;padding:.4rem;background:var(--paper)}
+.gallery figure.fig img{aspect-ratio:4/3;object-fit:cover;object-position:top;border-radius:6px}
+.gallery figcaption{font-size:.78rem;text-align:left;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gallery .fig.zoomable::after{top:.7rem;right:.7rem;font-size:.7rem;padding:.2rem .45rem}
+@media(max-width:700px){.gallery .g-items{grid-template-columns:1fr 1fr}}
+details.sub{border:1px solid var(--line);border-radius:10px;background:var(--paper);margin:.7rem 0;padding:0}
+details.sub>summary{padding:.75rem 1rem!important;font-weight:700;font-size:1rem!important;color:var(--ink)!important;cursor:pointer;list-style:none;display:flex!important;align-items:center;gap:.6rem;border:0!important;border-radius:10px!important;background:none!important;width:100%;box-sizing:border-box}
+details.sub>summary:hover{background:var(--accent-soft)!important}
+details.sub>summary::-webkit-details-marker{display:none}
+details.sub>summary::before{content:""!important;width:0;height:0;border-left:7px solid var(--accent)!important;border-top:5px solid transparent!important;border-bottom:5px solid transparent!important;transition:transform .15s;flex:0 0 auto}
+details.sub>summary::after{content:"afficher"!important;margin-left:auto;font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.04em}
+details.sub[open]>summary::after{content:"réduire"!important}
+details.sub[open]>summary::before{transform:rotate(90deg)}
+details.sub>*:not(summary){margin-left:1rem;margin-right:1rem}
+details.sub[open]{padding-bottom:.4rem}
+pre.clamped{max-height:calc(30 * 1.6em + 3.4rem);overflow:hidden}
+pre.clamped::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5rem;background:linear-gradient(rgba(13,17,23,0),var(--code-bg) 75%);pointer-events:none}
+pre .morebtn{position:absolute;left:50%;transform:translateX(-50%);bottom:.7rem;z-index:2;background:#1F6FEB;color:#fff;border:0;border-radius:999px;font-size:.8rem;font-weight:700;padding:.35rem .9rem;cursor:pointer}
+pre:not(.clamped) .morebtn{position:static;display:block;margin:.8rem auto 0;transform:none}
+/* --- images agrandissables (visionneuse) --- */
+.fig.zoomable{position:relative;cursor:zoom-in}
+.fig.zoomable img{width:100%;height:auto;display:block;border-radius:6px}
+.fig.zoomable::after{content:"⤢ Agrandir";position:absolute;top:.9rem;right:.9rem;background:rgba(15,23,42,.78);color:#fff;font-size:.78rem;font-weight:700;padding:.3rem .6rem;border-radius:6px;pointer-events:none}
+.fig a[title="Ouvrir le schéma en grand"]{cursor:zoom-in}
+.lightbox{position:fixed;inset:0;z-index:200;background:rgba(5,10,20,.94);display:none;flex-direction:column}
+.lightbox.open{display:flex}
+.lightbox .bar{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;color:#fff;font-size:.9rem;background:rgba(0,0,0,.35)}
+.lightbox .bar .cap{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#D7DEEA}
+.lightbox .bar button,.lightbox .bar a{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:.35rem .7rem;font:inherit;font-size:.85rem;text-decoration:none;cursor:pointer}
+.lightbox .view{flex:1;overflow:auto;touch-action:pan-x pan-y pinch-zoom;display:flex;align-items:flex-start;justify-content:center;padding:1rem}
+.lightbox .view img{flex:0 0 auto;max-width:none;width:min(96vw,1400px);height:auto;transform-origin:top center;transition:width .15s;cursor:zoom-in}
+.lightbox .view img.big{width:2400px;cursor:zoom-out}
+@media print{.topbar,.sitefooter,.lightbox{display:none}}
 </style>
 </head>
 <body>
 <header class="topbar" id="topbar"><div class="in">
 <a class="brand" href="../index.html"><span class="logo">D</span>DevOps Courses</a>
 <button class="burger" type="button" aria-label="Menu" onclick="document.getElementById('topbar').classList.toggle('open')">☰</button>
-<nav><a href="../index.html">Accueil</a><details><summary>Parcours DevOps</summary><div><a href="../devops-niveau-0-fondations.html">0 · Fondations</a><a href="../devops-niveau-1-conteneurs.html">1 · Conteneurs</a><a href="../devops-niveau-2-ci-cd.html">2 · CI/CD</a><a href="../devops-niveau-3-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-niveau-4-cloud.html">4 · Cloud</a><a href="../devops-niveau-5-kubernetes.html">5 · Kubernetes</a><a href="../devops-niveau-6-observabilite.html">6 · Observabilité</a><a href="../devops-niveau-7-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="../devops-niveau-8-sre-architecture.html">8 · SRE et architecture</a><a href="../devops-niveau-9-expert-leadership.html">9 · Expert et leadership</a></div></details><details><summary>Cours</summary><div><a href="../cours-react.html">React</a><a href="../cours-angular.html">Angular</a><a href="../cours-vue.html">Vue.js</a><a href="../cours-cloud.html">Cloud</a><a href="../cours-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a></div></details><a href="../devops-aide-memoire.html">Aide-mémoire</a><a href="../devops-fiches-entretien.html">Entretien</a>
+<nav><a href="../index.html">Accueil</a><details><summary>Parcours DevOps</summary><div class="groups"><div class="g"><span class="grp">Phase 1 · Les bases</span><a href="../devops-00-fondations.html">0 · Fondations</a><a href="../devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a></div><div class="g"><span class="grp">Phase 2 · Automatiser</span><a href="../devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="../devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a></div><div class="g"><span class="grp">Phase 3 · La plateforme</span><a href="../devops-04-cloud.html">4 · Cloud</a><a href="../devops-05-kubernetes.html">5 · Kubernetes</a><a href="../devops-06-observabilite.html">6 · Observabilité</a></div><div class="g"><span class="grp">Phase 4 · Sécuriser, fiabiliser, diriger</span><a href="../devops-07-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="../devops-08-sre-et-architecture.html">8 · SRE et architecture</a><a href="../devops-09-expert-et-leadership.html">9 · Expert et leadership</a></div></div></details><details><summary>Cours</summary><div class="groups"><div class="g"><span class="grp">Frontend</span><a href="../cours-01-react.html">React</a><a href="../cours-02-angular.html">Angular</a><a href="../cours-03-vue.html">Vue.js</a></div><div class="g"><span class="grp">Java et JVM</span><a href="../cours-04-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="../cours-05-kotlin.html">Kotlin</a><a href="../cours-06-java-pki-signature-electronique.html">Java PKI et signature</a></div><div class="g"><span class="grp">Cloud et données</span><a href="../cours-07-cloud.html">Cloud</a><a href="../cours-08-data-platform-aws-talend.html">Data Platform AWS Talend</a></div><div class="g"><span class="grp">Savoir-être</span><a href="../cours-09-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="../cours-10-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div></div></details><a href="../devops-10-aide-memoire.html">Aide-mémoire</a><a href="../devops-11-fiches-entretien.html">Entretien</a>
+<button class="rapid-btn" type="button" title="N'afficher que le résumé, les objectifs, les titres et les schémas de chaque chapitre" onclick="(function(b){var on=document.body.classList.toggle('rapid');b.classList.toggle('on',on);try{localStorage.setItem('devops-rapid',on?'1':'')}catch(e){}})(this)">Lecture rapide</button>
 <button class="theme-btn" type="button" aria-label="Basculer clair / sombre" onclick="(function(){var r=document.documentElement;var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('devops-theme',n)}catch(e){}})()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
 </nav></div></header>
 <header class="hero"><div class="in">
-<div class="pagenav"><a href="../devops-niveau-3-infrastructure-as-code.html#c16">← Retour au chapitre 16</a><a href="../index.html">Accueil du parcours</a></div>
+<div class="pagenav"><a href="../devops-03-infrastructure-as-code.html#c16">← Retour au chapitre 16</a><a href="../index.html">Accueil du parcours</a></div>
 <div class="level">Correction type — Travail pratique 16</div>
 <h1>Terraform contre LocalStack et Docker</h1>
 <p class="lead">Une solution complète, étape par étape : ce qu'il faut produire, la commande ou le fichier clé, le résultat qui prouve que ça marche, et les pièges. Ta solution peut différer ; ce qui compte, c'est que chaque preuve soit là.</p>
 </div></header>
-<div class="single">
+<div class="single with-toc">
+<nav class="toc" data-auto="corrections"><strong>Étapes de la correction</strong><ol><li><a href="#etape-1">LocalStack et un backend S3 pour le state</a></li><li><a href="#etape-2">Structure : modules et environnements</a></li><li><a href="#etape-3">Dérive, import, moved, verrou</a></li><li><a href="#etape-4">Sécurité et coût dans la CI</a></li><li><a href="#etape-5">Tests Terraform avec mocks, et un vrai contre LocalStack</a></li><li><a href="#etape-6">Ce que le relecteur doit trouver</a></li><li><a href="#etape-7">Questions de relecteur</a></li></ol></nav>
 <div class="enonce"><strong>Énoncé</strong><ol><li>Provider Docker : décris en Terraform la pile CrisisShield (réseau, volumes, conteneurs PostgreSQL, API, front) avec le provider kreuzwerker/docker. plan, apply, vérifie avec docker ps, change l&#x27;image de l&#x27;API, observe le plan de remplacement, apply. Puis destroy.</li><li>LocalStack : module network (VPC, 3 sous-réseaux privés, 3 publics avec for_each, IGW, tables de routage), module storage (bucket S3 chiffré, versionné, accès public bloqué), module identity (rôle IAM avec politique minimale pour lire le bucket). Environnements dev et prod avec des CIDR différents.</li><li>Backend distant : crée d&#x27;abord un bucket tfstate et une table DynamoDB dans LocalStack (un petit module « bootstrap » avec state local), puis migre les environnements vers ce backend (terraform init -migrate-state). Simule un verrou orphelin (tue le conteneur en plein apply) et répare avec force-unlock.</li><li>Import : crée un bucket à la main avec awslocal s3 mb, puis adopte-le en Terraform avec un bloc import et -generate-config-out.</li><li>Refactoring : renomme une ressource avec un bloc moved et prouve que le plan est vide.</li><li>CI : pipeline fmt, validate, Trivy config (fais-le échouer avec un bucket public, corrige), plan en artefact, apply manuel avec resource_group. Écris deux tests .tftest.hcl sur le module network.</li><li>Langage : réécris le module réseau avec dynamic pour les règles de security group, des variables typées object avec optional et validation, une precondition, un bloc check, et un alias de provider pour une seconde région LocalStack (deux conteneurs LocalStack ou deux régions du même). terraform-docs génère le README du module.</li><li>Débogage : provoque et répare chacun des cas du tableau 16.8 que LocalStack permet (verrou orphelin, cycle de security groups, remplacement forcé, dérive de tags avec ignore_changes, lockfile multi-plateforme entre Git Bash et le conteneur CI). Note pour chacun la ligne du plan qui t&#x27;a mis sur la piste.</li><li>Tests : trois .tftest.hcl avec mock_provider (sans rien créer) sur le module réseau, plus un terraform test réel contre LocalStack en CI ; un removed block pour sortir une ressource du state sans la détruire.</li></ol></div>
-<article><div class="chaphead"><span class="chapnum">Étape 1</span></div><h2>LocalStack et un backend S3 pour le state</h2><pre><code>docker run -d --name localstack -p 4566:4566 -e SERVICES=s3,ec2,iam,dynamodb localstack/localstack:3
+<article id="etape-1"><div class="chaphead"><span class="chapnum">Étape 1</span></div><h2>LocalStack et un backend S3 pour le state</h2><pre><code>docker run -d --name localstack -p 4566:4566 -e SERVICES=s3,ec2,iam,dynamodb localstack/localstack:3
 alias awsl=&#x27;docker run --rm --network host -e AWS_ACCESS_KEY_ID=test -e AWS_SECRET_ACCESS_KEY=test -e AWS_DEFAULT_REGION=eu-west-3 amazon/aws-cli --endpoint-url http://localhost:4566&#x27;
 awsl s3 mb s3://tfstate &amp;&amp; awsl s3api put-bucket-versioning --bucket tfstate --versioning-configuration Status=Enabled
 awsl dynamodb create-table --table-name tflock --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --billing-mode PAY_PER_REQUEST</code></pre><div class="out">make_bucket: tfstate
 &quot;TableStatus&quot;: &quot;ACTIVE&quot;</div><ul><li>Versioning sur le bucket : chaque apply garde l'ancien state, restaurable. Table de verrou : deux apply simultanés sont impossibles.</li><li>Le même schéma sur un vrai compte AWS au niveau 4 ; ici LocalStack, gratuit et jetable.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 2</span></div><h2>Structure : modules et environnements</h2><pre><code>mkdir -p modules/network envs/dev envs/prod
+<article id="etape-2"><div class="chaphead"><span class="chapnum">Étape 2</span></div><h2>Structure : modules et environnements</h2><pre><code>mkdir -p modules/network envs/dev envs/prod
 cat &gt; modules/network/main.tf &lt;&lt;&#x27;EOF&#x27;
 variable &quot;name&quot; { type = string } ; variable &quot;cidr&quot; { type = string, validation { condition = can(cidrhost(var.cidr, 0)), error_message = &quot;CIDR invalide.&quot; } } ; variable &quot;azs&quot; { type = list(string) }
 resource &quot;aws_vpc&quot; &quot;this&quot; { cidr_block = var.cidr, tags = { Name = var.name } }
@@ -554,7 +667,7 @@ alias tf=&#x27;docker run --rm -v &quot;$PWD:/w&quot; -w /w --network host hashi
 cd envs/dev &amp;&amp; tf init &amp;&amp; tf fmt -check -recursive ../.. &amp;&amp; tf validate &amp;&amp; tf plan -out=tfplan &amp;&amp; tf apply tfplan</code></pre><div class="out">Plan: 3 to add, 0 to change, 0 to destroy.
 Apply complete! Resources: 3 added.
 subnets = { &quot;eu-west-3a&quot; = &quot;subnet-…&quot;, &quot;eu-west-3b&quot; = &quot;subnet-…&quot; }</div><ul><li><code>for_each</code> sur un set d'AZ : ajouter une zone n'invalide pas les autres (avec <code>count</code>, l'index bougerait).</li><li>Un state par environnement (<code>key</code>), un module partagé : la structure demandée par le chapitre.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 3</span></div><h2>Dérive, import, moved, verrou</h2><pre><code>awsl ec2 create-tags --resources $(tf output -raw vpc_id 2&gt;/dev/null || awsl ec2 describe-vpcs --query &#x27;Vpcs[0].VpcId&#x27; --output text) --tags Key=Owner,Value=console
+<article id="etape-3"><div class="chaphead"><span class="chapnum">Étape 3</span></div><h2>Dérive, import, moved, verrou</h2><pre><code>awsl ec2 create-tags --resources $(tf output -raw vpc_id 2&gt;/dev/null || awsl ec2 describe-vpcs --query &#x27;Vpcs[0].VpcId&#x27; --output text) --tags Key=Owner,Value=console
 tf plan | grep -A3 &#x27;tags&#x27;
 # import d&#x27;un bucket créé à la main
 awsl s3 mb s3://crisis-dev-logs ; printf &#x27;import { to = aws_s3_bucket.logs, id = &quot;crisis-dev-logs&quot; }\nresource &quot;aws_s3_bucket&quot; &quot;logs&quot; { bucket = &quot;crisis-dev-logs&quot; }\n&#x27; &gt;&gt; main.tf &amp;&amp; tf plan
@@ -565,12 +678,12 @@ printf &#x27;moved { from = module.network, to = module.net }\n&#x27; &gt;&gt; m
 Plan: 1 to import, 0 to add
 Plan: 0 to add, 0 to change, 0 to destroy. (moved : aucune recréation)
 Error: Error acquiring the state lock</div><ul><li>La dérive apparaît au plan ; on la corrige par le code (ajouter le tag) ou on la laisse se corriger par l'apply. <code>ignore_changes</code> seulement pour ce qu'un autre système gère.</li><li>Le verrou fait exactement ce qu'on attend ; <code>force-unlock</code> seulement après avoir vérifié qu'aucun apply ne tourne.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 4</span></div><h2>Sécurité et coût dans la CI</h2><pre><code>docker run --rm -v &quot;$PWD:/w&quot; aquasec/trivy config --exit-code 1 --severity HIGH,CRITICAL /w
+<article id="etape-4"><div class="chaphead"><span class="chapnum">Étape 4</span></div><h2>Sécurité et coût dans la CI</h2><pre><code>docker run --rm -v &quot;$PWD:/w&quot; aquasec/trivy config --exit-code 1 --severity HIGH,CRITICAL /w
 docker run --rm -v &quot;$PWD:/w&quot; -w /w bridgecrew/checkov -d . --quiet
 docker run --rm -v &quot;$PWD:/w&quot; -w /w infracost/infracost breakdown --path envs/prod   # nécessite une clé gratuite
 # pipeline : fmt-check → validate → trivy config → plan (artefact + commentaire de MR via tfcmt) → apply manuel sur main avec resource_group</code></pre><div class="out">trivy : 0 HIGH (ou : « S3 bucket sans chiffrement » → corriger avec aws_s3_bucket_server_side_encryption_configuration)
 infracost : monthly cost $42.10</div><ul><li>Le plan est un artefact revu dans la MR ; l'apply est un job manuel sur main, jamais depuis un poste.</li><li>Les findings de trivy config sont des vraies erreurs de configuration, pas du bruit : chiffrement, journalisation, accès public.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 5</span></div><h2>Tests Terraform avec mocks, et un vrai contre LocalStack</h2><pre><code>cat &gt; tests/network.tftest.hcl &lt;&lt;&#x27;EOF&#x27;
+<article id="etape-5"><div class="chaphead"><span class="chapnum">Étape 5</span></div><h2>Tests Terraform avec mocks, et un vrai contre LocalStack</h2><pre><code>cat &gt; tests/network.tftest.hcl &lt;&lt;&#x27;EOF&#x27;
 mock_provider &quot;aws&quot; {}
 run &quot;deux_subnets&quot; { command = plan
   variables { name = &quot;t&quot;, cidr = &quot;10.0.0.0/16&quot;, azs = [&quot;a&quot;, &quot;b&quot;] }
@@ -583,9 +696,9 @@ cd modules/network &amp;&amp; tf test</code></pre><div class="out">tests/network
   run &quot;deux_subnets&quot;… pass
   run &quot;cidr_invalide&quot;… pass
 Success! 2 passed, 0 failed.</div><ul><li><code>mock_provider</code> teste la logique du module sans rien créer, en secondes ; un test réel contre LocalStack en CI complète.</li><li><code>expect_failures</code> vérifie que la validation refuse bien une entrée invalide.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Livrable</span><span class="badge tag-important">Important</span></div><h2>Ce que le relecteur doit trouver</h2><ul><li>Le dépôt avec <code>modules/</code>, <code>envs/dev</code> et <code>envs/prod</code>, backend S3 versionné avec verrou DynamoDB (LocalStack), variables validées, <code>for_each</code>, outputs.</li><li><code>tp16.md</code> : le plan de dérive, l'import, le <code>moved</code> sans recréation, l'erreur de verrou, les rapports trivy config et checkov, le coût infracost, les tests <code>terraform test</code>.</li><li>Le pipeline avec plan en MR et apply manuel.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Pour aller plus loin</span><span class="badge tag-contexte">Bon à savoir</span></div><h2>Questions de relecteur</h2><ul><li>Pourquoi un state par environnement et pas un workspace Terraform ? Isolation de l'accès et du rayon d'impact : un workspace partage le backend et ses droits.</li><li>Que se passe-t-il si le bucket du state perd son versioning et qu'un apply corrompt le state ?</li></ul></article>
-<div class="footnav"><a href="../devops-niveau-3-infrastructure-as-code.html#c16">← Chapitre 16</a><a href="../devops-niveau-3-infrastructure-as-code.html#c17">Chapitre 17 →</a></div>
+<article id="etape-6"><div class="chaphead"><span class="chapnum">Livrable</span><span class="badge tag-important">Important</span></div><h2>Ce que le relecteur doit trouver</h2><ul><li>Le dépôt avec <code>modules/</code>, <code>envs/dev</code> et <code>envs/prod</code>, backend S3 versionné avec verrou DynamoDB (LocalStack), variables validées, <code>for_each</code>, outputs.</li><li><code>tp16.md</code> : le plan de dérive, l'import, le <code>moved</code> sans recréation, l'erreur de verrou, les rapports trivy config et checkov, le coût infracost, les tests <code>terraform test</code>.</li><li>Le pipeline avec plan en MR et apply manuel.</li></ul></article>
+<article id="etape-7"><div class="chaphead"><span class="chapnum">Pour aller plus loin</span><span class="badge tag-contexte">Bon à savoir</span></div><h2>Questions de relecteur</h2><ul><li>Pourquoi un state par environnement et pas un workspace Terraform ? Isolation de l'accès et du rayon d'impact : un workspace partage le backend et ses droits.</li><li>Que se passe-t-il si le bucket du state perd son versioning et qu'un apply corrompt le state ?</li></ul></article>
+<div class="footnav"><a href="../devops-03-infrastructure-as-code.html#c16">← Chapitre 16</a><a href="../devops-03-infrastructure-as-code.html#c17">Chapitre 17 →</a></div>
 </div>
 <script>
 (function(){ var root=document.documentElement; try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
@@ -595,8 +708,88 @@ Success! 2 passed, 0 failed.</div><ul><li><code>mock_provider</code> teste la lo
 </script>
 <footer class="sitefooter"><div class="in">
 <div><div class="brand">DevOps Courses</div>Parcours DevOps de zéro à expert et cours complémentaires, avec CrisisShield comme fil conducteur. Tout tourne en Docker. Code source et outils de génération sur <a href="https://github.com/TABETG/DevOpsCourses" rel="noopener" style="display:inline">GitHub</a>.</div>
-<div><h4>Parcours</h4><a href="../devops-niveau-0-fondations.html">0 · Fondations</a><a href="../devops-niveau-1-conteneurs.html">1 · Conteneurs</a><a href="../devops-niveau-2-ci-cd.html">2 · CI/CD</a><a href="../devops-niveau-3-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-niveau-4-cloud.html">4 · Cloud</a><a href="../index.html">Tous les niveaux →</a></div>
-<div><h4>Cours</h4><a href="../cours-react.html">React</a><a href="../cours-angular.html">Angular</a><a href="../cours-vue.html">Vue.js</a><a href="../cours-cloud.html">Cloud</a><a href="../cours-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a></div>
-<div><h4>Réviser</h4><a href="../devops-aide-memoire.html">Aide-mémoire</a><a href="../devops-fiches-entretien.html">Fiches entretien</a><a href="../maquette.html">Charte graphique</a></div>
+<div><h4>Parcours</h4><a href="../devops-00-fondations.html">0 · Fondations</a><a href="../devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a><a href="../devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="../devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-04-cloud.html">4 · Cloud</a><a href="../index.html">Tous les niveaux →</a></div>
+<div><h4>Cours</h4><a href="../cours-01-react.html">React</a><a href="../cours-02-angular.html">Angular</a><a href="../cours-03-vue.html">Vue.js</a><a href="../cours-04-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="../cours-05-kotlin.html">Kotlin</a><a href="../cours-06-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-07-cloud.html">Cloud</a><a href="../cours-08-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-09-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="../cours-10-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div>
+<div><h4>Réviser</h4><a href="../devops-10-aide-memoire.html">Aide-mémoire</a><a href="../devops-11-fiches-entretien.html">Fiches entretien</a><a href="../site-00-charte-graphique.html">Charte graphique</a></div>
 </div></footer>
+<script id="site-lightbox">(function(){
+var lb=document.createElement('div');lb.className='lightbox';lb.innerHTML='<div class="bar"><span class="cap"></span><button type="button" data-zoom>Zoom ×2</button><a data-open target="_blank" rel="noopener">Nouvel onglet</a><button type="button" data-close>Fermer ✕</button></div><div class="view"><img alt=""></div>';
+document.body.appendChild(lb);var img=lb.querySelector('.view img'),cap=lb.querySelector('.cap'),open=lb.querySelector('[data-open]');
+function show(src,text){img.src=src;img.classList.remove('big');cap.textContent=text||'';open.href=src;lb.classList.add('open');document.body.style.overflow='hidden';}
+function hide(){lb.classList.remove('open');document.body.style.overflow='';img.src='';}
+lb.querySelector('[data-close]').addEventListener('click',hide);lb.addEventListener('click',function(e){if(e.target===lb||e.target.classList.contains('view'))hide();});
+lb.querySelector('[data-zoom]').addEventListener('click',function(){img.classList.toggle('big');this.textContent=img.classList.contains('big')?'Zoom ×1':'Zoom ×2';});
+img.addEventListener('click',function(){img.classList.toggle('big');});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
+document.querySelectorAll('figure.fig img').forEach(function(i){var f=i.closest('figure');var pc=function(){if(i.naturalHeight>i.naturalWidth*1.15)f.classList.add('portrait')};if(i.complete)pc();else i.addEventListener('load',pc);if(!f.classList.contains('zoomable')&&!i.closest('a'))f.classList.add('zoomable');
+ var a=i.closest('a');if(a){a.addEventListener('click',function(e){e.preventDefault();show(i.getAttribute('data-full')||i.currentSrc||i.src,(f.querySelector('figcaption')||{}).textContent);});}
+ else i.addEventListener('click',function(){show(i.getAttribute('data-full')||i.currentSrc||i.src,(f.querySelector('figcaption')||{}).textContent);});});
+})();</script>
+<script id="site-highlight">(function(){
+/* Coloration syntaxique légère pour tout le site (bash, yaml, java, kotlin, js/ts, python, sql, hcl, html, dockerfile). Injectée par restyle.py. */
+var KW = new RegExp('^(?:' + [
+ 'abstract','actual','as','async','await','break','case','catch','class','companion','const','constructor','continue','data','def','default','do','else','elif','enum','except','export','extends','final','finally','for','from','fun','function','if','implements','import','in','inline','interface','internal','is','lambda','lateinit','let','match','new','not','object','open','operator','override','package','pass','private','protected','public','raise','record','reified','return','sealed','static','suspend','switch','this','throw','throws','try','typealias','val','var','void','when','where','while','with','yield','and','or','null','true','false','None','True','False','undefined','nil',
+ 'resource','provider','variable','output','locals','module','terraform','data',
+ 'select','from','where','join','left','inner','outer','group','by','order','having','limit','offset','insert','into','values','update','set','delete','create','table','index','alter','add','drop','primary','key','references','on','using','exists','between','like','asc','desc','distinct','union','begin','commit','rollback','declare','partition','concurrently','not','null','default',
+ 'FROM','RUN','COPY','ADD','CMD','ENTRYPOINT','ENV','ARG','EXPOSE','USER','WORKDIR','VOLUME','HEALTHCHECK','LABEL','SHELL','AS',
+ 'docker','kubectl','helm','terraform','ansible-playbook','git','curl','wget','npm','npx','mvn','gradle','java','python3','python','pip','aws','az','gcloud','openssl','keytool','cosign','trivy','k6','psql','sudo','echo','cat','grep','sed','awk','ls','cd','mkdir','rm','cp','mv','chmod','chown','source','alias','done','then','fi','esac','exit','tar','zip','unzip','ssh','scp','systemctl','journalctl','vault','argocd','kind','jq','yq'
+].join('|') + ')$');
+var esc = function(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+var TOKEN = new RegExp([
+ '(<!--[\\s\\S]*?-->|/\\*[\\s\\S]*?\\*/)',                                   // 1 commentaire bloc
+ '((?<![:\\w/])//(?!/)[^\\n]*|#(?![0-9a-fA-F]{3,6}\\b)[^\\n]*|--\\s[^\\n]*)',            // 2 commentaire ligne
+ '("""[\\s\\S]*?"""|\'\'\'[\\s\\S]*?\'\'\'|"(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\'|`(?:\\\\.|[^`\\\\])*`)', // 3 chaîne
+ '(^[ \\t]*(?:\\$|>>>|❯)(?=\\s))',                                          // 4 prompt
+ '(^[ \\t]*[\\w.\\-/\\[\\]"\']+(?=:(?:\\s|$)))',                            // 5 clé yaml / json
+ '(@[A-Za-z_][\\w.]*)',                                                      // 6 annotation
+ '(\\$\\{?[A-Za-z_][\\w.]*\\}?|\\$\\d)',                                     // 7 variable shell
+ '(</?[A-Za-z][\\w:.-]*(?=[\\s>/])|/?>(?=\\s|$|<))',                          // 8 balise
+ '(\\b0x[0-9a-fA-F]+\\b|\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?[a-zA-Z%]{0,3}\\b)', // 9 nombre
+ '(\\b[A-Za-z_][\\w.-]*\\b)',                                                // 10 mot
+ '(=>|->|::|===|!==|==|!=|<=|>=|&&|\\|\\||\\?:|\\?\\.|!!|[+\\-*/%=<>!?&|^~])'  // 11 opérateur
+].join('|'), 'gm');
+function highlight(src){
+ var out = '', last = 0, m;
+ TOKEN.lastIndex = 0;
+ while ((m = TOKEN.exec(src))) {
+  out += esc(src.slice(last, m.index)); last = m.index + m[0].length;
+  var t = m[0], cls = null;
+  if (m[1] || m[2]) cls = 'com';
+  else if (m[3]) cls = 'str';
+  else if (m[4]) cls = 'prompt';
+  else if (m[5]) cls = 'key';
+  else if (m[6]) cls = 'ann';
+  else if (m[7]) cls = 'var';
+  else if (m[8]) cls = 'tag';
+  else if (m[9]) cls = 'num';
+  else if (m[10]) { if (KW.test(t)) cls = 'kw'; else if (/^[A-Z][A-Za-z0-9_]*$/.test(t)) cls = 'type'; else if (/\(/.test(src.slice(last, last + 2)) || src.charAt(last) === '(') cls = 'fn'; }
+  else if (m[11]) cls = 'op';
+  out += cls ? '<span class="tk-' + cls + '">' + esc(t) + '</span>' : esc(t);
+ }
+ return out + esc(src.slice(last));
+}
+document.querySelectorAll('pre > code').forEach(function(c){ if (c.querySelector('span')) return; try { c.innerHTML = highlight(c.textContent); } catch (e) {} });
+})();
+</script>
+<script id="site-toc">(function(){
+/* scroll-spy du sommaire */
+document.querySelectorAll('.toc ol[start]').forEach(function(o){o.style.counterReset='toc '+(parseInt(o.getAttribute('start'),10)-1);});
+var links=Array.prototype.slice.call(document.querySelectorAll('.toc a[href^="#"]'));if(!links.length)return;
+var map={};links.forEach(function(a){var id=a.getAttribute('href').slice(1);var el=document.getElementById(id);if(el)map[id]=a;});
+var ids=Object.keys(map);if(!ids.length)return;var cur=null;
+function setActive(id){if(cur===id)return;cur=id;links.forEach(function(a){a.classList.remove('active')});map[id].classList.add('active');var t=map[id].closest('.toc');if(t&&t.scrollHeight>t.clientHeight){var r=map[id].getBoundingClientRect(),tr=t.getBoundingClientRect();if(r.top<tr.top||r.bottom>tr.bottom)map[id].scrollIntoView({block:'nearest'});}}
+function update(){var top=64+24,best=ids[0];for(var i=0;i<ids.length;i++){var r=document.getElementById(ids[i]).getBoundingClientRect();if(r.top<=top+8)best=ids[i];else break;}setActive(best);}
+document.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);update();
+/* retour à la ligne du code avec indentation conservée */
+document.querySelectorAll('pre > code').forEach(function(code){var pre=code.parentElement;var html=code.innerHTML.replace(/\n$/,'');var lines=html.split('\n');
+ code.innerHTML=lines.map(function(l){var m=/^((?:&nbsp;|[ \t])*)/.exec(l.replace(/<[^>]+>/g,''));var ind=(m?m[1].replace(/\t/g,'    '):'').length;return '<span class="ln"'+(ind?' data-ind style="--ind:'+(ind+2)+'"':'')+'>'+l+'</span>';}).join('<span class="nl">\n</span>');
+ var wide=false;lines.forEach(function(l){if(l.replace(/<[^>]+>/g,'').length>72)wide=true;});
+ if(lines.length>34){pre.classList.add('clamped');var mb=document.createElement('button');mb.type='button';mb.className='morebtn';mb.textContent='Afficher les '+lines.length+' lignes ▾';mb.addEventListener('click',function(){var c=pre.classList.toggle('clamped');mb.textContent=c?'Afficher les '+lines.length+' lignes ▾':'Réduire ▴';if(c)pre.scrollIntoView({block:'nearest'});});pre.appendChild(mb);}
+ if(wide){pre.classList.add('wrapped');var b=document.createElement('button');b.type='button';b.className='wrapbtn';b.textContent='⇤ Une ligne';b.title='Basculer le retour à la ligne';b.addEventListener('click',function(){pre.classList.toggle('wrapped');b.textContent=pre.classList.contains('wrapped')?'⇤ Une ligne':'⇌ Replier';});pre.appendChild(b);}
+});
+})();</script>
+<script id="site-rapid">(function(){try{if(localStorage.getItem('devops-rapid')==='1'){document.body.classList.add('rapid');var b=document.querySelector('.rapid-btn');if(b)b.classList.add('on');}}catch(e){}
+document.querySelectorAll('article').forEach(function(a){var h=a.querySelector('h2');if(h&&!a.querySelector('.rapid-hint')){var s=document.createElement('span');s.className='rapid-hint';s.textContent='Lecture rapide : clique sur un titre de section pour afficher le chapitre entier.';h.insertAdjacentElement('afterend',s);}
+ a.querySelectorAll('h3').forEach(function(t){t.classList.add('rapid-toggle');t.addEventListener('click',function(){if(document.body.classList.contains('rapid'))a.classList.toggle('expanded');});});});
+})();</script>
 </body></html>

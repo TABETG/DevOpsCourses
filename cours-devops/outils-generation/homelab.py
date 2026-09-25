@@ -71,7 +71,7 @@ EXO = r'''<div class="exo"><span class="tag">Exercice 7.5</span>
 '''
 TP = ('<li>Homelab : rédige ton plan en une page (matériel ou variante virtuelle, plan d\'adressage et VLAN, ce qui va sur le nœud admin, distribution Kubernetes, les quatre phases avec leurs portes de sortie), commité dans <code>docs/homelab.md</code>. Si tu as le matériel ou une VM cloud à virtualisation imbriquée : phase 1 (OPNsense + Tailscale) et phase 2 (Proxmox admin avec Keycloak ou authentik, OpenBao, step-ca) ce mois-ci, en suivant les guides de Stéphane Robert ; phase 3 avec Talos au niveau 5 ; phase 4 au niveau 7. Tiens un journal de bord des pannes.</li>')
 
-p = out/'devops-niveau-1-conteneurs.html'; s = p.read_text()
+p = out/'devops-01-virtualisation-et-conteneurs.html'; s = p.read_text()
 assert '7.5 Construire un homelab' not in s
 key = 'Pour sortir du lot — Firecracker'; i = s.index(key); j = s.rfind('<div class="niche">', 0, i)
 s = s[:j] + SEC + '\n' + PIPE + '\n' + s[j:]
@@ -86,10 +86,10 @@ s = s.replace('<li>VMware, Proxmox, Nutanix : hyperviseur, plan de contrôle, st
 p.write_text(s); print('7 :', re.findall(r'<h3>(7\.\d) ', s))
 
 # renvois depuis 43.3 (plateforme) et 18 (Talos)
-p = out/'devops-niveau-8-sre-architecture.html'; s = p.read_text()
+p = out/'devops-08-sre-et-architecture.html'; s = p.read_text()
 if 'homelab' not in s:
     s = s.replace("l'IdP de l'astreinte, la documentation et l'outil d'incident vivent ailleurs)", "l'IdP de l'astreinte, la documentation et l'outil d'incident vivent ailleurs ; c'est aussi le principe du nœud admin de confiance du homelab, chapitre 7.5)", 1); p.write_text(s); print('43 ok')
-p = out/'devops-niveau-3-infrastructure-as-code.html'; s = p.read_text()
+p = out/'devops-03-infrastructure-as-code.html'; s = p.read_text()
 if 'chapitre 7.5' not in s:
     s = s.replace('Talos Linux', 'Talos Linux (la distribution retenue pour le cluster du homelab, chapitre 7.5)', 1); p.write_text(s); print('18 ok')
 
@@ -98,6 +98,6 @@ ip = out/'devops-parcours-complet.html'; t = ip.read_text()
 if 'Ressources externes' not in t:
     t = t.replace('<h2>Aide-mémoire</h2>',
         '<h2>Ressources externes</h2>\n<ul>\n<li><a href="' + BLOG + '" rel="noopener">HomeLab DevSecOps, Stéphane Robert</a> : le parcours de référence en français pour construire un laboratoire personnel security-first (matériel, OPNsense et Tailscale, nœud admin Proxmox avec authentik et OpenBao, roadmap en quatre phases). Le chapitre 7.5 de ce cours s\'en inspire et le relie aux chapitres concernés ; le reste du blog (formations OPNsense, Proxmox, Talos, supply chain, examens blancs) est un complément utile à chaque niveau.</li>\n</ul>\n<h2>Aide-mémoire</h2>', 1)
-    t = t.replace('<td><strong>Virtualisation : VMware, Proxmox, Nutanix</strong></td><td><a href="devops-niveau-1-conteneurs.html#c7">hyperviseurs en entreprise, commandes, IaC, HA, sauvegarde (7.4)</a>',
-                  '<td><strong>Virtualisation et homelab</strong></td><td><a href="devops-niveau-1-conteneurs.html#c7">hyperviseurs en entreprise, commandes, IaC, HA, sauvegarde (7.4), homelab security-first (7.5)</a>', 1)
+    t = t.replace('<td><strong>Virtualisation : VMware, Proxmox, Nutanix</strong></td><td><a href="devops-01-virtualisation-et-conteneurs.html#c7">hyperviseurs en entreprise, commandes, IaC, HA, sauvegarde (7.4)</a>',
+                  '<td><strong>Virtualisation et homelab</strong></td><td><a href="devops-01-virtualisation-et-conteneurs.html#c7">hyperviseurs en entreprise, commandes, IaC, HA, sauvegarde (7.4), homelab security-first (7.5)</a>', 1)
     ip.write_text(t); print('index ok')

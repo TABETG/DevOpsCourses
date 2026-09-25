@@ -40,16 +40,16 @@ def badge(level):
     return f'<span class="badge lvl-{level}">{LABEL[level]}</span>'
 
 files = [
- ("devops-niveau-0-fondations.html", range(1,7)),
- ("devops-niveau-1-conteneurs.html", range(7,11)),
- ("devops-niveau-2-ci-cd.html", range(11,16)),
- ("devops-niveau-3-infrastructure-as-code.html", range(16,20)),
- ("devops-niveau-4-cloud.html", range(20,25)),
- ("devops-niveau-5-kubernetes.html", range(25,32)),
- ("devops-niveau-6-observabilite.html", range(32,37)),
- ("devops-niveau-7-securite-devsecops.html", range(37,43)),
- ("devops-niveau-8-sre-architecture.html", range(43,49)),
- ("devops-niveau-9-expert-leadership.html", range(49,55)),
+ ("devops-00-fondations.html", range(1,7)),
+ ("devops-01-virtualisation-et-conteneurs.html", range(7,11)),
+ ("devops-02-integration-et-livraison-continues.html", range(11,16)),
+ ("devops-03-infrastructure-as-code.html", range(16,20)),
+ ("devops-04-cloud.html", range(20,25)),
+ ("devops-05-kubernetes.html", range(25,32)),
+ ("devops-06-observabilite.html", range(32,37)),
+ ("devops-07-securite-devsecops.html", range(37,43)),
+ ("devops-08-sre-et-architecture.html", range(43,49)),
+ ("devops-09-expert-et-leadership.html", range(49,55)),
 ]
 out = pathlib.Path('/mnt/user-data/outputs')
 ranges = {}
@@ -91,11 +91,11 @@ if 'class="badge' not in s:
                    lambda m, fn=fn: m.group(1), s)  # rien à faire ici, les liens restent
     # insérer les badges dans chaque carte : après le <h3>
     cards = {
-     "Fondations":"devops-niveau-0-fondations.html","Virtualisation et conteneurs":"devops-niveau-1-conteneurs.html",
-     "Intégration et livraison continues":"devops-niveau-2-ci-cd.html","Infrastructure as Code":"devops-niveau-3-infrastructure-as-code.html",
-     "Cloud":"devops-niveau-4-cloud.html","Kubernetes":"devops-niveau-5-kubernetes.html","Observabilité":"devops-niveau-6-observabilite.html",
-     "Sécurité DevSecOps":"devops-niveau-7-securite-devsecops.html","SRE et architecture":"devops-niveau-8-sre-architecture.html",
-     "Expert et leadership":"devops-niveau-9-expert-leadership.html"}
+     "Fondations":"devops-00-fondations.html","Virtualisation et conteneurs":"devops-01-virtualisation-et-conteneurs.html",
+     "Intégration et livraison continues":"devops-02-integration-et-livraison-continues.html","Infrastructure as Code":"devops-03-infrastructure-as-code.html",
+     "Cloud":"devops-04-cloud.html","Kubernetes":"devops-05-kubernetes.html","Observabilité":"devops-06-observabilite.html",
+     "Sécurité DevSecOps":"devops-07-securite-devsecops.html","SRE et architecture":"devops-08-sre-et-architecture.html",
+     "Expert et leadership":"devops-09-expert-et-leadership.html"}
     for title, fn in cards.items():
         lo, hi = ranges[fn]
         rng = badge(lo) if lo == hi else badge(lo) + '<span style="color:var(--muted);margin-left:.3rem">→</span>' + badge(hi)

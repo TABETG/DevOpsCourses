@@ -1,6 +1,6 @@
 import re, pathlib, html
 
-p = pathlib.Path('/mnt/user-data/outputs/devops-niveau-9-expert-leadership.html')
+p = pathlib.Path('/mnt/user-data/outputs/devops-09-expert-et-leadership.html')
 s = p.read_text()
 assert '54.5 GitHub Copilot' not in s, 'déjà fait'
 

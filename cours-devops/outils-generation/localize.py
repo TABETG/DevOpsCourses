@@ -1,16 +1,16 @@
 import re, pathlib
 d = pathlib.Path('/home/claude/build/cours-devops')
 levels = [
- ("SbcBu2KkXvc1rsETDSdfDZ","devops-niveau-0-fondations.html","Niveau 0 — Fondations"),
- ("LkdWWLG4gRB39uXbRZdFuX","devops-niveau-1-conteneurs.html","Niveau 1 — Virtualisation et conteneurs"),
- ("DcFGfKkiYhcMDsZUak7ZnZ","devops-niveau-2-ci-cd.html","Niveau 2 — Intégration et livraison continues"),
- ("DYjxq8LXdD8Kq2yDcHwknN","devops-niveau-3-infrastructure-as-code.html","Niveau 3 — Infrastructure as Code"),
- ("2jgzWyEfQKo1srhkoXw79F","devops-niveau-4-cloud.html","Niveau 4 — Cloud"),
- ("9aqMcKBGhyJXNjJv96Sgoy","devops-niveau-5-kubernetes.html","Niveau 5 — Kubernetes"),
- ("59X5PJ2gqZqdM3zCNG6dgK","devops-niveau-6-observabilite.html","Niveau 6 — Observabilité"),
- ("4RwKD847kQZ5ANy53vfAP1","devops-niveau-7-securite-devsecops.html","Niveau 7 — Sécurité DevSecOps"),
- ("5vSsyu5nU23P6zZEAwXTr2","devops-niveau-8-sre-architecture.html","Niveau 8 — SRE et architecture"),
- ("JKKUXnD95WedqDgm9javjH","devops-niveau-9-expert-leadership.html","Niveau 9 — Expert et leadership"),
+ ("SbcBu2KkXvc1rsETDSdfDZ","devops-00-fondations.html","Niveau 0 — Fondations"),
+ ("LkdWWLG4gRB39uXbRZdFuX","devops-01-virtualisation-et-conteneurs.html","Niveau 1 — Virtualisation et conteneurs"),
+ ("DcFGfKkiYhcMDsZUak7ZnZ","devops-02-integration-et-livraison-continues.html","Niveau 2 — Intégration et livraison continues"),
+ ("DYjxq8LXdD8Kq2yDcHwknN","devops-03-infrastructure-as-code.html","Niveau 3 — Infrastructure as Code"),
+ ("2jgzWyEfQKo1srhkoXw79F","devops-04-cloud.html","Niveau 4 — Cloud"),
+ ("9aqMcKBGhyJXNjJv96Sgoy","devops-05-kubernetes.html","Niveau 5 — Kubernetes"),
+ ("59X5PJ2gqZqdM3zCNG6dgK","devops-06-observabilite.html","Niveau 6 — Observabilité"),
+ ("4RwKD847kQZ5ANy53vfAP1","devops-07-securite-devsecops.html","Niveau 7 — Sécurité DevSecOps"),
+ ("5vSsyu5nU23P6zZEAwXTr2","devops-08-sre-et-architecture.html","Niveau 8 — SRE et architecture"),
+ ("JKKUXnD95WedqDgm9javjH","devops-09-expert-et-leadership.html","Niveau 9 — Expert et leadership"),
 ]
 extra_css = """
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
@@ -25,7 +25,7 @@ extra_css = """
 idx = (d/'index.html').read_text()
 for aid, fn, _ in levels:
     idx = idx.replace(f'https://claude.ai/artifact/{aid}', fn)
-idx = idx.replace('https://claude.ai/artifact/3hJC54hLqcEAzTFtB1G8Qi', 'devops-fiches-entretien.html').replace('https://claude.ai/artifact/R1VURi7M5FUSwshfHjaKPB', 'devops-aide-memoire.html').replace('https://claude.ai/artifact/2Jr4M3v18aTLjxwmdL8377', 'cours-react.html').replace('https://claude.ai/artifact/FrwLKYymfrm4HRG9e3bxXB', 'cours-angular.html').replace('https://claude.ai/artifact/8c6eyxcphVfq93PeD3Uz7j', 'cours-vue.html').replace('https://claude.ai/artifact/9nfso3dXBZ9gFuRq7EbTjW', 'cours-cloud.html').replace('https://claude.ai/artifact/5G3dH1PuugUZzgy9dX353T', 'cours-java-pki-signature-electronique.html').replace('https://claude.ai/artifact/MginNSvHw2cEiK1iGuirjh', 'cours-data-platform-aws-talend.html').replace('https://claude.ai/artifact/E9pjLtYvMT664fGGVyyVpy', 'maquette.html').replace('https://claude.ai/artifact/PdV8HSJ2VzyweicX7YQwxD', 'cours-struts-hibernate-jsp.html').replace('https://claude.ai/artifact/9xRGVRTmjgFU9fkCg9XyBp', 'cours-vue.html').replace('https://claude.ai/artifact/R4VuBjse7pvSSB34Cu827M', 'cours-cloud.html')
+idx = idx.replace('https://claude.ai/artifact/3hJC54hLqcEAzTFtB1G8Qi', 'devops-11-fiches-entretien.html').replace('https://claude.ai/artifact/R1VURi7M5FUSwshfHjaKPB', 'devops-10-aide-memoire.html').replace('https://claude.ai/artifact/2Jr4M3v18aTLjxwmdL8377', 'cours-01-react.html').replace('https://claude.ai/artifact/FrwLKYymfrm4HRG9e3bxXB', 'cours-02-angular.html').replace('https://claude.ai/artifact/8c6eyxcphVfq93PeD3Uz7j', 'cours-03-vue.html').replace('https://claude.ai/artifact/9nfso3dXBZ9gFuRq7EbTjW', 'cours-07-cloud.html').replace('https://claude.ai/artifact/5G3dH1PuugUZzgy9dX353T', 'cours-06-java-pki-signature-electronique.html').replace('https://claude.ai/artifact/MginNSvHw2cEiK1iGuirjh', 'cours-08-data-platform-aws-talend.html').replace('https://claude.ai/artifact/E9pjLtYvMT664fGGVyyVpy', 'site-00-charte-graphique.html').replace('https://claude.ai/artifact/PdV8HSJ2VzyweicX7YQwxD', 'cours-04-struts-hibernate-jsp.html').replace('https://claude.ai/artifact/5i7dJdWaLocqqYt5GDio6V', 'cours-10-savoir-etre-situations-et-attitudes.html').replace('https://claude.ai/artifact/BT8jcW4tXpQHEZdrGCSZd8', 'cours-05-kotlin.html').replace('https://claude.ai/artifact/AdVd1XGEaAxvMMjJHMuk1P', 'cours-09-savoir-etre-de-zero-a-expert.html').replace('https://claude.ai/artifact/9xRGVRTmjgFU9fkCg9XyBp', 'cours-03-vue.html').replace('https://claude.ai/artifact/R4VuBjse7pvSSB34Cu827M', 'cours-07-cloud.html')
 idx = idx.replace('</style>', extra_css, 1)
 (d/'index.html').write_text(idx)
 # pages de niveau : lien accueil dans le hero, précédent/suivant en bas

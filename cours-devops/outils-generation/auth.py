@@ -1,6 +1,6 @@
 import re, pathlib, html
 
-p = pathlib.Path('/mnt/user-data/outputs/devops-niveau-7-securite-devsecops.html')
+p = pathlib.Path('/mnt/user-data/outputs/devops-07-securite-devsecops.html')
 s = p.read_text()
 assert '41.6 Mise en œuvre' not in s, 'déjà fait'
 

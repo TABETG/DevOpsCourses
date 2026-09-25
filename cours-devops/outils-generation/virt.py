@@ -94,7 +94,7 @@ EXOS = r'''<div class="exo"><span class="tag">Exercice 7.3</span>
 '''
 TP = ('<li>Hyperviseurs d\'entreprise : sans installer d\'hyperviseur sur ton poste (interdit), écris et valide (<code>terraform validate</code>) un module Terraform Proxmox (provider bpg) et un module Nutanix créant la même VM CrisisShield depuis un template cloud-init, plus le playbook Ansible d\'inventaire dynamique correspondant ; documente les commandes <code>qm</code>, <code>pct</code>, <code>vzdump</code>, <code>acli</code> et <code>ncc</code> que tu utiliserais le premier jour. Si tu disposes d\'une machine de labo ou d\'un compte Nutanix Community Edition, exécute-les et note les différences avec le cours.</li>')
 
-p = out/'devops-niveau-1-conteneurs.html'; s = p.read_text()
+p = out/'devops-01-virtualisation-et-conteneurs.html'; s = p.read_text()
 assert '7.4 Hyperviseurs' not in s
 key = 'Pour sortir du lot — Firecracker'; i = s.index(key); j = s.rfind('<div class="niche">', 0, i)
 s = s[:j] + SEC + s[j:]
@@ -110,7 +110,7 @@ s = s.replace('Machines virtuelles et hyperviseurs</h2>', 'Machines virtuelles e
 p.write_text(s); print('7 :', re.findall(r'<h3>(7\.\d) ', s))
 
 # ---------------- chapitre 50 : cas de sortie de VMware ----------------
-p = out/'devops-niveau-9-expert-leadership.html'; s = p.read_text()
+p = out/'devops-09-expert-et-leadership.html'; s = p.read_text()
 if 'Sortie de VMware' not in s:
     add = r'''<h4>Cas fréquent : la sortie de VMware</h4>
 <p>Après le rachat par Broadcom, beaucoup d'organisations quittent vSphere. C'est une migration de plateforme (« relocate » ou « replatform ») qui suit le même programme : inventaire des VM et de leurs dépendances (vCenter, RVTools, CMDB), choix de la cible par lot (Proxmox, Nutanix, cloud public, ou conteneurisation directe pour ce qui s'y prête : chapitre 7.4), fondations d'abord (réseau, stockage, sauvegarde, IaC sur la nouvelle plateforme), migration outillée (Nutanix Move, export OVF/OVA et <code>qm importovf</code> sur Proxmox, agents de réplication), vagues par criticité avec tests et retour arrière, puis décommissionnement de vSphere et fin des licences. Pièges : les VM à licences liées au matériel, les appliances propriétaires, les dépendances réseau (VLAN, NSX), les sauvegardes Veeam à reconfigurer, et les compétences de l'équipe.</p>
@@ -121,7 +121,7 @@ if 'Sortie de VMware' not in s:
     p.write_text(s); print('50 : cas VMware ajouté')
 
 # ---------------- aide-mémoire ----------------
-p = out/'devops-aide-memoire.html'; s = p.read_text()
+p = out/'devops-10-aide-memoire.html'; s = p.read_text()
 if 'id="virt"' not in s:
     def esc(t): return html.escape(t)
     cmds = [("pvecm status ; pvecm nodes ; qm list ; pct list","cluster Proxmox ; VM ; conteneurs LXC"),("qm start|shutdown|migrate 100 node2 --online","cycle de vie et migration à chaud"),
@@ -145,5 +145,5 @@ if 'id="virt"' not in s:
 p = out/'devops-parcours-complet.html'; s = p.read_text()
 if 'Proxmox' not in s:
     s = s.replace('<tr><td><strong>Docker et CI/CD</strong></td>',
-                  '<tr><td><strong>Virtualisation : VMware, Proxmox, Nutanix</strong></td><td><a href="devops-niveau-1-conteneurs.html#c7">hyperviseurs en entreprise, commandes, IaC, HA, sauvegarde (7.4)</a>, <a href="devops-niveau-9-expert-leadership.html#c50">sortie de VMware (50)</a>, <a href="devops-niveau-3-infrastructure-as-code.html#c18">Packer et Talos (18)</a></td></tr>\n<tr><td><strong>Docker et CI/CD</strong></td>', 1)
+                  '<tr><td><strong>Virtualisation : VMware, Proxmox, Nutanix</strong></td><td><a href="devops-01-virtualisation-et-conteneurs.html#c7">hyperviseurs en entreprise, commandes, IaC, HA, sauvegarde (7.4)</a>, <a href="devops-09-expert-et-leadership.html#c50">sortie de VMware (50)</a>, <a href="devops-03-infrastructure-as-code.html#c18">Packer et Talos (18)</a></td></tr>\n<tr><td><strong>Docker et CI/CD</strong></td>', 1)
     p.write_text(s); print('carte ok')

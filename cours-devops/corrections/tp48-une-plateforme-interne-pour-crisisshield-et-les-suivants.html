@@ -447,7 +447,7 @@ body{padding-bottom:2rem}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style id="site-design">
-/* ===== Charte graphique unifiée (maquette.html) ===== */
+/* ===== Charte graphique unifiée (site-00-charte-graphique.html) ===== */
 :root{--bg:#F4F6FA;--paper:#FFFFFF;--ink:#0F172A;--muted:#5B6474;--line:#E2E8F0;--line-strong:#CBD5E1;--accent:#2563EB;--accent-ink:#1E40AF;--accent-soft:#EAF1FE;--hero:#0B1220;--hero-2:#132A57;--radius:12px;--shadow:0 1px 2px rgba(15,23,42,.05),0 6px 18px rgba(15,23,42,.06);--topbar:64px;--code-bg:#0F172A;--code-ink:#E2E8F0;--code-line:#1E293B}
 [data-theme="dark"]{--bg:#0B1220;--paper:#111A2E;--ink:#E5EAF3;--muted:#9AA6BA;--line:#22304A;--line-strong:#33456A;--accent:#60A5FA;--accent-ink:#93C5FD;--accent-soft:#16264A;--hero:#070D1A;--hero-2:#0F2148;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--code-bg:#060B16;--code-line:#1F2C46}
 html{scroll-padding-top:calc(var(--topbar) + 16px)}
@@ -521,25 +521,138 @@ details>summary{cursor:pointer;font-weight:700;color:var(--accent-ink)}
 .sitefooter .brand{color:#fff;font-weight:800;font-size:1.05rem;margin-bottom:.4rem}
 @media(max-width:800px){.sitefooter .in{grid-template-columns:1fr 1fr}}
 #sprint{background:var(--hero)}
-@media print{.topbar,.sitefooter{display:none}}
+
+
+/* --- code : thème IDE (GitHub Dark), commun à tout le site --- */
+:root{--code-bg:#0D1117;--code-ink:#E6EDF3;--code-line:#30363D;--code-kw:#FF7B72;--code-str:#A5D6FF;--code-com:#8B949E;--code-num:#79C0FF;--code-fn:#D2A8FF;--code-type:#FFA657;--code-ann:#F2CC60;--code-prompt:#7EE787;--code-key:#7EE787;--code-op:#FF7B72;--code-var:#FFA657}
+pre{background:var(--code-bg)!important;color:var(--code-ink)!important;border:1px solid var(--code-line)!important;border-radius:10px;padding:2.4rem 1.1rem 1rem;font-size:.86em;line-height:1.6;tab-size:4;overflow:auto;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+pre code{background:none!important;color:inherit!important;padding:0!important;font-size:inherit!important;border:0!important}
+pre::-webkit-scrollbar{height:10px}pre::-webkit-scrollbar-thumb{background:#484F58;border-radius:6px}pre::-webkit-scrollbar-track{background:#161B22}
+pre .copy{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important;border-radius:6px;font-size:.78rem;padding:.25rem .6rem;position:absolute;top:.6rem;right:.6rem;cursor:pointer;opacity:.85}pre .copy:hover{opacity:1;background:#30363D!important}
+pre .explain{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important}
+.tk-kw{color:var(--code-kw)}.tk-str{color:var(--code-str)}.tk-com{color:var(--code-com);font-style:italic}.tk-num{color:var(--code-num)}.tk-fn{color:var(--code-fn)}.tk-type{color:var(--code-type)}.tk-ann{color:var(--code-ann)}.tk-prompt{color:var(--code-prompt);font-weight:700}.tk-key{color:var(--code-key)}.tk-op{color:var(--code-op)}.tk-var{color:var(--code-var)}.tk-tag{color:var(--code-prompt)}
+code:not(pre code){background:var(--accent-soft);color:var(--accent-ink);padding:.1em .4em;border-radius:5px;font-size:.9em}
+[data-theme="dark"] code:not(pre code){background:#1C2A48;color:#93C5FD}
+/* --- sommaire : grille sans dépendre de :has() --- */
+.single.with-toc{display:grid;grid-template-columns:270px minmax(0,1fr);gap:2rem;align-items:start}
+.single.with-toc>.toc{grid-column:1;grid-row:1 / span 60;position:sticky;top:calc(var(--topbar) + 16px);max-height:calc(100vh - var(--topbar) - 32px);overflow:auto}
+.single.with-toc>:not(.toc){grid-column:2}
+@media(max-width:900px){.single.with-toc{display:block}.single.with-toc>.toc{position:static;max-height:none;margin-bottom:1.2rem;overflow-x:auto}}
+
+/* --- sommaire : design commun --- */
+.toc{padding:1rem .9rem!important}
+.toc strong{display:flex!important;align-items:center;gap:.5rem;font-size:.74rem!important;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)!important;margin:0 .2rem .6rem!important}
+.toc strong::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.toc ol{list-style:none!important;padding:0!important;margin:0!important;display:grid!important;gap:.15rem;counter-reset:toc}
+.toc li{margin:0!important;display:block!important;padding:0!important;counter-increment:none!important}
+.toc li::before,.toc li::after,.toc li a::after{content:none!important;display:none!important}
+.toc li a{display:grid;grid-template-columns:26px minmax(0,1fr);align-items:start;gap:.55rem;padding:.42rem .55rem;border-radius:8px;color:var(--ink)!important;text-decoration:none;font-size:.9rem;line-height:1.35;counter-increment:toc;transition:background .12s}
+.toc li a::before{content:counter(toc);display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--accent-soft);color:var(--accent-ink);font-size:.72rem;font-weight:800;margin-top:1px}
+
+.toc li a:hover{background:var(--accent-soft)}
+.toc li a.active{background:var(--accent);color:#fff!important}.toc li a.active::before{background:rgba(255,255,255,.22);color:#fff}
+.toc li a[href="#rev"]::before,.toc li a[href="#revision"]::before,nav.toc ol[start] a[href="#rev"]::before{content:"✓"!important}
+.toc li a.toc-junior::before{background:#DCFCE7;color:#166534}.toc li a.toc-confirme::before{background:#DBEAFE;color:#1E40AF}.toc li a.toc-senior::before{background:#FEF3C7;color:#92400E}.toc li a.toc-expert::before{background:#FCE7F3;color:#9D174D}
+.toc li a.active.toc-junior::before,.toc li a.active.toc-confirme::before,.toc li a.active.toc-senior::before,.toc li a.active.toc-expert::before{background:rgba(255,255,255,.22);color:#fff}
+.toc .legend{margin-top:.8rem!important;padding-top:.7rem;border-top:1px solid var(--line);font-size:.8rem!important}
+.toc .prog,.toc .progress{margin-top:.7rem}
+@media(max-width:900px){.toc ol{grid-template-columns:1fr 1fr}.toc li a{font-size:.86rem}}
+@media(max-width:560px){.toc ol{grid-template-columns:1fr}}
+/* --- code : retour à la ligne avec indentation conservée --- */
+pre.wrapped code{white-space:pre-wrap;word-break:break-word}
+pre .ln{display:block;white-space:pre-wrap;overflow-wrap:anywhere}
+pre .ln[data-ind]{text-indent:calc(var(--ind) * -1ch);padding-left:calc(var(--ind) * 1ch)}
+pre .wrapbtn{position:absolute;top:.6rem;right:5.2rem;background:#21262D;color:#C9D1D9;border:1px solid #30363D;border-radius:6px;font-size:.78rem;padding:.25rem .55rem;cursor:pointer;opacity:.85}pre .wrapbtn:hover{opacity:1}
+pre.wrapped{overflow-x:hidden}
+pre .nl{display:none}
+
+
+/* --- menus groupés --- */
+.topbar nav>details>div.groups{grid-template-columns:repeat(2,minmax(220px,1fr));min-width:500px;gap:.1rem .6rem}
+.topbar nav>details>div .g{display:grid;align-content:start}
+.topbar nav>details>div .grp{font-size:.68rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:.55rem .7rem .2rem}
+@media(max-width:900px){.topbar nav>details>div.groups{grid-template-columns:1fr;min-width:0}.topbar nav>details>div .grp{color:#8FA0BA}}
+/* --- lecture rapide : ne garder que l'essentiel de chaque chapitre --- */
+body.rapid article:not(.expanded) > :is(p,ul,ol,table,pre,.tablewrap,.avap,.se-why,.se-week,.se-recap,.se-check,.roadmap,.grid2,.grid3,details,.note,.memo,.card,figure:not(.fig)),
+body.rapid article:not(.expanded) .exo > :not(.tag),body.rapid article:not(.expanded) .tp > :not(.tag){display:none!important}
+body.rapid article:not(.expanded) .exo,body.rapid article:not(.expanded) .tp{padding:.5rem .9rem;opacity:.75}
+body.rapid article:not(.expanded) h3{cursor:pointer}
+body.rapid article:not(.expanded) h3::after{content:"  afficher ▾";font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.04em}
+body.rapid article .rapid-hint{display:block;font-size:.8rem;color:var(--muted);margin:.4rem 0 0}
+.rapid-hint{display:none}
+body.rapid article.expanded h3.rapid-toggle::after{content:"  réduire ▴";font-size:.72rem;font-weight:600;color:var(--muted)}
+.topbar .rapid-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;height:36px;padding:0 .7rem;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;margin-left:.25rem;white-space:nowrap}
+.topbar .rapid-btn.on{background:#2563EB;border-color:#2563EB}
+@media(max-width:900px){.topbar .rapid-btn{margin:.4rem 0 0}}
+
+.fig.portrait img{max-height:680px;width:auto!important;max-width:100%;margin:0 auto}.gallery .fig.portrait img{max-height:none;width:100%!important}
+
+/* --- tuiles (accueil, charte) --- */
+.grp-label{display:flex;align-items:center;gap:.6rem;margin:1.2rem 0 .6rem;font-size:.74rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}.grp-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}@media(max-width:1150px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.tiles{grid-template-columns:1fr}}
+.tile{position:relative;display:flex;flex-direction:column;gap:.45rem;background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--tile-c,var(--accent));border-radius:12px;padding:1rem 1.1rem;box-shadow:var(--shadow)}
+.tile-head{display:flex;align-items:center;gap:.65rem}.tile .ic{flex:0 0 38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--tile-soft,var(--accent-soft));color:var(--tile-c,var(--accent-ink));font-weight:800}
+.tile h3{margin:0;border:0!important;padding:0!important;font-size:1.02rem;color:var(--ink)}.tile h3 a{color:inherit;text-decoration:none}.tile h3 a::after{content:"";position:absolute;inset:0}
+.tile p{margin:0;font-size:.9rem;color:var(--muted)}.tile-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding-top:.55rem;border-top:1px solid var(--line);font-size:.82rem}
+.tile-foot .meta{color:var(--tile-c,var(--accent-ink));font-weight:700;white-space:nowrap}.tile-foot label{position:relative;z-index:2;color:var(--muted);display:flex;gap:.35rem;align-items:center}
+.s-dev{--tile-c:#7C3AED;--tile-soft:#EDE9FE}
+/* --- galerie de fiches, sous-parties repliables, code long replié --- */
+.gallery{margin:1.4rem 0;padding:1rem;border:1px dashed var(--line-strong);border-radius:12px;background:var(--bg)}
+.gallery>strong{display:block;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem}
+.gallery .g-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+.gallery figure.fig{margin:0;padding:.4rem;background:var(--paper)}
+.gallery figure.fig img{aspect-ratio:4/3;object-fit:cover;object-position:top;border-radius:6px}
+.gallery figcaption{font-size:.78rem;text-align:left;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gallery .fig.zoomable::after{top:.7rem;right:.7rem;font-size:.7rem;padding:.2rem .45rem}
+@media(max-width:700px){.gallery .g-items{grid-template-columns:1fr 1fr}}
+details.sub{border:1px solid var(--line);border-radius:10px;background:var(--paper);margin:.7rem 0;padding:0}
+details.sub>summary{padding:.75rem 1rem!important;font-weight:700;font-size:1rem!important;color:var(--ink)!important;cursor:pointer;list-style:none;display:flex!important;align-items:center;gap:.6rem;border:0!important;border-radius:10px!important;background:none!important;width:100%;box-sizing:border-box}
+details.sub>summary:hover{background:var(--accent-soft)!important}
+details.sub>summary::-webkit-details-marker{display:none}
+details.sub>summary::before{content:""!important;width:0;height:0;border-left:7px solid var(--accent)!important;border-top:5px solid transparent!important;border-bottom:5px solid transparent!important;transition:transform .15s;flex:0 0 auto}
+details.sub>summary::after{content:"afficher"!important;margin-left:auto;font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.04em}
+details.sub[open]>summary::after{content:"réduire"!important}
+details.sub[open]>summary::before{transform:rotate(90deg)}
+details.sub>*:not(summary){margin-left:1rem;margin-right:1rem}
+details.sub[open]{padding-bottom:.4rem}
+pre.clamped{max-height:calc(30 * 1.6em + 3.4rem);overflow:hidden}
+pre.clamped::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5rem;background:linear-gradient(rgba(13,17,23,0),var(--code-bg) 75%);pointer-events:none}
+pre .morebtn{position:absolute;left:50%;transform:translateX(-50%);bottom:.7rem;z-index:2;background:#1F6FEB;color:#fff;border:0;border-radius:999px;font-size:.8rem;font-weight:700;padding:.35rem .9rem;cursor:pointer}
+pre:not(.clamped) .morebtn{position:static;display:block;margin:.8rem auto 0;transform:none}
+/* --- images agrandissables (visionneuse) --- */
+.fig.zoomable{position:relative;cursor:zoom-in}
+.fig.zoomable img{width:100%;height:auto;display:block;border-radius:6px}
+.fig.zoomable::after{content:"⤢ Agrandir";position:absolute;top:.9rem;right:.9rem;background:rgba(15,23,42,.78);color:#fff;font-size:.78rem;font-weight:700;padding:.3rem .6rem;border-radius:6px;pointer-events:none}
+.fig a[title="Ouvrir le schéma en grand"]{cursor:zoom-in}
+.lightbox{position:fixed;inset:0;z-index:200;background:rgba(5,10,20,.94);display:none;flex-direction:column}
+.lightbox.open{display:flex}
+.lightbox .bar{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;color:#fff;font-size:.9rem;background:rgba(0,0,0,.35)}
+.lightbox .bar .cap{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#D7DEEA}
+.lightbox .bar button,.lightbox .bar a{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:.35rem .7rem;font:inherit;font-size:.85rem;text-decoration:none;cursor:pointer}
+.lightbox .view{flex:1;overflow:auto;touch-action:pan-x pan-y pinch-zoom;display:flex;align-items:flex-start;justify-content:center;padding:1rem}
+.lightbox .view img{flex:0 0 auto;max-width:none;width:min(96vw,1400px);height:auto;transform-origin:top center;transition:width .15s;cursor:zoom-in}
+.lightbox .view img.big{width:2400px;cursor:zoom-out}
+@media print{.topbar,.sitefooter,.lightbox{display:none}}
 </style>
 </head>
 <body>
 <header class="topbar" id="topbar"><div class="in">
 <a class="brand" href="../index.html"><span class="logo">D</span>DevOps Courses</a>
 <button class="burger" type="button" aria-label="Menu" onclick="document.getElementById('topbar').classList.toggle('open')">☰</button>
-<nav><a href="../index.html">Accueil</a><details><summary>Parcours DevOps</summary><div><a href="../devops-niveau-0-fondations.html">0 · Fondations</a><a href="../devops-niveau-1-conteneurs.html">1 · Conteneurs</a><a href="../devops-niveau-2-ci-cd.html">2 · CI/CD</a><a href="../devops-niveau-3-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-niveau-4-cloud.html">4 · Cloud</a><a href="../devops-niveau-5-kubernetes.html">5 · Kubernetes</a><a href="../devops-niveau-6-observabilite.html">6 · Observabilité</a><a href="../devops-niveau-7-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="../devops-niveau-8-sre-architecture.html">8 · SRE et architecture</a><a href="../devops-niveau-9-expert-leadership.html">9 · Expert et leadership</a></div></details><details><summary>Cours</summary><div><a href="../cours-react.html">React</a><a href="../cours-angular.html">Angular</a><a href="../cours-vue.html">Vue.js</a><a href="../cours-cloud.html">Cloud</a><a href="../cours-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a></div></details><a href="../devops-aide-memoire.html">Aide-mémoire</a><a href="../devops-fiches-entretien.html">Entretien</a>
+<nav><a href="../index.html">Accueil</a><details><summary>Parcours DevOps</summary><div class="groups"><div class="g"><span class="grp">Phase 1 · Les bases</span><a href="../devops-00-fondations.html">0 · Fondations</a><a href="../devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a></div><div class="g"><span class="grp">Phase 2 · Automatiser</span><a href="../devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="../devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a></div><div class="g"><span class="grp">Phase 3 · La plateforme</span><a href="../devops-04-cloud.html">4 · Cloud</a><a href="../devops-05-kubernetes.html">5 · Kubernetes</a><a href="../devops-06-observabilite.html">6 · Observabilité</a></div><div class="g"><span class="grp">Phase 4 · Sécuriser, fiabiliser, diriger</span><a href="../devops-07-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="../devops-08-sre-et-architecture.html">8 · SRE et architecture</a><a href="../devops-09-expert-et-leadership.html">9 · Expert et leadership</a></div></div></details><details><summary>Cours</summary><div class="groups"><div class="g"><span class="grp">Frontend</span><a href="../cours-01-react.html">React</a><a href="../cours-02-angular.html">Angular</a><a href="../cours-03-vue.html">Vue.js</a></div><div class="g"><span class="grp">Java et JVM</span><a href="../cours-04-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="../cours-05-kotlin.html">Kotlin</a><a href="../cours-06-java-pki-signature-electronique.html">Java PKI et signature</a></div><div class="g"><span class="grp">Cloud et données</span><a href="../cours-07-cloud.html">Cloud</a><a href="../cours-08-data-platform-aws-talend.html">Data Platform AWS Talend</a></div><div class="g"><span class="grp">Savoir-être</span><a href="../cours-09-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="../cours-10-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div></div></details><a href="../devops-10-aide-memoire.html">Aide-mémoire</a><a href="../devops-11-fiches-entretien.html">Entretien</a>
+<button class="rapid-btn" type="button" title="N'afficher que le résumé, les objectifs, les titres et les schémas de chaque chapitre" onclick="(function(b){var on=document.body.classList.toggle('rapid');b.classList.toggle('on',on);try{localStorage.setItem('devops-rapid',on?'1':'')}catch(e){}})(this)">Lecture rapide</button>
 <button class="theme-btn" type="button" aria-label="Basculer clair / sombre" onclick="(function(){var r=document.documentElement;var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('devops-theme',n)}catch(e){}})()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
 </nav></div></header>
 <header class="hero"><div class="in">
-<div class="pagenav"><a href="../devops-niveau-8-sre-architecture.html#c48">← Retour au chapitre 48</a><a href="../index.html">Accueil du parcours</a></div>
+<div class="pagenav"><a href="../devops-08-sre-et-architecture.html#c48">← Retour au chapitre 48</a><a href="../index.html">Accueil du parcours</a></div>
 <div class="level">Correction type — Travail pratique 48</div>
 <h1>Une plateforme interne pour CrisisShield et les suivants</h1>
 <p class="lead">Une solution complète, étape par étape : ce qu'il faut produire, la commande ou le fichier clé, le résultat qui prouve que ça marche, et les pièges. Ta solution peut différer ; ce qui compte, c'est que chaque preuve soit là.</p>
 </div></header>
-<div class="single">
+<div class="single with-toc">
+<nav class="toc" data-auto="corrections"><strong>Étapes de la correction</strong><ol><li><a href="#etape-1">Backstage : catalogue, intégrations, TechDocs</a></li><li><a href="#etape-2">Template Scaffolder « service Java » : Cartographie en 11 minutes</a></li><li><a href="#etape-3">Crossplane : PostgreSQLInstance et KafkaTopic en compositions</a></li><li><a href="#etape-4">Environnements éphémères par merge request, coût par OpenCost</a></li><li><a href="#etape-5">Scorecards : huit critères calculés depuis les systèmes</a></li><li><a href="#etape-6">Dev Container et Tilt : le poste enfin conforme à « le local est interdit »</a></li><li><a href="#etape-7">Fiche produit et plan de lancement</a></li><li><a href="#etape-8">Ce que le relecteur doit trouver</a></li><li><a href="#etape-9">Questions de relecteur</a></li></ol></nav>
 <div class="enonce"><strong>Énoncé</strong><ol><li>Backstage (Helm sur kind, ou Compose) avec le catalogue des composants de CrisisShield (API, front, Notification, base, Kafka, contrats d&#x27;API), les intégrations GitLab, ArgoCD, Grafana, Kubernetes ; TechDocs générés depuis les docs/ de chaque dépôt (tous les cours que tu as écrits deviennent la documentation de la plateforme).</li><li>Template Scaffolder « service Java Quarkus/Spring » qui crée : dépôt GitLab avec CODEOWNERS, pipeline complet (niveau 2 + 7), Dockerfile durci, chart ou overlays, ApplicationSet ArgoCD, ServiceMonitor, dashboards, SLO Sloth, alertes, External Secrets, NetworkPolicies, catalog-info.yaml. Crée un service « Cartographie » avec, en moins de 15 minutes, jusqu&#x27;au premier déploiement en staging.</li><li>Crossplane : XRD et composition PostgreSQLInstance (tailles small/medium/large) qui crée un cluster CloudNativePG avec sauvegardes, pooler, PodMonitor, alertes et secret de connexion ; composition KafkaTopic vers Strimzi avec conventions et ACL. Le nouveau service « Cartographie » les consomme en GitOps.</li><li>Environnements éphémères : ApplicationSet avec le générateur de merge requests GitLab qui déploie chaque MR dans un namespace mr-&amp;lt;id&amp;gt; avec une base éphémère (composition, taille tiny) et une URL de prévisualisation postée dans la MR ; destruction à la fermeture. Vérifie le coût par OpenCost.</li><li>Scorecards : dans Backstage (plugin tech-insights ou une page générée), une scorecard par service : propriétaire, SLO, alertes, runbook, signatures, CVE critiques, dépendances à jour, dernier test de restauration ; calcul automatisé par script depuis tes systèmes.</li><li>Dev Container pour CrisisShield (.devcontainer/) : tout l&#x27;outillage du cours en conteneur, Tilt pour le déploiement local sur kind ; c&#x27;est aussi la réponse définitive à « le local est interdit ».</li><li>Rédige la fiche produit de la plateforme (utilisateurs, golden paths, ce qu&#x27;elle garantit, ce qu&#x27;elle ne fait pas, roadmap, métriques) et un plan de lancement pour une entreprise de 10 équipes : pilote, migration, support.</li></ol></div>
-<article><div class="chaphead"><span class="chapnum">Étape 1</span></div><h2>Backstage : catalogue, intégrations, TechDocs</h2><pre><code># platform/backstage/ — app créée par npx @backstage/create-app dans un conteneur node:20, image construite par Dockerfile multi-étapes, déployée par le chart backstage/backstage sur kind (PostgreSQL CNPG dédié)
+<article id="etape-1"><div class="chaphead"><span class="chapnum">Étape 1</span></div><h2>Backstage : catalogue, intégrations, TechDocs</h2><pre><code># platform/backstage/ — app créée par npx @backstage/create-app dans un conteneur node:20, image construite par Dockerfile multi-étapes, déployée par le chart backstage/backstage sur kind (PostgreSQL CNPG dédié)
 # app-config.production.yaml (extraits)
 auth: { providers: { oidc: { production: { metadataUrl: https://keycloak.crisis.local/realms/crisis/.well-known/openid-configuration, clientId: backstage, clientSecret: ${BACKSTAGE_OIDC_SECRET} } } } }
 integrations: { gitlab: [{ host: gitlab.local, baseUrl: http://gitlab.local:8929, apiBaseUrl: http://gitlab.local:8929/api/v4, token: ${GITLAB_TOKEN} }] }
@@ -550,7 +663,7 @@ techdocs: { builder: external, publisher: { type: awsS3, awsS3: { bucketName: te
 # catalog-info.yaml de l&#x27;API (extrait) : kind Component, spec.type service, lifecycle production, owner team-crisis, system crisisshield, providesApis [incidents-api], dependsOn [resource:crisis-db, resource:kafka], annotations gitlab.com/project-slug, argocd/app-name, backstage.io/kubernetes-id, grafana/dashboard-selector, backstage.io/techdocs-ref: dir:.
 # TechDocs : chaque dépôt a mkdocs.yml pointant sur docs/ (dont les cours-*.md) ; job CI techdocs-cli generate + publish vers MinIO
 curl -s -H &quot;Authorization: Bearer $BS&quot; https://backstage.crisis.local/api/catalog/entities?filter=kind=component | jq length</code></pre><div class="out">9 composants (api, web, notification, report-lambda, cartographie, dora, ai-gateway, contracts, backstage), 4 ressources, 3 API, 1 système ; onglets Kubernetes, ArgoCD, Grafana, CI actifs sur l&#x27;API ; TechDocs : 14 documents dont les 9 cours</div><ul><li>Le catalogue n'est pas une saisie : chaque <code>catalog-info.yaml</code> vit dans son dépôt, à côté du code, et un fichier <code>all.yaml</code> les référence. Une entité qu'on doit mettre à jour à la main dans Backstage est déjà fausse.</li><li>TechDocs rend les cours utiles à quelqu'un d'autre que toi : c'est la documentation de la plateforme, cherchable, versionnée.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 2</span></div><h2>Template Scaffolder « service Java » : Cartographie en 11 minutes</h2><pre><code># platform/templates/service-java/template.yaml (extrait)
+<article id="etape-2"><div class="chaphead"><span class="chapnum">Étape 2</span></div><h2>Template Scaffolder « service Java » : Cartographie en 11 minutes</h2><pre><code># platform/templates/service-java/template.yaml (extrait)
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata: { name: service-java, title: Service Java (Quarkus ou Spring) }
@@ -564,7 +677,7 @@ spec:
     - { id: register, action: catalog:register, input: { repoContentsUrl: &#x27;${{ steps.repo.output.repoContentsUrl }}&#x27;, catalogInfoPath: /catalog-info.yaml } }
 # skeleton/quarkus/ : code minimal, CODEOWNERS, .gitlab-ci.yml (include du template de compliance TP 51 : build, tests, SAST, SCA, image Kaniko, signature, SBOM), Dockerfile durci, kustomize/ (Deployment de référence), slo.yaml (→ Sloth), dashboards/, ServiceMonitor, ExternalSecret, NetworkPolicy, catalog-info.yaml, mkdocs.yml ; si needsDatabase : claim PostgreSQLInstance (étape 3) ; si needsKafka : claim KafkaTopic
 # chrono : « Create » dans Backstage → MR config fusionnée (revue de 2 min) → ArgoCD staging Synced/Healthy → curl https://cartographie.staging.crisis.local/q/health</code></pre><div class="out">T+0 Create ; T+40 s dépôt créé, pipeline lancé ; T+6 min image signée ; T+7 MR config fusionnée ; T+10 ArgoCD Synced ; T+11 min {&quot;status&quot;:&quot;UP&quot;} — SLO, alertes, dashboard, secrets, NetworkPolicies, Rollout et sauvegarde en place, 0 commande kubectl</div><ul><li>Le template ne génère pas seulement du code : il génère la <em>conformité</em> (pipeline, signature, SLO, politiques). Le chemin doré est celui où faire bien est plus facile que faire mal.</li><li>La MR sur le dépôt de config au lieu d'un apply direct : même le template respecte GitOps et la revue.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 3</span></div><h2>Crossplane : PostgreSQLInstance et KafkaTopic en compositions</h2><pre><code>k helm install crossplane crossplane-stable/crossplane -n crossplane-system --create-namespace --version 1.17.1
+<article id="etape-3"><div class="chaphead"><span class="chapnum">Étape 3</span></div><h2>Crossplane : PostgreSQLInstance et KafkaTopic en compositions</h2><pre><code>k helm install crossplane crossplane-stable/crossplane -n crossplane-system --create-namespace --version 1.17.1
 # provider-kubernetes (crée des objets dans le cluster) ; platform/crossplane/xrd-postgresql.yaml :
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
@@ -584,7 +697,7 @@ spec: { size: small }
 k kubectl get postgresqlinstance -n cartographie ; k kubectl get cluster -n cartographie ; k kubectl get secret cartographie-db-conn -n cartographie -o jsonpath=&#x27;{.data}&#x27; | jq &#x27;keys&#x27;</code></pre><div class="out">cartographie-db  SYNCED True  READY True  (2 min)
 cartographie-db-xk2p  3 instances  Cluster in healthy state
 [&quot;host_ro&quot;,&quot;host_rw&quot;,&quot;password&quot;,&quot;username&quot;]   (le service lit ce Secret : il n&#x27;a jamais vu un manifest CNPG)</div><ul><li>L'équipe demande une « base small » ; la plateforme décide de la HA, des sauvegardes, du pooler, des alertes. Changer la composition met à jour toutes les bases : c'est ça, une abstraction de plateforme.</li><li>Une composition est du code testé (<code>crossplane render</code> en CI avec les quatre tailles) et versionnée : une nouvelle version se déploie progressivement (compositionRevision).</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 4</span></div><h2>Environnements éphémères par merge request, coût par OpenCost</h2><pre><code>cat &gt; argocd/appset-mr.yaml &lt;&lt;&#x27;EOF&#x27;
+<article id="etape-4"><div class="chaphead"><span class="chapnum">Étape 4</span></div><h2>Environnements éphémères par merge request, coût par OpenCost</h2><pre><code>cat &gt; argocd/appset-mr.yaml &lt;&lt;&#x27;EOF&#x27;
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata: { name: mr-envs, namespace: argocd }
@@ -604,14 +717,14 @@ EOF
 k helm install opencost opencost/opencost -n opencost --create-namespace --set opencost.prometheus.internal.serviceName=kps-kube-prometheus-stack-prometheus
 curl -s &#x27;http://opencost.opencost:9003/allocation?window=7d&amp;aggregate=namespace&#x27; | jq &#x27;.data[0] | to_entries | map(select(.key | startswith(&quot;mr-&quot;))) | map({ns: .key, cost: .value.totalCost})&#x27;</code></pre><div class="out">MR !117 ouverte → namespace mr-117 en 3 min, base tiny, note postée dans la MR ; fermeture → namespace supprimé en 2 min (prune)
 OpenCost : mr-117 0,42 $ sur 7 j, mr-118 0,39 $ ; 11 environnements de MR sur le mois : 4,10 $ (prix kind ≈ prix nœud AWS m6g équivalent)</div><ul><li>Un environnement par MR est la fonctionnalité qui change le plus la vie des développeurs ; sa base éphémère par composition <code>tiny</code> est ce qui la rend crédible (un vrai PostgreSQL, pas H2).</li><li>Le coût par namespace rend l'éphémère défendable devant la direction : 4 $ par mois pour 11 environnements.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 5</span></div><h2>Scorecards : huit critères calculés depuis les systèmes</h2><pre><code># platform/scorecards/compute.py — pour chaque composant du catalogue : propriétaire (catalog) ; SLO défini (slo.yaml présent + PrometheusRule chargée) ; alertes avec runbook_url (Prometheus API) ; runbook (docs/runbooks/*.md dans le dépôt) ; image signée (cosign verify du digest déployé) ; CVE critiques (Trivy Operator vulnerabilityreports) ; dépendances à jour (Renovate : MR ouvertes &gt; 30 j) ; dernier test de restauration (backup_restore_test_* pour sa base)
+<article id="etape-5"><div class="chaphead"><span class="chapnum">Étape 5</span></div><h2>Scorecards : huit critères calculés depuis les systèmes</h2><pre><code># platform/scorecards/compute.py — pour chaque composant du catalogue : propriétaire (catalog) ; SLO défini (slo.yaml présent + PrometheusRule chargée) ; alertes avec runbook_url (Prometheus API) ; runbook (docs/runbooks/*.md dans le dépôt) ; image signée (cosign verify du digest déployé) ; CVE critiques (Trivy Operator vulnerabilityreports) ; dépendances à jour (Renovate : MR ouvertes &gt; 30 j) ; dernier test de restauration (backup_restore_test_* pour sa base)
 # sortie : platform/scorecards/scores.json + page Backstage (plugin tech-insights avec facts retriever HTTP, ou @roadiehq/backstage-plugin-iframe sur une page générée) ; badge dans le catalogue ; CronJob quotidien
 docker run --rm -v &quot;$PWD/platform/scorecards:/w&quot; -w /w --network host python:3.12-slim sh -c &#x27;pip -q install requests &amp;&amp; python compute.py&#x27; | column -t</code></pre><div class="out">composant      owner  slo  alertes  runbook  signee  cve_crit  deps  restore  score
 api            ✓      ✓    ✓        ✓        ✓       0         ✓     ✓        8/8
 notification   ✓      ✓    ✓        ✗        ✓       0         ✓     n/a      6/7
 cartographie   ✓      ✓    ✓        ✓        ✓       0         ✓     ✓        8/8  (créé par template : complet dès le premier jour)
 web            ✓      ✗    ✗        ✗        ✓       2         ✗     n/a      2/7</div><ul><li>Une scorecard calculée est un outil de conversation, pas de sanction : « web » n'a pas de SLO parce que personne n'a décidé lequel ; la scorecard rend la décision visible.</li><li>Le service créé par le template a 8/8 le premier jour : c'est la preuve que le chemin doré fonctionne.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 6</span></div><h2>Dev Container et Tilt : le poste enfin conforme à « le local est interdit »</h2><pre><code># .devcontainer/devcontainer.json : image harbor.crisis.local/platform/devtools:2026.09 (JDK 21, mvnw, node 20, kubectl, helm, kind, k9s, stern, argocd, vault, cosign, trivy, kyverno, k6, sloth, terraform, ansible, tilt, git, gh, glab) ; features : docker-outside-of-docker ; mounts : ~/.kube, ~/.m2 en volume nommé ; postCreateCommand : kind get clusters || kind create cluster --config kind-config.yaml
+<article id="etape-6"><div class="chaphead"><span class="chapnum">Étape 6</span></div><h2>Dev Container et Tilt : le poste enfin conforme à « le local est interdit »</h2><pre><code># .devcontainer/devcontainer.json : image harbor.crisis.local/platform/devtools:2026.09 (JDK 21, mvnw, node 20, kubectl, helm, kind, k9s, stern, argocd, vault, cosign, trivy, kyverno, k6, sloth, terraform, ansible, tilt, git, gh, glab) ; features : docker-outside-of-docker ; mounts : ~/.kube, ~/.m2 en volume nommé ; postCreateCommand : kind get clusters || kind create cluster --config kind-config.yaml
 # Tiltfile :
 docker_build(&#x27;harbor.crisis.local/crisisshield/api&#x27;, &#x27;.&#x27;, dockerfile=&#x27;Dockerfile&#x27;, live_update=[sync(&#x27;./target/classes&#x27;, &#x27;/app/BOOT-INF/classes&#x27;), run(&#x27;touch /app/restart.trigger&#x27;)])
 k8s_yaml(kustomize(&#x27;kustomize/overlays/dev&#x27;))
@@ -620,11 +733,11 @@ local_resource(&#x27;compile&#x27;, &#x27;mvn -q -o compile&#x27;, deps=[&#x27;s
 # VS Code : Dev Containers: Reopen in Container → tilt up → modification d&#x27;un contrôleur → recompilation + sync en 3 s dans le Pod kind
 docker run --rm -v &quot;$PWD:/w&quot; -w /w devtools:2026.09 sh -c &#x27;java -version 2&gt;&amp;1 | head -1 ; kubectl version --client --short ; tilt version&#x27;</code></pre><div class="out">openjdk 21.0.4 ; Client Version: v1.31.0 ; v0.33.20
 tilt up : api Running en 40 s ; modification de IncidentController → « Live update » 2,8 s, sans rebuild d&#x27;image</div><ul><li>Le Dev Container est l'image outillée du TP 25 devenue le poste de travail : un nouveau développeur est productif en 10 minutes, avec les mêmes versions que la CI.</li><li>Tilt ferme la boucle interne (édition → Pod en 3 s) sans sacrifier la fidélité (le vrai cluster, le vrai Deployment) : c'est la réponse à « Kubernetes est trop lourd pour développer ».</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Étape 7</span></div><h2>Fiche produit et plan de lancement</h2><pre><code># docs/platform/fiche-produit.md : utilisateurs (10 équipes produit, 60 devs, 4 ops), golden paths (créer un service, une base, un topic, un environnement de MR), garanties (déploiement &lt; 15 min, SLO et alertes par défaut, signature, sauvegarde testée, coût visible), ce qu&#x27;elle ne fait pas (pas de VM, pas de base hors PostgreSQL, pas de cloud hors AWS eu-west-3, pas de support des runtimes hors Java/Node/Python), roadmap 3 trimestres (T1 : previews et scorecards ; T2 : Crossplane Redis, Kafka ACL fines ; T3 : multi-cluster TP 49), métriques (adoption : % de services via template ; temps au premier déploiement ; tickets plateforme/semaine ; NPS)
+<article id="etape-7"><div class="chaphead"><span class="chapnum">Étape 7</span></div><h2>Fiche produit et plan de lancement</h2><pre><code># docs/platform/fiche-produit.md : utilisateurs (10 équipes produit, 60 devs, 4 ops), golden paths (créer un service, une base, un topic, un environnement de MR), garanties (déploiement &lt; 15 min, SLO et alertes par défaut, signature, sauvegarde testée, coût visible), ce qu&#x27;elle ne fait pas (pas de VM, pas de base hors PostgreSQL, pas de cloud hors AWS eu-west-3, pas de support des runtimes hors Java/Node/Python), roadmap 3 trimestres (T1 : previews et scorecards ; T2 : Crossplane Redis, Kafka ACL fines ; T3 : multi-cluster TP 49), métriques (adoption : % de services via template ; temps au premier déploiement ; tickets plateforme/semaine ; NPS)
 # docs/platform/plan-lancement.md : pilote (2 équipes volontaires, 6 semaines, mesure avant/après du lead time), coalition (1 champion par équipe), migration par vagues (3 × 3 équipes, un service à la fois via le template « import »), support (canal, permanence 2 h/jour, docs TechDocs, office hours hebdo), critères d&#x27;arrêt du pilote</code></pre><div class="out">deux documents, chaque garantie renvoie à une preuve du TP (chrono, scorecard, OpenCost)</div><ul><li>Une plateforme est un produit : elle a des utilisateurs, une proposition de valeur, des limites explicites et une roadmap. « Ce qu'elle ne fait pas » est la section la plus utile.</li><li>Le plan de lancement mesure le pilote (lead time avant/après) : c'est ce qui convainc la troisième équipe, pas la démonstration.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Livrable</span><span class="badge tag-important">Important</span></div><h2>Ce que le relecteur doit trouver</h2><ul><li><code>platform/</code> : Backstage (config, catalogue, TechDocs), le template <code>service-java</code> avec son squelette, les XRD et compositions Crossplane (PostgreSQLInstance, KafkaTopic) avec leurs tests <code>crossplane render</code>, l'ApplicationSet des MR, OpenCost, <code>scorecards/compute.py</code>, <code>.devcontainer/</code> et <code>Tiltfile</code>, la fiche produit et le plan de lancement.</li><li><code>tp48.md</code> : le chrono Cartographie (11 min), la claim et son Secret de connexion, la note de preview dans la MR et le coût OpenCost, la scorecard, la boucle Tilt à 2,8 s.</li><li><code>docs/cours-platform-engineering.md</code> : chemin doré, abstraction par composition, plateforme comme produit, et comment le raconter en entretien.</li></ul></article>
-<article><div class="chaphead"><span class="chapnum">Pour aller plus loin</span><span class="badge tag-contexte">Bon à savoir</span></div><h2>Questions de relecteur</h2><ul><li>Pourquoi Crossplane plutôt qu'un chart Helm « base de données » ? La composition est réconciliée en continu et versionnée indépendamment du service ; un chart est appliqué une fois par celui qui l'installe.</li><li>Quel est le premier signe d'une plateforme qui échoue ? Les équipes contournent le template ; l'adoption est la métrique, pas le nombre de fonctionnalités.</li></ul></article>
-<div class="footnav"><a href="../devops-niveau-8-sre-architecture.html#c48">← Chapitre 48</a><a href="../devops-niveau-8-sre-architecture.html#c49">Chapitre 49 →</a></div>
+<article id="etape-8"><div class="chaphead"><span class="chapnum">Livrable</span><span class="badge tag-important">Important</span></div><h2>Ce que le relecteur doit trouver</h2><ul><li><code>platform/</code> : Backstage (config, catalogue, TechDocs), le template <code>service-java</code> avec son squelette, les XRD et compositions Crossplane (PostgreSQLInstance, KafkaTopic) avec leurs tests <code>crossplane render</code>, l'ApplicationSet des MR, OpenCost, <code>scorecards/compute.py</code>, <code>.devcontainer/</code> et <code>Tiltfile</code>, la fiche produit et le plan de lancement.</li><li><code>tp48.md</code> : le chrono Cartographie (11 min), la claim et son Secret de connexion, la note de preview dans la MR et le coût OpenCost, la scorecard, la boucle Tilt à 2,8 s.</li><li><code>docs/cours-platform-engineering.md</code> : chemin doré, abstraction par composition, plateforme comme produit, et comment le raconter en entretien.</li></ul></article>
+<article id="etape-9"><div class="chaphead"><span class="chapnum">Pour aller plus loin</span><span class="badge tag-contexte">Bon à savoir</span></div><h2>Questions de relecteur</h2><ul><li>Pourquoi Crossplane plutôt qu'un chart Helm « base de données » ? La composition est réconciliée en continu et versionnée indépendamment du service ; un chart est appliqué une fois par celui qui l'installe.</li><li>Quel est le premier signe d'une plateforme qui échoue ? Les équipes contournent le template ; l'adoption est la métrique, pas le nombre de fonctionnalités.</li></ul></article>
+<div class="footnav"><a href="../devops-08-sre-et-architecture.html#c48">← Chapitre 48</a><a href="../devops-08-sre-et-architecture.html#c49">Chapitre 49 →</a></div>
 </div>
 <script>
 (function(){ var root=document.documentElement; try{ var t=localStorage.getItem('devops-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
@@ -634,8 +747,88 @@ tilt up : api Running en 40 s ; modification de IncidentController → « Live u
 </script>
 <footer class="sitefooter"><div class="in">
 <div><div class="brand">DevOps Courses</div>Parcours DevOps de zéro à expert et cours complémentaires, avec CrisisShield comme fil conducteur. Tout tourne en Docker. Code source et outils de génération sur <a href="https://github.com/TABETG/DevOpsCourses" rel="noopener" style="display:inline">GitHub</a>.</div>
-<div><h4>Parcours</h4><a href="../devops-niveau-0-fondations.html">0 · Fondations</a><a href="../devops-niveau-1-conteneurs.html">1 · Conteneurs</a><a href="../devops-niveau-2-ci-cd.html">2 · CI/CD</a><a href="../devops-niveau-3-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-niveau-4-cloud.html">4 · Cloud</a><a href="../index.html">Tous les niveaux →</a></div>
-<div><h4>Cours</h4><a href="../cours-react.html">React</a><a href="../cours-angular.html">Angular</a><a href="../cours-vue.html">Vue.js</a><a href="../cours-cloud.html">Cloud</a><a href="../cours-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a></div>
-<div><h4>Réviser</h4><a href="../devops-aide-memoire.html">Aide-mémoire</a><a href="../devops-fiches-entretien.html">Fiches entretien</a><a href="../maquette.html">Charte graphique</a></div>
+<div><h4>Parcours</h4><a href="../devops-00-fondations.html">0 · Fondations</a><a href="../devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a><a href="../devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="../devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-04-cloud.html">4 · Cloud</a><a href="../index.html">Tous les niveaux →</a></div>
+<div><h4>Cours</h4><a href="../cours-01-react.html">React</a><a href="../cours-02-angular.html">Angular</a><a href="../cours-03-vue.html">Vue.js</a><a href="../cours-04-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="../cours-05-kotlin.html">Kotlin</a><a href="../cours-06-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-07-cloud.html">Cloud</a><a href="../cours-08-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-09-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="../cours-10-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div>
+<div><h4>Réviser</h4><a href="../devops-10-aide-memoire.html">Aide-mémoire</a><a href="../devops-11-fiches-entretien.html">Fiches entretien</a><a href="../site-00-charte-graphique.html">Charte graphique</a></div>
 </div></footer>
+<script id="site-lightbox">(function(){
+var lb=document.createElement('div');lb.className='lightbox';lb.innerHTML='<div class="bar"><span class="cap"></span><button type="button" data-zoom>Zoom ×2</button><a data-open target="_blank" rel="noopener">Nouvel onglet</a><button type="button" data-close>Fermer ✕</button></div><div class="view"><img alt=""></div>';
+document.body.appendChild(lb);var img=lb.querySelector('.view img'),cap=lb.querySelector('.cap'),open=lb.querySelector('[data-open]');
+function show(src,text){img.src=src;img.classList.remove('big');cap.textContent=text||'';open.href=src;lb.classList.add('open');document.body.style.overflow='hidden';}
+function hide(){lb.classList.remove('open');document.body.style.overflow='';img.src='';}
+lb.querySelector('[data-close]').addEventListener('click',hide);lb.addEventListener('click',function(e){if(e.target===lb||e.target.classList.contains('view'))hide();});
+lb.querySelector('[data-zoom]').addEventListener('click',function(){img.classList.toggle('big');this.textContent=img.classList.contains('big')?'Zoom ×1':'Zoom ×2';});
+img.addEventListener('click',function(){img.classList.toggle('big');});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
+document.querySelectorAll('figure.fig img').forEach(function(i){var f=i.closest('figure');var pc=function(){if(i.naturalHeight>i.naturalWidth*1.15)f.classList.add('portrait')};if(i.complete)pc();else i.addEventListener('load',pc);if(!f.classList.contains('zoomable')&&!i.closest('a'))f.classList.add('zoomable');
+ var a=i.closest('a');if(a){a.addEventListener('click',function(e){e.preventDefault();show(i.getAttribute('data-full')||i.currentSrc||i.src,(f.querySelector('figcaption')||{}).textContent);});}
+ else i.addEventListener('click',function(){show(i.getAttribute('data-full')||i.currentSrc||i.src,(f.querySelector('figcaption')||{}).textContent);});});
+})();</script>
+<script id="site-highlight">(function(){
+/* Coloration syntaxique légère pour tout le site (bash, yaml, java, kotlin, js/ts, python, sql, hcl, html, dockerfile). Injectée par restyle.py. */
+var KW = new RegExp('^(?:' + [
+ 'abstract','actual','as','async','await','break','case','catch','class','companion','const','constructor','continue','data','def','default','do','else','elif','enum','except','export','extends','final','finally','for','from','fun','function','if','implements','import','in','inline','interface','internal','is','lambda','lateinit','let','match','new','not','object','open','operator','override','package','pass','private','protected','public','raise','record','reified','return','sealed','static','suspend','switch','this','throw','throws','try','typealias','val','var','void','when','where','while','with','yield','and','or','null','true','false','None','True','False','undefined','nil',
+ 'resource','provider','variable','output','locals','module','terraform','data',
+ 'select','from','where','join','left','inner','outer','group','by','order','having','limit','offset','insert','into','values','update','set','delete','create','table','index','alter','add','drop','primary','key','references','on','using','exists','between','like','asc','desc','distinct','union','begin','commit','rollback','declare','partition','concurrently','not','null','default',
+ 'FROM','RUN','COPY','ADD','CMD','ENTRYPOINT','ENV','ARG','EXPOSE','USER','WORKDIR','VOLUME','HEALTHCHECK','LABEL','SHELL','AS',
+ 'docker','kubectl','helm','terraform','ansible-playbook','git','curl','wget','npm','npx','mvn','gradle','java','python3','python','pip','aws','az','gcloud','openssl','keytool','cosign','trivy','k6','psql','sudo','echo','cat','grep','sed','awk','ls','cd','mkdir','rm','cp','mv','chmod','chown','source','alias','done','then','fi','esac','exit','tar','zip','unzip','ssh','scp','systemctl','journalctl','vault','argocd','kind','jq','yq'
+].join('|') + ')$');
+var esc = function(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+var TOKEN = new RegExp([
+ '(<!--[\\s\\S]*?-->|/\\*[\\s\\S]*?\\*/)',                                   // 1 commentaire bloc
+ '((?<![:\\w/])//(?!/)[^\\n]*|#(?![0-9a-fA-F]{3,6}\\b)[^\\n]*|--\\s[^\\n]*)',            // 2 commentaire ligne
+ '("""[\\s\\S]*?"""|\'\'\'[\\s\\S]*?\'\'\'|"(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\'|`(?:\\\\.|[^`\\\\])*`)', // 3 chaîne
+ '(^[ \\t]*(?:\\$|>>>|❯)(?=\\s))',                                          // 4 prompt
+ '(^[ \\t]*[\\w.\\-/\\[\\]"\']+(?=:(?:\\s|$)))',                            // 5 clé yaml / json
+ '(@[A-Za-z_][\\w.]*)',                                                      // 6 annotation
+ '(\\$\\{?[A-Za-z_][\\w.]*\\}?|\\$\\d)',                                     // 7 variable shell
+ '(</?[A-Za-z][\\w:.-]*(?=[\\s>/])|/?>(?=\\s|$|<))',                          // 8 balise
+ '(\\b0x[0-9a-fA-F]+\\b|\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?[a-zA-Z%]{0,3}\\b)', // 9 nombre
+ '(\\b[A-Za-z_][\\w.-]*\\b)',                                                // 10 mot
+ '(=>|->|::|===|!==|==|!=|<=|>=|&&|\\|\\||\\?:|\\?\\.|!!|[+\\-*/%=<>!?&|^~])'  // 11 opérateur
+].join('|'), 'gm');
+function highlight(src){
+ var out = '', last = 0, m;
+ TOKEN.lastIndex = 0;
+ while ((m = TOKEN.exec(src))) {
+  out += esc(src.slice(last, m.index)); last = m.index + m[0].length;
+  var t = m[0], cls = null;
+  if (m[1] || m[2]) cls = 'com';
+  else if (m[3]) cls = 'str';
+  else if (m[4]) cls = 'prompt';
+  else if (m[5]) cls = 'key';
+  else if (m[6]) cls = 'ann';
+  else if (m[7]) cls = 'var';
+  else if (m[8]) cls = 'tag';
+  else if (m[9]) cls = 'num';
+  else if (m[10]) { if (KW.test(t)) cls = 'kw'; else if (/^[A-Z][A-Za-z0-9_]*$/.test(t)) cls = 'type'; else if (/\(/.test(src.slice(last, last + 2)) || src.charAt(last) === '(') cls = 'fn'; }
+  else if (m[11]) cls = 'op';
+  out += cls ? '<span class="tk-' + cls + '">' + esc(t) + '</span>' : esc(t);
+ }
+ return out + esc(src.slice(last));
+}
+document.querySelectorAll('pre > code').forEach(function(c){ if (c.querySelector('span')) return; try { c.innerHTML = highlight(c.textContent); } catch (e) {} });
+})();
+</script>
+<script id="site-toc">(function(){
+/* scroll-spy du sommaire */
+document.querySelectorAll('.toc ol[start]').forEach(function(o){o.style.counterReset='toc '+(parseInt(o.getAttribute('start'),10)-1);});
+var links=Array.prototype.slice.call(document.querySelectorAll('.toc a[href^="#"]'));if(!links.length)return;
+var map={};links.forEach(function(a){var id=a.getAttribute('href').slice(1);var el=document.getElementById(id);if(el)map[id]=a;});
+var ids=Object.keys(map);if(!ids.length)return;var cur=null;
+function setActive(id){if(cur===id)return;cur=id;links.forEach(function(a){a.classList.remove('active')});map[id].classList.add('active');var t=map[id].closest('.toc');if(t&&t.scrollHeight>t.clientHeight){var r=map[id].getBoundingClientRect(),tr=t.getBoundingClientRect();if(r.top<tr.top||r.bottom>tr.bottom)map[id].scrollIntoView({block:'nearest'});}}
+function update(){var top=64+24,best=ids[0];for(var i=0;i<ids.length;i++){var r=document.getElementById(ids[i]).getBoundingClientRect();if(r.top<=top+8)best=ids[i];else break;}setActive(best);}
+document.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);update();
+/* retour à la ligne du code avec indentation conservée */
+document.querySelectorAll('pre > code').forEach(function(code){var pre=code.parentElement;var html=code.innerHTML.replace(/\n$/,'');var lines=html.split('\n');
+ code.innerHTML=lines.map(function(l){var m=/^((?:&nbsp;|[ \t])*)/.exec(l.replace(/<[^>]+>/g,''));var ind=(m?m[1].replace(/\t/g,'    '):'').length;return '<span class="ln"'+(ind?' data-ind style="--ind:'+(ind+2)+'"':'')+'>'+l+'</span>';}).join('<span class="nl">\n</span>');
+ var wide=false;lines.forEach(function(l){if(l.replace(/<[^>]+>/g,'').length>72)wide=true;});
+ if(lines.length>34){pre.classList.add('clamped');var mb=document.createElement('button');mb.type='button';mb.className='morebtn';mb.textContent='Afficher les '+lines.length+' lignes ▾';mb.addEventListener('click',function(){var c=pre.classList.toggle('clamped');mb.textContent=c?'Afficher les '+lines.length+' lignes ▾':'Réduire ▴';if(c)pre.scrollIntoView({block:'nearest'});});pre.appendChild(mb);}
+ if(wide){pre.classList.add('wrapped');var b=document.createElement('button');b.type='button';b.className='wrapbtn';b.textContent='⇤ Une ligne';b.title='Basculer le retour à la ligne';b.addEventListener('click',function(){pre.classList.toggle('wrapped');b.textContent=pre.classList.contains('wrapped')?'⇤ Une ligne':'⇌ Replier';});pre.appendChild(b);}
+});
+})();</script>
+<script id="site-rapid">(function(){try{if(localStorage.getItem('devops-rapid')==='1'){document.body.classList.add('rapid');var b=document.querySelector('.rapid-btn');if(b)b.classList.add('on');}}catch(e){}
+document.querySelectorAll('article').forEach(function(a){var h=a.querySelector('h2');if(h&&!a.querySelector('.rapid-hint')){var s=document.createElement('span');s.className='rapid-hint';s.textContent='Lecture rapide : clique sur un titre de section pour afficher le chapitre entier.';h.insertAdjacentElement('afterend',s);}
+ a.querySelectorAll('h3').forEach(function(t){t.classList.add('rapid-toggle');t.addEventListener('click',function(){if(document.body.classList.contains('rapid'))a.classList.toggle('expanded');});});});
+})();</script>
 </body></html>

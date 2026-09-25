@@ -59,7 +59,7 @@ def level(sec, cmd):
 BADGE = {'M': ('min', '★ Minimum'), 'C': ('conf', 'Confirmé'), 'E': ('exp', 'Expert')}
 # bonnes pratiques : les deux premières = minimum, la dernière = expert, le reste confirmé
 
-head = re.sub(r'<title>[^<]*</title>', '<title>Aide-mémoire — commandes et bonnes pratiques</title>', re.search(r'^.*?</head>', (out/'devops-niveau-0-fondations.html').read_text(), flags=re.S).group(0))
+head = re.sub(r'<title>[^<]*</title>', '<title>Aide-mémoire — commandes et bonnes pratiques</title>', re.search(r'^.*?</head>', (out/'devops-00-fondations.html').read_text(), flags=re.S).group(0))
 extra = """
 .pagenav{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;font-size:.9rem}
 .pagenav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:.3rem .75rem;border-radius:6px}
@@ -95,7 +95,7 @@ head = head.replace('</style>', extra, 1)
 nM = nC = nE = 0
 body = '''<body>
 <header class="hero"><div class="in">
-<div class="pagenav"><a href="index.html">← Accueil du parcours</a><a href="devops-fiches-entretien.html">Fiches entretien</a></div>
+<div class="pagenav"><a href="index.html">← Accueil du parcours</a><a href="devops-11-fiches-entretien.html">Fiches entretien</a></div>
 <div class="level">Aide-mémoire</div>
 <h1>Toutes les commandes à connaître, et les bonnes pratiques par technologie</h1>
 <p class="lead">Dix-huit technologies, les commandes du quotidien avec ce qu'elles font, cinq bonnes pratiques par outil, et sur chaque ligne un badge qui dit à quel niveau tu dois la connaître : <strong>★ Minimum</strong> = par cœur, sans réfléchir, dès le premier jour ; <strong>Confirmé</strong> = attendu d'un profil expérimenté ; <strong>Expert</strong> = ce qui fait la différence en mission.</p>
@@ -143,5 +143,5 @@ body += '''</div>
 })();
 </script>
 </body></html>'''
-(out/'devops-aide-memoire.html').write_text(head + '\n' + body)
+(out/'devops-10-aide-memoire.html').write_text(head + '\n' + body)
 print('sections', len(S), '| minimum', nM, 'confirmé', nC, 'expert', nE, '| total', nM+nC+nE)

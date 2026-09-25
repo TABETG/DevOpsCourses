@@ -1,6 +1,6 @@
 import re, pathlib
 
-p = pathlib.Path('/mnt/user-data/outputs/devops-niveau-8-sre-architecture.html')
+p = pathlib.Path('/mnt/user-data/outputs/devops-08-sre-et-architecture.html')
 s = p.read_text()
 assert '43.3 SRE de plateforme' not in s, 'déjà fait'
 

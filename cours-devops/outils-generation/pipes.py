@@ -1,6 +1,6 @@
 import re, pathlib, json, html as H
 
-p = pathlib.Path('/mnt/user-data/outputs/devops-niveau-0-fondations.html')
+p = pathlib.Path('/mnt/user-data/outputs/devops-00-fondations.html')
 S = p.read_text()
 assert 'class="pipe"' not in S, 'déjà fait'
 

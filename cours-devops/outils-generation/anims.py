@@ -1,6 +1,6 @@
 import re, pathlib
 
-p = pathlib.Path('/mnt/user-data/outputs/devops-niveau-0-fondations.html')
+p = pathlib.Path('/mnt/user-data/outputs/devops-00-fondations.html')
 s = p.read_text()
 assert 'class="anim"' not in s, 'déjà fait'
 
