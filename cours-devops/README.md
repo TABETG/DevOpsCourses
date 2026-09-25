@@ -1,6 +1,6 @@
 # DevOps Courses
 
-Parcours DevOps de zéro à expert (10 niveaux, 54 chapitres, 54 travaux pratiques corrigés) et 10 cours complémentaires, en HTML statique. Fil conducteur : la plateforme CrisisShield. Tout se lance en Docker.
+Parcours DevOps de zéro à expert (10 niveaux, 54 chapitres, 54 travaux pratiques corrigés) et 14 cours complémentaires, en HTML statique. Fil conducteur : la plateforme CrisisShield. Tout se lance en Docker.
 
 Ouvrir `index.html` dans un navigateur : aucune installation, aucun serveur.
 
@@ -12,9 +12,12 @@ Ouvrir `index.html` dans un navigateur : aucune installation, aucun serveur.
 | `devops-00-…` à `devops-09-…` | Les dix niveaux du parcours (fondations → expert et leadership) |
 | `devops-10-aide-memoire.html`, `devops-11-fiches-entretien.html` | Révision : commandes, bonnes pratiques, questions d'entretien |
 | `cours-01` à `cours-03` | Frontend : React, Angular, Vue |
-| `cours-04` à `cours-06` | Java et JVM : Struts/Hibernate/JSP, Kotlin, Java PKI et signature électronique |
-| `cours-07`, `cours-08` | Cloud et données : Cloud AWS/Azure/GCP, Data Platform AWS/Talend/Airflow |
-| `cours-09`, `cours-10` | Savoir-être : progression de zéro à expert, situations et attitudes |
+| `cours-04` à `cours-07` | Backend : Struts/Hibernate/JSP, Kotlin, Java PKI et signature électronique, Node.js/NestJS/GraphQL (à venir) |
+| `cours-08`, `cours-09` | Architecture : Microservices, Kafka (à venir) |
+| `cours-10` | Intelligence artificielle : IA agentique et AI engineering |
+| `cours-11` à `cours-13` | Sécurité : Keycloak et IAM, Sécurité AWS (à venir), Gouvernance et conformité (à venir) |
+| `cours-14` à `cours-17` | Cloud, données et exploitation : Cloud, Data Platform, Monitoring, Kubernetes CKA/CKS (à venir) |
+| `cours-18`, `cours-19` | Savoir-être : progression de zéro à expert, situations et attitudes |
 | `corrections/tpNN-….html` | Les 54 corrections de travaux pratiques |
 | `site-00-charte-graphique.html` | Charte graphique : composants, couleurs, règles, exemples |
 | `images/` | Schémas et fiches visuelles (WebP) |

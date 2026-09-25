@@ -4,6 +4,10 @@ Injecte dans chaque page : la police, la feuille de style « site-design » (sur
 import re, sys, pathlib
 
 ONLINE = {
+ 'cours-10-ia-agentique.html': 'https://claude.ai/artifact/9Xt8AFCrPaqysv7WPCLxZw',
+ 'cours-11-keycloak-et-iam.html': 'https://claude.ai/artifact/MD7q8auT7ze4kvvYrPD2qq',
+ 'cours-08-microservices.html': 'https://claude.ai/artifact/MTCRFWoXqA6fFvmUKgNaHd',
+ 'cours-16-monitoring.html': 'https://claude.ai/artifact/89Bz6fX26dGg4yVce4xPUb',
  'index.html': 'https://claude.ai/artifact/HgutA9nYckb1fQ3psqfsBj',
  'devops-00-fondations.html': 'https://claude.ai/artifact/SbcBu2KkXvc1rsETDSdfDZ', 'devops-01-virtualisation-et-conteneurs.html': 'https://claude.ai/artifact/LkdWWLG4gRB39uXbRZdFuX',
  'devops-02-integration-et-livraison-continues.html': 'https://claude.ai/artifact/DcFGfKkiYhcMDsZUak7ZnZ', 'devops-03-infrastructure-as-code.html': 'https://claude.ai/artifact/DYjxq8LXdD8Kq2yDcHwknN',
@@ -12,13 +16,13 @@ ONLINE = {
  'devops-08-sre-et-architecture.html': 'https://claude.ai/artifact/5vSsyu5nU23P6zZEAwXTr2', 'devops-09-expert-et-leadership.html': 'https://claude.ai/artifact/JKKUXnD95WedqDgm9javjH',
  'devops-10-aide-memoire.html': 'https://claude.ai/artifact/R1VURi7M5FUSwshfHjaKPB', 'devops-11-fiches-entretien.html': 'https://claude.ai/artifact/3hJC54hLqcEAzTFtB1G8Qi',
  'cours-01-react.html': 'https://claude.ai/artifact/2Jr4M3v18aTLjxwmdL8377', 'cours-02-angular.html': 'https://claude.ai/artifact/FrwLKYymfrm4HRG9e3bxXB',
- 'cours-03-vue.html': 'https://claude.ai/artifact/8c6eyxcphVfq93PeD3Uz7j', 'cours-07-cloud.html': 'https://claude.ai/artifact/9nfso3dXBZ9gFuRq7EbTjW',
- 'cours-06-java-pki-signature-electronique.html': 'https://claude.ai/artifact/5G3dH1PuugUZzgy9dX353T', 'cours-08-data-platform-aws-talend.html': 'https://claude.ai/artifact/MginNSvHw2cEiK1iGuirjh',
+ 'cours-03-vue.html': 'https://claude.ai/artifact/8c6eyxcphVfq93PeD3Uz7j', 'cours-14-cloud.html': 'https://claude.ai/artifact/9nfso3dXBZ9gFuRq7EbTjW',
+ 'cours-06-java-pki-signature-electronique.html': 'https://claude.ai/artifact/5G3dH1PuugUZzgy9dX353T', 'cours-15-data-platform-aws-talend.html': 'https://claude.ai/artifact/MginNSvHw2cEiK1iGuirjh',
  'site-00-charte-graphique.html': 'https://claude.ai/artifact/E9pjLtYvMT664fGGVyyVpy',
  'cours-04-struts-hibernate-jsp.html': 'https://claude.ai/artifact/PdV8HSJ2VzyweicX7YQwxD',
- 'cours-10-savoir-etre-situations-et-attitudes.html': 'https://claude.ai/artifact/5i7dJdWaLocqqYt5GDio6V',
+ 'cours-19-savoir-etre-situations-et-attitudes.html': 'https://claude.ai/artifact/5i7dJdWaLocqqYt5GDio6V',
  'cours-05-kotlin.html': 'https://claude.ai/artifact/BT8jcW4tXpQHEZdrGCSZd8',
- 'cours-09-savoir-etre-de-zero-a-expert.html': 'https://claude.ai/artifact/AdVd1XGEaAxvMMjJHMuk1P',
+ 'cours-18-savoir-etre-de-zero-a-expert.html': 'https://claude.ai/artifact/AdVd1XGEaAxvMMjJHMuk1P',
 }
 LEVEL_GROUPS = [
  ('Phase 1 · Les bases', [('devops-00-fondations.html', '0 · Fondations'), ('devops-01-virtualisation-et-conteneurs.html', '1 · Virtualisation et conteneurs')]),
@@ -28,9 +32,12 @@ LEVEL_GROUPS = [
 ]
 COURSE_GROUPS = [
  ('Frontend', [('cours-01-react.html', 'React'), ('cours-02-angular.html', 'Angular'), ('cours-03-vue.html', 'Vue.js')]),
- ('Java et JVM', [('cours-04-struts-hibernate-jsp.html', 'Struts, Hibernate et JSP'), ('cours-05-kotlin.html', 'Kotlin'), ('cours-06-java-pki-signature-electronique.html', 'Java PKI et signature')]),
- ('Cloud et données', [('cours-07-cloud.html', 'Cloud'), ('cours-08-data-platform-aws-talend.html', 'Data Platform AWS Talend')]),
- ('Savoir-être', [('cours-09-savoir-etre-de-zero-a-expert.html', 'De zéro à expert'), ('cours-10-savoir-etre-situations-et-attitudes.html', 'Situations et attitudes')]),
+ ('Backend', [('cours-04-struts-hibernate-jsp.html', 'Struts, Hibernate et JSP'), ('cours-05-kotlin.html', 'Kotlin'), ('cours-06-java-pki-signature-electronique.html', 'Java PKI et signature')]),
+ ('Architecture', [('cours-08-microservices.html', 'Microservices')]),
+ ('Intelligence artificielle', [('cours-10-ia-agentique.html', 'IA agentique')]),
+ ('Sécurité', [('cours-11-keycloak-et-iam.html', 'Keycloak et IAM')]),
+ ('Cloud, données et exploitation', [('cours-14-cloud.html', 'Cloud'), ('cours-15-data-platform-aws-talend.html', 'Data Platform AWS Talend'), ('cours-16-monitoring.html', 'Monitoring')]),
+ ('Savoir-être', [('cours-18-savoir-etre-de-zero-a-expert.html', 'De zéro à expert'), ('cours-19-savoir-etre-situations-et-attitudes.html', 'Situations et attitudes')]),
 ]
 LEVELS = [x for _, g in LEVEL_GROUPS for x in g]
 COURSES = [x for _, g in COURSE_GROUPS for x in g]
@@ -222,7 +229,7 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 [data-theme="dark"] .tbox button.go,[data-theme="dark"] .pipe .primary,[data-theme="dark"] button.primary{color:#0B1220!important}
 [data-theme="dark"] .toc li a.active{background:#2563EB;color:#fff!important}
 [data-theme="dark"] .s-start{--tile-c:#5EEAD4}[data-theme="dark"] .s-devops{--tile-c:#93C5FD}[data-theme="dark"] .s-dev{--tile-c:#C4B5FD}
-[data-theme="dark"] .s-cloud{--tile-c:#7DD3FC}[data-theme="dark"] .s-soft{--tile-c:#FDBA74}[data-theme="dark"] .s-rev{--tile-c:#CBD5E1}
+[data-theme="dark"] .s-cloud{--tile-c:#7DD3FC}[data-theme="dark"] .s-sec{--tile-c:#FCA5A5}[data-theme="dark"] .s-soft{--tile-c:#FDBA74}[data-theme="dark"] .s-rev{--tile-c:#CBD5E1}
 :focus-visible{outline:3px solid #F59E0B;outline-offset:2px}
 /* --- images agrandissables (visionneuse) --- */
 .fig.zoomable{position:relative;cursor:zoom-in}

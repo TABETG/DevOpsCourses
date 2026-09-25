@@ -1,5 +1,5 @@
 """Insère une figure image à un ancrage. Usage : addfig_at.py <page> <ancrage> <webp> <slug> <légende> [--inline]
-ancrage : h3:7.2 (après ce titre) · ch:c9 (après le résumé « En 30 secondes » du chapitre) · top (avant le premier chapitre) · rev (avant les questions de révision)"""
+ancrage : h3:7.2 (après ce titre) · fin:c11 (avant les exercices du chapitre) · ch:c9 (après le résumé « En 30 secondes » du chapitre) · top (avant le premier chapitre) · rev (avant les questions de révision)"""
 import sys, re, base64, pathlib
 p, anchor, img, slug, cap = sys.argv[1:6]; inline = '--inline' in sys.argv
 s = pathlib.Path(p).read_text()
@@ -9,6 +9,7 @@ fig = f'\n<figure class="fig zoomable" id="{slug}"><img src="{src}" alt="{cap}" 
 kind, _, val = anchor.partition(':')
 if kind == 'h3': m = re.search(r'<h3[^>]*>' + re.escape(val) + r' [^<]*(?:<span[^>]*>[^<]*</span>)?</h3>', s); assert m, anchor; pos = m.end()
 elif kind == 'ch': a = s.index(f'id="{val}"'); b = s.index('<div class="bref">', a); pos = s.index('</div>', b) + 6
+elif kind == 'fin': a = s.index(f'<article id="{val}"'); pos = s.index('<div class="exo"', a)
 elif kind == 'top': pos = s.index('<article')
 elif kind == 'rev': pos = s.index('<ol class="quiz">')
 else: raise SystemExit('ancrage inconnu')
