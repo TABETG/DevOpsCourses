@@ -529,7 +529,7 @@ pre{background:var(--code-bg)!important;color:var(--code-ink)!important;border:1
 pre code{background:none!important;color:inherit!important;padding:0!important;font-size:inherit!important;border:0!important}
 pre::-webkit-scrollbar{height:10px}pre::-webkit-scrollbar-thumb{background:#484F58;border-radius:6px}pre::-webkit-scrollbar-track{background:#161B22}
 pre .copy{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important;border-radius:6px;font-size:.78rem;padding:.25rem .6rem;position:absolute;top:.6rem;right:.6rem;cursor:pointer;opacity:.85}pre .copy:hover{opacity:1;background:#30363D!important}
-pre .explain{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important}
+pre .explain{background:#21262D!important;color:#C9D1D9!important;border:1px solid #30363D!important;opacity:.92!important}
 .tk-kw{color:var(--code-kw)}.tk-str{color:var(--code-str)}.tk-com{color:var(--code-com);font-style:italic}.tk-num{color:var(--code-num)}.tk-fn{color:var(--code-fn)}.tk-type{color:var(--code-type)}.tk-ann{color:var(--code-ann)}.tk-prompt{color:var(--code-prompt);font-weight:700}.tk-key{color:var(--code-key)}.tk-op{color:var(--code-op)}.tk-var{color:var(--code-var)}.tk-tag{color:var(--code-prompt)}
 code:not(pre code){background:var(--accent-soft);color:var(--accent-ink);padding:.1em .4em;border-radius:5px;font-size:.9em}
 [data-theme="dark"] code:not(pre code){background:#1C2A48;color:#93C5FD}
@@ -619,6 +619,22 @@ pre.clamped{max-height:calc(30 * 1.6em + 3.4rem);overflow:hidden}
 pre.clamped::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5rem;background:linear-gradient(rgba(13,17,23,0),var(--code-bg) 75%);pointer-events:none}
 pre .morebtn{position:absolute;left:50%;transform:translateX(-50%);bottom:.7rem;z-index:2;background:#1F6FEB;color:#fff;border:0;border-radius:999px;font-size:.8rem;font-weight:700;padding:.35rem .9rem;cursor:pointer}
 pre:not(.clamped) .morebtn{position:static;display:block;margin:.8rem auto 0;transform:none}
+
+pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
+[data-theme="dark"] .pipe .col .cnt{color:#C3CCDA}
+:is(.single,article) :is(p,li,td,dd,span,.entretien,.niche,.note) a:not([class]){color:#1D4ED8}
+[data-theme="dark"] :is(.single,article) :is(p,li,td,dd,span,.entretien,.niche,.note) a:not([class]){color:#93C5FD}
+/* --- accessibilité : contrastes clair et sombre --- */
+.badge-niche,.tag-niche,.niche .tag{color:#0B6670}
+[data-theme="dark"] .badge-niche,[data-theme="dark"] .tag-niche,[data-theme="dark"] .niche .tag,[data-theme="dark"] .legend .badge-niche{color:#5EEAD4}
+.legend .badge-niche{color:#0B6670}
+.pipe .col{opacity:.62}
+.sitefooter .in>div:first-child a{text-decoration:underline;text-underline-offset:2px}
+[data-theme="dark"] .tbox button.go,[data-theme="dark"] .pipe .primary,[data-theme="dark"] button.primary{color:#0B1220!important}
+[data-theme="dark"] .toc li a.active{background:#2563EB;color:#fff!important}
+[data-theme="dark"] .s-start{--tile-c:#5EEAD4}[data-theme="dark"] .s-devops{--tile-c:#93C5FD}[data-theme="dark"] .s-dev{--tile-c:#C4B5FD}
+[data-theme="dark"] .s-cloud{--tile-c:#7DD3FC}[data-theme="dark"] .s-soft{--tile-c:#FDBA74}[data-theme="dark"] .s-rev{--tile-c:#CBD5E1}
+:focus-visible{outline:3px solid #F59E0B;outline-offset:2px}
 /* --- images agrandissables (visionneuse) --- */
 .fig.zoomable{position:relative;cursor:zoom-in}
 .fig.zoomable img{width:100%;height:auto;display:block;border-radius:6px}
@@ -788,7 +804,7 @@ function highlight(src){
  }
  return out + esc(src.slice(last));
 }
-document.querySelectorAll('pre > code').forEach(function(c){ if (c.querySelector('span')) return; try { c.innerHTML = highlight(c.textContent); } catch (e) {} });
+document.querySelectorAll('pre > code').forEach(function(c){ if (c.querySelector('span') || /[\u2500-\u257F]/.test(c.textContent)) return; try { c.innerHTML = highlight(c.textContent); } catch (e) {} });
 })();
 </script>
 <script id="site-toc">(function(){
@@ -799,9 +815,10 @@ var map={};links.forEach(function(a){var id=a.getAttribute('href').slice(1);var 
 var ids=Object.keys(map);if(!ids.length)return;var cur=null;
 function setActive(id){if(cur===id)return;cur=id;links.forEach(function(a){a.classList.remove('active')});map[id].classList.add('active');var t=map[id].closest('.toc');if(t&&t.scrollHeight>t.clientHeight){var r=map[id].getBoundingClientRect(),tr=t.getBoundingClientRect();if(r.top<tr.top||r.bottom>tr.bottom)map[id].scrollIntoView({block:'nearest'});}}
 function update(){var top=64+24,best=ids[0];for(var i=0;i<ids.length;i++){var r=document.getElementById(ids[i]).getBoundingClientRect();if(r.top<=top+8)best=ids[i];else break;}setActive(best);}
+document.querySelectorAll('.cols,.tablewrap,.gallery .g-items').forEach(function(r){if(r.scrollWidth>r.clientWidth+2&&!r.hasAttribute('tabindex')){r.setAttribute('tabindex','0');r.setAttribute('role','region');r.setAttribute('aria-label','Contenu défilant horizontalement');}});
 document.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);update();
 /* retour à la ligne du code avec indentation conservée */
-document.querySelectorAll('pre > code').forEach(function(code){var pre=code.parentElement;var html=code.innerHTML.replace(/\n$/,'');var lines=html.split('\n');
+document.querySelectorAll('pre > code').forEach(function(code){var pre=code.parentElement;if(/[\u2500-\u257F]/.test(code.textContent)){pre.classList.add('ascii');return;}var html=code.innerHTML.replace(/\n$/,'');var lines=html.split('\n');
  code.innerHTML=lines.map(function(l){var m=/^((?:&nbsp;|[ \t])*)/.exec(l.replace(/<[^>]+>/g,''));var ind=(m?m[1].replace(/\t/g,'    '):'').length;return '<span class="ln"'+(ind?' data-ind style="--ind:'+(ind+2)+'"':'')+'>'+l+'</span>';}).join('<span class="nl">\n</span>');
  var wide=false;lines.forEach(function(l){if(l.replace(/<[^>]+>/g,'').length>72)wide=true;});
  if(lines.length>34){pre.classList.add('clamped');var mb=document.createElement('button');mb.type='button';mb.className='morebtn';mb.textContent='Afficher les '+lines.length+' lignes ▾';mb.addEventListener('click',function(){var c=pre.classList.toggle('clamped');mb.textContent=c?'Afficher les '+lines.length+' lignes ▾':'Réduire ▴';if(c)pre.scrollIntoView({block:'nearest'});});pre.appendChild(mb);}

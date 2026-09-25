@@ -41,5 +41,5 @@ function highlight(src){
  }
  return out + esc(src.slice(last));
 }
-document.querySelectorAll('pre > code').forEach(function(c){ if (c.querySelector('span')) return; try { c.innerHTML = highlight(c.textContent); } catch (e) {} });
+document.querySelectorAll('pre > code').forEach(function(c){ if (c.querySelector('span') || /[\u2500-\u257F]/.test(c.textContent)) return; try { c.innerHTML = highlight(c.textContent); } catch (e) {} });
 })();
