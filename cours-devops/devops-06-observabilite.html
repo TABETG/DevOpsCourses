@@ -2,6 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<link rel="icon" data-site-icon type="image/svg+xml" href="favicon.svg">
+<link rel="icon" data-site-icon type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" data-site-icon href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cours DevOps — Niveau 6 : Observabilité</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -651,6 +654,8 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 <main>
 
 <!-- ===================== CHAPITRE 32 ===================== -->
+
+<figure class="fig zoomable" id="niveau-06-vue-ensemble-observabilite"><img src="images/niveau-06-vue-ensemble-observabilite.webp" alt="Fiche visuelle : Vue d'ensemble : observabilite" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vue d'ensemble : observabilite</figcaption></figure>
 <article id="c32">
 <div class="chaphead"><span class="chapnum">Chapitre 32</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Logs</h2>
@@ -735,6 +740,9 @@ sum by (app) (rate({namespace="crisisshield"} | json | level="ERROR" [5m]))     
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place les logs sur un cluster ? » Applications en JSON sur stdout avec trace_id, agent DaemonSet (Alloy ou OTel Collector), Loki sur S3 avec peu de labels, Grafana pour interroger, rétention par type, coût mesuré par service, données sensibles masquées à la source. Et le pont vers les métriques et traces : le trace_id qui permet de cliquer d'un log vers la trace.</div>
 
+
+<figure class="fig zoomable" id="niveau-06-logs-loki-elasticsearch-logql"><img src="images/niveau-06-logs-loki-elasticsearch-logql.webp" alt="Fiche visuelle : Logs loki elasticsearch logql" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Logs loki elasticsearch logql</figcaption></figure>
+<div class="gallery" id="gal-c32"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-06-logs-variante"><img src="images/niveau-06-logs-variante.webp" alt="Fiche visuelle : Logs" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Logs</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 32.1</span>
 <p>Une requête Loki sur 24 h met 2 minutes et échoue par manque de mémoire. Le développeur cherche <code>user_id=42</code>. Que s'est-il passé et comment faire ?</p>
 <details><summary>Corrigé</summary><div class="sol">La requête ne filtre par aucun label (ou par un label trop large) : Loki décompresse et lit tout. Ajouter les labels <code>namespace</code> et <code>app</code>, réduire la fenêtre, filtrer avec <code>|=</code> avant <code>| json</code>. Ne pas transformer <code>user_id</code> en label pour autant : c'est de la haute cardinalité. Si ce type de recherche est fréquent, c'est un cas pour Elasticsearch, ou pour une trace (les traces sont indexées par attribut).</div></details></div>
@@ -847,6 +855,9 @@ spec:
 
 <div class="entretien"><strong>En entretien</strong> — « Quelles métriques tu regardes en premier sur un service qui va mal ? » RED : le taux d'erreur et la latence p99 par route, puis la saturation (CPU vs request, mémoire vs limite, pool de connexions, lag Kafka), puis les événements Kubernetes (redémarrages, Pending). Précise : percentiles et pas moyennes, et le piège de la cardinalité.</div>
 
+
+<figure class="fig zoomable" id="niveau-06-prometheus-grafana-red-use"><img src="images/niveau-06-prometheus-grafana-red-use.webp" alt="Fiche visuelle : Prometheus grafana red use" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Prometheus grafana red use</figcaption></figure>
+<div class="gallery" id="gal-c33"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-06-metriques-prometheus-grafana-variante"><img src="images/niveau-06-metriques-prometheus-grafana-variante.webp" alt="Fiche visuelle : Metriques prometheus grafana" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Metriques prometheus grafana</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 33.1</span>
 <p>Pourquoi <code>avg(http_server_requests_seconds_sum / http_server_requests_seconds_count)</code> est-il une mauvaise mesure de latence, et que faut-il regarder ?</p>
 <details><summary>Corrigé</summary><div class="sol">La moyenne masque la distribution : 1 % de requêtes à 10 s disparaissent dans une moyenne à 200 ms alors qu'elles concernent les utilisateurs les plus actifs. Utiliser les histogrammes et <code>histogram_quantile</code> pour p95/p99, agrégés par <code>le</code>.</div></details></div>
@@ -954,6 +965,9 @@ public void escalate(@SpanAttribute("incident.id") String id, Priority to) {
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place le tracing distribué ? » OpenTelemetry comme standard, agent Java injecté par l'opérateur (zéro changement d'image), propagation W3C incluant Kafka, Collector en agent + gateway avec tail sampling, Tempo derrière Grafana, corrélation avec logs et métriques par trace_id et exemplars. Un exemple concret de ce que tu as trouvé avec une trace (le SMTP ci-dessus) vaut plus que la liste.</div>
 
+
+<figure class="fig zoomable" id="niveau-06-traces-opentelemetry-tempo-traceql"><img src="images/niveau-06-traces-opentelemetry-tempo-traceql.webp" alt="Fiche visuelle : Traces opentelemetry tempo traceql" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Traces opentelemetry tempo traceql</figcaption></figure>
+<div class="gallery" id="gal-c34"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-06-traces-opentelemetry-variante"><img src="images/niveau-06-traces-opentelemetry-variante.webp" alt="Fiche visuelle : Traces opentelemetry" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Traces opentelemetry</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 34.1</span>
 <p>Les traces s'arrêtent au moment où l'API publie dans Kafka ; le consommateur produit des traces séparées. Cause et correction ?</p>
 <details><summary>Corrigé</summary><div class="sol">Le contexte n'est pas propagé dans les en-têtes Kafka : le producteur ou le consommateur n'est pas instrumenté (agent OTel ou Spring Kafka avec observation activée, <code>spring.kafka.template.observation-enabled</code> et <code>listener.observation-enabled</code>). Avec l'agent, vérifier la version et que le consommateur crée bien un span enfant (mode <code>otel.instrumentation.kafka.experimental-span-attributes</code> selon le besoin).</div></details></div>
@@ -1068,6 +1082,9 @@ receivers:
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu conçois l'alerting ? » SLI centrés utilisateur, SLO négociés avec le produit, budget d'erreur, alertes de burn rate multi-fenêtres pour les pages, alertes de cause en ticket, Alertmanager avec regroupement et inhibition, runbook obligatoire, revue mensuelle du bruit. Et la phrase clé : « on alerte sur ce que l'utilisateur subit, pas sur ce que la machine fait ».</div>
 
+
+<figure class="fig zoomable" id="niveau-06-alerting-sli-slo-burn-rate"><img src="images/niveau-06-alerting-sli-slo-burn-rate.webp" alt="Fiche visuelle : Alerting sli SLO burn rate" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Alerting sli SLO burn rate</figcaption></figure>
+<div class="gallery" id="gal-c35"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-06-sli-slo-alerting-variante"><img src="images/niveau-06-sli-slo-alerting-variante.webp" alt="Fiche visuelle : Sli SLO alerting" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Sli SLO alerting</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 35.1</span>
 <p>SLO de disponibilité 99,95 % sur 30 jours. Un incident de 12 minutes a eu lieu le 3, un autre de 6 minutes le 15. Quel budget reste-t-il, et l'équipe peut-elle faire une migration risquée le 20 ?</p>
 <details><summary>Corrigé</summary><div class="sol">Budget : 0,05 % × 30 j × 24 h × 60 = 21,6 min. Consommé : 18 min, reste 3,6 min (17 %). Une migration risquée n'est pas raisonnable sans mesures compensatoires (fenêtre annoncée, blue/green avec rollback en secondes, réalisée hors pic) ; sinon on attend que la fenêtre glissante libère du budget.</div></details></div>
@@ -1171,6 +1188,9 @@ Le rollback de code ne suffit pas quand le schéma a changé ; la compatibilité
 
 <div class="entretien"><strong>En entretien</strong> — « Raconte un incident que tu as géré. » Structure : contexte, détection, ton rôle, la mitigation choisie et pourquoi, la cause, ce qui a changé après. Insiste sur la mitigation avant la compréhension et sur le post-mortem sans blâme avec des actions réellement fermées. Ta double casquette Scrum Master te donne la légitimité sur la partie organisationnelle : utilise-la.</div>
 
+
+<figure class="fig zoomable" id="niveau-06-astreinte-incidents-postmortems"><img src="images/niveau-06-astreinte-incidents-postmortems.webp" alt="Fiche visuelle : Astreinte incidents postmortems" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Astreinte incidents postmortems</figcaption></figure>
+<div class="gallery" id="gal-c36"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-06-stack-observabilite-crisisshield"><img src="images/niveau-06-stack-observabilite-crisisshield.webp" alt="Fiche visuelle : Stack observabilite crisisshield" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Stack observabilite crisisshield</figcaption></figure><figure class="fig zoomable" id="niveau-06-astreinte-incidents-postmortems-variante"><img src="images/niveau-06-astreinte-incidents-postmortems-variante.webp" alt="Fiche visuelle : Astreinte incidents postmortems" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Astreinte incidents postmortems</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 36.1</span>
 <p>Pendant un SEV1, le commandant d'incident, meilleur expert de la base de données, commence à investiguer lui-même. Trois conséquences prévisibles ?</p>
 <details><summary>Corrigé</summary><div class="sol">Plus personne ne coordonne (décisions non prises, doublons, pistes oubliées) ; la communication s'arrête (parties prenantes qui interrompent l'investigation) ; la chronologie n'est plus tenue. Le commandant délègue l'investigation, même à quelqu'un de moins expert, ou passe le commandement.</div></details></div>
@@ -1198,6 +1218,8 @@ Le rollback de code ne suffit pas quand le schéma a changé ; la compatibilité
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 6</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
+
+<figure class="fig zoomable" id="niveau-06-revision-entretien-observabilite"><img src="images/niveau-06-revision-entretien-observabilite.webp" alt="Fiche visuelle : Revision entretien observabilite" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Revision entretien observabilite</figcaption></figure>
 <ol class="quiz"><li>Monitoring contre observabilité ; les trois signaux et ce qui les relie.
 <details class="rep"><summary>Réponse attendue</summary><div class="sol">Monitoring : savoir si le système va bien selon des questions prévues (seuils). Observabilité : pouvoir répondre à des questions qu'on n'avait pas prévues à partir de ce que le système émet. Trois signaux : logs (événements), métriques (agrégats dans le temps), traces (parcours d'une requête) ; reliés par trace_id, exemplars et labels communs (service, namespace).</div></details></li>
 <li>Les six règles d'un bon log applicatif.

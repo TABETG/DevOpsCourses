@@ -2,6 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<link rel="icon" data-site-icon type="image/svg+xml" href="favicon.svg">
+<link rel="icon" data-site-icon type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" data-site-icon href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cours DevOps — Niveau 0 : Fondations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -680,6 +683,8 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 <main>
 
 <!-- ===================== CHAPITRE 1 ===================== -->
+
+<figure class="fig zoomable" id="niveau-00-vue-ensemble-fondations"><img src="images/niveau-00-vue-ensemble-fondations.webp" alt="Fiche visuelle : Vue d'ensemble : fondations" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vue d'ensemble : fondations</figcaption></figure>
 <article id="c1">
 <div class="chaphead"><span class="chapnum">Chapitre 1</span><span class="badge lvl-junior">Junior</span></div>
 <h2>Qu'est-ce que le DevOps</h2>
@@ -787,6 +792,8 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 
 <div class="entretien"><strong>En entretien</strong> — question classique : « C'est quoi le DevOps pour vous ? » Réponse structurée : un problème (silos Dev/Ops), une culture (responsabilité partagée), des pratiques (CI/CD, IaC, observabilité), une mesure (DORA). Évite de réciter une liste d'outils.</div>
 
+
+<figure class="fig zoomable" id="niveau-00-devops-calms-dora"><img src="images/niveau-00-devops-calms-dora.webp" alt="Fiche visuelle : Devops calms DORA" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Devops calms DORA</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 1.1 — Diagnostic</span>
 <p>Une équipe livre en production tous les trois mois, chaque mise en production mobilise six personnes un samedi, et 40 % des livraisons provoquent un retour arrière. Classe chaque symptôme selon la métrique DORA concernée et propose une première action par métrique.</p>
 <details><summary>Corrigé</summary><div class="sol">
@@ -973,6 +980,8 @@ lsof -p 1234           # fichiers ouverts par un processus</code></pre>
 
 <div class="entretien"><strong>En entretien</strong> — « Un serveur répond lentement, tu fais quoi ? » Ordre attendu : <code>uptime</code>/<code>top</code> (CPU ou wait ?), <code>free</code> (swap ?), <code>df</code> (disque plein ? inodes ?), <code>ss</code> (le service écoute-t-il ?), <code>journalctl</code> (erreurs ?). Montre une méthode, pas une liste.</div>
 
+
+<figure class="fig zoomable" id="niveau-00-linux-essentiel-diagnostic"><img src="images/niveau-00-linux-essentiel-diagnostic.webp" alt="Fiche visuelle : Linux essentiel diagnostic" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Linux essentiel diagnostic</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 2.1 — Permissions</span>
 <p>Un script <code>backup.sh</code> appartient à <code>root:ops</code> avec les droits <code>640</code>. L'utilisateur <code>bob</code>, membre du groupe <code>ops</code>, lance <code>./backup.sh</code> et obtient « Permission denied ». Pourquoi, et quelle commande corrige sans donner de droits aux autres utilisateurs ?</p>
 <details><summary>Corrigé</summary><div class="sol">640 = rw- r-- --- : le groupe peut lire mais pas exécuter. <code>chmod 750 backup.sh</code> (ou <code>chmod g+x</code>). Alternative sans changer les droits : <code>bash backup.sh</code>, car c'est bash qui lit le fichier.</div></details></div>
@@ -1154,6 +1163,8 @@ ufw enable</code></pre>
 
 <div class="entretien"><strong>En entretien</strong> — « L'application retourne 502, où cherches-tu ? » Réponse : le 502 est émis par le reverse proxy ; l'application derrière est injoignable ou répond mal. Vérifier que l'application écoute (<code>ss</code>), qu'elle est joignable depuis le proxy (<code>nc</code>, <code>curl</code> interne), ses logs, puis les logs du proxy. Bonus : distinguer 502 (refus/erreur) de 504 (timeout).</div>
 
+
+<figure class="fig zoomable" id="niveau-00-reseau-dns-tcp-tls-http"><img src="images/niveau-00-reseau-dns-tcp-tls-http.webp" alt="Fiche visuelle : Reseau dns tcp TLS http" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Reseau dns tcp TLS http</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 3.1 — Sous-réseaux</span>
 <p>Un VPC est en <code>10.20.0.0/16</code>. Tu dois créer trois sous-réseaux de 256 adresses chacun. Donne leurs CIDR et la plage d'hôtes utilisables du premier.</p>
 <details><summary>Corrigé</summary><div class="sol"><code>10.20.0.0/24</code>, <code>10.20.1.0/24</code>, <code>10.20.2.0/24</code>. Hôtes du premier : 10.20.0.1 à 10.20.0.254 (AWS réserve en plus les 4 premières et la dernière).</div></details></div>
@@ -1345,6 +1356,8 @@ def test_service_down_returns_ko(monkeypatch):
 
 <div class="entretien"><strong>En entretien</strong> — « Bash ou Python ? » Réponse attendue : Bash pour la glue entre commandes et les hooks courts ; Python dès qu'il y a de la logique, des données structurées ou un besoin de tests. Cite <code>set -euo pipefail</code> et <code>shellcheck</code> : c'est ce qui distingue quelqu'un qui a écrit des scripts de prod.</div>
 
+
+<figure class="fig zoomable" id="niveau-00-scripting-bash-python"><img src="images/niveau-00-scripting-bash-python.webp" alt="Fiche visuelle : Scripting bash python" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Scripting bash python</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 4.1 — Trouver le bug</span>
 <pre><code>#!/bin/bash
 for f in $(ls *.log); do
@@ -1495,6 +1508,8 @@ git bisect start ; git bisect bad ; git bisect good v1.2   # trouver le commit f
 
 <div class="entretien"><strong>En entretien</strong> — « Merge ou rebase ? » Ne pas répondre « ça dépend » sans suite. Dire : rebase sur ma branche locale pour rester à jour et garder un historique lisible ; merge (ou squash) pour intégrer dans <code>main</code> ; jamais de rebase sur une branche partagée ; revert et non reset sur <code>main</code>. Et cite le reflog comme filet de sécurité.</div>
 
+
+<figure class="fig zoomable" id="niveau-00-git-branches-rebase-reflog"><img src="images/niveau-00-git-branches-rebase-reflog.webp" alt="Fiche visuelle : Git branches rebase reflog" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Git branches rebase reflog</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 5.1 — Situations</span>
 <p>Pour chaque cas, donne la commande : a) tu as commité sur <code>main</code> au lieu d'une branche, rien n'est poussé ; b) un commit poussé sur <code>main</code> hier casse la prod ; c) tu as fait <code>git reset --hard</code> par erreur et perdu deux commits.</p>
 <details><summary>Corrigé</summary><div class="sol">a) <code>git switch -c feature/x</code> (la branche part du commit fautif) puis <code>git switch main && git reset --hard origin/main</code>. b) <code>git revert &lt;hash&gt;</code> puis push. c) <code>git reflog</code>, repérer le hash, <code>git reset --hard &lt;hash&gt;</code> ou <code>git cherry-pick</code>.</div></details></div>
@@ -1614,6 +1629,8 @@ EXPLAIN ANALYZE SELECT ... ;          -- lire le plan : Seq Scan sur une grosse 
 
 <div class="entretien"><strong>En entretien</strong> — « Qu'est-ce que tu demandes aux développeurs pour que leur application soit exploitable ? » Réponse : les 12 facteurs résumés (config par variables, stateless, logs stdout, arrêt propre), un healthcheck liveness/readiness, des métriques, des migrations de schéma versionnées et rétro-compatibles. Tu es Tech Lead Java : illustre avec Actuator et Flyway, ça crédibilise immédiatement.</div>
 
+
+<figure class="fig zoomable" id="niveau-00-donnees-architecture-12facteurs"><img src="images/niveau-00-donnees-architecture-12facteurs.webp" alt="Fiche visuelle : Donnees architecture 12facteurs" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Donnees architecture 12facteurs</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 6.1 — Choix de base</span>
 <p>Pour chaque besoin, propose une technologie et justifie en une phrase : a) panier d'achat avec expiration 30 min ; b) facturation ; c) logs applicatifs de 40 microservices ; d) événements de clics à 200 000/s.</p>
 <details><summary>Corrigé</summary><div class="sol">a) Redis avec TTL. b) PostgreSQL : ACID et intégrité non négociables. c) OpenSearch/Elasticsearch ou Loki : recherche et rétention. d) Kafka en ingestion, puis stockage analytique (ClickHouse, S3 + Athena).</div></details></div>
@@ -1652,6 +1669,8 @@ docker exec -it pg psql -U postgres</code></pre>
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 0</h2>
 <p>Réponds à voix haute, comme en entretien, sans support. Un point par réponse solide ; en dessous de 15 sur 20, reprends les chapitres concernés.</p>
+
+<figure class="fig zoomable" id="niveau-00-revision-questions-entretien"><img src="images/niveau-00-revision-questions-entretien.webp" alt="Fiche visuelle : Revision questions entretien" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Revision questions entretien</figcaption></figure>
 <ol class="quiz"><li>Explique le DevOps sans citer un seul outil.
 <details class="rep"><summary>Réponse attendue</summary><div class="sol">Une façon d'organiser le travail pour que ceux qui construisent et ceux qui exploitent partagent le même objectif : livrer souvent, en petits lots, avec une boucle de retour rapide, et mesurer (vitesse et stabilité) plutôt que discuter. Culture, pratiques, mesure ; les outils ne viennent qu'après.</div></details></li>
 <li>Les quatre métriques DORA historiques, la cinquième ajoutée en 2024, et pourquoi vitesse et stabilité ne s'opposent pas.

@@ -2,6 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<link rel="icon" data-site-icon type="image/svg+xml" href="favicon.svg">
+<link rel="icon" data-site-icon type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" data-site-icon href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cours DevOps — Niveau 3 : Infrastructure as Code</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -650,6 +653,8 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 <main>
 
 <!-- ===================== CHAPITRE 16 ===================== -->
+
+<figure class="fig zoomable" id="niveau-03-vue-ensemble-infrastructure-as-code"><img src="images/niveau-03-vue-ensemble-infrastructure-as-code.svg" alt="Fiche visuelle : Vue d'ensemble : infrastructure as code" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vue d'ensemble : infrastructure as code</figcaption></figure>
 <article id="c16">
 <div class="chaphead"><span class="chapnum">Chapitre 16</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Terraform / OpenTofu</h2>
@@ -895,6 +900,9 @@ terraform fmt -recursive -check ; terraform validate              # en pre-commi
 
 <div class="entretien"><strong>En entretien</strong> — « Deux personnes lancent <code>apply</code> en même temps, que se passe-t-il ? » Sans verrou : corruption du state. Avec backend S3 + verrou : la seconde attend ou échoue. Enchaîne : state distant chiffré versionné, un state par environnement et domaine, <code>apply</code> uniquement depuis la CI avec <code>resource_group</code>, plan revu en merge request. Puis « et si le state est corrompu ? » : restaurer la version S3 précédente, <code>refresh-only</code>, <code>import</code> au pire.</div>
 
+
+<figure class="fig zoomable" id="niveau-03-terraform-mission-state-reparation-debug"><img src="images/niveau-03-terraform-mission-state-reparation-debug.svg" alt="Fiche visuelle : Terraform mission state reparation debug" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Terraform mission state reparation debug</figcaption></figure>
+<div class="gallery" id="gal-c16"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-03-terraform-modele-hcl-modules-ci"><img src="images/niveau-03-terraform-modele-hcl-modules-ci.svg" alt="Fiche visuelle : Terraform modele hcl modules ci" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Terraform modele hcl modules ci</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 16.1</span>
 <p>Un <code>plan</code> annonce <code>-/+ aws_db_instance.main (forces replacement)</code> à cause d'un changement de nom. Que fais-tu avant tout <code>apply</code> ?</p>
 <details><summary>Corrigé</summary><div class="sol">Ne pas appliquer : le remplacement détruit la base. Vérifier si l'attribut est modifiable sans remplacement (souvent non pour <code>identifier</code>) ; sinon renoncer au renommage, ou passer par un snapshot et une restauration planifiée. Ajouter <code>prevent_destroy = true</code> pour que Terraform refuse ce type de plan à l'avenir.</div></details></div>
@@ -1152,6 +1160,8 @@ ssh_args           = -o ControlMaster=auto -o ControlPersist=60s</code></pre>
 
 <div class="entretien"><strong>En entretien</strong> — « Terraform ou Ansible ? » Ce n'est pas un choix : Terraform gère le cycle de vie des ressources avec un state ; Ansible applique une configuration sans state, de façon idempotente, en SSH. Ansible peut créer des VM, Terraform peut lancer des scripts, mais chacun est mauvais dans le rôle de l'autre. Ajoute : inventaire dynamique par tags pour les relier.</div>
 
+
+<figure class="fig zoomable" id="niveau-03-ansible-inventaire-playbook-roles-vault"><img src="images/niveau-03-ansible-inventaire-playbook-roles-vault.svg" alt="Fiche visuelle : Ansible inventaire playbook roles vault" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Ansible inventaire playbook roles vault</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 17.1</span>
 <p>Un playbook affiche <code>changed</code> à chaque exécution sur une tâche <code>shell: echo "x" >> /etc/motd</code>. Problème et correction ?</p>
 <details><summary>Corrigé</summary><div class="sol">Le module <code>shell</code> n'est pas idempotent : la ligne est ajoutée à chaque passage. Utiliser <code>ansible.builtin.lineinfile</code> (ou <code>copy</code>/<code>template</code>) ; si <code>shell</code> est indispensable, ajouter <code>creates:</code> ou <code>changed_when:</code>.</div></details></div>
@@ -1259,6 +1269,8 @@ end</code></pre>
 
 <div class="entretien"><strong>En entretien</strong> — « À quoi sert Packer si on a Docker ? » Docker fait tourner des applications ; Packer fabrique les machines qui font tourner Docker (nœuds Kubernetes, agents CI, bastions) et tout ce qui n'est pas conteneurisable. Golden image = démarrage rapide, conformité prouvable, patching par remplacement. Et la chaîne : Ansible dans Packer, AMI consommée par Terraform.</div>
 
+
+<figure class="fig zoomable" id="niveau-03-packer-vagrant-golden-images"><img src="images/niveau-03-packer-vagrant-golden-images.svg" alt="Fiche visuelle : Packer vagrant golden images" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Packer vagrant golden images</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 18.1</span>
 <p>Une faille critique dans OpenSSL est publiée. Compare le processus de correction pour 50 VM gérées « à la main + Ansible » et pour 50 VM issues d'une golden image Packer dans un autoscaling group.</p>
 <details><summary>Corrigé</summary><div class="sol">Ansible : un playbook <code>apt upgrade openssl</code> sur les 50, en rolling, avec risque de dérive si certaines échouent, et sans preuve d'état final uniforme. Packer : reconstruire l'image (pipeline), scanner, changer une variable Terraform, laisser l'ASG remplacer les instances progressivement ; toutes les machines sont strictement identiques et l'image est prouvée saine par le scan.</div></details></div>
@@ -1335,6 +1347,8 @@ crisisshield-config/     (dépôt de configuration : l'état désiré)
 
 <div class="entretien"><strong>En entretien</strong> — « C'est quoi GitOps, en quoi c'est différent de la CI/CD ? » Les quatre principes, puis la différence push/pull et ses trois bénéfices : sécurité (pas d'identifiants prod dans la CI), dérive corrigée en continu, rollback par revert. Cite ArgoCD et la séparation dépôt code / dépôt config. Ce chapitre prépare le niveau 5 où tu le pratiqueras.</div>
 
+
+<figure class="fig zoomable" id="niveau-03-immutabilite-drift-gitops"><img src="images/niveau-03-immutabilite-drift-gitops.svg" alt="Fiche visuelle : Immutabilite drift gitops" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Immutabilite drift gitops</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 19.1</span>
 <p>En pleine nuit, un ingénieur augmente à la main le nombre de réplicas d'un service de 3 à 10 pour absorber un pic. Le cluster est géré par ArgoCD avec auto-sync. Que se passe-t-il, et quelle aurait été la bonne procédure ?</p>
 <details><summary>Corrigé</summary><div class="sol">ArgoCD détecte l'écart (OutOfSync) et remet 3 réplicas dans les minutes qui suivent. Bonne procédure : une merge request d'urgence sur le dépôt de config (avec un processus d'approbation accéléré), ou un autoscaler horizontal qui rend ce réglage automatique. En dernier recours, désactiver temporairement l'auto-sync de l'application, ce qui est tracé.</div></details></div>
@@ -1361,6 +1375,8 @@ crisisshield-config/     (dépôt de configuration : l'état désiré)
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 3</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
+
+<figure class="fig zoomable" id="niveau-03-revision-express-iac"><img src="images/niveau-03-revision-express-iac.svg" alt="Fiche visuelle : Revision express infrastructure as code" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Revision express infrastructure as code</figcaption></figure>
 <ol class="quiz"><li>Déclaratif contre impératif ; provisioning contre configuration.
 <details class="rep"><summary>Réponse attendue</summary><div class="sol">Déclaratif : je décris l'état voulu, l'outil calcule les actions (Terraform, Kubernetes). Impératif : je liste les actions (script). Provisioning : créer l'infrastructure (VM, réseau, base) — Terraform. Configuration : installer et régler ce qu'il y a dedans — Ansible.</div></details></li>
 <li>Le triangle code / state / réalité, et ce que font <code>plan</code>, <code>apply</code>, <code>refresh</code>.

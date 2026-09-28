@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2050" viewBox="0 0 1600 2050">
+<rect width="100%" height="100%" fill="#F4F6FA"/>
+<rect width="1600" height="190" fill="#0F2F5A"/>
+<text x="70" y="72" font-size="48" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="start">Terraform — niveau mission</text>
+<text x="70" y="125" font-size="27" font-weight="500" fill="#D7E8FF" font-family="Inter,Arial,sans-serif" text-anchor="start">for_each, lifecycle, state repair, lecture du plan et débogage</text>
+<rect x="45" y="220" width="730" height="430" rx="24" fill="#F8FBFF" stroke="#D6E2F0" stroke-width="2"/>
+<rect x="45" y="220" width="730" height="64" rx="24" fill="#2563EB" opacity="0.12"/>
+<circle cx="87" cy="252" r="24" fill="#2563EB"/>
+<text x="87" y="261" font-size="26" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="middle">1</text>
+<text x="125" y="262" font-size="31" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">1. for_each plutôt que count</text>
+<text x="90" y="320" font-size="28" font-weight="800" fill="#DC2626" font-family="Inter,Arial,sans-serif" text-anchor="start">count</text>
+<text x="90" y="365" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Une liste indexée peut décaler les index lorsqu&#x27;on</text>
+<text x="90" y="396" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">supprime un élément : des ressources peuvent être</text>
+<text x="90" y="427" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">recréées inutilement.</text>
+<text x="90" y="500" font-size="28" font-weight="800" fill="#16A36A" font-family="Inter,Arial,sans-serif" text-anchor="start">for_each</text>
+<text x="90" y="545" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Une map ou un set donne une clé stable à chaque</text>
+<text x="90" y="576" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">ressource : ajouter ou supprimer une entrée ne</text>
+<text x="90" y="607" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">touche que cette entrée.</text>
+<rect x="825" y="220" width="730" height="430" rx="24" fill="#F8FBFF" stroke="#D6E2F0" stroke-width="2"/>
+<rect x="825" y="220" width="730" height="64" rx="24" fill="#F59E0B" opacity="0.12"/>
+<circle cx="867" cy="252" r="24" fill="#F59E0B"/>
+<text x="867" y="261" font-size="26" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="middle">2</text>
+<text x="905" y="262" font-size="31" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">2. lifecycle</text>
+<circle cx="870" cy="312" r="6" fill="#16A36A"/>
+<text x="888" y="320" font-size="23" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">prevent_destroy = true : protéger une base de</text>
+<text x="888" y="353" font-size="23" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">production.</text>
+<circle cx="870" cy="386" r="6" fill="#16A36A"/>
+<text x="888" y="394" font-size="23" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">create_before_destroy : remplacer sans coupure</text>
+<text x="888" y="427" font-size="23" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">derrière un load balancer.</text>
+<circle cx="870" cy="460" r="6" fill="#16A36A"/>
+<text x="888" y="468" font-size="23" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">ignore_changes : laisser un autoscaler ou un autre</text>
+<text x="888" y="501" font-size="23" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">contrôleur gérer un attribut.</text>
+<rect x="45" y="685" width="1510" height="520" rx="24" fill="#F8FBFF" stroke="#D6E2F0" stroke-width="2"/>
+<rect x="45" y="685" width="1510" height="64" rx="24" fill="#7C3AED" opacity="0.12"/>
+<circle cx="87" cy="717" r="24" fill="#7C3AED"/>
+<text x="87" y="726" font-size="26" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="middle">3</text>
+<text x="125" y="727" font-size="31" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">3. Réparer le state sans tout casser</text>
+<rect x="80" y="785" width="1435" height="444" rx="18" fill="#0D1117" stroke="#30363D" stroke-width="2"/>
+<text x="102" y="823" font-size="24" font-weight="700" fill="#C9D1D9" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">Boîte à outils de réparation</text>
+<text x="102" y="855" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform import aws_s3_bucket.logs crisisshield-logs</text>
+<text x="102" y="887" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform state mv aws_instance.old module.service.aws_instance.web</text>
+<text x="102" y="919" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform state rm aws_instance.temp</text>
+<text x="102" y="951" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform force-unlock LOCK_ID</text>
+<text x="102" y="983" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform apply -refresh-only</text>
+<text x="102" y="1015" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform plan -replace=aws_instance.web</text>
+<text x="102" y="1047" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start"></text>
+<text x="102" y="1079" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">moved {</text>
+<text x="102" y="1111" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">  from = aws_instance.old</text>
+<text x="102" y="1143" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">  to   = aws_instance.web</text>
+<text x="102" y="1175" font-size="22" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">}</text>
+<text x="90" y="1140" font-size="24" font-weight="800" fill="#A11B1B" font-family="Inter,Arial,sans-serif" text-anchor="start">Jamais éditer terraform.tfstate à la main. Faire une sauvegarde avant toute manipulation.</text>
+<rect x="45" y="1240" width="730" height="650" rx="24" fill="#F8FBFF" stroke="#D6E2F0" stroke-width="2"/>
+<rect x="45" y="1240" width="730" height="64" rx="24" fill="#16A36A" opacity="0.12"/>
+<circle cx="87" cy="1272" r="24" fill="#16A36A"/>
+<text x="87" y="1281" font-size="26" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="middle">4</text>
+<text x="125" y="1282" font-size="31" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">4. Lire un plan comme en production</text>
+<circle cx="90" cy="1337" r="6" fill="#16A36A"/>
+<text x="108" y="1345" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Lire le plan en entier avant d&#x27;agir.</text>
+<circle cx="90" cy="1376" r="6" fill="#16A36A"/>
+<text x="108" y="1384" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Chercher : # forces replacement et les lignes -/+.</text>
+<circle cx="90" cy="1415" r="6" fill="#16A36A"/>
+<text x="108" y="1423" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Comparer avec terraform state show ADRESSE.</text>
+<circle cx="90" cy="1454" r="6" fill="#16A36A"/>
+<text x="108" y="1462" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Ne jamais « appliquer pour voir » en production.</text>
+<circle cx="90" cy="1493" r="6" fill="#16A36A"/>
+<text x="108" y="1501" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Si la ressource est une base : arrêter,</text>
+<text x="108" y="1532" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">sauvegarder, comprendre.</text>
+<circle cx="90" cy="1563" r="6" fill="#16A36A"/>
+<text x="108" y="1571" font-size="22" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Plan sauvegardé + revue + fenêtre + rollback connu.</text>
+<rect x="80" y="1655" width="650" height="176" rx="18" fill="#0D1117" stroke="#30363D" stroke-width="2"/>
+<text x="102" y="1693" font-size="24" font-weight="700" fill="#C9D1D9" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">Séquence sûre</text>
+<text x="102" y="1725" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform plan -out=tfplan -lock-timeout=5m</text>
+<text x="102" y="1753" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform apply tfplan</text>
+<text x="102" y="1781" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform state pull &gt; backup.tfstate</text>
+<rect x="825" y="1240" width="730" height="650" rx="24" fill="#F8FBFF" stroke="#D6E2F0" stroke-width="2"/>
+<rect x="825" y="1240" width="730" height="64" rx="24" fill="#2563EB" opacity="0.12"/>
+<circle cx="867" cy="1272" r="24" fill="#2563EB"/>
+<text x="867" y="1281" font-size="26" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="middle">5</text>
+<text x="905" y="1282" font-size="31" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">5. Debug quotidien</text>
+<rect x="855" y="1345" width="670" height="324" rx="18" fill="#0D1117" stroke="#30363D" stroke-width="2"/>
+<text x="877" y="1383" font-size="24" font-weight="700" fill="#C9D1D9" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">Commandes utiles</text>
+<text x="877" y="1415" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform state list</text>
+<text x="877" y="1444" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform state show ADRESSE</text>
+<text x="877" y="1473" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform graph | dot -Tsvg &gt; graph.svg</text>
+<text x="877" y="1502" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">TF_LOG=DEBUG TF_LOG_PATH=tf.log terraform plan</text>
+<text x="877" y="1531" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform test</text>
+<text x="877" y="1560" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform providers lock   -platform=linux_amd64   -platform=windows_amd64</text>
+<text x="877" y="1589" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform fmt -recursive -check</text>
+<text x="877" y="1618" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">terraform validate</text>
+<rect x="0" y="1955" width="1600" height="95" fill="#0F2F5A"/><text x="70" y="2014" font-size="30" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="start">Un bon Terraform n&#x27;est pas celui qui sait APPLY vite, mais celui qui sait expliquer chaque changement du PLAN.</text>
+</svg>

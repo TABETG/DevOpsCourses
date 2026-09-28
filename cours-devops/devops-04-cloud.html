@@ -2,6 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<link rel="icon" data-site-icon type="image/svg+xml" href="favicon.svg">
+<link rel="icon" data-site-icon type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" data-site-icon href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cours DevOps — Niveau 4 : Cloud</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -651,6 +654,7 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 <main>
 
 <!-- ===================== CHAPITRE 20 ===================== -->
+<div class="gallery" id="gal-top-fiches"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-04-vue-ensemble-cloud-variante"><img src="images/niveau-04-vue-ensemble-cloud-variante.webp" alt="Fiche visuelle : Vue d'ensemble : cloud" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vue d'ensemble : cloud</figcaption></figure><figure class="fig zoomable" id="niveau-04-niveau-4-vue-d-ensemble-du-cloud-1-variante"><img src="images/niveau-04-niveau-4-vue-d-ensemble-du-cloud-1-variante.webp" alt="Fiche visuelle : Niveau 4 — vue d'ensemble du cloud (1)" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Niveau 4 — vue d'ensemble du cloud (1)</figcaption></figure><figure class="fig zoomable" id="niveau-04-niveau-4-vue-d-ensemble-du-cloud-2-variante"><img src="images/niveau-04-niveau-4-vue-d-ensemble-du-cloud-2-variante.webp" alt="Fiche visuelle : Niveau 4 — vue d'ensemble du cloud (2)" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Niveau 4 — vue d'ensemble du cloud (2)</figcaption></figure></div></div>
 <article id="c20">
 <div class="chaphead"><span class="chapnum">Chapitre 20</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Concepts du cloud</h2>
@@ -695,6 +699,9 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 
 <div class="entretien"><strong>En entretien</strong> — « Pourquoi le cloud plutôt qu'un datacenter ? » Éviter la réponse marketing. Dire : élasticité (payer l'usage, absorber les pics), vitesse (une base répliquée en 10 minutes), services managés qui remplacent des équipes, résilience géographique accessible. Puis les contreparties : coût à l'usage qui dérape sans FinOps, dépendance, compétences, et souveraineté des données (sujet sensible en France : SecNumCloud, S3NS, Bleu, OVHcloud).</div>
 
+
+<figure class="fig zoomable" id="niveau-04-chapitre-20-concepts-du-cloud"><img src="images/niveau-04-chapitre-20-concepts-du-cloud.webp" alt="Fiche visuelle : Chapitre 20 — Concepts du cloud" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Chapitre 20 — Concepts du cloud</figcaption></figure>
+<div class="gallery" id="gal-c20"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-04-concepts-cloud-responsabilite-comptes-variante"><img src="images/niveau-04-concepts-cloud-responsabilite-comptes-variante.webp" alt="Fiche visuelle : Concepts cloud responsabilite comptes" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Concepts cloud responsabilite comptes</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 20.1</span>
 <p>Une application interne, trafic stable, 200 utilisateurs, équipe de deux développeurs sans ops. Quel niveau de service et pourquoi pas les autres ?</p>
 <details><summary>Corrigé</summary><div class="sol">PaaS ou CaaS serverless (App Runner / Cloud Run / App Service) : zéro nœud à gérer, mise à l'échelle automatique, HTTPS fourni. IaaS demanderait de patcher des VM ; Kubernetes est disproportionné ; FaaS mal adapté à une application web classique avec état de session et connexions base persistantes.</div></details></div>
@@ -855,6 +862,9 @@ resource "aws_lambda_event_source_mapping" "queue" {
 
 <div class="entretien"><strong>En entretien</strong> — « Conçois l'infrastructure AWS d'une application web avec base de données. » Déroule : VPC 3 AZ, sous-réseaux publics/privés/données, ALB avec ACM et WAF dans le public, ECS Fargate (ou EKS) dans le privé avec rôle de tâche, RDS PostgreSQL Multi-AZ dans données avec Secrets Manager et rotation, S3 + CloudFront pour le front, endpoints VPC pour éviter la NAT, CloudWatch avec rétention, CloudTrail et GuardDuty, tout en Terraform avec state S3, déploiement par pipeline OIDC. Puis les coûts : NAT, transfert, dimensionnement RDS. C'est la question la plus fréquente ; répète-la jusqu'à la dérouler en trois minutes.</div>
 
+
+<figure class="fig zoomable" id="niveau-04-chapitre-21-aws-en-profondeur"><img src="images/niveau-04-chapitre-21-aws-en-profondeur.webp" alt="Fiche visuelle : Chapitre 21 — AWS en profondeur" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Chapitre 21 — AWS en profondeur</figcaption></figure>
+<div class="gallery" id="gal-c21"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-04-aws-iam-vpc-security-groups-endpoints-variante"><img src="images/niveau-04-aws-iam-vpc-security-groups-endpoints-variante.webp" alt="Fiche visuelle : AWS IAM vpc security groups endpoints" loading="lazy" decoding="async"><figcaption>Fiche visuelle : AWS IAM vpc security groups endpoints</figcaption></figure><figure class="fig zoomable" id="niveau-04-aws-ecs-lambda-rds-secrets-variante"><img src="images/niveau-04-aws-ecs-lambda-rds-secrets-variante.webp" alt="Fiche visuelle : AWS ecs lambda rds secrets" loading="lazy" decoding="async"><figcaption>Fiche visuelle : AWS ecs lambda rds secrets</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 21.1</span>
 <p>Une Lambda doit lire un objet dans le bucket <code>crisisshield-reports</code>. Elle échoue avec AccessDenied alors que sa politique d'identité autorise <code>s3:GetObject</code> sur <code>arn:aws:s3:::crisisshield-reports</code>. Pourquoi, et quelle autre cause possible ?</p>
 <details><summary>Corrigé</summary><div class="sol">L'ARN d'un objet est <code>arn:aws:s3:::crisisshield-reports/*</code> ; le bucket seul ne couvre pas les objets. Autre cause : la bucket policy ou une SCP refuse explicitement, ou l'objet est chiffré avec une clé KMS sur laquelle le rôle n'a pas <code>kms:Decrypt</code>.</div></details></div>
@@ -942,6 +952,9 @@ resource "google_cloud_run_v2_service" "api" {
 
 <div class="entretien"><strong>En entretien</strong> — On te demandera rarement de maîtriser les trois. On te demandera de ne pas être perdu. Sache dire : « je suis AWS d'abord ; sur Azure, je sais que la structure est tenant/abonnement/groupe de ressources avec Entra ID et identités managées, et que Container Apps et AKS remplacent ECS et EKS ». Pour un client Azure, cette phrase suffit à passer le premier filtre ; le reste s'apprend en deux semaines.</div>
 
+
+<figure class="fig zoomable" id="niveau-04-chapitre-22-azure-et-gcp-equivalences"><img src="images/niveau-04-chapitre-22-azure-et-gcp-equivalences.webp" alt="Fiche visuelle : Chapitre 22 — Azure et GCP : équivalences" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Chapitre 22 — Azure et GCP : équivalences</figcaption></figure>
+<div class="gallery" id="gal-c22"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-04-azure-gcp-equivalences-cloud-confiance-variante"><img src="images/niveau-04-azure-gcp-equivalences-cloud-confiance-variante.webp" alt="Fiche visuelle : Azure GCP equivalences cloud confiance" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Azure GCP equivalences cloud confiance</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 22.1</span>
 <p>Traduis en Azure puis en GCP : « ECS Fargate derrière un ALB, RDS PostgreSQL Multi-AZ, secrets dans Secrets Manager, rôle de tâche IAM, images dans ECR ».</p>
 <details><summary>Corrigé</summary><div class="sol">Azure : Container Apps (ou AKS) derrière Application Gateway, Azure Database for PostgreSQL Flexible Server avec haute disponibilité zone-redondante, Key Vault, identité managée, Container Registry. GCP : Cloud Run derrière Cloud Load Balancing, Cloud SQL PostgreSQL en haute disponibilité régionale, Secret Manager, compte de service, Artifact Registry.</div></details></div>
@@ -1004,6 +1017,9 @@ resource "google_cloud_run_v2_service" "api" {
 
 <div class="entretien"><strong>En entretien</strong> — « La facture AWS a augmenté de 40 % en six mois, que fais-tu ? » Méthode : Cost Explorer par service et par tag pour trouver le poste, vérifier si l'unité de coût a augmenté aussi (croissance saine ?), puis les leviers dans l'ordre : éteindre, redimensionner, architecture, engagement. Donne un exemple chiffré (NAT, logs). Termine par la mise en place du processus pour que ça ne se reproduise pas.</div>
 
+
+<figure class="fig zoomable" id="niveau-04-chapitre-23-finops"><img src="images/niveau-04-chapitre-23-finops.webp" alt="Fiche visuelle : Chapitre 23 — FinOps" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Chapitre 23 — FinOps</figcaption></figure>
+<div class="gallery" id="gal-c23"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-04-finops-couts-infracost-optimisation-variante"><img src="images/niveau-04-finops-couts-infracost-optimisation-variante.webp" alt="Fiche visuelle : Finops couts infracost optimisation" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Finops couts infracost optimisation</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 23.1</span>
 <p>Un environnement de staging (2 tâches Fargate, RDS <code>db.t4g.medium</code> Multi-AZ, NAT Gateway, ALB) coûte 380 €/mois. L'équipe l'utilise de 9 h à 19 h en semaine. Propose des économies chiffrées.</p>
 <details><summary>Corrigé</summary><div class="sol">Arrêt hors heures ouvrées : les heures utiles sont 50/168 ≈ 30 % de la semaine → environ −65 % sur Fargate et RDS (RDS peut être arrêtée 7 jours, redémarrage par planification). Multi-AZ inutile en staging : −50 % sur RDS. NAT remplacée par des endpoints VPC ou une instance NAT <code>t4g.nano</code> : −30 €/mois. Estimation : de 380 € à 100 à 130 €/mois.</div></details></div>
@@ -1061,6 +1077,9 @@ resource "google_cloud_run_v2_service" "api" {
 
 <div class="entretien"><strong>En entretien</strong> — « Faut-il être multi-cloud pour éviter la dépendance ? » Réponse d'expert : la dépendance réelle est dans les données et les compétences, pas dans les API. Le coût de la portabilité est certain, son bénéfice hypothétique. Préférer : bien choisir un fournisseur principal, garder les données dans des formats ouverts (PostgreSQL, Parquet, Kafka), documenter un plan de sortie, et n'utiliser un second cloud que pour un service qui le justifie. Mentionne la réglementation quand elle impose la réversibilité.</div>
 
+
+<figure class="fig zoomable" id="niveau-04-chapitre-24-multi-cloud-et-hybride"><img src="images/niveau-04-chapitre-24-multi-cloud-et-hybride.webp" alt="Fiche visuelle : Chapitre 24 — Multi-cloud et hybride" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Chapitre 24 — Multi-cloud et hybride</figcaption></figure>
+<div class="gallery" id="gal-c24"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-04-multicloud-hybride-reversibilite-variante"><img src="images/niveau-04-multicloud-hybride-reversibilite-variante.webp" alt="Fiche visuelle : Multicloud hybride reversibilite" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Multicloud hybride reversibilite</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 24.1</span>
 <p>Un client veut que CrisisShield tourne « sur AWS et Azure en actif-actif pour ne dépendre de personne ». Quelles questions poses-tu et que recommandes-tu ?</p>
 <details><summary>Corrigé</summary><div class="sol">Quelle contrainte réelle (réglementaire, contractuelle, peur) ? Quel RTO/RPO ? Quel budget ? La base de données en actif-actif entre deux clouds est le vrai problème (latence, cohérence, coût de sortie). Recommander : un cloud principal multi-région, données dans des formats ouverts, plan de réversibilité testé annuellement (restaurer sur l'autre cloud), et si l'actif-actif est imposé, une architecture qui l'accepte (partition des utilisateurs par cloud, pas de base partagée).</div></details></div>
@@ -1082,6 +1101,9 @@ resource "google_cloud_run_v2_service" "api" {
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 4</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
+
+<figure class="fig zoomable" id="niveau-04-revision-express-du-niveau-4"><img src="images/niveau-04-revision-express-du-niveau-4.webp" alt="Fiche visuelle : Révision express du niveau 4" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Révision express du niveau 4</figcaption></figure>
+<div class="gallery" id="gal-rev-fiches"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-04-revision-entretien-cloud-variante"><img src="images/niveau-04-revision-entretien-cloud-variante.webp" alt="Fiche visuelle : Revision entretien cloud" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Revision entretien cloud</figcaption></figure></div></div>
 <ol class="quiz"><li>IaaS, CaaS, PaaS, FaaS, SaaS : ce que tu gères dans chacun, et comment tu choisis.
 <details class="rep"><summary>Réponse attendue</summary><div class="sol">IaaS : tu gères OS et tout ce qu'il y a dessus (EC2). CaaS : tu gères les conteneurs, pas les hôtes (ECS/EKS managé). PaaS : tu livres du code, la plateforme fait le reste (App Runner, Beanstalk). FaaS : des fonctions par événement (Lambda). SaaS : tu utilises (RDS est un SaaS de base). Choix : plus on monte, moins on exploite et moins on contrôle ; on prend le plus haut niveau qui respecte les contraintes (langage, réseau, coût).</div></details></li>
 <li>Région, AZ, edge : pourquoi multi-AZ est le minimum et multi-région rarement justifié.

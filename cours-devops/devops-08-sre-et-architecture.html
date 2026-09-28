@@ -2,6 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<link rel="icon" data-site-icon type="image/svg+xml" href="favicon.svg">
+<link rel="icon" data-site-icon type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" data-site-icon href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cours DevOps — Niveau 8 : SRE et architecture</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -652,6 +655,9 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 <main>
 
 <!-- ===================== CHAPITRE 43 ===================== -->
+
+<figure class="fig zoomable" id="niveau-08-vue-ensemble-sre-architecture"><img src="images/niveau-08-vue-ensemble-sre-architecture.webp" alt="Fiche visuelle : Vue d'ensemble : SRE architecture" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vue d'ensemble : SRE architecture</figcaption></figure>
+<div class="gallery" id="gal-top-fiches"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-08-vue-ensemble-niveau-8-sre-architecture-variante"><img src="images/niveau-08-vue-ensemble-niveau-8-sre-architecture-variante.webp" alt="Fiche visuelle : Vue d'ensemble : niveau 8 SRE architecture" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vue d'ensemble : niveau 8 SRE architecture</figcaption></figure></div></div>
 <article id="c43">
 <div class="chaphead"><span class="chapnum">Chapitre 43</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Fiabilité, résilience, chaos engineering</h2>
@@ -870,6 +876,9 @@ spec:
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu rends une application résiliente ? » Les patrons dans l'ordre : timeouts partout, retries bornés et idempotents, circuit breaker, bulkheads, dégradation gracieuse avec feature flags ops, load shedding ; puis la preuve : chaos engineering avec hypothèses mesurées, en staging puis en prod. Donne l'exemple HikariCP : c'est concret et Java.</div>
 
+
+<figure class="fig zoomable" id="niveau-08-resilience-chaos-engineering"><img src="images/niveau-08-resilience-chaos-engineering.webp" alt="Fiche visuelle : Resilience chaos engineering" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Resilience chaos engineering</figcaption></figure>
+<div class="gallery" id="gal-c43"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-08-resilience-chaos-sre-variante"><img src="images/niveau-08-resilience-chaos-sre-variante.webp" alt="Fiche visuelle : Resilience chaos SRE" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Resilience chaos SRE</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 43.1</span>
 <p>Le front appelle l'API avec 3 retries, l'API appelle Notification avec 3 retries, le mesh ajoute 3 retries à chaque saut. Notification tombe. Combien d'appels reçoit-il par requête utilisateur, et que faut-il faire ?</p>
 <details><summary>Corrigé</summary><div class="sol">Jusqu'à 3 × 3 × 3 × 3 = 81 appels (retries du front, du mesh front→API, de l'API, du mesh API→Notification) : une « tempête de retries » qui achève le service. Règle : retry à un seul niveau (le plus proche de l'appel, ou le mesh, pas les deux), circuit breaker pour arrêter d'insister, et un budget de retries global (Envoy retry budget).</div></details></div>
@@ -967,6 +976,9 @@ Humains        : astreinte multi-personnes, documentation accessible hors des sy
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu conçois la reprise d'activité ? » Partir des RTO/RPO métier et du coût par stratégie, distinguer HA et PRA, dérouler les SPOF par couche (avec l'IdP et le monitoring, souvent oubliés), 3-2-1 immutable dans un compte isolé, test de restauration automatisé, bascule multi-région où les données sont le vrai sujet, et un PRA en code testé au moins annuellement. Avec DORA et NIS2 (niveau 7), les tests deviennent obligatoires : dis-le.</div>
 
+
+<figure class="fig zoomable" id="niveau-08-ha-pra-rto-rpo-backup"><img src="images/niveau-08-ha-pra-rto-rpo-backup.webp" alt="Fiche visuelle : Ha pra RTO et RPO backup" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Ha pra RTO et RPO backup</figcaption></figure>
+<div class="gallery" id="gal-c44"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-08-ha-pra-rto-rpo-backups-variante"><img src="images/niveau-08-ha-pra-rto-rpo-backups-variante.webp" alt="Fiche visuelle : Ha pra RTO et RPO backups" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Ha pra RTO et RPO backups</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 44.1</span>
 <p>Un ransomware chiffre les serveurs et supprime les sauvegardes accessibles avec les identifiants volés. Quelles mesures auraient préservé la capacité de restauration ?</p>
 <details><summary>Corrigé</summary><div class="sol">Sauvegardes dans un compte séparé avec accès en écriture seule depuis la prod (pas de suppression), Object Lock/Vault Lock (immutabilité), clés KMS du compte de sauvegarde, MFA delete, alerte sur toute tentative de suppression, et un test de restauration récent prouvant que ces sauvegardes fonctionnent. Plus l'IaC pour reconstruire l'infrastructure de zéro.</div></details></div>
@@ -1081,6 +1093,9 @@ Externe          : latence des dépendances (traces), DNS</code></pre>
 
 <div class="entretien"><strong>En entretien</strong> — « L'application est lente en production, comment tu procèdes ? » Méthode : SLO et symptôme précis (quelle route, quel percentile, depuis quand, corrélé à quel changement), traces pour localiser, USE sur la ressource, hypothèse, correction ciblée, mesure, test de charge en CI pour ne pas régresser. Cite HikariCP, pg_stat_statements, throttling CPU cgroup et JFR : c'est du vécu Java en conteneur.</div>
 
+
+<figure class="fig zoomable" id="niveau-08-performance-k6-use-capacity"><img src="images/niveau-08-performance-k6-use-capacity.webp" alt="Fiche visuelle : Performance k6 use capacity" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Performance k6 use capacity</figcaption></figure>
+<div class="gallery" id="gal-c45"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-08-performance-k6-capacity-variante"><img src="images/niveau-08-performance-k6-capacity-variante.webp" alt="Fiche visuelle : Performance k6 capacity" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Performance k6 capacity</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 45.1</span>
 <p>Sous charge, la latence p99 monte à 5 s, le CPU des Pods est à 40 %, HikariCP affiche 10 connexions actives sur 10 et 30 threads en attente. La base est à 15 % de CPU. Diagnostic ?</p>
 <details><summary>Corrigé</summary><div class="sol">Le pool est le goulot, pas la base ni le CPU : soit le pool est trop petit, soit les transactions gardent les connexions trop longtemps (appel externe dans une transaction, requêtes lentes par index manquant, transactions longues). Vérifier <code>pg_stat_statements</code> et <code>pg_stat_activity</code> (état idle in transaction), tracer la durée des transactions, réduire leur portée avant d'agrandir le pool (une base à 15 % supporte un pool plus grand, mais l'augmenter cache le vrai problème).</div></details></div>
@@ -1173,6 +1188,9 @@ public Incident create(CreateIncident cmd) {
 
 <div class="entretien"><strong>En entretien</strong> — « Monolithe ou microservices ? » Critères (taille d'équipe, frontières de domaine, besoins d'échelle différenciés, autonomie de déploiement), le monolithe modulaire comme défaut, l'extraction progressive par domaine. Puis la partie événementielle qui fait la différence : outbox transactionnel, idempotence, schémas compatibles, ordre par clé, dead-letter, lag. Tu as Kafka dans ta stack : raconte l'outbox avec Debezium.</div>
 
+
+<figure class="fig zoomable" id="niveau-08-architecture-microservices-kafka-outbox"><img src="images/niveau-08-architecture-microservices-kafka-outbox.webp" alt="Fiche visuelle : Architecture microservices kafka outbox" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Architecture microservices kafka outbox</figcaption></figure>
+<div class="gallery" id="gal-c46"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-08-microservices-kafka-outbox-saga-variante"><img src="images/niveau-08-microservices-kafka-outbox-saga-variante.webp" alt="Fiche visuelle : Microservices kafka outbox saga" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Microservices kafka outbox saga</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 46.1</span>
 <p>Le service Incidents écrit en base puis publie dans Kafka. Une fois par semaine, un incident existe sans que Notification ne l'ait su. Explique et corrige.</p>
 <details><summary>Corrigé</summary><div class="sol">Écriture en deux temps sans atomicité : la base a commité, la publication Kafka a échoué (timeout, broker indisponible, crash entre les deux). Outbox transactionnel : l'événement est dans la même transaction, un relais (Debezium) le publie de façon fiable avec reprise. Notification est idempotent car le relais peut republier.</div></details></div>
@@ -1256,6 +1274,9 @@ public Incident create(CreateIncident cmd) {
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu fais évoluer une base de 500 Go sans coupure ? » Migrations expand/contract avec <code>lock_timeout</code>, index concurrents, contraintes NOT VALID puis VALIDATE, mises à jour par lots, testées sur une copie ; réplication logique pour la version majeure ; PgBouncer pour les connexions ; partitionnement par date pour les grosses tables ; lecture répartie avec read-your-writes ; autovacuum surveillé. Et la règle « le code N-1 fonctionne toujours ».</div>
 
+
+<figure class="fig zoomable" id="niveau-08-postgresql-production-migrations-pgbouncer"><img src="images/niveau-08-postgresql-production-migrations-pgbouncer.webp" alt="Fiche visuelle : Postgresql production migrations pgbouncer" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Postgresql production migrations pgbouncer</figcaption></figure>
+<div class="gallery" id="gal-c47"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-08-postgresql-production-migrations-variante"><img src="images/niveau-08-postgresql-production-migrations-variante.webp" alt="Fiche visuelle : Postgresql production migrations" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Postgresql production migrations</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 47.1</span>
 <p>Une migration <code>ALTER TABLE incidents ADD CONSTRAINT fk_zone FOREIGN KEY (zone_id) REFERENCES zones(id)</code> bloque la production pendant 20 minutes. Pourquoi, et comment l'écrire ?</p>
 <details><summary>Corrigé</summary><div class="sol">L'ajout valide toutes les lignes existantes sous un verrou qui bloque les écritures, et si une autre transaction tient un verrou, la migration attend et met en file tout le monde derrière elle. Écrire <code>SET lock_timeout = '3s'; ALTER TABLE ... ADD CONSTRAINT fk_zone ... NOT VALID;</code> puis, séparément, <code>ALTER TABLE ... VALIDATE CONSTRAINT fk_zone;</code> qui ne prend qu'un verrou léger. Et un index sur <code>zone_id</code> créé <code>CONCURRENTLY</code> avant.</div></details></div>
@@ -1355,6 +1376,9 @@ spec:
 
 <div class="entretien"><strong>En entretien</strong> — « Qu'est-ce que le platform engineering et comment tu le mettrais en place ? » Le problème (charge cognitive, hétérogénéité), la plateforme comme produit avec des golden paths, l'abstraction au bon niveau (Crossplane, templates), le portail (Backstage) comme interface, la conformité par construction, la mesure (délai de création, adoption, DORA, satisfaction), et le démarrage : un golden path pour le cas le plus fréquent, avec une équipe pilote volontaire.</div>
 
+
+<figure class="fig zoomable" id="niveau-08-platform-engineering-backstage-crossplane"><img src="images/niveau-08-platform-engineering-backstage-crossplane.webp" alt="Fiche visuelle : Platform engineering backstage crossplane" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Platform engineering backstage crossplane</figcaption></figure>
+<div class="gallery" id="gal-c48"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-08-platform-engineering-backstage-crossplane-variante"><img src="images/niveau-08-platform-engineering-backstage-crossplane-variante.webp" alt="Fiche visuelle : Platform engineering backstage crossplane" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Platform engineering backstage crossplane</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 48.1</span>
 <p>Une équipe demande une exception : elle veut déployer avec ses propres scripts hors du golden path. Que réponds-tu ?</p>
 <details><summary>Corrigé</summary><div class="sol">Comprendre le besoin (le golden path a peut-être une lacune à corriger pour tous). Si l'exception est justifiée : possible, mais l'équipe assume ce que la plateforme n'apporte plus (conformité, observabilité, support) et cela se voit dans sa scorecard ; les politiques non négociables (signatures, réseau, secrets) restent appliquées par l'admission quel que soit le chemin. La plateforme n'est pas une cage, mais la sécurité de base n'est pas optionnelle.</div></details></div>
@@ -1383,6 +1407,8 @@ spec:
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 8</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
+
+<figure class="fig zoomable" id="niveau-08-revision-entretien-sre-architecture"><img src="images/niveau-08-revision-entretien-sre-architecture.webp" alt="Fiche visuelle : Revision entretien SRE architecture" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Revision entretien SRE architecture</figcaption></figure>
 <ol class="quiz"><li>SRE : la fiabilité comme objectif chiffré, le toil plafonné à 50 %, la revue de lancement comme contrat.
 <details class="rep"><summary>Réponse attendue</summary><div class="sol">La fiabilité est un objectif chiffré (SLO), pas un absolu : au-delà, on dépense le budget en changements. Le toil (travail manuel, répétitif, automatisable) est plafonné à 50 % du temps SRE, le reste va à l'ingénierie. La revue de lancement (PRR) est le contrat entre le produit et l'exploitation avant la prod.</div></details></li>
 <li>Tech Lead SRE : porter les SLO, arbitrer avec le produit, rendre l'astreinte soutenable, concevoir pour la panne, rendre compte ; un tiers ingénierie, un tiers exploitation, un tiers organisation.

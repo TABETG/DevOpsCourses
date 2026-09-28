@@ -320,6 +320,16 @@ def restyle(path, base, online):
     if 'family=Inter' not in s: s = s.replace('</head>', FONT + '</head>', 1)
     s = s.replace('</head>', f'<style id="site-design">{CSS}</style>\n</head>', 1)
     rel = path.relative_to(base); prefix = '../' * (len(rel.parts) - 1)
+    # icône du site (onglet du navigateur, écran d'accueil) ; en ligne : icône intégrée à la page
+    s = re.sub(r'<link[^>]*data-site-icon[^>]*>\n?', '', s)
+    if online:
+        import base64
+        ic = '<link rel="icon" data-site-icon type="image/svg+xml" href="data:image/svg+xml;base64,' + base64.b64encode((base / 'favicon.svg') if (base / 'favicon.svg').exists() else pathlib.Path(__file__).with_name('favicon.svg').read_bytes()).decode() + '">\n'
+    else:
+        ic = (f'<link rel="icon" data-site-icon type="image/svg+xml" href="{prefix}favicon.svg">\n'
+              f'<link rel="icon" data-site-icon type="image/png" sizes="32x32" href="{prefix}favicon-32.png">\n'
+              f'<link rel="apple-touch-icon" data-site-icon href="{prefix}apple-touch-icon.png">\n')
+    s = re.sub(r'(<meta charset="[^"]*"\s*/?>\n?)', lambda m: m.group(1) + ic, s, count=1) if re.search(r'<meta charset', s) else s.replace('<head>', '<head>\n' + ic, 1)
     top = nav_html(rel.name if prefix == '' else '#'); foot = FOOTER
     if prefix: top = top.replace('href="', f'href="{prefix}').replace(f'href="{prefix}#', 'href="#'); foot = foot.replace('href="', f'href="{prefix}').replace(f'href="{prefix}https', 'href="https')
     if online:

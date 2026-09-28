@@ -2,6 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<link rel="icon" data-site-icon type="image/svg+xml" href="favicon.svg">
+<link rel="icon" data-site-icon type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" data-site-icon href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cours DevOps — Niveau 7 : Sécurité DevSecOps</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -652,6 +655,9 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 <main>
 
 <!-- ===================== CHAPITRE 37 ===================== -->
+
+<figure class="fig zoomable" id="niveau-07-vue-ensemble-devsecops"><img src="images/niveau-07-vue-ensemble-devsecops.webp" alt="Fiche visuelle : Vue d'ensemble : devsecops" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vue d'ensemble : devsecops</figcaption></figure>
+<div class="gallery" id="gal-top-fiches"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-07-vue-ensemble-niveau-7-devsecops-variante"><img src="images/niveau-07-vue-ensemble-niveau-7-devsecops-variante.webp" alt="Fiche visuelle : Vue d'ensemble : niveau 7 devsecops" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vue d'ensemble : niveau 7 devsecops</figcaption></figure></div></div>
 <article id="c37">
 <div class="chaphead"><span class="chapnum">Chapitre 37</span><span class="badge lvl-senior">Senior</span></div>
 <h2>Shift-left : SAST, DAST, SCA, SBOM</h2>
@@ -764,6 +770,9 @@ http.headers(h -> h
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu mets en place le DevSecOps dans une équipe ? » Modélisation des menaces sur les fonctionnalités sensibles, analyses au bon endroit avec bruit maîtrisé et agrégation (DefectDojo), SBOM à chaque build, priorisation EPSS/KEV/reachability avec SLA de correction, DAST authentifié sur staging, mesure et SAMM. Et la posture : la sécurité au service des développeurs, avec correction proposée, pas un mur.</div>
 
+
+<figure class="fig zoomable" id="niveau-07-shift-left-sast-dast-sca-sbom"><img src="images/niveau-07-shift-left-sast-dast-sca-sbom.webp" alt="Fiche visuelle : Shift left sast dast sca sbom" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Shift left sast dast sca sbom</figcaption></figure>
+<div class="gallery" id="gal-c37"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-07-shift-left-sast-dast-sca-sbom-variante"><img src="images/niveau-07-shift-left-sast-dast-sca-sbom-variante.webp" alt="Fiche visuelle : Shift left sast dast sca sbom" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Shift left sast dast sca sbom</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 37.1</span>
 <p>Trivy remonte CVE-2024-XXXX critique (CVSS 9.8) dans une bibliothèque de parsing XML incluse transitivement par un client SOAP jamais utilisé par CrisisShield. Que fais-tu et que documentes-tu ?</p>
 <details><summary>Corrigé</summary><div class="sol">Vérifier la reachability (la classe vulnérable est-elle chargée ? le client SOAP est-il appelé ?), l'EPSS et KEV. Si non atteignable : VEX « not_affected » avec justification, exclusion documentée avec date de revue, et idéalement retirer la dépendance inutile (la vraie correction). Si le retrait est simple, le faire : moins de code, moins de CVE.</div></details></div>
@@ -899,6 +908,9 @@ v write -f transit/keys/crisisshield/rotate     # nouvelle version ; rewrap poss
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu gères les secrets ? » Hiérarchie : d'abord supprimer le secret (identité : rôle IAM, Workload Identity, OIDC en CI), ensuite secret dynamique de courte durée (Vault database, PKI), ensuite secret statique centralisé avec rotation (Vault KV, Secrets Manager) livré par External Secrets, et en dernier le chiffrement dans Git (Sealed Secrets, SOPS) avec ses limites énoncées. KMS et enveloppe pour les données. Ta PKI/HSM est ton point fort : place-la.</div>
 
+
+<figure class="fig zoomable" id="niveau-07-vault-kms-secrets-pki-transit"><img src="images/niveau-07-vault-kms-secrets-pki-transit.webp" alt="Fiche visuelle : Vault kms secrets PKI transit" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vault kms secrets PKI transit</figcaption></figure>
+<div class="gallery" id="gal-c38"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-07-vault-kms-secrets-variante"><img src="images/niveau-07-vault-kms-secrets-variante.webp" alt="Fiche visuelle : Vault kms secrets" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vault kms secrets</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 38.1</span>
 <p>Le mot de passe PostgreSQL de production a fuité dans un log. Décris la réponse avec et sans Vault database.</p>
 <details><summary>Corrigé</summary><div class="sol">Sans : changer le mot de passe en base, le mettre à jour partout (gestionnaire, pipelines, applications), redéployer, vérifier qu'aucun composant ne l'a encore, journaliser l'incident ; heures de travail et risque d'oubli. Avec : le secret fuité est un bail d'une heure lié à une instance ; le révoquer (<code>vault lease revoke</code>), l'application en obtient un nouveau ; rechercher d'où vient le log ; minutes. Dans les deux cas : corriger la fuite dans les logs (chapitre 32).</div></details></div>
@@ -1045,6 +1057,9 @@ spec:
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu sécurises un cluster Kubernetes ? » Les 4 C, puis par couche : API OIDC + RBAC + audit, etcd chiffré, nœuds immuables sans SSH, NetworkPolicies default-deny, PSA restricted, Kyverno pour registre/signatures/ressources, Falco à l'exécution, kube-bench et Trivy Operator pour mesurer. Précise la méthode : audit → warn → enforce, jamais enforce d'un coup sur un cluster existant.</div>
 
+
+<figure class="fig zoomable" id="niveau-07-kubernetes-psa-kyverno-falco"><img src="images/niveau-07-kubernetes-psa-kyverno-falco.webp" alt="Fiche visuelle : Kubernetes psa kyverno falco" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Kubernetes psa kyverno falco</figcaption></figure>
+<div class="gallery" id="gal-c39"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-07-securite-kubernetes-psa-kyverno-falco-variante"><img src="images/niveau-07-securite-kubernetes-psa-kyverno-falco-variante.webp" alt="Fiche visuelle : Securite kubernetes psa kyverno falco" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Securite kubernetes psa kyverno falco</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 39.1</span>
 <p>Un Pod avec <code>hostPath: /</code> monté et <code>privileged: true</code> est déployé par un développeur dans son namespace. Que peut-il faire, et quels trois mécanismes auraient dû l'empêcher ?</p>
 <details><summary>Corrigé</summary><div class="sol">Il est root sur le nœud : lecture de tous les secrets des autres Pods du nœud, du token du kubelet, pivot vers l'API et le cloud (IMDS). PSA baseline (ou restricted) sur le namespace, une politique Kyverno interdisant hostPath et privileged, et un RBAC qui ne lui permet pas de créer des Pods hors d'un Deployment revu en GitOps. Falco aurait au moins alerté.</div></details></div>
@@ -1140,6 +1155,9 @@ cosign sign-blob --yes --bundle release.bundle release.tar.gz</code></pre>
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu sécurises la supply chain ? » Trois questions (provenance, intégrité, contenu), puis la chaîne : dépendances épinglées et proxifiées, build unique sur runner éphémère sans Docker socket, SBOM et provenance SLSA attestés, signature keyless Sigstore, vérification à l'admission (Kyverno), déploiement par digest, actions et images de job par SHA. Cite XZ et tj-actions pour montrer que tu suis l'actualité, et le CRA pour le côté conformité.</div>
 
+
+<figure class="fig zoomable" id="niveau-07-supply-chain-sigstore-slsa"><img src="images/niveau-07-supply-chain-sigstore-slsa.webp" alt="Fiche visuelle : Supply chain sigstore slsa" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Supply chain sigstore slsa</figcaption></figure>
+<div class="gallery" id="gal-c40"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-07-supply-chain-sigstore-slsa-variante"><img src="images/niveau-07-supply-chain-sigstore-slsa-variante.webp" alt="Fiche visuelle : Supply chain sigstore slsa" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Supply chain sigstore slsa</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 40.1</span>
 <p>Une image est signée par Cosign et la signature est valide. Un attaquant contrôle le compte GitLab du développeur principal. L'image en production peut-elle être malveillante ? Qu'est-ce qui l'empêche, ou non ?</p>
 <details><summary>Corrigé</summary><div class="sol">Si la signature est keyless liée au job de la branche main, l'attaquant doit faire passer du code malveillant par la MR (revue par un autre, CODEOWNERS), sur un runner qu'il ne contrôle pas (SLSA L3). Si la signature est faite avec une clé accessible au développeur, il signe ce qu'il veut. La signature prouve l'origine, pas l'innocuité ; la protection vient de la revue, de l'isolation du build, des analyses et de la séparation des rôles.</div></details></div>
@@ -1401,6 +1419,9 @@ keytool -importkeystore -srckeystore srv.p12 -srcstoretype PKCS12 -destkeystore 
 
 <div class="entretien"><strong>En entretien</strong> — C'est ton terrain. Construis une réponse type « zero trust appliqué à une plateforme Kubernetes » : IdP unique avec MFA phishing-resistant, SPIFFE pour les charges, mTLS par mesh, PKI Vault avec certificats de 24 h renouvelés par cert-manager, racine hors ligne dans un HSM, accès admin JIT enregistré, NetworkPolicies, secrets dynamiques, tout journalisé dans un SIEM. Puis OAuth 2.1 côté application : PKCE, jetons courts, BFF. Prépare une anecdote PKI/HSM réelle.</div>
 
+
+<figure class="fig zoomable" id="niveau-07-zero-trust-pki-oauth-oidc"><img src="images/niveau-07-zero-trust-pki-oauth-oidc.webp" alt="Fiche visuelle : Zero trust PKI oauth OIDC" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Zero trust PKI oauth OIDC</figcaption></figure>
+<div class="gallery" id="gal-c41"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-07-zero-trust-pki-oauth-iam-variante"><img src="images/niveau-07-zero-trust-pki-oauth-iam-variante.webp" alt="Fiche visuelle : Zero trust PKI oauth IAM" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Zero trust PKI oauth IAM</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 41.1</span>
 <p>Le certificat de la CA intermédiaire expire dans 30 jours. Déroule la rotation sans interruption des services qui présentent des certificats émis par elle.</p>
 <details><summary>Corrigé</summary><div class="sol">Émettre une nouvelle intermédiaire signée par la racine (cérémonie), la publier dans Vault comme nouvel émetteur par défaut tout en gardant l'ancienne active, distribuer la chaîne mise à jour dans les trust stores (les deux intermédiaires sont signées par la même racine : les clients qui font confiance à la racine acceptent les deux), laisser les certificats courts se renouveler naturellement sur la nouvelle (24 h), vérifier qu'aucun certificat n'est plus émis par l'ancienne, la retirer après expiration du dernier certificat émis. Alerte à 30 jours = c'est déjà tard ; planifier à 90.</div></details></div>
@@ -1509,6 +1530,9 @@ ISO 27001 A.8.25-A.8.29 Développement sécurisé
 
 <div class="entretien"><strong>En entretien</strong> — « Un client veut l'ISO 27001, que fais-tu ? » Gap analysis sur l'annexe A, priorisation par risque, traduction des contrôles techniques en code et en preuves automatiques (donner trois exemples concrets comme ci-dessus), procédures écrites, préparation d'audit avec échantillons. Ajoute NIS2 et DORA pour montrer que tu connais le calendrier réglementaire européen, et le RGPD comme obligation transverse. Ton profil Tech Lead + Scrum Master donne la crédibilité organisationnelle que ces missions exigent.</div>
 
+
+<figure class="fig zoomable" id="niveau-07-conformite-iso-soc2-rgpd-preuves"><img src="images/niveau-07-conformite-iso-soc2-rgpd-preuves.webp" alt="Fiche visuelle : Conformite iso soc2 rgpd preuves" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Conformite iso soc2 rgpd preuves</figcaption></figure>
+<div class="gallery" id="gal-c42"><strong>Autres fiches visuelles — clique pour agrandir</strong><div class="g-items"><figure class="fig zoomable" id="niveau-07-conformite-iso27001-rgpd-preuves-variante"><img src="images/niveau-07-conformite-iso27001-rgpd-preuves-variante.webp" alt="Fiche visuelle : Conformite iso27001 rgpd preuves" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Conformite iso27001 rgpd preuves</figcaption></figure></div></div>
 <div class="exo"><span class="tag">Exercice 42.1</span>
 <p>L'auditeur demande : « prouvez que tous les changements en production des six derniers mois ont été revus et approuvés par une personne différente de l'auteur ». Quelles preuves produis-tu, en combien de temps ?</p>
 <details><summary>Corrigé</summary><div class="sol">Avec GitOps et branches protégées : export via l'API GitLab des MR fusionnées sur <code>main</code> du dépôt de config avec auteur, approbateur, date ; règle de protection (approbation requise, auteur exclu) et son historique de configuration ; log ArgoCD des synchronisations liées aux commits ; audit log de l'API Kubernetes montrant qu'aucune modification n'est venue d'un humain. Un script, quelques minutes. Sans GitOps : impossible à prouver de façon fiable.</div></details></div>
@@ -1536,6 +1560,8 @@ ISO 27001 A.8.25-A.8.29 Développement sécurisé
 <section class="rev" id="rev">
 <h2 style="border-top:none;padding-top:0;margin-top:0">Révision du niveau 7</h2>
 <p>Réponds à voix haute, sans support, comme en entretien. En dessous de trois quarts de réponses solides, reprends les chapitres concernés avant de passer au niveau suivant.</p>
+
+<figure class="fig zoomable" id="niveau-07-revision-entretien-devsecops"><img src="images/niveau-07-revision-entretien-devsecops.webp" alt="Fiche visuelle : Revision entretien devsecops" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Revision entretien devsecops</figcaption></figure>
 <ol class="quiz"><li>STRIDE sur une fonctionnalité de ton choix, en deux minutes.
 <details class="rep"><summary>Réponse attendue</summary><div class="sol">Prendre la fonctionnalité (ex. export CSV), tracer les flux et frontières de confiance, puis par lettre : Spoofing (jeton forgé), Tampering (paramètre modifié), Repudiation (pas de journal), Information disclosure (PII dans l'export), Denial of service (export massif), Elevation (rôle dans le corps). Pour chaque menace : contrôle et test.</div></details></li>
 <li>La cartographie des analyses de sécurité : étape, outil, mode bloquant ou non.

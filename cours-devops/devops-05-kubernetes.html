@@ -2,6 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<link rel="icon" data-site-icon type="image/svg+xml" href="favicon.svg">
+<link rel="icon" data-site-icon type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" data-site-icon href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cours DevOps — Niveau 5 : Kubernetes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -653,6 +656,8 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 <main>
 
 <!-- ===================== CHAPITRE 25 ===================== -->
+
+<figure class="fig zoomable" id="niveau-05-vue-ensemble-kubernetes"><img src="images/niveau-05-vue-ensemble-kubernetes.webp" alt="Fiche visuelle : Vue d'ensemble : kubernetes" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Vue d'ensemble : kubernetes</figcaption></figure>
 <article id="c25">
 <div class="chaphead"><span class="chapnum">Chapitre 25</span><span class="badge lvl-confirme">Confirmé</span></div>
 <h2>Architecture, et OpenShift</h2>
@@ -855,6 +860,8 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 <div class="entretien"><strong>En entretien</strong> — « Que se passe-t-il quand tu fais <code>kubectl apply</code> d'un Deployment ? » kubectl envoie l'objet à l'API ; authN, authZ (RBAC), admission (validation, mutation) ; écriture dans etcd ; le contrôleur Deployment crée un ReplicaSet ; le contrôleur ReplicaSet crée les Pods ; le scheduler leur assigne un nœud ; le kubelet du nœud demande au runtime de lancer les conteneurs et au CNI de connecter le Pod ; les Endpoints du Service se mettent à jour. Cette chaîne vaut un entretien à elle seule.</div>
 
+
+<figure class="fig zoomable" id="niveau-05-architecture-diagnostic-openshift"><img src="images/niveau-05-architecture-diagnostic-openshift.webp" alt="Fiche visuelle : Architecture diagnostic openshift" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Architecture diagnostic openshift</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 25.1</span>
 <p>Le control plane tombe entièrement pendant 10 minutes. Les applications qui tournaient continuent-elles de servir du trafic ? Que ne peut-on plus faire ?</p>
 <details><summary>Corrigé</summary><div class="sol">Oui : les kubelets et les conteneurs continuent, kube-proxy garde ses règles. On ne peut plus déployer, mettre à l'échelle, replanifier un Pod mort, ni obtenir de nouveaux Endpoints ; les Pods qui crashent ne sont pas remplacés tant que le control plane est absent (le kubelet redémarre les conteneurs localement, mais un nœud perdu n'est pas compensé).</div></details></div>
@@ -1168,6 +1175,8 @@ spec:
 
 <div class="entretien"><strong>En entretien</strong> — « Différence entre liveness et readiness ? » et « pourquoi ne pas mettre de limite CPU ? » sont les deux questions les plus posées. Liveness : « suis-je vivant ? » → redémarrage, sans dépendance externe. Readiness : « puis-je servir ? » → retrait du trafic. CPU : la limite provoque du throttling CFS qui augmente la latence même sous la limite moyenne ; les requests suffisent à partager équitablement ; la limite mémoire, elle, est obligatoire.</div>
 
+
+<figure class="fig zoomable" id="niveau-05-objets-deployment-service-ingress-networkpolicy"><img src="images/niveau-05-objets-deployment-service-ingress-networkpolicy.webp" alt="Fiche visuelle : Objets deployment service ingress networkpolicy" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Objets deployment service ingress networkpolicy</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 26.1</span>
 <p>Pendant chaque rolling update, les utilisateurs voient quelques erreurs 502 pendant une à deux secondes. Le Deployment a readiness et liveness correctes. Cause et correction ?</p>
 <details><summary>Corrigé</summary><div class="sol">À l'arrêt d'un Pod, le retrait de ses Endpoints et le SIGTERM sont envoyés en parallèle ; l'ingress peut encore router vers un Pod déjà en train de s'arrêter. Ajouter <code>preStop: sleep 5</code> (le Pod reste vivant mais est retiré des Endpoints), et vérifier que l'application arrête d'accepter les connexions proprement (<code>server.shutdown=graceful</code>, <code>terminationGracePeriodSeconds</code> suffisant).</div></details></div>
@@ -1290,6 +1299,8 @@ spec: {schedule: "0 0 2 * * *", cluster: {name: db}}</code></pre>
 
 <div class="entretien"><strong>En entretien</strong> — « Mettrais-tu une base de données dans Kubernetes ? » Ne pas répondre oui ou non. Expliquer StatefulSet et ses limites, le rôle d'un opérateur (CloudNativePG), les critères (managé par défaut, opérateur si beaucoup de bases, portabilité, sur site), et la condition non négociable : sauvegardes vers stockage objet et restauration testée.</div>
 
+
+<figure class="fig zoomable" id="niveau-05-stockage-statefulsets-operators"><img src="images/niveau-05-stockage-statefulsets-operators.webp" alt="Fiche visuelle : Stockage statefulsets operators" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Stockage statefulsets operators</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 27.1</span>
 <p>Un StatefulSet à 3 réplicas est supprimé par erreur. Les données sont-elles perdues ? Et si c'était le namespace ?</p>
 <details><summary>Corrigé</summary><div class="sol">Supprimer un StatefulSet ne supprime pas ses PVC (par défaut, <code>persistentVolumeClaimRetentionPolicy</code>) : recréer le StatefulSet réattache les volumes. Supprimer le namespace supprime les PVC ; les PV sont conservés seulement si la StorageClass a <code>reclaimPolicy: Retain</code>, sinon les disques sont détruits. D'où : Retain pour les données, et sauvegardes hors cluster.</div></details></div>
@@ -1437,6 +1448,8 @@ commonLabels: {environment: prod}</code></pre>
 
 <div class="entretien"><strong>En entretien</strong> — « Helm ou Kustomize ? » Réponse : les deux, à des places différentes ; Helm pour les composants tiers et un produit à distribuer, Kustomize pour les overlays d'environnement de nos applications. Cite <code>helm diff</code>, <code>--atomic</code>, le checksum de ConfigMap et les hooks de migration : ce sont les détails qui distinguent l'usage réel.</div>
 
+
+<figure class="fig zoomable" id="niveau-05-helm-kustomize"><img src="images/niveau-05-helm-kustomize.webp" alt="Fiche visuelle : Helm kustomize" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Helm kustomize</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 28.1</span>
 <p>Après <code>helm upgrade</code> avec une nouvelle valeur dans le ConfigMap, les Pods n'ont pas redémarré et utilisent l'ancienne configuration. Pourquoi et comment corriger dans le chart ?</p>
 <details><summary>Corrigé</summary><div class="sol">Le Deployment n'a pas changé (même template de Pod), donc pas de rolling. Ajouter l'annotation <code>checksum/config</code> calculée sur le ConfigMap rendu : toute modification change le hash, donc le template, donc déclenche un rolling.</div></details></div>
@@ -1552,6 +1565,8 @@ spec:
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu gères les secrets avec ArgoCD ? » Ne jamais dire « en base64 dans Git ». External Secrets Operator vers le gestionnaire du cloud ou Vault par défaut ; Sealed Secrets pour un cluster autonome ; SOPS pour du multi-outil. Puis : ArgoCD lui-même en SSO, AppProjects restrictifs, deploy tokens en lecture seule.</div>
 
+
+<figure class="fig zoomable" id="niveau-05-gitops-argocd-flux-external-secrets"><img src="images/niveau-05-gitops-argocd-flux-external-secrets.webp" alt="Fiche visuelle : Gitops argocd flux external secrets" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Gitops argocd flux external secrets</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 29.1</span>
 <p>Une Application ArgoCD reste <code>OutOfSync</code> en permanence juste après chaque synchronisation, sur le champ <code>replicas</code> d'un Deployment. Cause et correction ?</p>
 <details><summary>Corrigé</summary><div class="sol">Un HPA modifie <code>replicas</code>, Git dit autre chose, ArgoCD voit une différence (et avec selfHeal, il y aurait un ping-pong). Soit retirer <code>replicas</code> du manifest, soit <code>ignoreDifferences</code> sur ce champ.</div></details></div>
@@ -1655,6 +1670,8 @@ spec:
 
 <div class="entretien"><strong>En entretien</strong> — « Vous utiliseriez un service mesh ? » Réponse : d'abord ce qu'il apporte (mTLS, autorisation par identité, résilience, métriques sans code), puis le coût (complexité, ressources), puis le critère (nombre de services, exigence de chiffrement, équipe capable de l'opérer), et la tendance sans sidecar. Le lien avec ton profil : le mesh est l'outil qui implémente le zero trust réseau ; sache le dire.</div>
 
+
+<figure class="fig zoomable" id="niveau-05-service-mesh-istio-mtls"><img src="images/niveau-05-service-mesh-istio-mtls.webp" alt="Fiche visuelle : Service mesh istio mtls" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Service mesh istio mtls</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 30.1</span>
 <p>Avec mTLS STRICT activé, un Job de migration Flyway lancé par Helm échoue à joindre la base. Pourquoi ?</p>
 <details><summary>Corrigé</summary><div class="sol">Le Job n'a pas de sidecar (souvent exclu, ou le sidecar n'est pas prêt quand le conteneur démarre, ou le Job se termine sans arrêter le sidecar). En mode sidecar : annoter pour l'injection et gérer la fin (<code>holdApplicationUntilProxyStarts</code>, appel à <code>/quitquitquit</code>), ou exclure le Job du mTLS strict avec une PeerAuthentication en PERMISSIVE ciblée. En mode ambient, le problème disparaît.</div></details></div>
@@ -1761,6 +1778,8 @@ priorityClassName: critical</code></pre>
 
 <div class="entretien"><strong>En entretien</strong> — « Comment tu dimensionnes et fais évoluer un cluster ? » Requests calibrées avec VPA en mode recommandation, HPA sur métrique métier plutôt que CPU seul, KEDA pour les workers, Karpenter avec Spot et consolidation pour les nœuds, PDB et topologie pour que tout cela n'abîme pas la disponibilité, quotas par équipe, et OpenCost pour rendre le coût visible. Cite le piège de la JVM et du scaling mémoire.</div>
 
+
+<figure class="fig zoomable" id="niveau-05-autoscaling-scheduling-karpenter"><img src="images/niveau-05-autoscaling-scheduling-karpenter.webp" alt="Fiche visuelle : Autoscaling scheduling karpenter" loading="lazy" decoding="async"><figcaption>Fiche visuelle : Autoscaling scheduling karpenter</figcaption></figure>
 <div class="exo"><span class="tag">Exercice 31.1</span>
 <p>Le HPA oscille : 3 → 8 → 3 → 8 réplicas toutes les cinq minutes. Causes et corrections ?</p>
 <details><summary>Corrigé</summary><div class="sol">Fenêtre de stabilisation de descente trop courte, requests CPU trop faibles (le % monte vite), pics de démarrage des nouveaux Pods (JVM) comptés dans la moyenne. Corriger : <code>scaleDown.stabilizationWindowSeconds: 300</code> et politique par paliers, requests réalistes, startup probe, scaler sur une métrique de trafic plutôt que le CPU.</div></details></div>
