@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2050" viewBox="0 0 1600 2050">
+<rect width="100%" height="100%" fill="#F4F6FA"/>
+<rect width="1600" height="190" fill="#0F2F5A"/>
+<text x="70" y="72" font-size="48" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="start">Chapitre 17 — Ansible</text>
+<text x="70" y="125" font-size="27" font-weight="500" fill="#D7E8FF" font-family="Inter,Arial,sans-serif" text-anchor="start">Inventaire → Playbook → Rôles → Vault → Rolling deployment</text>
+<rect x="45" y="220" width="1510" height="300" rx="24" fill="#F8FBFF" stroke="#D6E2F0" stroke-width="2"/>
+<rect x="45" y="220" width="1510" height="64" rx="24" fill="#16A36A" opacity="0.12"/>
+<circle cx="87" cy="252" r="24" fill="#16A36A"/>
+<text x="87" y="261" font-size="26" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="middle">1</text>
+<text x="125" y="262" font-size="31" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">1. Le modèle Ansible</text>
+<rect x="90" y="330" width="300" height="100" rx="16" fill="#EAF7F0" stroke="#93D4B5" stroke-width="2"/>
+<text x="240" y="365" font-size="26" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="middle">Contrôleur</text>
+<text x="240" y="405" font-size="20" font-weight="600" fill="#55606F" font-family="Inter,Arial,sans-serif" text-anchor="middle">ansible-playbook</text>
+<text x="415" y="390" font-size="35" font-weight="800" fill="#8AA0B8" font-family="Inter,Arial,sans-serif" text-anchor="start">→</text>
+<rect x="460" y="330" width="300" height="100" rx="16" fill="#EAF7F0" stroke="#93D4B5" stroke-width="2"/>
+<text x="610" y="365" font-size="26" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="middle">SSH</text>
+<text x="610" y="405" font-size="20" font-weight="600" fill="#55606F" font-family="Inter,Arial,sans-serif" text-anchor="middle">sans agent</text>
+<text x="785" y="390" font-size="35" font-weight="800" fill="#8AA0B8" font-family="Inter,Arial,sans-serif" text-anchor="start">→</text>
+<rect x="830" y="330" width="300" height="100" rx="16" fill="#EAF7F0" stroke="#93D4B5" stroke-width="2"/>
+<text x="980" y="365" font-size="26" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="middle">Cibles</text>
+<text x="980" y="405" font-size="20" font-weight="600" fill="#55606F" font-family="Inter,Arial,sans-serif" text-anchor="middle">web1 • web2 • db1</text>
+<text x="1155" y="390" font-size="35" font-weight="800" fill="#8AA0B8" font-family="Inter,Arial,sans-serif" text-anchor="start">→</text>
+<rect x="1200" y="330" width="300" height="100" rx="16" fill="#EAF7F0" stroke="#93D4B5" stroke-width="2"/>
+<text x="1350" y="365" font-size="26" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="middle">État désiré</text>
+<text x="1350" y="405" font-size="20" font-weight="600" fill="#55606F" font-family="Inter,Arial,sans-serif" text-anchor="middle">idempotent</text>
+<rect x="45" y="555" width="730" height="600" rx="24" fill="#F8FBFF" stroke="#D6E2F0" stroke-width="2"/>
+<rect x="45" y="555" width="730" height="64" rx="24" fill="#2563EB" opacity="0.12"/>
+<circle cx="87" cy="587" r="24" fill="#2563EB"/>
+<text x="87" y="596" font-size="26" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="middle">2</text>
+<text x="125" y="597" font-size="31" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">2. Inventaire</text>
+<rect x="75" y="650" width="670" height="527" rx="18" fill="#0D1117" stroke="#30363D" stroke-width="2"/>
+<text x="97" y="688" font-size="24" font-weight="700" fill="#C9D1D9" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">inventory/prod.ini</text>
+<text x="97" y="720" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start"># inventory/prod.ini</text>
+<text x="97" y="749" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">[web]</text>
+<text x="97" y="778" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">web1 ansible_host=10.20.1.10</text>
+<text x="97" y="807" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">web2 ansible_host=10.20.1.11</text>
+<text x="97" y="836" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start"></text>
+<text x="97" y="865" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">[db]</text>
+<text x="97" y="894" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">db1 ansible_host=10.20.2.10</text>
+<text x="97" y="923" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start"></text>
+<text x="97" y="952" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">[prod:children]</text>
+<text x="97" y="981" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">web</text>
+<text x="97" y="1010" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">db</text>
+<text x="97" y="1039" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start"></text>
+<text x="97" y="1068" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">[prod:vars]</text>
+<text x="97" y="1097" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">ansible_user=deploy</text>
+<text x="97" y="1126" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">environment_name=prod</text>
+<text x="80" y="1110" font-size="22" font-weight="700" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">Cloud : inventaire dynamique par tags → Terraform tague, Ansible cible.</text>
+<rect x="825" y="555" width="730" height="600" rx="24" fill="#F8FBFF" stroke="#D6E2F0" stroke-width="2"/>
+<rect x="825" y="555" width="730" height="64" rx="24" fill="#F59E0B" opacity="0.12"/>
+<circle cx="867" cy="587" r="24" fill="#F59E0B"/>
+<text x="867" y="596" font-size="26" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="middle">3</text>
+<text x="905" y="597" font-size="31" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">3. Playbook</text>
+<rect x="855" y="650" width="670" height="556" rx="18" fill="#0D1117" stroke="#30363D" stroke-width="2"/>
+<text x="877" y="688" font-size="24" font-weight="700" fill="#C9D1D9" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">playbooks/web.yml</text>
+<text x="877" y="720" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">- name: Configurer les serveurs web</text>
+<text x="877" y="749" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">  hosts: web</text>
+<text x="877" y="778" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">  become: true</text>
+<text x="877" y="807" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">  vars:</text>
+<text x="877" y="836" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">    app_port: 8080</text>
+<text x="877" y="865" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">  roles:</text>
+<text x="877" y="894" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">    - common</text>
+<text x="877" y="923" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">    - docker</text>
+<text x="877" y="952" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">    - crisisshield_api</text>
+<text x="877" y="981" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start"></text>
+<text x="877" y="1010" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">  tasks:</text>
+<text x="877" y="1039" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">    - name: Déployer nginx</text>
+<text x="877" y="1068" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">      ansible.builtin.template:</text>
+<text x="877" y="1097" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">        src: nginx.conf.j2</text>
+<text x="877" y="1126" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">        dest: /etc/nginx/nginx.conf</text>
+<text x="877" y="1155" font-size="19" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">      notify: reload nginx</text>
+<rect x="45" y="1190" width="730" height="640" rx="24" fill="#F8FBFF" stroke="#D6E2F0" stroke-width="2"/>
+<rect x="45" y="1190" width="730" height="64" rx="24" fill="#7C3AED" opacity="0.12"/>
+<circle cx="87" cy="1222" r="24" fill="#7C3AED"/>
+<text x="87" y="1231" font-size="26" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="middle">4</text>
+<text x="125" y="1232" font-size="31" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">4. Rôles + qualité</text>
+<rect x="75" y="1285" width="670" height="371" rx="18" fill="#0D1117" stroke="#30363D" stroke-width="2"/>
+<text x="97" y="1323" font-size="24" font-weight="700" fill="#C9D1D9" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">Structure d&#x27;un rôle</text>
+<text x="97" y="1355" font-size="21" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">roles/crisisshield_api/</text>
+<text x="97" y="1386" font-size="21" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">├── defaults/main.yml</text>
+<text x="97" y="1417" font-size="21" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">├── vars/main.yml</text>
+<text x="97" y="1448" font-size="21" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">├── tasks/main.yml</text>
+<text x="97" y="1479" font-size="21" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">├── handlers/main.yml</text>
+<text x="97" y="1510" font-size="21" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">├── templates/</text>
+<text x="97" y="1541" font-size="21" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">├── files/</text>
+<text x="97" y="1572" font-size="21" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">├── meta/main.yml</text>
+<text x="97" y="1603" font-size="21" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">└── molecule/default/</text>
+<circle cx="85" cy="1637" r="6" fill="#16A36A"/>
+<text x="103" y="1645" font-size="21" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Un rôle = une responsabilité.</text>
+<circle cx="85" cy="1675" r="6" fill="#16A36A"/>
+<text x="103" y="1683" font-size="21" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Molecule vérifie le rôle et l&#x27;idempotence.</text>
+<circle cx="85" cy="1713" r="6" fill="#16A36A"/>
+<text x="103" y="1721" font-size="21" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">ansible-lint dans la CI.</text>
+<circle cx="85" cy="1751" r="6" fill="#16A36A"/>
+<text x="103" y="1759" font-size="21" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">Handlers : déclenchés seulement si une tâche a</text>
+<text x="103" y="1789" font-size="21" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">changed.</text>
+<rect x="825" y="1190" width="730" height="640" rx="24" fill="#F8FBFF" stroke="#D6E2F0" stroke-width="2"/>
+<rect x="825" y="1190" width="730" height="64" rx="24" fill="#DC2626" opacity="0.12"/>
+<circle cx="867" cy="1222" r="24" fill="#DC2626"/>
+<text x="867" y="1231" font-size="26" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="middle">5</text>
+<text x="905" y="1232" font-size="31" font-weight="800" fill="#0F2F5A" font-family="Inter,Arial,sans-serif" text-anchor="start">5. Secrets, rolling et performance</text>
+<rect x="855" y="1285" width="670" height="232" rx="18" fill="#0D1117" stroke="#30363D" stroke-width="2"/>
+<text x="877" y="1323" font-size="24" font-weight="700" fill="#C9D1D9" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">Ansible Vault</text>
+<text x="877" y="1355" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">ansible-vault create vault/prod.yml</text>
+<text x="877" y="1383" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">ansible-vault edit vault/prod.yml</text>
+<text x="877" y="1411" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">ansible-vault encrypt_string &#x27;S3cret&#x27; --name db_password</text>
+<text x="877" y="1439" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start"></text>
+<text x="877" y="1467" font-size="18" font-weight="500" fill="#E6EDF3" font-family="JetBrains Mono,Consolas,monospace" text-anchor="start">ansible-playbook ...   --vault-password-file ~/.vault_pass</text>
+<circle cx="865" cy="1539" r="6" fill="#16A36A"/>
+<text x="883" y="1547" font-size="21" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">La clé du Vault n&#x27;est jamais commitée.</text>
+<circle cx="865" cy="1577" r="6" fill="#16A36A"/>
+<text x="883" y="1585" font-size="21" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">serial: 25% pour un déploiement rolling.</text>
+<circle cx="865" cy="1615" r="6" fill="#16A36A"/>
+<text x="883" y="1623" font-size="21" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">block / rescue pour revenir en arrière.</text>
+<circle cx="865" cy="1653" r="6" fill="#16A36A"/>
+<text x="883" y="1661" font-size="21" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">forks=50 + pipelining + cache de facts pour</text>
+<text x="883" y="1691" font-size="21" font-weight="500" fill="#172033" font-family="Inter,Arial,sans-serif" text-anchor="start">accélérer.</text>
+<rect x="0" y="1955" width="1600" height="95" fill="#0F2F5A"/><text x="70" y="2014" font-size="30" font-weight="800" fill="#fff" font-family="Inter,Arial,sans-serif" text-anchor="start">Terraform CRÉE • Ansible CONFIGURE • Docker/Kubernetes EXÉCUTENT.</text>
+</svg>
