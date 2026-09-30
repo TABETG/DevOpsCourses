@@ -42,7 +42,7 @@ def page(fn, title, lead, meta, chapters, other):
         for st, txt, code in c['sec']:
             b += f'<h3>{H.escape(st)}</h3>' + (txt if txt.lstrip().startswith(('<div', '<ul', '<ol', '<table')) else (f'<p>{txt}</p>' if txt else ''))
             if code:
-                if code.lstrip().startswith(('<div class="tablewrap">', '<ul class=', '<ol class=', '<div class="couches">', '<p class="liste-titre">')): b += code + '\n'      # HTML fourni tel quel
+                if code.lstrip().startswith(('<div class="tablewrap">', '<ul class=', '<ol class=', '<div class="couches">', '<p class="liste-titre">', '<div class="qr">')): b += code + '\n'      # HTML fourni tel quel
                 elif code.startswith('texte::'): b += f'<pre class="texte"><code class="texte">{H.escape(code[7:])}</code></pre>\n'   # texte brut, sans coloration
                 else: b += f'<pre><code>{H.escape(code)}</code></pre>\n'
         for k, (q, s) in enumerate(c['exo'], 1):

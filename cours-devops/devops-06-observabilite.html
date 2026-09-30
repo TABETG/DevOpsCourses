@@ -627,6 +627,21 @@ section.partie h2{color:#fff!important;border:0!important;margin:.5rem 0 .3rem!i
 section.partie p{color:#E2E8F0;margin:0}
 .toc li.toc-partie span{display:block;margin:.9rem .35rem .3rem;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .toc li.toc-partie:first-child span{margin-top:.2rem}
+
+/* --- questions et réponses d'entretien --- */
+.qr{display:grid;gap:.5rem;margin:.5rem 0 1.3rem}
+.qr-outils{display:flex;flex-wrap:wrap;gap:.5rem;margin:.2rem 0 .6rem}
+.qr-outils button{border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);border-radius:8px;padding:.35rem .7rem;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer}
+.qr details.qr-item{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:0 .9rem;border-left:4px solid var(--accent)}
+.qr details.qr-item summary{cursor:pointer;font-weight:700;list-style:none;color:var(--ink)!important;display:flex!important;align-items:flex-start;gap:.6rem;border:0!important;border-radius:0!important;background:transparent!important;padding:.65rem 0!important;font-size:1rem!important;min-height:0!important;width:100%}
+.qr details.qr-item summary:hover{background:transparent!important;color:var(--accent-ink)!important}
+.qr details.qr-item summary::-webkit-details-marker{display:none}
+.qr details.qr-item summary::before{content:"Q"!important;flex:none;display:inline-grid!important;place-items:center;width:1.5rem!important;height:1.5rem!important;border:0!important;border-radius:6px!important;background:var(--accent)!important;color:#fff!important;font-size:.75rem;font-weight:800;transform:none!important;margin-top:.05rem}
+.qr details.qr-item[open] summary::before{content:"R"!important;background:#15803D!important}
+.qr details.qr-item[open] summary{border-bottom:1px dashed var(--line)}
+.qr .rep{padding:.65rem 0 .8rem;line-height:1.55;color:var(--ink)}
+section.partie a{color:#BFDBFE;text-decoration:underline;text-underline-offset:2px}
+section.partie a:hover{color:#fff}
 /* --- accessibilité : contrastes clair et sombre --- */
 .badge-niche,.tag-niche,.niche .tag{color:#0B6670}
 [data-theme="dark"] .badge-niche,[data-theme="dark"] .tag-niche,[data-theme="dark"] .niche .tag,[data-theme="dark"] .legend .badge-niche{color:#5EEAD4}
