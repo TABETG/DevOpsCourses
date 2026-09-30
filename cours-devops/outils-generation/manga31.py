@@ -51,4 +51,5 @@ STRIPS = [
    "s'arrêter et contrôler", ["-halt-on-error", "contrôle des pages et du texte", "lecture du .log", "alerte si échec"],
    "Une compilation qui continue malgré les erreurs publie des documents incomplets : on s'arrête à la première erreur, et on contrôle chaque PDF produit.")),
 ]
-if __name__ == '__main__': apply(sys.argv[1], STRIPS)
+REMPLACEES_PAR_FICHES = True   # à la demande : les chapitres LaTeX utilisent les fiches visuelles à la place des planches
+if __name__ == '__main__' and not REMPLACEES_PAR_FICHES: apply(sys.argv[1], STRIPS)

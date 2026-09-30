@@ -124,5 +124,5 @@ ENT = [
    "Ne poser aucune question donne l'image de quelqu'un qui ne se projette pas : quatre questions préparées sur leur contexte."),
 ]
 TOUS = RUN + PERL + LATEX + U + DATA + TCL + LANG + GD + EXPLOIT + ENT
-STRIPS = [(f"c{i}", svg) for i, svg in enumerate(TOUS, 1)]
+STRIPS = [(f"c{i}", svg) for i, svg in enumerate(TOUS, 1) if not (16 <= i <= 24)]   # chapitres LaTeX : fiches visuelles à la place des planches
 if __name__ == '__main__': apply(sys.argv[1], STRIPS)
