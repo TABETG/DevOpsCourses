@@ -1,6 +1,6 @@
 # DevOps Courses
 
-Parcours DevOps de zéro à expert (10 niveaux, 54 chapitres, 54 travaux pratiques corrigés) et 18 cours complémentaires, en HTML statique. Fil conducteur : la plateforme CrisisShield. Tout se lance en Docker.
+Parcours DevOps de zéro à expert (10 niveaux, 54 chapitres, 54 travaux pratiques corrigés) et 21 cours complémentaires, en HTML statique. Fil conducteur : la plateforme CrisisShield. Tout se lance en Docker.
 
 Ouvrir `index.html` dans un navigateur : aucune installation, aucun serveur.
 
@@ -11,13 +11,15 @@ Ouvrir `index.html` dans un navigateur : aucune installation, aucun serveur.
 | `index.html` | Accueil : commencer, parcours DevOps, développement, cloud et données, savoir-être, réviser, méthode |
 | `devops-00-…` à `devops-09-…` | Les dix niveaux du parcours (fondations → expert et leadership) |
 | `devops-10-aide-memoire.html`, `devops-11-fiches-entretien.html` | Révision : commandes, bonnes pratiques, questions d'entretien |
-| `cours-01` à `cours-03` | Frontend : React, Angular, Vue |
-| `cours-11` à `cours-14` | Backend : Struts/Hibernate/JSP, Kotlin, Java PKI et signature électronique, Node.js/NestJS/GraphQL (à venir) |
+| `cours-01` à `cours-04` | Frontend : React, Angular, Vue, JavaScript (à venir) |
+| `cours-11` à `cours-14` | Backend : Struts/Hibernate/JSP, Kotlin, Java PKI et signature électronique, Node.js/NestJS/GraphQL (à venir), Java (à venir) |
 | `cours-21`, `cours-22` | Architecture : Microservices, Kafka (à venir) |
 | `cours-31`, `cours-32` | Intelligence artificielle : IA agentique, Assistants IA (Copilot, Claude, ChatGPT) |
 | `cours-41` à `cours-43` | Sécurité : Keycloak et IAM, Sécurité AWS (à venir), Gouvernance et conformité (à venir) |
 | `cours-51` à `cours-54` | Cloud : Cloud AWS/Azure/GCP, AWS, Alibaba Cloud, Kubernetes CKA/CKS (à venir) |
-| `cours-61` à `cours-63` | Données et exploitation : Data Platform, Talend, Monitoring |
+| `cours-61` à `cours-65` | Données et exploitation : Data Platform, Talend, Monitoring, SQL (à venir), MongoDB (à venir) |
+| `cours-71` à `cours-75` | Langages, scripts et documents : Perl, Python (à venir), TCL (à venir), Linux et Shell (à venir), LaTeX |
+| `cours-81` | Missions : préparer une mission de Tech Lead Java en MCO et MCS |
 | `cours-91`, `cours-92` | Savoir-être : progression de zéro à expert, situations et attitudes |
 
 Le premier chiffre du numéro de cours indique le groupe : on ajoute un cours sans renuméroter les autres.

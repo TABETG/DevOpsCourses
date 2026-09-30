@@ -29,16 +29,22 @@ def page(fn, title, lead, meta, chapters, other):
 <p>{meta}</p>
 </div></header>
 <div class="single with-toc">
-<div class="toc"><strong>Sommaire</strong><ol>{''.join(f'<li><a href="#c{i}">{H.escape(c["t"])}</a></li>' for i, c in enumerate(chapters, 1))}</ol></div>
+<div class="toc"><strong>Sommaire</strong><ol>{''.join((f'<li class="toc-partie"><span>Partie {c["partie"][0]} · {H.escape(c["partie"][1])}</span></li>' if c.get('partie') else '') + f'<li><a href="#c{i}">{H.escape(c["t"])}</a></li>' for i, c in enumerate(chapters, 1))}</ol></div>
 '''
     for i, c in enumerate(chapters, 1):
         cls, lbl = LVL[c['l']]
+        if c.get('partie'):
+            n, tp, rp = c['partie']
+            b += f'<section class="partie" id="partie-{n}"><span class="partie-num">Partie {n}</span><h2>{H.escape(tp)}</h2><p>{rp}</p></section>\n'
         b += f'<article id="c{i}"><div class="chaphead"><span class="chapnum">Chapitre {i}</span><span class="badge {cls}">{lbl}</span></div><h2>{H.escape(c["t"])}</h2>\n'
         b += f'<div class="bref"><span class="tag">En 30 secondes</span><ol>{"".join(f"<li>{x}</li>" for x in c["bref"])}</ol></div>\n'
         b += f'<div class="objectifs"><strong>À la fin de ce chapitre, tu sauras</strong><ul>{"".join(f"<li>{x}</li>" for x in c["obj"])}</ul></div>\n'
         for st, txt, code in c['sec']:
-            b += f'<h3>{H.escape(st)}</h3><p>{txt}</p>'
-            if code: b += f'<pre><code>{H.escape(code)}</code></pre>\n'
+            b += f'<h3>{H.escape(st)}</h3>' + (txt if txt.lstrip().startswith(('<div', '<ul', '<ol', '<table')) else (f'<p>{txt}</p>' if txt else ''))
+            if code:
+                if code.lstrip().startswith(('<div class="tablewrap">', '<ul class=', '<ol class=', '<div class="couches">', '<p class="liste-titre">')): b += code + '\n'      # HTML fourni tel quel
+                elif code.startswith('texte::'): b += f'<pre class="texte"><code class="texte">{H.escape(code[7:])}</code></pre>\n'   # texte brut, sans coloration
+                else: b += f'<pre><code>{H.escape(code)}</code></pre>\n'
         for k, (q, s) in enumerate(c['exo'], 1):
             b += f'<div class="exo"><span class="tag">Exercice {i}.{k}</span><p>{q}</p><details><summary>Corrigé</summary><div class="sol">{s}</div></details></div>\n'
         tt, steps, sol = c['tp']

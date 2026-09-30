@@ -627,6 +627,46 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 [data-theme="dark"] .pipe .col .cnt{color:#C3CCDA}
 :is(.single,article) :is(p,li,td,dd,span,.entretien,.niche,.note) a:not([class]){color:#1D4ED8}
 [data-theme="dark"] :is(.single,article) :is(p,li,td,dd,span,.entretien,.niche,.note) a:not([class]){color:#93C5FD}
+
+/* --- terminer toute la page d'un coup --- */
+.finpage{margin:.9rem 0 0;padding:.75rem .8rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:.85rem}
+.finpage button{width:100%;border:1px solid #15803D;border-radius:8px;padding:.55rem .7rem;font-weight:700;cursor:pointer;background:#15803D;color:#fff;font:inherit;font-weight:700}
+.finpage.fait button{background:var(--paper);color:var(--ink);border-color:var(--line-strong)}
+.finpage .etat{display:block;margin-top:.45rem;color:var(--muted);line-height:1.35}
+.finpage.fait .etat{color:#15803D;font-weight:700}
+[data-theme="dark"] .finpage.fait .etat{color:#86EFAC}
+.finpage.bas{max-width:420px;margin:1.6rem auto 0}
+#sprint #spAll{background:#15803D;color:#fff;border:1px solid #15803D;font-weight:700}
+#sprint #spAll.fait{background:transparent;color:#86EFAC;border-color:#86EFAC}
+
+/* --- blocs de texte, listes de contrôle, questions, couches --- */
+pre.texte{background:var(--paper)!important;border:1px solid var(--line-strong)!important}
+pre.texte code,pre.texte code *{color:var(--ink)!important;font-style:normal!important}
+.liste-titre{font-weight:700;margin:1rem 0 .3rem;color:var(--ink)}
+ul.liste-controle{list-style:none;padding:.6rem 1rem;margin:.4rem 0 1.1rem;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+ul.liste-controle li{position:relative;padding:.4rem 0 .4rem 1.9rem;border-bottom:1px dashed var(--line);margin:0}
+ul.liste-controle li:last-child{border-bottom:0}
+ul.liste-controle li::before{content:"";position:absolute;left:.15rem;top:.62rem;width:.95rem;height:.95rem;border:2px solid var(--accent);border-radius:4px}
+ol.questions{columns:2;column-gap:2.2rem;padding-left:1.6rem;margin:.6rem 0 1.2rem}
+ol.questions li{break-inside:avoid;margin:0 0 .45rem}
+@media(max-width:900px){ol.questions{columns:1}}
+ol.etapes{counter-reset:e;list-style:none;padding:0;margin:.6rem 0 1.1rem}
+ol.etapes li{counter-increment:e;position:relative;padding:.45rem .6rem .45rem 2.6rem;margin:.35rem 0;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+ol.etapes li::before{content:counter(e);position:absolute;left:.6rem;top:.45rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:.8rem}
+.couches{display:grid;gap:.4rem;margin:.8rem 0 1.2rem}
+.couches>div{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.6rem .9rem;border-radius:10px;border:1px solid var(--line);background:var(--paper);border-left:5px solid var(--accent)}
+.couches>div:nth-child(2){margin-left:1.2rem}.couches>div:nth-child(3){margin-left:2.4rem}.couches>div:nth-child(4){margin-left:3.6rem}
+.couches small{color:var(--muted);font-size:.8rem;text-align:right}
+.couches .a-cote{border-left-color:#7C3AED;margin-left:0!important}
+@media(max-width:700px){.couches>div{margin-left:0!important;flex-direction:column;align-items:flex-start}}
+
+/* --- parties d'une page (plusieurs cours dans un même HTML) --- */
+section.partie{margin:2.2rem 0 1.2rem;padding:1.3rem 1.5rem;border-radius:16px;background:linear-gradient(135deg,#1E3A8A,#0F172A);color:#fff;scroll-margin-top:80px}
+section.partie .partie-num{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.16);padding:.2rem .6rem;border-radius:999px}
+section.partie h2{color:#fff!important;border:0!important;margin:.5rem 0 .3rem!important;padding:0!important;font-size:1.5rem}
+section.partie p{color:#E2E8F0;margin:0}
+.toc li.toc-partie span{display:block;margin:.9rem .35rem .3rem;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.toc li.toc-partie:first-child span{margin-top:.2rem}
 /* --- accessibilité : contrastes clair et sombre --- */
 .badge-niche,.tag-niche,.niche .tag{color:#0B6670}
 [data-theme="dark"] .badge-niche,[data-theme="dark"] .tag-niche,[data-theme="dark"] .niche .tag,[data-theme="dark"] .legend .badge-niche{color:#5EEAD4}
@@ -636,7 +676,7 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 [data-theme="dark"] .tbox button.go,[data-theme="dark"] .pipe .primary,[data-theme="dark"] button.primary{color:#0B1220!important}
 [data-theme="dark"] .toc li a.active{background:#2563EB;color:#fff!important}
 [data-theme="dark"] .s-start{--tile-c:#5EEAD4}[data-theme="dark"] .s-devops{--tile-c:#93C5FD}[data-theme="dark"] .s-dev{--tile-c:#C4B5FD}
-[data-theme="dark"] .s-cloud{--tile-c:#7DD3FC}[data-theme="dark"] .s-sec{--tile-c:#FCA5A5}[data-theme="dark"] .s-soft{--tile-c:#FDBA74}[data-theme="dark"] .s-rev{--tile-c:#CBD5E1}
+[data-theme="dark"] .s-cloud{--tile-c:#7DD3FC}[data-theme="dark"] .s-sec{--tile-c:#FCA5A5}[data-theme="dark"] .s-lang{--tile-c:#BEF264}[data-theme="dark"] .s-mis{--tile-c:#F9A8D4}[data-theme="dark"] .s-soft{--tile-c:#FDBA74}[data-theme="dark"] .s-rev{--tile-c:#CBD5E1}
 :focus-visible{outline:3px solid #F59E0B;outline-offset:2px}
 /* --- images agrandissables (visionneuse) --- */
 .fig.zoomable{position:relative;cursor:zoom-in}
@@ -658,7 +698,7 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 <header class="topbar" id="topbar"><div class="in">
 <a class="brand" href="../index.html"><span class="logo">D</span>DevOps Courses</a>
 <button class="burger" type="button" aria-label="Menu" onclick="document.getElementById('topbar').classList.toggle('open')">☰</button>
-<nav><a href="../index.html">Accueil</a><details><summary>Parcours DevOps</summary><div class="groups"><div class="g"><span class="grp">Phase 1 · Les bases</span><a href="../devops-00-fondations.html">0 · Fondations</a><a href="../devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a></div><div class="g"><span class="grp">Phase 2 · Automatiser</span><a href="../devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="../devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a></div><div class="g"><span class="grp">Phase 3 · La plateforme</span><a href="../devops-04-cloud.html">4 · Cloud</a><a href="../devops-05-kubernetes.html">5 · Kubernetes</a><a href="../devops-06-observabilite.html">6 · Observabilité</a></div><div class="g"><span class="grp">Phase 4 · Sécuriser, fiabiliser, diriger</span><a href="../devops-07-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="../devops-08-sre-et-architecture.html">8 · SRE et architecture</a><a href="../devops-09-expert-et-leadership.html">9 · Expert et leadership</a></div></div></details><details><summary>Cours</summary><div class="groups"><div class="g"><span class="grp">Frontend</span><a href="../cours-01-react.html">React</a><a href="../cours-02-angular.html">Angular</a><a href="../cours-03-vue.html">Vue.js</a></div><div class="g"><span class="grp">Backend</span><a href="../cours-11-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="../cours-12-kotlin.html">Kotlin</a><a href="../cours-13-java-pki-signature-electronique.html">Java PKI et signature</a></div><div class="g"><span class="grp">Architecture</span><a href="../cours-21-microservices.html">Microservices</a></div><div class="g"><span class="grp">Intelligence artificielle</span><a href="../cours-31-ia-agentique.html">IA agentique</a><a href="../cours-32-assistants-ia-copilot-claude-chatgpt.html">Assistants IA : Copilot, Claude, ChatGPT</a></div><div class="g"><span class="grp">Sécurité</span><a href="../cours-41-keycloak-et-iam.html">Keycloak et IAM</a></div><div class="g"><span class="grp">Cloud</span><a href="../cours-51-cloud.html">Cloud AWS, Azure, GCP</a><a href="../cours-52-aws.html">AWS</a><a href="../cours-53-alibaba-cloud.html">Alibaba Cloud</a></div><div class="g"><span class="grp">Données et exploitation</span><a href="../cours-61-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-62-talend.html">Talend</a><a href="../cours-63-monitoring.html">Monitoring</a></div><div class="g"><span class="grp">Savoir-être</span><a href="../cours-91-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="../cours-92-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div></div></details><a href="../devops-10-aide-memoire.html">Aide-mémoire</a><a href="../devops-11-fiches-entretien.html">Entretien</a>
+<nav><a href="../index.html">Accueil</a><details><summary>Parcours DevOps</summary><div class="groups"><div class="g"><span class="grp">Phase 1 · Les bases</span><a href="../devops-00-fondations.html">0 · Fondations</a><a href="../devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a></div><div class="g"><span class="grp">Phase 2 · Automatiser</span><a href="../devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="../devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a></div><div class="g"><span class="grp">Phase 3 · La plateforme</span><a href="../devops-04-cloud.html">4 · Cloud</a><a href="../devops-05-kubernetes.html">5 · Kubernetes</a><a href="../devops-06-observabilite.html">6 · Observabilité</a></div><div class="g"><span class="grp">Phase 4 · Sécuriser, fiabiliser, diriger</span><a href="../devops-07-securite-devsecops.html">7 · Sécurité DevSecOps</a><a href="../devops-08-sre-et-architecture.html">8 · SRE et architecture</a><a href="../devops-09-expert-et-leadership.html">9 · Expert et leadership</a></div></div></details><details><summary>Cours</summary><div class="groups"><div class="g"><span class="grp">Frontend</span><a href="../cours-01-react.html">React</a><a href="../cours-02-angular.html">Angular</a><a href="../cours-03-vue.html">Vue.js</a></div><div class="g"><span class="grp">Backend</span><a href="../cours-11-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="../cours-12-kotlin.html">Kotlin</a><a href="../cours-13-java-pki-signature-electronique.html">Java PKI et signature</a></div><div class="g"><span class="grp">Architecture</span><a href="../cours-21-microservices.html">Microservices</a></div><div class="g"><span class="grp">Intelligence artificielle</span><a href="../cours-31-ia-agentique.html">IA agentique</a><a href="../cours-32-assistants-ia-copilot-claude-chatgpt.html">Assistants IA : Copilot, Claude, ChatGPT</a></div><div class="g"><span class="grp">Sécurité</span><a href="../cours-41-keycloak-et-iam.html">Keycloak et IAM</a></div><div class="g"><span class="grp">Cloud</span><a href="../cours-51-cloud.html">Cloud AWS, Azure, GCP</a><a href="../cours-52-aws.html">AWS</a><a href="../cours-53-alibaba-cloud.html">Alibaba Cloud</a></div><div class="g"><span class="grp">Données et exploitation</span><a href="../cours-61-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-62-talend.html">Talend</a><a href="../cours-63-monitoring.html">Monitoring</a></div><div class="g"><span class="grp">Langages, scripts et documents</span><a href="../cours-71-perl.html">Perl</a><a href="../cours-75-latex.html">LaTeX</a></div><div class="g"><span class="grp">Missions</span><a href="../cours-81-mission-tech-lead-java-mco-mcs.html">Mission Tech Lead Java (MCO, MCS)</a></div><div class="g"><span class="grp">Savoir-être</span><a href="../cours-91-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="../cours-92-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div></div></details><a href="../devops-10-aide-memoire.html">Aide-mémoire</a><a href="../devops-11-fiches-entretien.html">Entretien</a>
 <button class="rapid-btn" type="button" title="N'afficher que le résumé, les objectifs, les titres et les schémas de chaque chapitre" onclick="(function(b){var on=document.body.classList.toggle('rapid');b.classList.toggle('on',on);try{localStorage.setItem('devops-rapid',on?'1':'')}catch(e){}})(this)">Lecture rapide</button>
 <button class="theme-btn" type="button" aria-label="Basculer clair / sombre" onclick="(function(){var r=document.documentElement;var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('devops-theme',n)}catch(e){}})()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
 </nav></div></header>
@@ -764,10 +804,46 @@ tilt up : api Running en 40 s ; modification de IncidentController → « Live u
     b.addEventListener('click',function(){ var t=pre.querySelector('code').textContent; navigator.clipboard.writeText(t).then(function(){ b.textContent='Copié !'; setTimeout(function(){ b.textContent='Copier'; },1500); }); }); pre.appendChild(b); });
 })();
 </script>
+<script id="site-fin">(function(){
+var PAGE='tp48-une-plateforme-interne-pour-crisisshield-et-les-suivants.html', LVL=-1, DONE='devops-pages-terminees', HOME='devops-index-progress';
+var CLE=LVL>=0?String(LVL):'c:'+PAGE;
+function lire(k){try{return JSON.parse(localStorage.getItem(k)||'{}')}catch(e){return {}}}
+function ecrire(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function fait(){return lire(DONE)[PAGE]}
+function sections(){return Array.prototype.filter.call(document.querySelectorAll('.ok'),function(b){var box=b.parentElement;return box&&box.querySelector('.go')&&!box.classList.contains('done')&&!box.classList.contains('late')})}
+function toutTerminer(){
+  if(!confirm('Marquer toute la page comme terminée ?\n(sections, exercices, TP et chapitres)'))return;
+  sections().forEach(function(b){b.click()});
+  document.querySelectorAll('input[data-ch]').forEach(function(c){if(!c.checked){c.checked=true;c.dispatchEvent(new Event('change',{bubbles:true}))}});
+  var d=lire(DONE); d[PAGE]=new Date().toISOString().slice(0,10); ecrire(DONE,d);
+  var h=lire(HOME); h[CLE]=true; ecrire(HOME,h); maj();
+}
+function remettre(){
+  if(!confirm('Remettre toute la page à zéro ?\n(le suivi des sections et des chapitres sera effacé)'))return;
+  if(LVL>=0){var k='devops-n'+LVL+'-sprint',kp='devops-n'+LVL+'-progress',o=Storage.prototype.setItem,st=lire(k);st.done={};st.spent={};
+    try{o.call(localStorage,k,JSON.stringify(st));o.call(localStorage,kp,'{}')}catch(e){}
+    Storage.prototype.setItem=function(c){if(c===k||c===kp)return;return o.apply(this,arguments)}}   // la page ne réécrit pas l'ancien état en partant
+  var d=lire(DONE); delete d[PAGE]; ecrire(DONE,d); var h=lire(HOME); delete h[CLE]; ecrire(HOME,h); location.reload();
+}
+var panneaux=[];
+function panneau(cls){var p=document.createElement('div');p.className='finpage '+cls;p.innerHTML='<button type="button"></button><span class="etat"></span>';p.querySelector('button').addEventListener('click',function(){fait()?remettre():toutTerminer()});panneaux.push(p);return p}
+var toc=document.querySelector('nav.toc'); if(toc) toc.appendChild(panneau(''));
+var zone=document.querySelector('.single>main')||document.querySelector('.single')||document.querySelector('main');
+if(zone) zone.appendChild(panneau('bas'));
+var suiv=document.getElementById('spNext'), btn=null;
+if(suiv){btn=document.createElement('button');btn.type='button';btn.id='spAll';suiv.parentNode.insertBefore(btn,suiv.nextSibling);btn.addEventListener('click',function(){fait()?remettre():toutTerminer()})}
+function maj(){var f=fait();
+  panneaux.forEach(function(p){p.classList.toggle('fait',!!f);p.querySelector('button').textContent=f?'Remettre la page à zéro':'✓ Marquer toute la page comme terminée';
+    p.querySelector('.etat').textContent=f?'✓ Page terminée le '+f.split('-').reverse().join('/'):'Un seul clic : toutes les sections, exercices, TP et chapitres.'});
+  if(btn){btn.textContent=f?'✓ Page terminée':'Tout terminer';btn.classList.toggle('fait',!!f);btn.title=f?'Remettre la page à zéro':'Marquer toute la page comme terminée'}
+  document.querySelectorAll('.tbox.done .spent, .done > .spent').forEach(function(sp){if(/ 00:00$/.test(sp.textContent))sp.textContent='✓ terminé'});
+}
+maj();
+})();</script>
 <footer class="sitefooter"><div class="in">
 <div><div class="brand">DevOps Courses</div>Parcours DevOps de zéro à expert et cours complémentaires, avec CrisisShield comme fil conducteur. Tout tourne en Docker. Code source et outils de génération sur <a href="https://github.com/TABETG/DevOpsCourses" rel="noopener" style="display:inline">GitHub</a>.</div>
 <div><h4>Parcours</h4><a href="../devops-00-fondations.html">0 · Fondations</a><a href="../devops-01-virtualisation-et-conteneurs.html">1 · Virtualisation et conteneurs</a><a href="../devops-02-integration-et-livraison-continues.html">2 · Intégration et livraison continues</a><a href="../devops-03-infrastructure-as-code.html">3 · Infrastructure as Code</a><a href="../devops-04-cloud.html">4 · Cloud</a><a href="../index.html">Tous les niveaux →</a></div>
-<div><h4>Cours</h4><a href="../cours-01-react.html">React</a><a href="../cours-02-angular.html">Angular</a><a href="../cours-03-vue.html">Vue.js</a><a href="../cours-11-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="../cours-12-kotlin.html">Kotlin</a><a href="../cours-13-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-21-microservices.html">Microservices</a><a href="../cours-31-ia-agentique.html">IA agentique</a><a href="../cours-32-assistants-ia-copilot-claude-chatgpt.html">Assistants IA : Copilot, Claude, ChatGPT</a><a href="../cours-41-keycloak-et-iam.html">Keycloak et IAM</a><a href="../cours-51-cloud.html">Cloud AWS, Azure, GCP</a><a href="../cours-52-aws.html">AWS</a><a href="../cours-53-alibaba-cloud.html">Alibaba Cloud</a><a href="../cours-61-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-62-talend.html">Talend</a><a href="../cours-63-monitoring.html">Monitoring</a><a href="../cours-91-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="../cours-92-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div>
+<div><h4>Cours</h4><a href="../cours-01-react.html">React</a><a href="../cours-02-angular.html">Angular</a><a href="../cours-03-vue.html">Vue.js</a><a href="../cours-11-struts-hibernate-jsp.html">Struts, Hibernate et JSP</a><a href="../cours-12-kotlin.html">Kotlin</a><a href="../cours-13-java-pki-signature-electronique.html">Java PKI et signature</a><a href="../cours-21-microservices.html">Microservices</a><a href="../cours-31-ia-agentique.html">IA agentique</a><a href="../cours-32-assistants-ia-copilot-claude-chatgpt.html">Assistants IA : Copilot, Claude, ChatGPT</a><a href="../cours-41-keycloak-et-iam.html">Keycloak et IAM</a><a href="../cours-51-cloud.html">Cloud AWS, Azure, GCP</a><a href="../cours-52-aws.html">AWS</a><a href="../cours-53-alibaba-cloud.html">Alibaba Cloud</a><a href="../cours-61-data-platform-aws-talend.html">Data Platform AWS Talend</a><a href="../cours-62-talend.html">Talend</a><a href="../cours-63-monitoring.html">Monitoring</a><a href="../cours-71-perl.html">Perl</a><a href="../cours-75-latex.html">LaTeX</a><a href="../cours-81-mission-tech-lead-java-mco-mcs.html">Mission Tech Lead Java (MCO, MCS)</a><a href="../cours-91-savoir-etre-de-zero-a-expert.html">De zéro à expert</a><a href="../cours-92-savoir-etre-situations-et-attitudes.html">Situations et attitudes</a></div>
 <div><h4>Réviser</h4><a href="../devops-10-aide-memoire.html">Aide-mémoire</a><a href="../devops-11-fiches-entretien.html">Fiches entretien</a><a href="../site-00-charte-graphique.html">Charte graphique</a></div>
 </div></footer>
 <script id="site-lightbox">(function(){
@@ -826,7 +902,7 @@ function highlight(src){
  }
  return out + esc(src.slice(last));
 }
-document.querySelectorAll('pre > code').forEach(function(c){ if (c.querySelector('span') || /[\u2500-\u257F]/.test(c.textContent)) return; try { c.innerHTML = highlight(c.textContent); } catch (e) {} });
+document.querySelectorAll('pre > code').forEach(function(c){ if (c.querySelector('span') || c.classList.contains('texte') || /[\u2500-\u257F]/.test(c.textContent)) return; try { c.innerHTML = highlight(c.textContent); } catch (e) {} });
 })();
 </script>
 <script id="site-toc">(function(){

@@ -4,6 +4,9 @@ Injecte dans chaque page : la police, la feuille de style « site-design » (sur
 import re, sys, pathlib
 
 ONLINE = {
+ 'cours-81-mission-tech-lead-java-mco-mcs.html': 'https://claude.ai/artifact/FuqGi9ECYLHWNQBB31iqdD',
+ 'cours-71-perl.html': 'https://claude.ai/artifact/W5gTzazeBYCNCUYBgPVZnu',
+ 'cours-75-latex.html': 'https://claude.ai/artifact/FUsqwHTS1BBHryLSkXM7kB',
  'cours-52-aws.html': 'https://claude.ai/artifact/Xfs4cJPYqGeLHWqoN5yP2P',
  'cours-53-alibaba-cloud.html': 'https://claude.ai/artifact/HSNpK75y4MzoA5u9yg1B8E',
  'cours-32-assistants-ia-copilot-claude-chatgpt.html': 'https://claude.ai/artifact/Y8wfetNKiDoRGzR2uQN3ku',
@@ -34,6 +37,43 @@ LEVEL_GROUPS = [
  ('Phase 3 · La plateforme', [('devops-04-cloud.html', '4 · Cloud'), ('devops-05-kubernetes.html', '5 · Kubernetes'), ('devops-06-observabilite.html', '6 · Observabilité')]),
  ('Phase 4 · Sécuriser, fiabiliser, diriger', [('devops-07-securite-devsecops.html', '7 · Sécurité DevSecOps'), ('devops-08-sre-et-architecture.html', '8 · SRE et architecture'), ('devops-09-expert-et-leadership.html', '9 · Expert et leadership')]),
 ]
+FIN_JS = r'''<script id="site-fin">(function(){
+var PAGE='__PAGE__', LVL=__LVL__, DONE='devops-pages-terminees', HOME='devops-index-progress';
+var CLE=LVL>=0?String(LVL):'c:'+PAGE;
+function lire(k){try{return JSON.parse(localStorage.getItem(k)||'{}')}catch(e){return {}}}
+function ecrire(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function fait(){return lire(DONE)[PAGE]}
+function sections(){return Array.prototype.filter.call(document.querySelectorAll('.ok'),function(b){var box=b.parentElement;return box&&box.querySelector('.go')&&!box.classList.contains('done')&&!box.classList.contains('late')})}
+function toutTerminer(){
+  if(!confirm('Marquer toute la page comme terminée ?\n(sections, exercices, TP et chapitres)'))return;
+  sections().forEach(function(b){b.click()});
+  document.querySelectorAll('input[data-ch]').forEach(function(c){if(!c.checked){c.checked=true;c.dispatchEvent(new Event('change',{bubbles:true}))}});
+  var d=lire(DONE); d[PAGE]=new Date().toISOString().slice(0,10); ecrire(DONE,d);
+  var h=lire(HOME); h[CLE]=true; ecrire(HOME,h); maj();
+}
+function remettre(){
+  if(!confirm('Remettre toute la page à zéro ?\n(le suivi des sections et des chapitres sera effacé)'))return;
+  if(LVL>=0){var k='devops-n'+LVL+'-sprint',kp='devops-n'+LVL+'-progress',o=Storage.prototype.setItem,st=lire(k);st.done={};st.spent={};
+    try{o.call(localStorage,k,JSON.stringify(st));o.call(localStorage,kp,'{}')}catch(e){}
+    Storage.prototype.setItem=function(c){if(c===k||c===kp)return;return o.apply(this,arguments)}}   // la page ne réécrit pas l'ancien état en partant
+  var d=lire(DONE); delete d[PAGE]; ecrire(DONE,d); var h=lire(HOME); delete h[CLE]; ecrire(HOME,h); location.reload();
+}
+var panneaux=[];
+function panneau(cls){var p=document.createElement('div');p.className='finpage '+cls;p.innerHTML='<button type="button"></button><span class="etat"></span>';p.querySelector('button').addEventListener('click',function(){fait()?remettre():toutTerminer()});panneaux.push(p);return p}
+var toc=document.querySelector('nav.toc'); if(toc) toc.appendChild(panneau(''));
+var zone=document.querySelector('.single>main')||document.querySelector('.single')||document.querySelector('main');
+if(zone) zone.appendChild(panneau('bas'));
+var suiv=document.getElementById('spNext'), btn=null;
+if(suiv){btn=document.createElement('button');btn.type='button';btn.id='spAll';suiv.parentNode.insertBefore(btn,suiv.nextSibling);btn.addEventListener('click',function(){fait()?remettre():toutTerminer()})}
+function maj(){var f=fait();
+  panneaux.forEach(function(p){p.classList.toggle('fait',!!f);p.querySelector('button').textContent=f?'Remettre la page à zéro':'✓ Marquer toute la page comme terminée';
+    p.querySelector('.etat').textContent=f?'✓ Page terminée le '+f.split('-').reverse().join('/'):'Un seul clic : toutes les sections, exercices, TP et chapitres.'});
+  if(btn){btn.textContent=f?'✓ Page terminée':'Tout terminer';btn.classList.toggle('fait',!!f);btn.title=f?'Remettre la page à zéro':'Marquer toute la page comme terminée'}
+  document.querySelectorAll('.tbox.done .spent, .done > .spent').forEach(function(sp){if(/ 00:00$/.test(sp.textContent))sp.textContent='✓ terminé'});
+}
+maj();
+})();</script>
+'''
 COURSE_GROUPS = [
  ('Frontend', [('cours-01-react.html', 'React'), ('cours-02-angular.html', 'Angular'), ('cours-03-vue.html', 'Vue.js')]),
  ('Backend', [('cours-11-struts-hibernate-jsp.html', 'Struts, Hibernate et JSP'), ('cours-12-kotlin.html', 'Kotlin'), ('cours-13-java-pki-signature-electronique.html', 'Java PKI et signature')]),
@@ -42,6 +82,8 @@ COURSE_GROUPS = [
  ('Sécurité', [('cours-41-keycloak-et-iam.html', 'Keycloak et IAM')]),
  ('Cloud', [('cours-51-cloud.html', 'Cloud AWS, Azure, GCP'), ('cours-52-aws.html', 'AWS'), ('cours-53-alibaba-cloud.html', 'Alibaba Cloud')]),
  ('Données et exploitation', [('cours-61-data-platform-aws-talend.html', 'Data Platform AWS Talend'), ('cours-62-talend.html', 'Talend'), ('cours-63-monitoring.html', 'Monitoring')]),
+ ('Langages, scripts et documents', [('cours-71-perl.html', 'Perl'), ('cours-75-latex.html', 'LaTeX')]),
+ ('Missions', [('cours-81-mission-tech-lead-java-mco-mcs.html', 'Mission Tech Lead Java (MCO, MCS)')]),
  ('Savoir-être', [('cours-91-savoir-etre-de-zero-a-expert.html', 'De zéro à expert'), ('cours-92-savoir-etre-situations-et-attitudes.html', 'Situations et attitudes')]),
 ]
 LEVELS = [x for _, g in LEVEL_GROUPS for x in g]
@@ -225,6 +267,46 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 [data-theme="dark"] .pipe .col .cnt{color:#C3CCDA}
 :is(.single,article) :is(p,li,td,dd,span,.entretien,.niche,.note) a:not([class]){color:#1D4ED8}
 [data-theme="dark"] :is(.single,article) :is(p,li,td,dd,span,.entretien,.niche,.note) a:not([class]){color:#93C5FD}
+
+/* --- terminer toute la page d'un coup --- */
+.finpage{margin:.9rem 0 0;padding:.75rem .8rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:.85rem}
+.finpage button{width:100%;border:1px solid #15803D;border-radius:8px;padding:.55rem .7rem;font-weight:700;cursor:pointer;background:#15803D;color:#fff;font:inherit;font-weight:700}
+.finpage.fait button{background:var(--paper);color:var(--ink);border-color:var(--line-strong)}
+.finpage .etat{display:block;margin-top:.45rem;color:var(--muted);line-height:1.35}
+.finpage.fait .etat{color:#15803D;font-weight:700}
+[data-theme="dark"] .finpage.fait .etat{color:#86EFAC}
+.finpage.bas{max-width:420px;margin:1.6rem auto 0}
+#sprint #spAll{background:#15803D;color:#fff;border:1px solid #15803D;font-weight:700}
+#sprint #spAll.fait{background:transparent;color:#86EFAC;border-color:#86EFAC}
+
+/* --- blocs de texte, listes de contrôle, questions, couches --- */
+pre.texte{background:var(--paper)!important;border:1px solid var(--line-strong)!important}
+pre.texte code,pre.texte code *{color:var(--ink)!important;font-style:normal!important}
+.liste-titre{font-weight:700;margin:1rem 0 .3rem;color:var(--ink)}
+ul.liste-controle{list-style:none;padding:.6rem 1rem;margin:.4rem 0 1.1rem;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+ul.liste-controle li{position:relative;padding:.4rem 0 .4rem 1.9rem;border-bottom:1px dashed var(--line);margin:0}
+ul.liste-controle li:last-child{border-bottom:0}
+ul.liste-controle li::before{content:"";position:absolute;left:.15rem;top:.62rem;width:.95rem;height:.95rem;border:2px solid var(--accent);border-radius:4px}
+ol.questions{columns:2;column-gap:2.2rem;padding-left:1.6rem;margin:.6rem 0 1.2rem}
+ol.questions li{break-inside:avoid;margin:0 0 .45rem}
+@media(max-width:900px){ol.questions{columns:1}}
+ol.etapes{counter-reset:e;list-style:none;padding:0;margin:.6rem 0 1.1rem}
+ol.etapes li{counter-increment:e;position:relative;padding:.45rem .6rem .45rem 2.6rem;margin:.35rem 0;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+ol.etapes li::before{content:counter(e);position:absolute;left:.6rem;top:.45rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:.8rem}
+.couches{display:grid;gap:.4rem;margin:.8rem 0 1.2rem}
+.couches>div{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.6rem .9rem;border-radius:10px;border:1px solid var(--line);background:var(--paper);border-left:5px solid var(--accent)}
+.couches>div:nth-child(2){margin-left:1.2rem}.couches>div:nth-child(3){margin-left:2.4rem}.couches>div:nth-child(4){margin-left:3.6rem}
+.couches small{color:var(--muted);font-size:.8rem;text-align:right}
+.couches .a-cote{border-left-color:#7C3AED;margin-left:0!important}
+@media(max-width:700px){.couches>div{margin-left:0!important;flex-direction:column;align-items:flex-start}}
+
+/* --- parties d'une page (plusieurs cours dans un même HTML) --- */
+section.partie{margin:2.2rem 0 1.2rem;padding:1.3rem 1.5rem;border-radius:16px;background:linear-gradient(135deg,#1E3A8A,#0F172A);color:#fff;scroll-margin-top:80px}
+section.partie .partie-num{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.16);padding:.2rem .6rem;border-radius:999px}
+section.partie h2{color:#fff!important;border:0!important;margin:.5rem 0 .3rem!important;padding:0!important;font-size:1.5rem}
+section.partie p{color:#E2E8F0;margin:0}
+.toc li.toc-partie span{display:block;margin:.9rem .35rem .3rem;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.toc li.toc-partie:first-child span{margin-top:.2rem}
 /* --- accessibilité : contrastes clair et sombre --- */
 .badge-niche,.tag-niche,.niche .tag{color:#0B6670}
 [data-theme="dark"] .badge-niche,[data-theme="dark"] .tag-niche,[data-theme="dark"] .niche .tag,[data-theme="dark"] .legend .badge-niche{color:#5EEAD4}
@@ -234,7 +316,7 @@ pre.ascii,pre.ascii code{white-space:pre!important;overflow-x:auto!important}
 [data-theme="dark"] .tbox button.go,[data-theme="dark"] .pipe .primary,[data-theme="dark"] button.primary{color:#0B1220!important}
 [data-theme="dark"] .toc li a.active{background:#2563EB;color:#fff!important}
 [data-theme="dark"] .s-start{--tile-c:#5EEAD4}[data-theme="dark"] .s-devops{--tile-c:#93C5FD}[data-theme="dark"] .s-dev{--tile-c:#C4B5FD}
-[data-theme="dark"] .s-cloud{--tile-c:#7DD3FC}[data-theme="dark"] .s-sec{--tile-c:#FCA5A5}[data-theme="dark"] .s-soft{--tile-c:#FDBA74}[data-theme="dark"] .s-rev{--tile-c:#CBD5E1}
+[data-theme="dark"] .s-cloud{--tile-c:#7DD3FC}[data-theme="dark"] .s-sec{--tile-c:#FCA5A5}[data-theme="dark"] .s-lang{--tile-c:#BEF264}[data-theme="dark"] .s-mis{--tile-c:#F9A8D4}[data-theme="dark"] .s-soft{--tile-c:#FDBA74}[data-theme="dark"] .s-rev{--tile-c:#CBD5E1}
 :focus-visible{outline:3px solid #F59E0B;outline-offset:2px}
 /* --- images agrandissables (visionneuse) --- */
 .fig.zoomable{position:relative;cursor:zoom-in}
@@ -330,6 +412,17 @@ def restyle(path, base, online):
               f'<link rel="icon" data-site-icon type="image/png" sizes="32x32" href="{prefix}favicon-32.png">\n'
               f'<link rel="apple-touch-icon" data-site-icon href="{prefix}apple-touch-icon.png">\n')
     s = re.sub(r'(<meta charset="[^"]*"\s*/?>\n?)', lambda m: m.group(1) + ic, s, count=1) if re.search(r'<meta charset', s) else s.replace('<head>', '<head>\n' + ic, 1)
+    # ETIQUETTE_GROUPE : l'en-tête des cours indique leur vrai groupe (et non « Cours frontend » pour tous)
+    grp = next((gname for gname, items in COURSE_GROUPS for fn, _ in items if fn == rel.name), None)
+    if grp and grp != 'Frontend':
+        etiquette = 'Préparer une mission' if grp == 'Missions' else f'{grp} — de zéro à expert'
+        s = s.replace('<div class="level">Cours frontend — de zéro à expert</div>', f'<div class="level">{etiquette}</div>', 1)
+    # bouton « terminer toute la page »
+    s = re.sub(r'<script id="site-fin">.*?</script>\n?', '', s, flags=re.S)
+    if rel.name != 'index.html':
+        mlv = re.match(r'devops-0(\d)-', rel.name)
+        fin = FIN_JS.replace('__PAGE__', rel.name).replace('__LVL__', mlv.group(1) if mlv else '-1')
+        s = s.replace('</body>', fin + '</body>', 1)
     top = nav_html(rel.name if prefix == '' else '#'); foot = FOOTER
     if prefix: top = top.replace('href="', f'href="{prefix}').replace(f'href="{prefix}#', 'href="#'); foot = foot.replace('href="', f'href="{prefix}').replace(f'href="{prefix}https', 'href="https')
     if online:
